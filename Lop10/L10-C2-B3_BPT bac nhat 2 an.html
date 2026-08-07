@@ -1694,7 +1694,7 @@
       if (newXR < 2 || newXR > 500) return;
       const pctX = cx / CW, pctY = 1 - cy / CH;
       vXMin = mx - pctX * newXR; vXMax = vXMin + newXR;
-      vYMin = my - pctY * newYR; vYMax = my - pctY * newYR;
+      vYMin = my - pctY * newYR; vYMax = vYMin + newYR;
       fullRedraw();
     }
 

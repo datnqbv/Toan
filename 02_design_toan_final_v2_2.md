@@ -872,7 +872,7 @@ function setupWheel(canvas, getCW, getCH) {
     const { x: mx, y: my } = c2m(cx, cy, CW, CH);
     const xRange = vXMax - vXMin, yRange = vYMax - vYMin;
     const newXR = xRange * factor, newYR = yRange * factor;
-    if (newXR < 2 || newXR > 500) return;
+    if (newXR < 2 || newXR > 50000) return;
     const pctX = cx / CW, pctY = 1 - cy / CH;
     vXMin = mx - pctX * newXR; vXMax = vXMin + newXR;
     vYMin = my - pctY * newYR; vYMax = vYMin + newYR;
@@ -927,6 +927,28 @@ function setupPan(canvas, getCW, getCH) {
   }, { passive: true });
 
   canvas.addEventListener('touchend', () => { isPanning = false; });
+}
+
+/* JS chuẩn cho các Nút bấm Zoom (.canvas-zoom-controls) */
+function applyZoom(factor) {
+  if (CW === 0 || CH === 0) return;
+  zoomAt(CW / 2, CH / 2, factor);
+}
+
+function zoomAt(cx, cy, factor) {
+  const { x: mx, y: my } = c2m(cx, cy);
+  const xRange = vXMax - vXMin, yRange = vYMax - vYMin;
+  const newXR = xRange * factor, newYR = yRange * factor;
+  if (newXR < 2 || newXR > 500) return;
+  const pctX = cx / CW, pctY = 1 - cy / CH;
+  vXMin = mx - pctX * newXR; vXMax = vXMin + newXR;
+  vYMin = my - pctY * newYR; vYMax = vYMin + newYR;
+  fullRedraw();
+}
+
+function resetView() {
+  vXMin = -10; vXMax = 10; vYMin = -10; vYMax = 10;
+  fullRedraw();
 }
 ```
 

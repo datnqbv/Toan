@@ -2280,7 +2280,7 @@
       const yRange = state.vYMax - state.vYMin;
       const newXR = xRange * factor;
       const newYR = yRange * factor;
-      if (newXR < 2 || newXR > 500) return;
+      if (newXR < 2 || newXR > 50000) return;
       const pctX = cx / CW;
       const pctY = 1 - cy / CH;
       state.vXMin = mx - pctX * newXR;
