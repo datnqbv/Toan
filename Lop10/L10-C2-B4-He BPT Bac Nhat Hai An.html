@@ -1,0 +1,2444 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biểu diễn miền nghiệm Hệ Bất Phương Trình Bậc Nhất Hai Ẩn</title>
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  
+  <script type="application/json" id="athena-context">
+{
+  "title": "Hệ Bất Phương Trình Bậc Nhất Hai Ẩn",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Xác định đường biên của một bất phương trình bậc nhất hai ẩn là nét liền (≤, ≥) hay nét đứt (<, >).",
+    "Dùng điểm thử để kiểm tra một điểm có thỏa mãn bất phương trình hay không, từ đó xác định đúng nửa mặt phẳng nghiệm.",
+    "Xác định miền nghiệm của một bất phương trình bằng cách gạch bỏ nửa mặt phẳng không thỏa mãn.",
+    "Suy luận miền nghiệm chung của một hệ nhiều bất phương trình bậc nhất hai ẩn (giao của các miền nghiệm riêng lẻ), và kiểm tra một điểm bất kỳ có thuộc miền nghiệm chung không."
+  ],
+  "structure": [
+    { "id": "m1", "title": "Module 1: Từng bước biểu diễn miền nghiệm — đi qua 4 bước (chọn nét biên, thử điểm, gạch bỏ nửa mặt phẳng, kết luận) cho từng bất phương trình trong hệ (tối đa 4 BPT)." },
+    { "id": "m2", "title": "Module 2: Toàn cảnh miền nghiệm & khám phá tự do — học sinh tự chỉnh hệ số/dấu của từng BPT (nhập số hoặc bấm Random), bật/tắt hiển thị từng miền, và click điểm bất kỳ trên đồ thị để kiểm tra điểm đó có thuộc miền nghiệm chung không." }
+  ],
+  "athenaGuidance": "Bài học cho học sinh khám phá cách biểu diễn miền nghiệm của một hệ bất phương trình bậc nhất hai ẩn bằng đồ thị, qua 2 module. Module 1 (Từng bước) dẫn dắt học sinh xử lý lần lượt từng bất phương trình trong hệ (hệ có 2-4 bất phương trình, hệ số a/b/c và dấu bất đẳng thức là dữ liệu động do người dùng nhập ở màn hình trước đó, không cố định), mỗi bất phương trình đi qua đúng 4 bước lặp lại: (1) chọn đường biên là 'Nét liền (≤, ≥)' hay 'Nét đứt (<, >)' rồi bấm 'Kiểm tra đường biên'; (2) chọn một điểm thử có tọa độ do hệ thống gợi ý có 'Thỏa' hay 'Không (Không thỏa)' bất phương trình đó, sau khi chọn thì bấm 'Kiểm tra kết quả' — hệ thống tự tính vế trái và so sánh với vế phải để chấm đúng/sai theo đúng dữ liệu số của bất phương trình đó, Athena không được tự đoán hay nói trước kết quả tính toán này; (3) click vào nửa mặt phẳng KHÔNG thỏa mãn bất phương trình ngay trên đồ thị canvas để gạch bỏ phần đó (đúng/sai được xác định bằng toạ độ click thực tế so với đường biên, không phải một đáp án cố định để liệt kê); (4) sau khi xử lý xong tất cả bất phương trình, bấm 'Hoàn thành' để xem tóm tắt. Module 2 (Toàn cảnh) là khu vực khám phá tự do: học sinh có thể sửa hệ số/dấu từng bất phương trình, bật/tắt hiển thị từng miền, và click một điểm M bất kỳ trên đồ thị — hệ thống sẽ liệt kê điểm đó thỏa hay không thỏa từng bất phương trình và kết luận điểm có thuộc miền nghiệm chung hay không; đây là công cụ khám phá tính toán tự động theo công thức toán học thực tế tại thời điểm click, không phải một câu hỏi có đáp án cố định. Vì hầu hết các bước đều dùng số liệu động (do người dùng nhập hoặc do hệ thống sinh ngẫu nhiên khi bấm Random), Athena không có một bộ đáp án cố định để đối chiếu — khi học sinh hỏi, Athena chỉ nên hướng dẫn PHƯƠNG PHÁP (cách xác định nét liền/nét đứt dựa vào dấu ≤/≥ hay <;/>, cách thế toạ độ vào vế trái rồi so sánh với vế phải, cách xác định nửa mặt phẳng chứa gốc toạ độ O có thỏa mãn hay không để suy ra phía cần gạch bỏ), tuyệt đối không tự tính hộ hoặc nói thẳng kết quả đúng/sai cụ thể cho một bộ số liệu mà học sinh đang thao tác, vì Athena không đọc được DOM nên không biết chắc học sinh đang ở bước nào với số liệu gì."
+}
+  </script>
+
+  <style>
+    /* ── DESIGN TOKENS (v2.2 — Cream · Jade · Sage · Accent) ── */
+    :root {
+      /* Neutrals · giấy & mực */
+      --cream: #FAF7F0;
+      --cream-2: #F0EADD;
+      --cream-3: #E7DECC;
+      --paper-line: #E5DECF;
+      --paper-line-2: #D6CCB6;
+      --ink: #1A1A1A;
+      --ink-2: #514C44;
+      --ink-3: #7C756A;
+      --ink-faint: #ABA396;
+
+      /* Jade · hành động chính & đúng */
+      --jade: #3CA57A;
+      --jade-deep: #2D8B6F;
+      --jade-dark: #14432F;
+      --jade-text: #1B5E48;
+      --jade-soft: #A9D0BE;
+      --jade-pale: #DCEAE1;
+
+      /* Sage · phụ trợ */
+      --sage: #A8C9B8;
+      --sage-deep: #7CA792;
+      --sage-text: #46685A;
+      --sage-pale: #E1ECE4;
+
+      /* Accent · điểm nhấn ấm */
+      --accent: #E8A24A;
+      --accent-deep: #CE8A33;
+      --accent-text: #8A551A;
+      --accent-pale: #F7E7CD;
+
+      /* Semantic · phản hồi đúng/sai/cảnh báo/info */
+      --correct: #2D8B6F;
+      --correct-bg: #DCEAE1;
+      --wrong: #C15F3C;
+      --wrong-bg: #F3E2D6;
+      --warning: #C58A2E;
+      --warning-bg: #F5E7CB;
+      --info: #4E7F92;
+      --info-bg: #DCE7EB;
+
+      --white: #FFFFFF;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --radius-sm: 6px;
+      --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+      --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+
+      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--ink);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── MAIN LAYOUT (KHÔNG CÓ HEADER BANNER TRÊN CÙNG) ── */
+    .app-body {
+      max-width: 1080px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 0 16px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+    }
+
+    /* ── SIM CARD ── */
+    .sim-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--paper-line);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sim-header {
+      background: var(--cream-2);
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1.5px solid var(--paper-line);
+      flex-wrap: wrap;
+    }
+
+    .sim-title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sim-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .sim-sub {
+      font-size: 14px;
+      color: var(--ink-3);
+    }
+
+    /* Tab switcher inside sim-header */
+    .tab-container {
+      display: flex;
+      gap: 6px;
+      background: var(--cream-3);
+      padding: 4px;
+      border-radius: var(--radius);
+    }
+
+    .tab-btn {
+      border: none;
+      min-height: 44px;
+      padding: 6px 18px;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s;
+      background: transparent;
+      color: var(--ink-2);
+    }
+
+    .tab-btn.active {
+      background: var(--jade-deep);
+      color: var(--white);
+      box-shadow: var(--shadow-sm);
+    }
+
+    /* ── SIM BODY & RESPONSIVE GRID ── */
+    .sim-body {
+      display: grid;
+      grid-template-columns: 3.8fr 6.2fr;
+      min-height: 540px;
+    }
+
+    @media (max-width: 1023px) {
+      .sim-body {
+        display: flex;
+        flex-direction: column;
+      }
+      .sim-right {
+        order: 1; /* Canvas hiện trước trên Mobile */
+      }
+      .sim-left {
+        order: 2; /* Sidebar điều khiển ở sau */
+        border-right: none;
+        border-top: 1.5px solid var(--paper-line);
+      }
+    }
+
+    /* LEFT SIDEBAR */
+    .sim-left {
+      border-right: 1.5px solid var(--paper-line);
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--cream);
+    }
+
+    .panel-section-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+    }
+
+    /* BPT Input row */
+    .bpt-input-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .bpt-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 10px;
+      background: var(--white);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--paper-line);
+      transition: all 0.2s;
+    }
+
+    .coeff-input {
+      width: 48px;
+      height: 44px;
+      padding: 0 6px;
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--ink);
+      background: var(--white);
+      text-align: center;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .coeff-input:focus {
+      border-color: var(--jade-deep);
+      box-shadow: 0 0 0 3px rgba(60, 165, 122, 0.15);
+    }
+
+    .coeff-input:disabled {
+      background: var(--cream-2);
+      border-color: var(--paper-line);
+      color: var(--ink-3);
+      cursor: not-allowed;
+    }
+
+    .bpt-label {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink-2);
+    }
+
+    .sign-toggle-btn {
+      height: 44px;
+      min-width: 44px;
+      padding: 0 8px;
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      background: var(--white);
+      color: var(--jade-deep);
+      cursor: pointer;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .sign-toggle-btn.active-le {
+      background: var(--correct-bg);
+      border-color: var(--correct);
+      color: var(--jade-text);
+    }
+
+    .sign-toggle-btn.active-ge {
+      background: var(--info-bg);
+      border-color: var(--info);
+      color: var(--info);
+    }
+
+    .sign-toggle-btn:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      background: var(--cream-2) !important;
+      border-color: var(--paper-line) !important;
+      color: var(--ink-3) !important;
+    }
+
+    .btn-delete-row {
+      background: transparent;
+      color: var(--ink-3);
+      border: none;
+      cursor: pointer;
+      font-size: 18px;
+      padding: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      border-radius: 4px;
+      transition: all 0.2s;
+      margin-left: auto;
+      min-height: 44px;
+      min-width: 44px;
+    }
+
+    .btn-delete-row:hover:not(:disabled) {
+      color: var(--wrong);
+      background: var(--wrong-bg);
+    }
+
+    .btn-delete-row:disabled {
+      opacity: 0.3;
+      cursor: not-allowed;
+    }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 16px;
+      background: var(--jade);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, opacity .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--jade-deep);
+    }
+
+    .btn-primary:disabled {
+      opacity: .45;
+      cursor: default;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 16px;
+      background: var(--white);
+      color: var(--ink-2);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      border-color: var(--jade-deep);
+      color: var(--jade-deep);
+    }
+
+    .btn-secondary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Caption */
+    .sim-caption {
+      background: var(--sage-pale);
+      border-left: 4px solid var(--jade-deep);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 14px;
+      color: var(--jade-text);
+      line-height: 1.6;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: auto;
+    }
+
+    .sim-caption i {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: var(--jade-deep);
+    }
+
+    .sim-caption.green {
+      background: var(--correct-bg);
+      border-left-color: var(--correct);
+      color: var(--jade-text);
+    }
+
+    .sim-caption.red {
+      background: var(--wrong-bg);
+      border-left-color: var(--wrong);
+      color: var(--wrong);
+    }
+    .sim-caption.red i { color: var(--wrong); }
+
+    /* Choice row and Linetype */
+    .choice-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-choice {
+      flex: 1;
+      min-height: 44px;
+      padding: 10px;
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+      line-height: 1.3;
+      color: var(--ink);
+    }
+
+    .btn-choice:hover {
+      border-color: var(--jade);
+      color: var(--jade-text);
+    }
+
+    .btn-choice.selected {
+      background: var(--jade-deep);
+      color: var(--white);
+      border-color: var(--jade-deep);
+    }
+
+    .btn-linetype {
+      flex: 1;
+      min-height: 56px;
+      padding: 10px 8px;
+      border: 2px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+      line-height: 1.4;
+      color: var(--ink);
+    }
+
+    .btn-linetype:hover {
+      border-color: var(--jade);
+      color: var(--jade-text);
+    }
+
+    .btn-linetype.selected {
+      background: var(--jade-deep);
+      color: var(--white);
+      border-color: var(--jade-deep);
+    }
+
+    .progress-wrap { display: none !important; }
+
+    /* BPT Display for steps */
+    .bpt-display {
+      background: var(--jade-dark);
+      color: var(--accent);
+      font-size: 15px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      padding: 8px 12px;
+      border-radius: var(--radius-sm);
+      text-align: center;
+      letter-spacing: .03em;
+    }
+
+    /* RIGHT CANVAS */
+    .sim-right {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--white);
+    }
+
+    .canvas-wrap {
+      flex: 1;
+      position: relative;
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--cream);
+      min-height: 380px;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .tooltip-box {
+      position: absolute;
+      background: rgba(26, 26, 26, 0.9);
+      color: var(--white);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+      pointer-events: none;
+      display: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .coord-bar {
+      font-size: 13px;
+      color: var(--ink-3);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      padding: 2px 4px;
+      height: 20px;
+    }
+
+    .zoom-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-zoom {
+      min-height: 44px;
+      padding: 8px 16px;
+      background: var(--white);
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      color: var(--ink-2);
+    }
+
+    .btn-zoom:hover {
+      border-color: var(--jade-deep);
+      color: var(--jade-deep);
+    }
+
+    .btn-zoom.accent {
+      background: var(--jade-deep);
+      color: var(--white);
+      border-color: var(--jade-deep);
+    }
+
+    .btn-zoom.accent:hover {
+      background: var(--jade-dark);
+    }
+
+    .info-box {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .info-box.blue {
+      background: var(--info-bg);
+      border-color: var(--info);
+      color: var(--ink);
+    }
+
+    .info-box.gold {
+      background: var(--warning-bg);
+      border-color: var(--warning);
+      color: var(--accent-text);
+    }
+
+    .ib-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .ib-title {
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .calc-row {
+      background: var(--white);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+    }
+
+    .feedback-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .feedback-badge.ok {
+      background: var(--correct-bg);
+      color: var(--jade-text);
+    }
+
+    .feedback-badge.err {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+    }
+
+    .hint-text {
+      font-size: 13px;
+      color: var(--ink-3);
+      font-style: italic;
+      margin-top: 4px;
+    }
+
+    .sdiv {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--ink-3);
+      margin: 4px 0;
+    }
+
+    .sdiv::before, .sdiv::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--paper-line-2);
+    }
+
+    .celebration {
+      text-align: center;
+      padding: 20px;
+      background: var(--sage-pale);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--jade-deep);
+    }
+
+    .celebration .emoji {
+      font-size: 36px;
+      margin-bottom: 4px;
+    }
+
+    .celebration h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--jade-dark);
+      margin: 4px 0;
+    }
+
+    .btn-newgame {
+      margin-top: 14px;
+      min-height: 44px;
+      padding: 10px 24px;
+      background: var(--jade-deep);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .btn-newgame:hover {
+      background: var(--jade-dark);
+    }
+
+    .pc-table {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 8px;
+    }
+
+    .pc-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--white);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-family: var(--font-mono);
+    }
+
+    .pc-badge {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .pc-badge.ok {
+      background: var(--correct-bg);
+      color: var(--jade-text);
+    }
+
+    .pc-badge.err {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+    }
+
+    .pc-conclusion {
+      padding: 10px 12px;
+      border-radius: var(--radius-sm);
+      font-weight: 700;
+      font-size: 13px;
+      margin-top: 8px;
+    }
+
+    .pc-conclusion.ok {
+      background: var(--correct-bg);
+      color: var(--jade-text);
+      border: 1px solid var(--correct);
+    }
+
+    .pc-conclusion.err {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+      border: 1px solid var(--wrong);
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+
+<body>
+
+  <!-- BODY CONTAINER (KHÔNG CÓ HEADER BANNER TRÊN CÙNG) -->
+  <div class="app-body">
+    <div class="sim-card">
+      <div class="sim-header">
+        <div class="sim-title-wrap">
+          <div class="sim-title" id="simTitle">Module 1: Từng bước biểu diễn miền nghiệm của hệ</div>
+          <div class="sim-sub" id="simSubtitle">Trải nghiệm đúng quy trình biểu diễn và gạch bỏ miền nghiệm</div>
+        </div>
+        <div class="tab-container">
+          <button class="tab-btn active" id="tab-1" onclick="switchTab(1)">Từng Bước Một</button>
+          <button class="tab-btn" id="tab-2" onclick="switchTab(2)">Toàn Cảnh</button>
+        </div>
+      </div>
+
+      <div class="sim-body">
+        <!-- LEFT CONTROL SIDEBAR -->
+        <div class="sim-left">
+          <!-- BPT Inputs Section -->
+          <div id="bptInputSection">
+            <div class="panel-section-label">Hệ bất phương trình</div>
+            <div class="bpt-input-list" id="bptInputList"></div>
+
+            <button class="btn-secondary" id="btnAddBPT" onclick="addBPTRow()" style="margin-top: 10px;">
+              <i class="ti ti-plus"></i> Thêm bất phương trình
+            </button>
+            <button class="btn-primary" id="btnStartSim" onclick="startStepByStep()" style="margin-top: 14px;">
+              <i class="ti ti-player-play"></i> Bắt đầu
+            </button>
+          </div>
+
+          <!-- Step-by-Step UI (Module 1) -->
+          <div id="stepSection" class="hidden">
+            <div class="progress-wrap" id="progressWrap">
+              <div class="prog-step-light active" id="ps1">
+                <div class="prog-dot-light">1</div>
+                <span>Biên</span>
+              </div>
+              <div class="prog-line-light"></div>
+              <div class="prog-step-light" id="ps2">
+                <div class="prog-dot-light">2</div>
+                <span>Điểm thử</span>
+              </div>
+              <div class="prog-line-light"></div>
+              <div class="prog-step-light" id="ps3">
+                <div class="prog-dot-light">3</div>
+                <span>Gạch bỏ</span>
+              </div>
+              <div class="prog-line-light"></div>
+              <div class="prog-step-light" id="ps4">
+                <div class="prog-dot-light">4</div>
+                <span>Kết luận</span>
+              </div>
+            </div>
+
+            <div id="stepContent"></div>
+          </div>
+
+          <!-- Overview controls (Module 2) -->
+          <div id="overviewSection" class="hidden">
+            <div class="sdiv">Khám phá toàn cảnh</div>
+            <div style="display:flex; gap:10px;">
+              <button class="btn-secondary" onclick="randomizeSystem()" style="flex:1;">
+                <i class="ti ti-dice"></i> Hệ ngẫu nhiên
+              </button>
+              <button class="btn-secondary" onclick="resetOverview()" style="flex:1;">
+                <i class="ti ti-refresh"></i> Đặt lại
+              </button>
+            </div>
+
+            <div class="panel-section-label" style="margin-top: 16px;">Chế độ hiển thị miền nghiệm</div>
+            <div style="display:flex; gap:10px; margin-bottom: 14px;">
+              <button class="btn-choice selected" id="btnShowAll" onclick="setOverviewMode('all')">Xem tất cả</button>
+              <button class="btn-choice" id="btnShowInter" onclick="setOverviewMode('inter')">Chỉ giao chung</button>
+            </div>
+
+            <!-- Point check panel -->
+            <div class="panel-section-label">Kiểm tra tọa độ điểm</div>
+            <div id="pointCheckPanel" class="info-box blue">
+              <div class="ib-icon"><i class="ti ti-bulb"></i></div>
+              <div style="font-size:13px;">
+                <strong>Click vào điểm bất kỳ trên đồ thị</strong> để kiểm tra điểm đó có thuộc miền nghiệm của hệ không.
+              </div>
+            </div>
+            <div id="pointCheckDetails" class="hidden"></div>
+          </div>
+
+          <!-- General caption -->
+          <div class="sim-caption" id="capBox">
+            <i class="ti ti-info-circle"></i>
+            <span id="capText">Quan sát hệ BPT bên trái. Nhấn Bắt đầu khi sẵn sàng!</span>
+          </div>
+        </div>
+
+        <!-- RIGHT GRAPH CANVAS -->
+        <div class="sim-right">
+          <div class="canvas-wrap" id="canvasWrap">
+            <canvas id="simCanvas"></canvas>
+            <div class="tooltip-box" id="simTooltip"></div>
+          </div>
+          <div class="coord-bar" id="coordBar">x: 0.00 · y: 0.00</div>
+          <div class="zoom-row">
+            <button class="btn-zoom accent" onclick="applyZoom(0.7)">＋ Phóng to</button>
+            <button class="btn-zoom accent" onclick="applyZoom(1.4)">－ Thu nhỏ</button>
+            <button class="btn-zoom" onclick="resetView()">↺ Mặc định</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== LMS Safe Accessor (PHẦN 7.2) =====
+    function LMS() {
+      return window.AiducationLMS || { ready: function () { }, progress: function () { }, event: function () { }, state: function () { }, complete: function () { }, resize: function () { } };
+    }
+
+    // ──────────────────────────────────────
+    // 1. STATE & DATA STRUCTURE
+    // ──────────────────────────────────────
+    let state = {
+      activeTab: 1, // 1: Step-by-step, 2: Overview
+
+      bpts: [
+        { id: 1, a: 7, b: 4, c: 2400, sign: 'le', colorHex: '#CE8A33', fillRGB: [206, 138, 51], visible: true, boundaryDrawn: false, testPointSatisfied: false, crossedOut: false },
+        { id: 2, a: 1, b: 1, c: 100, sign: 'le', colorHex: '#4E7F92', fillRGB: [78, 127, 146], visible: true, boundaryDrawn: false, testPointSatisfied: false, crossedOut: false },
+        { id: 3, a: 1, b: 0, c: 0, sign: 'ge', colorHex: '#2D8B6F', fillRGB: [45, 139, 111], visible: true, boundaryDrawn: false, testPointSatisfied: false, crossedOut: false }
+      ],
+
+      m1: {
+        started: false,
+        step: 1,
+        subStep: 0,
+        lineTypeSelected: null,
+        satisfySelected: null,
+        satisfyChecked: false,
+        testPoint: null,
+        clickedRegion: null,
+        completed: false
+      },
+
+      m2: {
+        clickedPoint: null,
+        showIntersectionOnly: false
+      },
+
+      vXMin: -800, vXMax: 800, vYMin: -600, vYMax: 600
+    };
+
+    // ──────────────────────────────────────
+    // 2. CANVAS SETUP (Retina PW/PH vs CW/CH)
+    // ──────────────────────────────────────
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const canvasWrap = document.getElementById('canvasWrap');
+
+    let CW = 0, CH = 0;   // CSS pixels
+    let PW = 0, PH = 0;   // Physical pixels
+
+    function resizeCanvas() {
+      const rect = canvasWrap.getBoundingClientRect();
+      CW = rect.width;
+      CH = rect.height;
+      if (CW === 0 || CH === 0) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      PW = Math.round(CW * dpr);
+      PH = Math.round(CH * dpr);
+
+      canvas.width = PW;
+      canvas.height = PH;
+
+      fullRedraw();
+    }
+
+    let roTimer = null;
+    const ro = new ResizeObserver(() => {
+      clearTimeout(roTimer);
+      roTimer = setTimeout(resizeCanvas, 30);
+    });
+    ro.observe(canvasWrap);
+
+    // ──────────────────────────────────────
+    // 3. COORD TRANSFORMATION
+    // ──────────────────────────────────────
+    function m2c(mx, my, w = CW, h = CH) {
+      return {
+        px: (mx - state.vXMin) / (state.vXMax - state.vXMin) * w,
+        py: (1 - (my - state.vYMin) / (state.vYMax - state.vYMin)) * h
+      };
+    }
+
+    function c2m(px, py, w = CW, h = CH) {
+      return {
+        x: state.vXMin + (px / w) * (state.vXMax - state.vXMin),
+        y: state.vYMin + (1 - py / h) * (state.vYMax - state.vYMin)
+      };
+    }
+
+    function applyZoom(factor) {
+      const xc = (state.vXMin + state.vXMax) / 2;
+      const yc = (state.vYMin + state.vYMax) / 2;
+      const xr = (state.vXMax - state.vXMin) * factor / 2;
+      const yr = (state.vYMax - state.vYMin) * factor / 2;
+
+      if (xr < 0.2 || xr > 10000) return;
+
+      state.vXMin = xc - xr; state.vXMax = xc + xr;
+      state.vYMin = yc - yr; state.vYMax = yc + yr;
+      fullRedraw();
+    }
+
+    function zoomAt(cx, cy, factor) {
+      const { x: mx, y: my } = c2m(cx, cy);
+      const newXRange = (state.vXMax - state.vXMin) * factor;
+      const newYRange = (state.vYMax - state.vYMin) * factor;
+
+      if (newXRange < 0.2 || newXRange > 50000) return;
+
+      const pctX = (cx / CW);
+      const pctY = 1 - (cy / CH);
+
+      state.vXMin = mx - pctX * newXRange;
+      state.vXMax = state.vXMin + newXRange;
+      state.vYMin = my - pctY * newYRange;
+      state.vYMax = state.vYMin + newYRange;
+
+      fullRedraw();
+    }
+
+    function resetView() {
+      autoScaleViewport();
+      fullRedraw();
+    }
+
+    // ──────────────────────────────────────
+    // 4. VIEWPORT AUTO SCALING
+    // ──────────────────────────────────────
+    function autoScaleViewport() {
+      if (CW === 0 || CH === 0) {
+        state.vXMin = -800; state.vXMax = 800;
+        state.vYMin = -600; state.vYMax = 600;
+        return;
+      }
+
+      let points = [{ x: 0, y: 0 }];
+
+      state.bpts.forEach(b => {
+        if (b.a !== 0) {
+          const xInt = b.c / b.a;
+          if (isFinite(xInt) && Math.abs(xInt) < 10000) points.push({ x: xInt, y: 0 });
+        }
+        if (b.b !== 0) {
+          const yInt = b.c / b.b;
+          if (isFinite(yInt) && Math.abs(yInt) < 10000) points.push({ x: 0, y: yInt });
+        }
+      });
+
+      for (let i = 0; i < state.bpts.length; i++) {
+        for (let j = i + 1; j < state.bpts.length; j++) {
+          const pt = lineIntersection(state.bpts[i], state.bpts[j]);
+          if (pt && isFinite(pt.x) && isFinite(pt.y) && Math.abs(pt.x) < 10000 && Math.abs(pt.y) < 10000) {
+            points.push(pt);
+          }
+        }
+      }
+
+      let maxScale = 0.05;
+      points.forEach(pt => {
+        const sx = (2 * Math.abs(pt.x)) / CW;
+        const sy = (2 * Math.abs(pt.y)) / CH;
+        maxScale = Math.max(maxScale, sx, sy);
+      });
+
+      const S = maxScale * 1.3;
+      const xRange = S * CW;
+      const yRange = S * CH;
+
+      state.vXMin = -xRange / 2;
+      state.vXMax = xRange / 2;
+      state.vYMin = -yRange / 2;
+      state.vYMax = yRange / 2;
+    }
+
+    function lineIntersection(b1, b2) {
+      const det = b1.a * b2.b - b2.a * b1.b;
+      if (Math.abs(det) < 1e-5) return null;
+      return {
+        x: (b1.c * b2.b - b2.c * b1.b) / det,
+        y: (b1.a * b2.c - b2.a * b1.c) / det
+      };
+    }
+
+    // ──────────────────────────────────────
+    // 5. MATH EVALUATION HELPERS
+    // ──────────────────────────────────────
+    function bptSatisfied(bpt, x, y) {
+      const lhs = bpt.a * x + bpt.b * y;
+      const eps = 1e-9;
+      if (bpt.sign === 'lt') return lhs < bpt.c - eps;
+      if (bpt.sign === 'le') return lhs <= bpt.c + eps;
+      if (bpt.sign === 'gt') return lhs > bpt.c + eps;
+      if (bpt.sign === 'ge') return lhs >= bpt.c - eps;
+      return false;
+    }
+
+    function getTestPointForBPT(bpt) {
+      if (Math.abs(bpt.c) > 1e-5) {
+        return { x: 0, y: 0, label: 'O(0, 0)' };
+      }
+      if (bpt.a === 0) return { x: 0, y: 1, label: 'A(0, 1)' };
+      if (bpt.b === 0) return { x: 1, y: 0, label: 'B(1, 0)' };
+      if (Math.abs(bpt.a + bpt.b) > 1e-5) return { x: 1, y: 1, label: 'P(1, 1)' };
+      return { x: 1, y: -1, label: 'P(1, -1)' };
+    }
+
+    // ──────────────────────────────────────
+    // 6. DRAWING FUNCTIONS (DESIGN TOKENS v2.2)
+    // ──────────────────────────────────────
+
+    // Pixel shading trên Physical Pixels PW x PH
+    function shadeRegions(ctx, CW, CH, PW, PH) {
+      const dpr = window.devicePixelRatio || 1;
+      const xRange = state.vXMax - state.vXMin;
+      const yRange = state.vYMax - state.vYMin;
+
+      const imgData = ctx.createImageData(PW, PH);
+      const data = imgData.data;
+
+      const isOverview = (state.activeTab === 2);
+      const isStepMode = (state.activeTab === 1);
+
+      for (let py = 0; py < PH; py++) {
+        const my = state.vYMin + (1 - py / PH) * yRange;
+        for (let px = 0; px < PW; px++) {
+          const mx = state.vXMin + (px / PW) * xRange;
+          const idx = (py * PW + px) * 4;
+
+          let r = 250, g = 247, b = 240, a = 0; // Default --cream: #FAF7F0
+
+          if (isOverview) {
+            const activeBpts = state.bpts.filter(b => b.visible);
+            if (activeBpts.length > 0) {
+              if (state.m2.showIntersectionOnly) {
+                const allTrue = activeBpts.every(b => bptSatisfied(b, mx, my));
+                if (allTrue) { r = 206; g = 138; b = 51; a = 140; } // --accent-deep
+              } else {
+                let tr = 0, tg = 0, tb = 0, cnt = 0;
+                activeBpts.forEach(b => {
+                  if (bptSatisfied(b, mx, my)) {
+                    tr += b.fillRGB[0]; tg += b.fillRGB[1]; tb += b.fillRGB[2];
+                    cnt++;
+                  }
+                });
+
+                if (cnt === activeBpts.length && activeBpts.length > 1) {
+                  r = 206; g = 138; b = 51; a = 150; // Intersection highlight
+                } else if (cnt > 0) {
+                  r = tr / cnt; g = tg / cnt; b = tb / cnt;
+                  a = cnt === 1 ? 45 : 85;
+                }
+              }
+            }
+          } else if (isStepMode) {
+            const step = state.m1.step;
+            const subStep = state.m1.subStep;
+
+            if (step === 2) {
+              let tr = 0, tg = 0, tb = 0, cnt = 0;
+              for (let i = 0; i < subStep; i++) {
+                const b = state.bpts[i];
+                if (bptSatisfied(b, mx, my)) {
+                  tr += b.fillRGB[0]; tg += b.fillRGB[1]; tb += b.fillRGB[2];
+                  cnt++;
+                }
+              }
+              if (cnt > 0) {
+                r = tr / cnt; g = tg / cnt; b = tb / cnt; a = cnt === 1 ? 45 : 85;
+              }
+            } else if (step === 3) {
+              let isHatched = false;
+              for (let i = 0; i < state.bpts.length; i++) {
+                const b = state.bpts[i];
+                const shouldHatch = (i < subStep) || (i === subStep && state.m1.clickedRegion === 'out');
+                if (shouldHatch && !bptSatisfied(b, mx, my)) {
+                  isHatched = true;
+                }
+              }
+              if (isHatched) {
+                if ((px + py) % 16 < 2) {
+                  r = 124; g = 117; b = 106; a = 95; // --ink-3 hatch
+                }
+              }
+            } else if (step === 4) {
+              let isHatched = false;
+              let allTrue = true;
+
+              state.bpts.forEach(b => {
+                if (!bptSatisfied(b, mx, my)) {
+                  isHatched = true;
+                  allTrue = false;
+                }
+              });
+
+              if (allTrue) {
+                r = 206; g = 138; b = 51; a = 150; // final intersection region
+              } else if (isHatched) {
+                if ((px + py) % 16 < 2) {
+                  r = 124; g = 117; b = 106; a = 95;
+                }
+              }
+            }
+          }
+
+          if (a > 0) {
+            const an = a / 255;
+            data[idx]   = Math.round(r * an + 250 * (1 - an));
+            data[idx+1] = Math.round(g * an + 247 * (1 - an));
+            data[idx+2] = Math.round(b * an + 240 * (1 - an));
+            data[idx+3] = 255;
+          } else {
+            data[idx] = 250; data[idx+1] = 247; data[idx+2] = 240; data[idx+3] = 255;
+          }
+        }
+      }
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.putImageData(imgData, 0, 0);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    // Grid and axes
+    function drawGrid(ctx, CW, CH) {
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const xRange = state.vXMax - state.vXMin;
+      let step = 1;
+      if (xRange > 15) step = 2;
+      if (xRange > 40) step = 10;
+      if (xRange > 150) step = 50;
+      if (xRange > 400) step = 100;
+      if (xRange < 4) step = 0.5;
+
+      ctx.strokeStyle = 'rgba(26, 26, 26, 0.06)'; ctx.lineWidth = 1;
+      for (let x = Math.ceil(state.vXMin / step) * step; x <= state.vXMax; x += step) {
+        const { px } = m2c(x, 0, CW, CH);
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, CH); ctx.stroke();
+      }
+      for (let y = Math.ceil(state.vYMin / step) * step; y <= state.vYMax; y += step) {
+        const { py } = m2c(0, y, CW, CH);
+        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(CW, py); ctx.stroke();
+      }
+
+      // Main axes
+      ctx.strokeStyle = '#514C44'; ctx.lineWidth = 1.5; // --ink-2
+      const { px: x0, py: y0 } = m2c(0, 0, CW, CH);
+      if (x0 >= 0 && x0 <= CW) { ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, CH); ctx.stroke(); }
+      if (y0 >= 0 && y0 <= CH) { ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(CW, y0); ctx.stroke(); }
+
+      // Arrows
+      ctx.fillStyle = '#514C44';
+      if (y0 >= 0 && y0 <= CH) {
+        ctx.beginPath(); ctx.moveTo(CW - 10, y0 - 4); ctx.lineTo(CW, y0); ctx.lineTo(CW - 10, y0 + 4); ctx.fill();
+      }
+      if (x0 >= 0 && x0 <= CW) {
+        ctx.beginPath(); ctx.moveTo(x0 - 4, 10); ctx.lineTo(x0, 0); ctx.lineTo(x0 + 4, 10); ctx.fill();
+      }
+
+      // Ticks and labels — LUÔN dùng JetBrains Mono
+      ctx.font = "bold 12px 'JetBrains Mono', monospace"; ctx.fillStyle = '#514C44';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      for (let x = Math.ceil(state.vXMin / step) * step; x <= state.vXMax; x += step) {
+        if (Math.abs(x) < 0.001) continue;
+        const { px } = m2c(x, 0, CW, CH);
+        let ly = y0 + 4; if (ly > CH - 16) ly = CH - 16; if (ly < 2) ly = 2;
+        ctx.fillText(x % 1 === 0 ? x : x.toFixed(1), px, ly);
+      }
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      for (let y = Math.ceil(state.vYMin / step) * step; y <= state.vYMax; y += step) {
+        if (Math.abs(y) < 0.001) continue;
+        const { py } = m2c(0, y, CW, CH);
+        let lx = x0 - 5; if (lx < 24) lx = 24; if (lx > CW - 6) lx = CW - 6;
+        ctx.fillText(y % 1 === 0 ? y : y.toFixed(1), lx, py);
+      }
+
+      if (x0 >= 0 && x0 <= CW && y0 >= 0 && y0 <= CH) {
+        ctx.font = "bold 12px 'JetBrains Mono', monospace"; ctx.fillStyle = '#514C44';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+        ctx.fillText('O', x0 - 4, y0 + 4);
+      }
+
+      ctx.fillStyle = '#514C44'; ctx.font = "bold 13px 'JetBrains Mono', monospace";
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      const { px: xEnd } = m2c(state.vXMax, 0, CW, CH); ctx.fillText('x', xEnd - 16, y0 + 4);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      const { py: yTop } = m2c(0, state.vYMax, CW, CH); ctx.fillText('y', x0 + 6, yTop + 4);
+    }
+
+    // Boundary lines
+    function drawBPTBoundary(ctx, CW, CH, bpt, dashed) {
+      const { a, b, c } = bpt;
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      ctx.strokeStyle = bpt.colorHex;
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash(dashed ? [7, 5] : []);
+      ctx.beginPath();
+
+      let p1, p2;
+      if (b !== 0) {
+        p1 = m2c(state.vXMin, (c - a * state.vXMin) / b, CW, CH);
+        p2 = m2c(state.vXMax, (c - a * state.vXMax) / b, CW, CH);
+      } else if (a !== 0) {
+        p1 = m2c(c / a, state.vYMin, CW, CH);
+        p2 = m2c(c / a, state.vYMax, CW, CH);
+      } else {
+        return;
+      }
+
+      ctx.moveTo(p1.px, p1.py);
+      ctx.lineTo(p2.px, p2.py);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    // Line labels with JetBrains Mono
+    function drawLineLabel(ctx, CW, CH, bpt, idx) {
+      const { a, b, c } = bpt;
+      const label = `d${idx + 1}: ` + formatBPTText(bpt, true);
+
+      const targetsY = [0.35, 0.6, 0.45, 0.75];
+      const targetYCSS = CH * targetsY[idx % targetsY.length];
+
+      let bestX = null, bestY = null, bestDist = Infinity;
+      for (let i = 0; i <= 60; i++) {
+        let mx, my;
+
+        if (b !== 0) {
+          mx = state.vXMin + (0.2 + i / 60 * 0.6) * (state.vXMax - state.vXMin);
+          my = (c - a * mx) / b;
+        } else if (a !== 0) {
+          mx = c / a;
+          my = state.vYMin + (0.2 + i / 60 * 0.6) * (state.vYMax - state.vYMin);
+        } else {
+          continue;
+        }
+
+        if (!isFinite(my) || my < state.vYMin || my > state.vYMax) continue;
+        const { px, py } = m2c(mx, my, CW, CH);
+        const dist = Math.abs(py - targetYCSS);
+        if (dist < bestDist) {
+          bestDist = dist;
+          bestX = px;
+          bestY = py;
+        }
+      }
+      if (bestX === null) return;
+
+      ctx.font = "bold 13px 'JetBrains Mono', monospace";
+      const tw = ctx.measureText(label).width;
+      const PAD = 6, H = 20;
+      let lx = bestX + 16; if (lx + tw + PAD * 2 > CW - 8) lx = bestX - tw - PAD * 2 - 10;
+      let ly = bestY - H - 8; if (ly < 8) ly = bestY + 10;
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.93)';
+      ctx.strokeStyle = bpt.colorHex;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(lx - PAD, ly, tw + PAD * 2, H, 4);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = bpt.colorHex;
+      ctx.textAlign = 'left';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, lx, ly + H / 2);
+    }
+
+    function drawPoint(ctx, mx, my, label, color, w = CW, h = CH, pulse = false) {
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const { px, py } = m2c(mx, my, w, h);
+
+      if (pulse) {
+        ctx.beginPath(); ctx.arc(px, py, 11, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(232, 162, 74, 0.25)'; ctx.fill(); // --accent-pale
+      }
+
+      ctx.beginPath(); ctx.arc(px, py, 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = color; ctx.fill();
+      ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 1.5; ctx.stroke();
+
+      if (label) {
+        ctx.font = "bold 12px 'JetBrains Mono', monospace"; ctx.fillStyle = color;
+        ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+        ctx.fillText(label, px + 8, py - 3);
+      }
+    }
+
+    function fullRedraw() {
+      if (CW === 0) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, PW, PH);
+
+      shadeRegions(ctx, CW, CH, PW, PH);
+      drawGrid(ctx, CW, CH);
+
+      if (state.activeTab === 2) {
+        state.bpts.forEach((b, idx) => {
+          if (b.visible) {
+            const isStrict = (b.sign === 'lt' || b.sign === 'gt');
+            drawBPTBoundary(ctx, CW, CH, b, isStrict);
+            drawLineLabel(ctx, CW, CH, b, idx);
+          }
+        });
+      } else {
+        const step = state.m1.step;
+        const subStep = state.m1.subStep;
+
+        state.bpts.forEach((b, idx) => {
+          let drawIt = false;
+          if (step === 1 && idx < subStep) drawIt = true;
+          if (step > 1) drawIt = true;
+
+          if (drawIt) {
+            const isStrict = (b.sign === 'lt' || b.sign === 'gt');
+            drawBPTBoundary(ctx, CW, CH, b, isStrict);
+            drawLineLabel(ctx, CW, CH, b, idx);
+          }
+        });
+      }
+
+      drawPointsAndMarkers(ctx);
+    }
+
+    function drawPointsAndMarkers(ctx) {
+      if (state.activeTab === 1 && state.m1.started) {
+        const step = state.m1.step;
+        if (step === 2) {
+          const tp = state.m1.testPoint;
+          if (tp) {
+            drawPoint(ctx, tp.x, tp.y, tp.label, '#CE8A33', CW, CH, true);
+          }
+        }
+      } else if (state.activeTab === 2) {
+        const pt = state.m2.clickedPoint;
+        if (pt) {
+          const satisfiesAll = state.bpts.every(b => bptSatisfied(b, pt.x, pt.y));
+          const col = satisfiesAll ? '#2D8B6F' : '#C15F3C';
+          drawPoint(ctx, pt.x, pt.y, `M(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})`, col, CW, CH, true);
+        }
+      }
+    }
+
+    // ──────────────────────────────────────
+    // 7. INPUT & TABS MANAGER
+    // ──────────────────────────────────────
+    function switchTab(tabId) {
+      state.activeTab = tabId;
+      document.getElementById('tab-1').className = 'tab-btn' + (tabId === 1 ? ' active' : '');
+      document.getElementById('tab-2').className = 'tab-btn' + (tabId === 2 ? ' active' : '');
+
+      const title = document.getElementById('simTitle');
+      const sub = document.getElementById('simSubtitle');
+
+      if (tabId === 1) {
+        title.innerText = 'Module 1: Từng bước biểu diễn miền nghiệm của hệ';
+        sub.innerText = 'Trải nghiệm đúng quy trình biểu diễn và gạch bỏ miền nghiệm';
+
+        document.getElementById('overviewSection').className = 'hidden';
+        if (state.m1.started) {
+          document.getElementById('bptInputSection').className = 'hidden';
+          document.getElementById('stepSection').className = '';
+          renderStepUI();
+        } else {
+          document.getElementById('bptInputSection').className = '';
+          document.getElementById('stepSection').className = 'hidden';
+          setCaptionText('Quan sát hệ BPT bên trái. Nhấn Bắt đầu khi sẵn sàng!');
+        }
+      } else {
+        title.innerText = 'Module 2: Toàn cảnh miền nghiệm & Khám phá tự do';
+        sub.innerText = 'Tự do thay đổi hệ số, bật/tắt từng miền và chọn điểm kiểm tra';
+
+        document.getElementById('bptInputSection').className = '';
+        document.getElementById('stepSection').className = 'hidden';
+        document.getElementById('overviewSection').className = '';
+        setOverviewCaption('Sửa các hệ số hoặc bấm 🎲 Random để quan sát sự thay đổi miền nghiệm tức thời. Click điểm bất kỳ trên đồ thị để kiểm tra.');
+      }
+
+      renderBPTInputs();
+      autoScaleViewport();
+      fullRedraw();
+    }
+
+    function renderBPTInputs() {
+      const container = document.getElementById('bptInputList');
+      container.innerHTML = '';
+
+      const isStarted = state.m1.started && state.activeTab === 1;
+      const disabledAttr = isStarted ? 'disabled' : '';
+
+      state.bpts.forEach((bpt, idx) => {
+        const row = document.createElement('div');
+        row.className = 'bpt-row';
+        row.style.borderLeft = `4px solid ${bpt.colorHex}`;
+        if (isStarted && state.m1.step < 4 && idx === state.m1.subStep) {
+          row.style.background = 'var(--sage-pale)';
+          row.style.borderColor = 'var(--jade-deep)';
+        }
+
+        row.innerHTML = `
+          <div style="display:flex; align-items:center; gap:6px; flex:1;">
+            <input class="coeff-input" type="number" value="${bpt.a}" ${disabledAttr} onchange="updateBPTCoeff(${idx}, 'a', this.value)">
+            <span class="bpt-label">x +</span>
+            <input class="coeff-input" type="number" value="${bpt.b}" ${disabledAttr} onchange="updateBPTCoeff(${idx}, 'b', this.value)">
+            <span class="bpt-label">y</span>
+            <button class="sign-toggle-btn ${bpt.sign === 'le' || bpt.sign === 'lt' ? 'active-le' : 'active-ge'}" ${disabledAttr} onclick="toggleBPTSign(${idx})">
+              ${bpt.sign === 'le' || bpt.sign === 'lt' ? '≤' : '≥'}
+            </button>
+            <input class="coeff-input" type="number" value="${bpt.c}" ${disabledAttr} onchange="updateBPTCoeff(${idx}, 'c', this.value)" style="width:68px;">
+          </div>
+        `;
+
+        if (state.activeTab === 2) {
+          row.innerHTML += `
+            <button class="btn-delete-row" onclick="toggleBPTEye(${idx})" style="color: ${bpt.visible ? 'var(--jade-deep)' : 'var(--ink-3)'};" title="Bật/tắt hiển thị miền này">
+              <i class="ti ${bpt.visible ? 'ti-eye' : 'ti-eye-off'}"></i>
+            </button>
+            <button class="btn-delete-row" onclick="deleteBPTRow(${idx})" ${state.bpts.length <= 2 ? 'disabled' : ''} title="Xóa BPT">
+              <i class="ti ti-x"></i>
+            </button>
+          `;
+        } else {
+          if (!isStarted) {
+            row.innerHTML += `
+              <button class="btn-delete-row" onclick="deleteBPTRow(${idx})" ${state.bpts.length <= 2 ? 'disabled' : ''} title="Xóa BPT">
+                <i class="ti ti-x"></i>
+              </button>
+            `;
+          } else {
+            let statusIcon = '';
+            if (state.m1.step === 1) {
+              if (idx < state.m1.subStep) statusIcon = '<i class="ti ti-check" style="color:var(--correct); font-weight:bold;"></i>';
+              else if (idx === state.m1.subStep) statusIcon = '<i class="ti ti-pencil" style="color:var(--jade-deep); font-weight:bold;"></i>';
+            } else if (state.m1.step === 2) {
+              if (idx < state.m1.subStep) statusIcon = '<i class="ti ti-check" style="color:var(--correct); font-weight:bold;"></i>';
+              else if (idx === state.m1.subStep) statusIcon = '<i class="ti ti-bulb" style="color:var(--accent); font-weight:bold;"></i>';
+            } else if (state.m1.step === 3) {
+              if (idx < state.m1.subStep) statusIcon = '<i class="ti ti-check" style="color:var(--correct); font-weight:bold;"></i>';
+              else if (idx === state.m1.subStep) statusIcon = '<i class="ti ti-hand-click" style="color:var(--jade-deep); font-weight:bold;"></i>';
+            } else {
+              statusIcon = '<i class="ti ti-check" style="color:var(--correct); font-weight:bold;"></i>';
+            }
+            row.innerHTML += `<div style="display:flex; align-items:center; width:24px; justify-content:center;">${statusIcon}</div>`;
+          }
+        }
+
+        container.appendChild(row);
+      });
+
+      updateAddButtonState();
+    }
+
+    function toggleBPTSign(idx) {
+      if (state.m1.started && state.activeTab === 1) return;
+      const bpt = state.bpts[idx];
+      bpt.sign = (bpt.sign === 'le' || bpt.sign === 'lt') ? 'ge' : 'le';
+
+      state.m2.clickedPoint = null;
+      document.getElementById('pointCheckDetails').className = 'hidden';
+      document.getElementById('pointCheckPanel').className = 'info-box blue';
+
+      renderBPTInputs();
+      autoScaleViewport();
+      fullRedraw();
+    }
+
+    function updateBPTCoeff(idx, field, value) {
+      if (state.m1.started && state.activeTab === 1) return;
+
+      if (field === 'a' || field === 'b' || field === 'c') {
+        state.bpts[idx][field] = parseFloat(value) || 0;
+      } else {
+        state.bpts[idx][field] = value;
+      }
+
+      state.m2.clickedPoint = null;
+      document.getElementById('pointCheckDetails').className = 'hidden';
+      document.getElementById('pointCheckPanel').className = 'info-box blue';
+
+      autoScaleViewport();
+      fullRedraw();
+    }
+
+    function deleteBPTRow(idx) {
+      if (state.m1.started && state.activeTab === 1) return;
+      if (state.bpts.length <= 2) return;
+
+      state.bpts.splice(idx, 1);
+
+      const colorsHex = ['#CE8A33', '#4E7F92', '#2D8B6F', '#46685A'];
+      const colorsRGB = [[206, 138, 51], [78, 127, 146], [45, 139, 111], [70, 104, 90]];
+      state.bpts.forEach((b, i) => {
+        b.colorHex = colorsHex[i];
+        b.fillRGB = colorsRGB[i];
+      });
+
+      state.m2.clickedPoint = null;
+
+      renderBPTInputs();
+      autoScaleViewport();
+      fullRedraw();
+    }
+
+    function addBPTRow() {
+      if (state.m1.started && state.activeTab === 1) return;
+      if (state.bpts.length >= 4) return;
+
+      const colorsHex = ['#CE8A33', '#4E7F92', '#2D8B6F', '#46685A'];
+      const colorsRGB = [[206, 138, 51], [78, 127, 146], [45, 139, 111], [70, 104, 90]];
+
+      const nextIdx = state.bpts.length;
+      state.bpts.push({
+        id: Date.now() + nextIdx,
+        a: 1, b: 1, c: 50, sign: 'le',
+        visible: true,
+        boundaryDrawn: false, testPointSatisfied: false, crossedOut: false,
+        colorHex: colorsHex[nextIdx],
+        fillRGB: colorsRGB[nextIdx]
+      });
+
+      state.m2.clickedPoint = null;
+
+      renderBPTInputs();
+      autoScaleViewport();
+      fullRedraw();
+    }
+
+    function updateAddButtonState() {
+      const btn = document.getElementById('btnAddBPT');
+      if (btn) {
+        btn.disabled = state.bpts.length >= 4;
+      }
+    }
+
+    function toggleBPTEye(idx) {
+      state.bpts[idx].visible = !state.bpts[idx].visible;
+      state.m2.clickedPoint = null;
+      updatePointCheckDetails();
+      renderBPTInputs();
+      fullRedraw();
+    }
+
+    // ──────────────────────────────────────
+    // 8. MODULE 1 STEP-BY-STEP LOGIC
+    // ──────────────────────────────────────
+    function startStepByStep() {
+      state.m1.started = true;
+      state.m1.step = 1;
+      state.m1.subStep = 0;
+      state.m1.lineTypeSelected = null;
+      state.m1.satisfySelected = null;
+      state.m1.satisfyChecked = false;
+      state.m1.clickedRegion = null;
+      state.m1.completed = false;
+
+      state.bpts.forEach(b => {
+        b.boundaryDrawn = false;
+        b.testPointSatisfied = false;
+        b.crossedOut = false;
+      });
+
+      document.getElementById('bptInputSection').className = 'hidden';
+      document.getElementById('stepSection').className = '';
+
+      renderBPTInputs();
+      renderStepUI();
+      fullRedraw();
+    }
+
+    function resetAllMod1() {
+      state.m1.started = false;
+      state.m1.step = 1;
+      state.m1.subStep = 0;
+      state.m1.lineTypeSelected = null;
+      state.m1.satisfySelected = null;
+      state.m1.satisfyChecked = false;
+      state.m1.clickedRegion = null;
+      state.m1.completed = false;
+
+      state.bpts.forEach(b => {
+        b.boundaryDrawn = false;
+        b.testPointSatisfied = false;
+        b.crossedOut = false;
+      });
+
+      document.getElementById('bptInputSection').className = '';
+      document.getElementById('stepSection').className = 'hidden';
+
+      setCaptionText('Quan sát hệ BPT bên trái. Nhấn Bắt đầu khi sẵn sàng!');
+      document.getElementById('capBox').className = 'sim-caption';
+
+      renderBPTInputs();
+      autoScaleViewport();
+      fullRedraw();
+    }
+
+    function updateProgress(doneStep) {
+      for (let i = 1; i <= 4; i++) {
+        const el = document.getElementById('ps' + i);
+        if (el) {
+          el.className = 'prog-step-light' + (i === doneStep + 1 ? ' active' : (i <= doneStep ? ' done' : ''));
+        }
+      }
+    }
+
+    function renderStepUI() {
+      const step = state.m1.step;
+      const subStep = state.m1.subStep;
+      const bpt = state.bpts[subStep];
+      const stepContent = document.getElementById('stepContent');
+
+      updateProgress(step - 1);
+
+      if (step === 1) {
+        const bptStr = formatBPTText(bpt, false);
+        const eqStr = formatBPTText(bpt, true);
+        stepContent.innerHTML = `
+          <div class="panel-section-label" style="margin-top: 10px;">Bất phương trình ${subStep + 1} / ${state.bpts.length}</div>
+          <div class="bpt-display" style="background:${bpt.colorHex}; margin-bottom:12px;">${bptStr}</div>
+          
+          <div class="panel-section-label">Đường biên d${subStep + 1} của BPT này là nét gì?</div>
+          <div class="choice-row" style="margin-bottom:12px;">
+            <button class="btn-linetype" id="btnSolid" onclick="selectLineType('solid')">
+              <div style="font-size:18px; font-family:var(--font-mono); font-weight:bold; letter-spacing:2px; margin-bottom:2px;">————</div>
+              Nét liền (≤, ≥)
+            </button>
+            <button class="btn-linetype" id="btnDashed" onclick="selectLineType('dashed')">
+              <div style="font-size:18px; font-family:var(--font-mono); font-weight:bold; letter-spacing:2px; margin-bottom:2px;">- - -</div>
+              Nét đứt (&lt;, &gt;)
+            </button>
+          </div>
+          
+          <button class="btn-primary" onclick="checkStep1()">Kiểm tra đường biên</button>
+          <div id="fbStep" class="hint-text" style="min-height:22px; margin-top:6px; font-weight:600;"></div>
+        `;
+
+        setCaptionText(`Đường biên ${eqStr} này là nét liền hay nét đứt?`);
+        document.getElementById('capBox').className = 'sim-caption';
+      }
+      else if (step === 2) {
+        const bptStr = formatBPTText(bpt, false);
+        const tp = getTestPointForBPT(bpt);
+        state.m1.testPoint = tp;
+
+        const lhsVal = bpt.a * tp.x + bpt.b * tp.y;
+        const hasChecked = (state.m1.satisfyChecked === true);
+        const ans = state.m1.satisfySelected;
+        const correct = bptSatisfied(bpt, tp.x, tp.y);
+        const isCorrect = hasChecked && (ans === correct);
+
+        stepContent.innerHTML = `
+          <div class="panel-section-label" style="margin-top: 10px;">Bất phương trình ${subStep + 1} / ${state.bpts.length}</div>
+          <div class="bpt-display" style="background:${bpt.colorHex}; margin-bottom:12px;">${bptStr}</div>
+          
+          <div class="info-box blue" style="margin-bottom:12px;">
+            <div class="ib-icon"><i class="ti ti-bulb"></i></div>
+            <div>
+              <div class="ib-title">Điểm thử: ${tp.label}</div>
+              <div style="font-size:13px;">Thế tọa độ của điểm thử vào vế trái để tính giá trị.</div>
+            </div>
+          </div>
+          
+          <div class="calc-row ${hasChecked ? '' : 'hidden'}" id="calcRowStep2" style="margin-bottom:12px; font-weight:600;">
+            Thế vào vế trái: ${bpt.a}(${tp.x}) + ${bpt.b}(${tp.y}) = <strong>${lhsVal}</strong> ${getSignSymbol(bpt.sign)} ${bpt.c} (${correct ? 'Đúng' : 'Sai'})
+          </div>
+          
+          <div class="panel-section-label">Điểm thử ${tp.label} có thỏa mãn BPT không?</div>
+          <div class="choice-row" style="margin-bottom:12px;">
+            <button class="btn-choice ${ans === true ? 'selected' : ''}" id="choiceYes" onclick="selectSatisfy(true)" ${isCorrect ? 'disabled' : ''}>Có (Thỏa)</button>
+            <button class="btn-choice ${ans === false ? 'selected' : ''}" id="choiceNo" onclick="selectSatisfy(false)" ${isCorrect ? 'disabled' : ''}>Không (Không thỏa)</button>
+          </div>
+          
+          <button class="btn-primary" id="btnCheckStep2" onclick="checkStep2()" ${isCorrect ? 'disabled' : ''}>Kiểm tra kết quả</button>
+          <div id="fbStep" class="hint-text" style="min-height:22px; margin-top:6px; font-weight:600;"></div>
+          
+          <button class="btn-primary" id="btnNextStep2" onclick="nextStep2()" ${isCorrect ? '' : 'disabled'} style="margin-top:8px;">
+            Tiếp tục <i class="ti ti-chevron-right"></i>
+          </button>
+        `;
+
+        if (hasChecked) {
+          const fb = document.getElementById('fbStep');
+          if (isCorrect) {
+            fb.innerHTML = '<span class="feedback-badge ok">✓ Chính xác!</span>';
+            setCaptionText(`Đúng rồi! Điểm thử thỏa mãn → miền chứa điểm này là miền nghiệm.`);
+            document.getElementById('capBox').className = 'sim-caption green';
+          } else {
+            fb.innerHTML = `<span class="feedback-badge err">✗ Chưa đúng!</span>`;
+            setCaptionText(`Chưa đúng. Thay tọa độ ${tp.label} vào BPT: ${bpt.a}(${tp.x}) + ${bpt.b}(${tp.y}) = ${lhsVal} so với vế phải ${bpt.c}. Hãy thử lại.`);
+            document.getElementById('capBox').className = 'sim-caption red';
+          }
+        } else {
+          setCaptionText(`Thử điểm O(0,0): thay x=0, y=0 vào BPT — kết quả thế nào?`);
+          document.getElementById('capBox').className = 'sim-caption';
+        }
+      }
+      else if (step === 3) {
+        const bptStr = formatBPTText(bpt, false);
+        const hasClickedCorrect = (state.m1.clickedRegion === 'out');
+
+        stepContent.innerHTML = `
+          <div class="panel-section-label" style="margin-top: 10px;">Bất phương trình ${subStep + 1} / ${state.bpts.length}</div>
+          <div class="bpt-display" style="background:${bpt.colorHex}; margin-bottom:12px;">${bptStr}</div>
+          
+          <div class="info-box gold" style="margin-bottom:12px;">
+            <div class="ib-icon"><i class="ti ti-hand-click"></i></div>
+            <div style="font-size:13px;">
+              Hãy <strong>click vào nửa mặt phẳng KHÔNG thỏa mãn</strong> BPT trên đồ thị bên phải để gạch bỏ phần đó.
+            </div>
+          </div>
+          
+          <div id="fbStep" class="hint-text" style="min-height:22px; margin-top:6px; font-weight:600;"></div>
+          
+          <button class="btn-primary" id="btnNextStep3" onclick="nextStep3()" ${hasClickedCorrect ? '' : 'disabled'} style="margin-top:8px;">
+            Tiếp tục <i class="ti ti-chevron-right"></i>
+          </button>
+        `;
+
+        if (hasClickedCorrect) {
+          document.getElementById('fbStep').innerHTML = '<span class="feedback-badge ok">✓ Chính xác!</span> Đã gạch bỏ vùng không thỏa.';
+        } else {
+          setCaptionText(`Click vào vùng cần gạch bỏ — phần KHÔNG thỏa mãn BPT.`);
+          document.getElementById('capBox').className = 'sim-caption';
+        }
+      }
+      else if (step === 4) {
+        if (!state.m1.completed) {
+          stepContent.innerHTML = `
+            <div class="panel-section-label" style="margin-top: 10px;">Kết luận miền nghiệm chung</div>
+            <div class="info-box gold" style="margin-bottom:12px;">
+              <div class="ib-icon"><i class="ti ti-award"></i></div>
+              <div style="font-size:13.5px;">
+                Phần không bị gạch chính là miền nghiệm của hệ! Nhấn <strong>Hoàn thành</strong> để xem tóm tắt 4 bước đã thực hiện.
+              </div>
+            </div>
+            
+            <button class="btn-primary" onclick="finishMod1()">Hoàn thành</button>
+          `;
+          setCaptionText(`Tuyệt vời! Phần không bị gạch là miền nghiệm chung của hệ.`);
+          document.getElementById('capBox').className = 'sim-caption green';
+        } else {
+          stepContent.innerHTML = `
+            <div class="celebration" style="margin-top: 10px;">
+              <div class="emoji">🎉</div>
+              <h3>Hoàn thành xuất sắc!</h3>
+              <p style="margin-top:4px; font-size:13px; color:var(--ink-2); margin-bottom: 12px;">
+                Bạn đã biểu diễn thành công miền nghiệm của hệ bất phương trình bậc nhất hai ẩn.
+              </p>
+              
+              <div class="sdiv">Tóm tắt quy trình 4 bước</div>
+              <div style="text-align: left; font-size: 13px; display: flex; flex-direction: column; gap: 8px; margin-bottom: 14px;">
+                <div style="display: flex; gap: 8px;">
+                  <span style="color: var(--correct); font-weight: bold; min-width: 54px;">Bước 1:</span>
+                  <span>Vẽ đường biên (nét liền nếu chứa dấu "=", nét đứt nếu là so sánh nghiêm ngặt &lt;, &gt;)</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <span style="color: var(--correct); font-weight: bold; min-width: 54px;">Bước 2:</span>
+                  <span>Thế tọa độ điểm thử (thường chọn O(0,0)) vào vế trái BPT để xác minh tính thỏa mãn</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <span style="color: var(--correct); font-weight: bold; min-width: 54px;">Bước 3:</span>
+                  <span>Gạch bỏ nửa mặt phẳng không chứa miền nghiệm của từng BPT</span>
+                </div>
+                <div style="display: flex; gap: 8px;">
+                  <span style="color: var(--correct); font-weight: bold; min-width: 54px;">Bước 4:</span>
+                  <span>Xác định miền nghiệm chung là phần mặt phẳng không bị gạch (tô màu cam đậm)</span>
+                </div>
+              </div>
+
+              <button class="btn-newgame" onclick="resetAllMod1()"><i class="ti ti-refresh"></i> Thử hệ BPT khác</button>
+            </div>
+          `;
+          setCaptionText(`Tuyệt vời! Bạn đã kết luận được miền nghiệm chung của hệ BPT.`);
+          document.getElementById('capBox').className = 'sim-caption green';
+        }
+      }
+    }
+
+    function finishMod1() {
+      state.m1.completed = true;
+      triggerConfetti();
+      renderStepUI();
+    }
+
+    function selectLineType(type) {
+      state.m1.lineTypeSelected = type;
+      const solid = document.getElementById('btnSolid');
+      const dashed = document.getElementById('btnDashed');
+      if (solid && dashed) {
+        solid.className = 'btn-linetype' + (type === 'solid' ? ' selected' : '');
+        dashed.className = 'btn-linetype' + (type === 'dashed' ? ' selected' : '');
+      }
+    }
+
+    function checkStep1() {
+      const type = state.m1.lineTypeSelected;
+      const fb = document.getElementById('fbStep');
+      if (!type) {
+        fb.innerHTML = '<span class="feedback-badge err">Chưa chọn đáp án!</span>';
+        return;
+      }
+
+      const bpt = state.bpts[state.m1.subStep];
+      const isStrict = (bpt.sign === 'lt' || bpt.sign === 'gt');
+      const expected = isStrict ? 'dashed' : 'solid';
+
+      if (type === expected) {
+        fb.innerHTML = '<span class="feedback-badge ok">✓ Chính xác!</span>';
+        bpt.boundaryDrawn = true;
+
+        const signChar = getSignSymbol(bpt.sign);
+        const lineTypeChar = isStrict ? 'nét đứt' : 'nét liền';
+        setCaptionText(`Chính xác! Dấu ${signChar} → đường biên thuộc miền → ${lineTypeChar}.`);
+        document.getElementById('capBox').className = 'sim-caption green';
+
+        fullRedraw();
+
+        setTimeout(() => {
+          state.m1.lineTypeSelected = null;
+          state.m1.subStep++;
+          if (state.m1.subStep >= state.bpts.length) {
+            state.m1.step = 2;
+            state.m1.subStep = 0;
+          }
+          renderStepUI();
+          renderBPTInputs();
+          fullRedraw();
+        }, 1200);
+      } else {
+        fb.innerHTML = `<span class="feedback-badge err">✗ Chưa đúng!</span>`;
+        setCaptionText("Chưa đúng. Nhớ quy tắc: ≤ / ≥ → nét liền, < / > → nét đứt.");
+        document.getElementById('capBox').className = 'sim-caption red';
+      }
+    }
+
+    function selectSatisfy(val) {
+      state.m1.satisfySelected = val;
+      const yes = document.getElementById('choiceYes');
+      const no = document.getElementById('choiceNo');
+      if (yes && no) {
+        yes.className = 'btn-choice' + (val === true ? ' selected' : '');
+        no.className = 'btn-choice' + (val === false ? ' selected' : '');
+      }
+    }
+
+    function checkStep2() {
+      const ans = state.m1.satisfySelected;
+      const fb = document.getElementById('fbStep');
+      if (ans === null) {
+        fb.innerHTML = '<span class="feedback-badge err">Chưa chọn đáp án!</span>';
+        return;
+      }
+
+      const bpt = state.bpts[state.m1.subStep];
+      const tp = state.m1.testPoint;
+      const correct = bptSatisfied(bpt, tp.x, tp.y);
+
+      state.m1.satisfyChecked = true;
+
+      if (ans === correct) {
+        bpt.testPointSatisfied = true;
+        fullRedraw();
+      }
+
+      renderStepUI();
+    }
+
+    function nextStep2() {
+      state.m1.satisfySelected = null;
+      state.m1.satisfyChecked = false;
+      state.m1.subStep++;
+      if (state.m1.subStep >= state.bpts.length) {
+        state.m1.step = 3;
+        state.m1.subStep = 0;
+      }
+      renderStepUI();
+      renderBPTInputs();
+      fullRedraw();
+    }
+
+    let step3Timeout = null;
+    function handleCanvasClickStep3(mx, my) {
+      if (state.m1.clickedRegion === 'out') return;
+
+      const bpt = state.bpts[state.m1.subStep];
+      const satisfies = bptSatisfied(bpt, mx, my);
+      const fb = document.getElementById('fbStep');
+
+      if (!satisfies) {
+        state.m1.clickedRegion = 'out';
+        if (fb) fb.innerHTML = '<span class="feedback-badge ok">✓ Chính xác!</span> Đã gạch bỏ vùng không thỏa.';
+        setCaptionText(`Chính xác! Đã gạch bỏ vùng không thỏa.`);
+        document.getElementById('capBox').className = 'sim-caption green';
+
+        const nextBtn = document.getElementById('btnNextStep3');
+        if (nextBtn) nextBtn.disabled = false;
+
+        fullRedraw();
+
+        clearTimeout(step3Timeout);
+        step3Timeout = setTimeout(() => {
+          nextStep3();
+        }, 1200);
+      } else {
+        if (fb) fb.innerHTML = '<span class="feedback-badge err">✗ Sai rồi!</span> Vùng này thỏa mãn BPT.';
+        setCaptionText(`Vùng này thỏa mãn BPT — không gạch bỏ nhé!`);
+        document.getElementById('capBox').className = 'sim-caption red';
+      }
+    }
+
+    function nextStep3() {
+      clearTimeout(step3Timeout);
+      const bpt = state.bpts[state.m1.subStep];
+      bpt.crossedOut = true;
+      state.m1.clickedRegion = null;
+
+      state.m1.subStep++;
+      if (state.m1.subStep >= state.bpts.length) {
+        state.m1.step = 4;
+        state.m1.subStep = 0;
+        state.m1.completed = false;
+      }
+
+      renderStepUI();
+      renderBPTInputs();
+      fullRedraw();
+    }
+
+    // ──────────────────────────────────────
+    // 9. MODULE 2 OVERVIEW LOGIC
+    // ──────────────────────────────────────
+    function setOverviewMode(mode) {
+      state.m2.showIntersectionOnly = (mode === 'inter');
+
+      const allBtn = document.getElementById('btnShowAll');
+      const interBtn = document.getElementById('btnShowInter');
+      if (allBtn && interBtn) {
+        allBtn.className = 'btn-choice' + (mode === 'all' ? ' selected' : '');
+        interBtn.className = 'btn-choice' + (mode === 'inter' ? ' selected' : '');
+      }
+
+      state.m2.clickedPoint = null;
+      document.getElementById('pointCheckDetails').className = 'hidden';
+      document.getElementById('pointCheckPanel').className = 'info-box blue';
+
+      fullRedraw();
+    }
+
+    function handleCanvasClickOverview(mx, my) {
+      state.m2.clickedPoint = { x: mx, y: my };
+      updatePointCheckDetails();
+      fullRedraw();
+    }
+
+    function updatePointCheckDetails() {
+      const pt = state.m2.clickedPoint;
+      if (!pt) return;
+
+      const panel = document.getElementById('pointCheckPanel');
+      const details = document.getElementById('pointCheckDetails');
+
+      panel.className = 'hidden';
+      details.className = '';
+
+      let rowsHtml = '';
+      let allSatisfied = true;
+      let violatedIndices = [];
+
+      const activeBpts = state.bpts.filter(b => b.visible);
+
+      if (activeBpts.length === 0) {
+        details.innerHTML = `
+          <div class="pc-conclusion ok">Không có BPT nào đang hiển thị.</div>
+        `;
+        return;
+      }
+
+      activeBpts.forEach((b, idx) => {
+        const lhsVal = b.a * pt.x + b.b * pt.y;
+        const satisfies = bptSatisfied(b, pt.x, pt.y);
+        if (!satisfies) {
+          allSatisfied = false;
+          const originalIdx = state.bpts.findIndex(item => item.id === b.id) + 1;
+          violatedIndices.push(originalIdx);
+        }
+
+        const formula = `${b.a}(${pt.x.toFixed(1)}) + ${b.b}(${pt.y.toFixed(1)}) = ${lhsVal.toFixed(1)}`;
+        const condition = `${formula} ${getSignSymbol(b.sign)} ${b.c}`;
+
+        rowsHtml += `
+          <div class="pc-row" style="border-left: 3px solid ${b.colorHex};">
+            <span>${condition}</span>
+            <span class="pc-badge ${satisfies ? 'ok' : 'err'}">${satisfies ? '✓ Thỏa' : '✗ Không'}</span>
+          </div>
+        `;
+      });
+
+      details.innerHTML = `
+        <div class="panel-section-label" style="font-size:11px; margin-top:2px;">Tọa độ M(${pt.x.toFixed(1)}, ${pt.y.toFixed(1)})</div>
+        <div class="pc-table">
+          ${rowsHtml}
+        </div>
+        <div class="pc-conclusion ${allSatisfied ? 'ok' : 'err'}">
+          ${allSatisfied ? `✓ Thỏa tất cả BPT → M thuộc miền nghiệm chung` : `✗ Không thỏa tất cả BPT → M ngoài miền nghiệm chung`}
+        </div>
+        <button class="btn-secondary" onclick="clearCheckedPoint()" style="margin-top: 8px; font-size: 13px; padding: 6px 12px; width: auto; align-self: flex-start;">
+          <i class="ti ti-trash"></i> Xóa điểm
+        </button>
+      `;
+
+      if (allSatisfied) {
+        setOverviewCaption(`✓ Điểm này thỏa mãn tất cả BPT — thuộc miền nghiệm chung!`);
+        document.getElementById('capBox').className = 'sim-caption green';
+      } else {
+        const bptNumbers = violatedIndices.map(num => `BPT ${num}`).join(', ');
+        setOverviewCaption(`✗ Điểm này không thỏa ${bptNumbers} — không thuộc miền nghiệm chung.`);
+        document.getElementById('capBox').className = 'sim-caption red';
+      }
+    }
+
+    function clearCheckedPoint() {
+      state.m2.clickedPoint = null;
+      document.getElementById('pointCheckDetails').className = 'hidden';
+      document.getElementById('pointCheckPanel').className = 'info-box blue';
+
+      setOverviewCaption('Sửa các hệ số hoặc bấm 🎲 Random để quan sát sự thay đổi miền nghiệm tức thời. Click điểm bất kỳ trên đồ thị để kiểm tra.');
+      document.getElementById('capBox').className = 'sim-caption';
+
+      fullRedraw();
+    }
+
+    function resetOverview() {
+      state.m2.clickedPoint = null;
+      state.m2.showIntersectionOnly = false;
+
+      const allBtn = document.getElementById('btnShowAll');
+      const interBtn = document.getElementById('btnShowInter');
+      if (allBtn && interBtn) {
+        allBtn.className = 'btn-choice selected';
+        interBtn.className = 'btn-choice';
+      }
+
+      document.getElementById('pointCheckDetails').className = 'hidden';
+      document.getElementById('pointCheckPanel').className = 'info-box blue';
+
+      setOverviewCaption('Sửa các hệ số hoặc bấm 🎲 Random để quan sát sự thay đổi miền nghiệm tức thời. Click điểm bất kỳ trên đồ thị để kiểm tra.');
+      document.getElementById('capBox').className = 'sim-caption';
+
+      fullRedraw();
+    }
+
+    function randomizeSystem() {
+      const targetX = Math.floor(Math.random() * 5) + 1;
+      const targetY = Math.floor(Math.random() * 5) + 1;
+
+      const newBpts = [];
+
+      for (let i = 0; i < 2; i++) {
+        let a = 0, b = 0;
+        while (a === 0 && b === 0) {
+          a = Math.floor(Math.random() * 7) - 3;
+          b = Math.floor(Math.random() * 7) - 3;
+        }
+
+        const sign = Math.random() > 0.5 ? 'le' : 'ge';
+        const val = a * targetX + b * targetY;
+
+        let c;
+        if (sign === 'le') {
+          c = val + Math.floor(Math.random() * 6);
+        } else {
+          c = val - Math.floor(Math.random() * 6);
+        }
+
+        newBpts.push({
+          a, b, c, sign,
+          visible: true,
+          boundaryDrawn: false, testPointSatisfied: false, crossedOut: false
+        });
+      }
+
+      newBpts.push({
+        a: 1, b: 0, c: 0, sign: 'ge',
+        visible: true,
+        boundaryDrawn: false, testPointSatisfied: false, crossedOut: false
+      });
+
+      const colorsHex = ['#CE8A33', '#4E7F92', '#2D8B6F', '#46685A'];
+      const colorsRGB = [[206, 138, 51], [78, 127, 146], [45, 139, 111], [70, 104, 90]];
+
+      newBpts.forEach((b, idx) => {
+        b.id = Date.now() + idx;
+        b.colorHex = colorsHex[idx];
+        b.fillRGB = colorsRGB[idx];
+      });
+
+      state.bpts = newBpts;
+      state.m2.clickedPoint = null;
+
+      document.getElementById('pointCheckDetails').className = 'hidden';
+      document.getElementById('pointCheckPanel').className = 'info-box blue';
+
+      renderBPTInputs();
+      autoScaleViewport();
+      fullRedraw();
+
+      setOverviewCaption('Hệ mới đã sẵn sàng! Quan sát miền nghiệm thay đổi như thế nào?');
+      document.getElementById('capBox').className = 'sim-caption';
+    }
+
+    // ──────────────────────────────────────
+    // 10. MOUSE & TOUCH INTERACTION
+    // ──────────────────────────────────────
+    let isPanning = false;
+    let startPX = 0, startPY = 0;
+    let startXMin = 0, startXMax = 0, startYMin = 0, startYMax = 0;
+
+    function updatePointerHover(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const px = clientX - rect.left;
+      const py = clientY - rect.top;
+      const { x, y } = c2m(px, py, CW, CH);
+
+      document.getElementById('coordBar').innerText = `x: ${x.toFixed(2)} · y: ${y.toFixed(2)}`;
+
+      const tooltip = document.getElementById('simTooltip');
+      tooltip.style.display = 'block';
+      tooltip.style.left = (px + 14) + 'px';
+      tooltip.style.top = (py - 8) + 'px';
+      tooltip.innerText = `(${x.toFixed(1)}, ${y.toFixed(1)})`;
+    }
+
+    canvas.addEventListener('mousemove', e => {
+      updatePointerHover(e.clientX, e.clientY);
+      if (isPanning) {
+        const dx = e.clientX - startPX;
+        const dy = e.clientY - startPY;
+        const xRange = startXMax - startXMin;
+        const yRange = startYMax - startYMin;
+        const mxDiff = (dx / CW) * xRange;
+        const myDiff = (dy / CH) * yRange;
+        state.vXMin = startXMin - mxDiff;
+        state.vXMax = startXMax - mxDiff;
+        state.vYMin = startYMin + myDiff;
+        state.vYMax = startYMax + myDiff;
+        fullRedraw();
+      }
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      document.getElementById('simTooltip').style.display = 'none';
+      isPanning = false;
+    });
+
+    canvas.addEventListener('mousedown', e => {
+      if (e.button === 1 || e.shiftKey || state.activeTab === 2) {
+        isPanning = true;
+        startPX = e.clientX;
+        startPY = e.clientY;
+        startXMin = state.vXMin;
+        startXMax = state.vXMax;
+        startYMin = state.vYMin;
+        startYMax = state.vYMax;
+        canvas.style.cursor = 'grabbing';
+      }
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isPanning) {
+        isPanning = false;
+        canvas.style.cursor = 'crosshair';
+      }
+    });
+
+    canvas.addEventListener('touchstart', e => {
+      if (state.activeTab === 2 && e.touches.length === 1) {
+        const t = e.touches[0];
+        isPanning = true;
+        startPX = t.clientX;
+        startPY = t.clientY;
+        startXMin = state.vXMin;
+        startXMax = state.vXMax;
+        startYMin = state.vYMin;
+        startYMax = state.vYMax;
+      }
+    }, { passive: true });
+
+    window.addEventListener('touchmove', e => {
+      if (e.touches[0]) updatePointerHover(e.touches[0].clientX, e.touches[0].clientY);
+      if (!isPanning || e.touches.length !== 1) return;
+      const t = e.touches[0];
+      const dx = t.clientX - startPX;
+      const dy = t.clientY - startPY;
+      const xRange = startXMax - startXMin;
+      const yRange = startYMax - startYMin;
+      const mxDiff = (dx / CW) * xRange;
+      const myDiff = (dy / CH) * yRange;
+      state.vXMin = startXMin - mxDiff;
+      state.vXMax = startXMax - mxDiff;
+      state.vYMin = startYMin + myDiff;
+      state.vYMax = startYMax + myDiff;
+      fullRedraw();
+    }, { passive: true });
+
+    window.addEventListener('touchend', () => {
+      document.getElementById('simTooltip').style.display = 'none';
+      if (isPanning) isPanning = false;
+    });
+
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+      const factor = e.deltaY > 0 ? 1.15 : 0.85;
+      zoomAt(cx, cy, factor);
+    }, { passive: false });
+
+    canvas.addEventListener('click', e => {
+      if (isPanning) return;
+      const rect = canvas.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+      const { x, y } = c2m(px, py, CW, CH);
+
+      if (state.activeTab === 1 && state.m1.started && state.m1.step === 3) {
+        handleCanvasClickStep3(x, y);
+      } else if (state.activeTab === 2) {
+        handleCanvasClickOverview(x, y);
+      }
+    });
+
+    // ──────────────────────────────────────
+    // 11. GENERAL UI CAPTION HELPERS
+    // ──────────────────────────────────────
+    function setCaptionText(text) {
+      document.getElementById('capText').innerHTML = text;
+    }
+
+    function setOverviewCaption(text) {
+      document.getElementById('capText').innerHTML = text;
+    }
+
+    function triggerConfetti() {
+      const colors = ['#3CA57A', '#FAF7F0', '#4E7F92', '#CE8A33', '#C15F3C'];
+      const count = 60;
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.style.position = 'fixed';
+        el.style.width = Math.random() * 8 + 6 + 'px';
+        el.style.height = Math.random() * 12 + 6 + 'px';
+        el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        el.style.left = Math.random() * 100 + 'vw';
+        el.style.top = '-10px';
+        el.style.opacity = Math.random() * 0.8 + 0.2;
+        el.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+        el.style.zIndex = '9999';
+        el.style.pointerEvents = 'none';
+        el.style.transition = 'transform 3s ease-out, top 3s ease-out, opacity 3s ease-out';
+
+        document.body.appendChild(el);
+
+        setTimeout(() => {
+          el.style.top = '105vh';
+          el.style.transform = 'rotate(' + (Math.random() * 720 + 360) + 'deg)';
+          el.style.opacity = '0';
+        }, 50);
+
+        setTimeout(() => el.remove(), 3100);
+      }
+    }
+
+    // ──────────────────────────────────────
+    // 12. TEXT FORMATTING UTILS
+    // ──────────────────────────────────────
+    function formatBPTText(bpt, useEqual = false) {
+      const { a, b, c, sign } = bpt;
+      let lhs = '';
+      if (a === 0 && b === 0) return '0 ' + (useEqual ? '=' : getSignSymbol(sign)) + ' ' + c;
+
+      if (a !== 0) {
+        lhs += (a === 1 ? '' : (a === -1 ? '−' : a)) + 'x';
+      }
+
+      if (b !== 0) {
+        const bAbs = Math.abs(b);
+        if (a === 0) {
+          lhs += (b === 1 ? '' : (b === -1 ? '−' : b)) + 'y';
+        } else {
+          lhs += ' ' + (b > 0 ? '+ ' : '− ') + (bAbs === 1 ? '' : bAbs) + 'y';
+        }
+      }
+
+      const op = useEqual ? '=' : getSignSymbol(sign);
+      return lhs + ' ' + op + ' ' + c;
+    }
+
+    function getSignSymbol(sign) {
+      const syms = { lt: '<', le: '≤', gt: '>', ge: '≥' };
+      return syms[sign] || '≤';
+    }
+
+    // ──────────────────────────────────────
+    // 13. INITIALIZATION
+    // ──────────────────────────────────────
+    window.addEventListener('load', () => {
+      const colorsHex = ['#CE8A33', '#4E7F92', '#2D8B6F', '#46685A'];
+      const colorsRGB = [[206, 138, 51], [78, 127, 146], [45, 139, 111], [70, 104, 90]];
+      state.bpts.forEach((b, i) => {
+        b.colorHex = colorsHex[i];
+        b.fillRGB = colorsRGB[i];
+      });
+
+      renderBPTInputs();
+
+      const rect = canvasWrap.getBoundingClientRect();
+      CW = rect.width;
+      CH = rect.height;
+
+      autoScaleViewport();
+      resizeCanvas();
+
+      setTimeout(() => {
+        resizeCanvas();
+      }, 100);
+    });
+
+    window.addEventListener('resize', () => {
+      clearTimeout(roTimer);
+      roTimer = setTimeout(resizeCanvas, 30);
+    });
+
+    // ===== LMS Height Report =====
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    const _athenaResizeObserver = new ResizeObserver(() => {
+      clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+    });
+    _athenaResizeObserver.observe(document.body);
+</script>
+</body>
+
+</html>
