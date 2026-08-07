@@ -283,13 +283,14 @@
         border-top: 1.5px solid var(--paper-line);
         padding: 12px 14px !important;
         gap: 8px !important;
+        min-height: 480px;
       }
       .sim-caption {
         margin-top: 4px !important;
       }
     }
 
-    /* LEFT CONTROL PANEL */
+    /* LEFT CONTROL PANEL (Cố định chiều cao theo bước dài nhất) */
     .sim-left {
       border-right: 1.5px solid var(--paper-line);
       padding: 14px 16px;
@@ -297,6 +298,7 @@
       flex-direction: column;
       gap: 10px;
       background: var(--cream);
+      min-height: 520px;
     }
 
     .panel-section-label {

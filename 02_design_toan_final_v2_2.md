@@ -785,7 +785,7 @@ function drawLineLabel(label, color, bndFn) {
 
 ## PHẦN 3 — COMPONENT LIBRARY
 
-### 3.1 Sim Wrapper — Template đầy đủ
+### 3.1 Sim Wrapper — Template đầy đủ (v2.2 Cập nhật)
 
 ```html
 <div class="sim-wrap">
@@ -797,58 +797,66 @@ function drawLineLabel(label, color, bndFn) {
     <button class="sim-btn" id="guide-btn-m1" onclick="toggleGuide('m1')">
       <i class="ti ti-book"></i> Hướng dẫn
     </button>
-    <button class="sim-btn" id="audio-btn-m1" onclick="toggleAudio('m1')">
-      <i class="ti ti-headphones" id="audio-icon-m1"></i>
-    </button>
   </div>
 
-  <!-- Canvas -->
+  <!-- Canvas Container với Zoom Controls dọc & Tọa độ nổi tích hợp -->
   <div class="sim-canvas-wrap" id="canvasWrap">
     <canvas id="simCanvas"></canvas>
-    <div class="tooltip" id="tooltip">
-      <div class="tooltip-coord" id="tipCoord"></div>
-      <div class="tooltip-status" id="tipStatus"></div>
+    <div class="tooltip-box" id="tooltip"></div>
+    
+    <!-- 1. Thanh Zoom dọc chìm mờ ở góc trên bên phải canvas -->
+    <div class="canvas-zoom-controls">
+      <button class="btn-canvas-zoom" onclick="doZoom(0.7)" title="Phóng to"><i class="ti ti-plus"></i></button>
+      <button class="btn-canvas-zoom" onclick="doZoom(1.4)" title="Thu nhỏ"><i class="ti ti-minus"></i></button>
+      <button class="btn-canvas-zoom" onclick="resetView()" title="Đặt lại"><i class="ti ti-refresh"></i></button>
     </div>
+
+    <!-- 2. Thẻ tọa độ nổi mờ chìm sát góc dưới bên phải canvas (pointer-events: none) -->
+    <div class="coord-bar" id="coordBar">x: 0.00 · y: 0.00</div>
   </div>
 
-  <!-- Caption -->
+  <!-- Nút hành động chính (nằm ngay dưới Canvas trên Mobile & PC) -->
+  <button class="btn-primary btn-draw-boundary" id="btnAction">
+    <i class="ti ti-pencil"></i> Vẽ đường biên
+  </button>
+
+  <!-- Caption hướng dẫn -->
   <div class="sim-caption">
     <i class="ti ti-info-circle"></i>
     <span id="caption-m1">Nhập bất phương trình để bắt đầu...</span>
   </div>
-
-  <!-- Controls (nếu có animation) -->
-  <div class="sim-controls">
-    <button class="ctrl-btn" id="btnPlay-m1" onclick="togglePlay()">
-      <i class="ti ti-play" id="playIcon-m1"></i>
-    </button>
-    <button class="step-btn" onclick="stepPrev()" disabled>
-      <i class="ti ti-chevron-left"></i> Trước
-    </button>
-    <button class="step-btn" onclick="stepNext()">
-      Tiếp <i class="ti ti-chevron-right"></i>
-    </button>
-    <div class="speed-wrap">
-      <span>Tốc độ</span>
-      <input type="range" min="0.5" max="3" step="0.5" value="1"
-             oninput="setSpeed(this.value)">
-      <span id="speedLabel-m1">1×</span>
-    </div>
-    <button class="ctrl-btn" onclick="resetSim()" title="Đặt lại">
-      <i class="ti ti-refresh"></i>
-    </button>
-  </div>
-
-  <!-- Bottom bar: tọa độ + zoom -->
-  <div class="bottom-bar">
-    <div class="coord-bar" id="coordBar">x: 0.00 · y: 0.00</div>
-    <div class="zoom-btns">
-      <button class="btn-zoom" onclick="doZoom(0.7)">＋ Phóng To</button>
-      <button class="btn-zoom" onclick="doZoom(1.4)">－ Thu Nhỏ</button>
-      <button class="btn-zoom sec" onclick="resetView()">↺ Đặt Lại</button>
-    </div>
-  </div>
 </div>
+```
+
+```css
+/* CSS chuẩn cho Thanh Zoom dọc & Thẻ Tọa độ nổi tích hợp trong Canvas Wrapper */
+.canvas-zoom-controls {
+  position: absolute; top: 12px; right: 12px; z-index: 15;
+  display: flex; flex-direction: column;
+  background: rgba(250, 247, 240, 0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+  border: 1px solid rgba(229, 222, 207, 0.6); border-radius: var(--radius);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); overflow: hidden; opacity: 0.8;
+  transition: opacity 0.2s ease, background 0.2s ease;
+}
+.canvas-zoom-controls:hover { opacity: 1; background: rgba(255, 255, 255, 0.92); }
+
+.btn-canvas-zoom {
+  width: 36px; height: 36px; padding: 0; background: transparent; border: none;
+  font-size: 16px; font-weight: 600; cursor: pointer; color: var(--ink-2);
+  display: flex; align-items: center; justify-content: center; transition: background .2s, color .2s;
+}
+.btn-canvas-zoom:not(:last-child) { border-bottom: 1px solid rgba(229, 222, 207, 0.6); }
+.btn-canvas-zoom:hover { background: var(--jade-pale); color: var(--jade-deep); }
+
+.coord-bar {
+  position: absolute; bottom: 4px; right: 4px; z-index: 12;
+  font-size: 11px; font-weight: 500; color: var(--ink-3); font-family: var(--font-mono);
+  font-variant-numeric: tabular-nums; background: rgba(250, 247, 240, 0.5);
+  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+  padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(229, 222, 207, 0.5);
+  opacity: 0.8; pointer-events: none;
+}
+.hint-text:empty { display: none; } /* Ẩn khoảng trắng rỗng khi chưa có thông báo */
 ```
 
 ### 3.2 Trạng thái nút
@@ -1474,6 +1482,12 @@ if (typeof ResizeObserver !== 'undefined') {
   để nhúng LMS — để chiều cao trang co theo đúng nội dung, rồi báo lại qua `resize()` ở trên.
 - Margin/padding lớn cuối trang (`<body>` hoặc phần tử cuối cùng) — kiểm tra không còn khoảng đệm
   thừa sau phần tử cuối (thường là quiz/kết luận).
+
+**Quy tắc Khóa chiều cao bố cục theo bước dài nhất (Layout Height Locking):**
+- Đối với các simulation có mở từng bước dồn dập (ví dụ Module 2 có 4 bước mở dần), nếu để chiều cao co giãn tự nhiên, iframe LMS sẽ bị nảy/re-scale hoặc đẩy thanh sidebar khi học sinh bấm tới từng bước.
+- **Giải pháp bắt buộc:** Đặt `min-height` cố định trên `.sim-left` (ví dụ `min-height: 520px` desktop / `480px` mobile) tương ứng với chiều cao khi mở ĐẦY ĐỦ TẤT CẢ CÁC BƯỚC.
+- Việc này giúp chiều cao toàn trang (`scrollHeight`) được tính ổn định chuẩn xác 100% ngay từ khi trang vừa load, LMS iframe nhận đúng kích thước tối đa duy nhất 1 lần và không bao giờ bị giật/scale lại khi chuyển bước.
+- **Hướng dẫn cho AI:** Khi tạo bài mới hoặc refactor bài bất kỳ, AI sẽ tự động phân tích số bước trong kịch bản để thiết lập `min-height` chuẩn sẵn trong code, người dùng KHÔNG cần phải tự đo đạc hay sửa thủ công.
 
 > **Lưu ý:** contract LMS hiện tại chỉ định nghĩa `resize` là 1 hàm rỗng trong fallback, chưa nêu
 > rõ tham số mong đợi (`{height}` là suy đoán hợp lý theo convention của các iframe auto-resize
