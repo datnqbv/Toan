@@ -1,0 +1,2375 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Ứng dụng Hệ Bất Phương Trình Bậc Nhất Hai Ẩn - Bài toán thực tế</title>
+
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+
+  <script type="application/json" id="athena-context">
+{
+  "title": "Ứng dụng Hệ Bất Phương Trình Bậc Nhất Hai Ẩn — Bài toán thực tế",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Chọn đúng ẩn x, y đại diện cho đại lượng cần tìm (số lượng, không phải chi phí/nguyên liệu)",
+    "Lập hệ bất phương trình bậc nhất hai ẩn từ các ràng buộc thực tế (nguyên liệu, thời gian, vốn, diện tích...) với đúng hệ số và dấu bất phương trình",
+    "Xác định miền nghiệm (miền khả thi) của hệ bất phương trình và tìm phương án tối ưu hóa hàm mục tiêu (lãi, doanh thu, chi phí, tổng số lượng...) tại các đỉnh của miền khả thi",
+    "Diễn đạt kết luận bài toán thực tế bằng ngôn ngữ có đơn vị và ý nghĩa, không chỉ dừng ở cặp số nghiệm x,y thuần túy"
+  ],
+  "structure": [
+    { "id": "scenario-1", "title": "Tình huống 1 — Quán cà phê: 12L sữa, 8L cà phê/ngày; Latte cần 0.3L sữa+0.2L cà phê lãi 25.000đ; Cappuccino cần 0.2L sữa+0.3L cà phê lãi 30.000đ" },
+    { "id": "scenario-2", "title": "Tình huống 2 — Xưởng may áo sơ mi/áo khoác: ràng buộc giờ máy, mục tiêu tổng giờ thợ ít nhất" },
+    { "id": "scenario-3", "title": "Tình huống 3 — Trồng rau muống/rau cải trên đất theo sào (số thực không âm vì đất có thể chia lẻ), mục tiêu doanh thu tối đa" },
+    { "id": "scenario-4", "title": "Tình huống 4 — Sản xuất bánh mì ngọt/bánh bông lan, mục tiêu tổng số bánh nhiều nhất" },
+    { "id": "scenario-5", "title": "Tình huống 5 — Phân bổ chuyến xe tải lớn/nhỏ, mục tiêu tiêu thụ nhiên liệu ít nhất" },
+    { "id": "step-flow", "title": "Mỗi tình huống có: Bước 1 chọn đúng cách đặt ẩn x,y (3 lựa chọn); Bước 2 chọn đúng từng bất phương trình ràng buộc trong hệ (nhiều ràng buộc, mỗi cái 3-4 lựa chọn); Bước 3 xác định miền nghiệm trên đồ thị; Bước 4 kết luận phương án tối ưu (3 lựa chọn)" }
+  ],
+  "athenaGuidance": "File có 5-6 tình huống độc lập (mảng scenarios trong code), mỗi tình huống có 3 loại câu hỏi trắc nghiệm cố định. TUYỆT ĐỐI không được nói thẳng đáp án đúng — chỉ hướng dẫn theo nguyên tắc chung. (1) Bước chọn ẩn: đáp án đúng luôn là lựa chọn đầu tiên trong mảng step1.options (correct:true) — ẩn x,y phải là ĐẠI LƯỢNG SỐ LƯỢNG trực tiếp mà đề bài hỏi (ví dụ số ly, số áo, số sào, số cái bánh, số chuyến xe), không phải chi phí/nguyên liệu/giờ máy dùng để tính; lưu ý Tình huống 3 (trồng rau) đặc biệt vì x,y là SỐ THỰC không âm (do đất có thể chia sào lẻ), khác các tình huống khác dùng số nguyên. (2) Bước lập từng bất phương trình ràng buộc: đáp án đúng luôn ở choices[correctIndex] (thường là index 0) — cần khớp đúng hệ số theo đúng đại lượng trong đề (không đảo hệ số giữa 2 sản phẩm), đúng dấu theo từ khóa ('tối đa'/'không quá' → ≤, 'ít nhất' → ≥), và dùng dấu ≤/≥ (không phải </> ) khi đề cho phép dùng hết đúng giới hạn. Điều kiện không âm x≥0,y≥0 luôn áp dụng (không phải x>0,y>0 vì có thể không sản xuất loại nào). (3) Bước kết luận: đáp án đúng luôn là conclusions[0] (correct:true) — phải là phương án cho giá trị hàm mục tiêu tối ưu NHẤT (lớn nhất nếu tối đa hóa lãi/doanh thu/số lượng, nhỏ nhất nếu tối thiểu hóa chi phí/giờ/nhiên liệu) VÀ phải diễn đạt bằng ngôn ngữ thực tế có đơn vị (không chỉ nói 'x=..., y=...' trần trụi — đó là lựa chọn sai vì thiếu ý nghĩa thực tế dù đúng về toán học). Đáp án tối ưu cụ thể của từng tình huống (dùng để Athena tự kiểm tra khi cần, KHÔNG đọc thẳng cho học sinh): TH1 Quán cà phê — 40 ly Latte, 0 ly Cappuccino, lãi 1.000.000đ; TH2 Xưởng may — 30 áo sơ mi, 20 áo khoác, tổng giờ thợ 70 giờ; TH3 Trồng rau — 5 sào rau muống, 5 sào rau cải, doanh thu 16 triệu đồng; TH4 Bánh — 30 bánh mì ngọt, 45 bánh bông lan, tổng 75 cái; TH5 Xe tải — 10 chuyến xe lớn, 20 chuyến xe nhỏ, nhiên liệu 1600 lít."
+}
+  </script>
+
+  <style>
+    /* ── DESIGN TOKENS (v2.2 — Cream · Jade · Sage · Accent) ── */
+    :root {
+      /* Neutrals · giấy & mực */
+      --cream: #FAF7F0;
+      --cream-2: #F0EADD;
+      --cream-3: #E7DECC;
+      --paper-line: #E5DECF;
+      --paper-line-2: #D6CCB6;
+      --ink: #1A1A1A;
+      --ink-2: #514C44;
+      --ink-3: #7C756A;
+      --ink-faint: #ABA396;
+
+      /* Jade · hành động chính & đúng */
+      --jade: #3CA57A;
+      --jade-deep: #2D8B6F;
+      --jade-dark: #14432F;
+      --jade-text: #1B5E48;
+      --jade-soft: #A9D0BE;
+      --jade-pale: #DCEAE1;
+
+      /* Sage · phụ trợ */
+      --sage: #A8C9B8;
+      --sage-deep: #7CA792;
+      --sage-text: #46685A;
+      --sage-pale: #E1ECE4;
+
+      /* Accent · điểm nhấn ấm */
+      --accent: #E8A24A;
+      --accent-deep: #CE8A33;
+      --accent-text: #8A551A;
+      --accent-pale: #F7E7CD;
+
+      /* Semantic · phản hồi đúng/sai/cảnh báo/info */
+      --correct: #2D8B6F;
+      --correct-bg: #DCEAE1;
+      --wrong: #C15F3C;
+      --wrong-bg: #F3E2D6;
+      --warning: #C58A2E;
+      --warning-bg: #F5E7CB;
+      --info: #4E7F92;
+      --info-bg: #DCE7EB;
+
+      --white: #FFFFFF;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --radius-sm: 6px;
+      --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+      --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+
+      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--ink);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── MAIN LAYOUT (KHÔNG CÓ HEADER BANNER TRÊN CÙNG) ── */
+    .app-body {
+      max-width: 1140px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 0 16px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+    }
+
+    /* ── SIM CARD ── */
+    .sim-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--paper-line);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sim-header {
+      background: var(--cream-2);
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      border-bottom: 1.5px solid var(--paper-line);
+      flex-wrap: wrap;
+    }
+
+    .sim-title-wrap {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sim-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .sim-sub {
+      font-size: 14px;
+      color: var(--ink-3);
+    }
+
+    /* ── SIM BODY & RESPONSIVE GRID ── */
+    .sim-body {
+      display: grid;
+      grid-template-columns: 3.8fr 6.2fr;
+      min-height: 560px;
+    }
+
+    @media (max-width: 1023px) {
+      .sim-body {
+        display: flex;
+        flex-direction: column;
+      }
+      .sim-right {
+        order: 1; /* Canvas hiện trước trên Mobile */
+      }
+      .sim-left {
+        order: 2; /* Sidebar câu hỏi điều khiển ở dưới */
+        border-right: none;
+        border-top: 1.5px solid var(--paper-line);
+      }
+    }
+
+    /* LEFT SIDEBAR */
+    .sim-left {
+      border-right: 1.5px solid var(--paper-line);
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--cream);
+    }
+
+    .panel-section-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+    }
+
+    .progress-wrap { display: none !important; }
+
+    /* Scenario Card */
+    .scenario-card {
+      background: var(--white);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius);
+      padding: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .scenario-desc {
+      font-size: 14px;
+      color: var(--ink-2);
+      line-height: 1.6;
+      font-weight: 500;
+    }
+
+    /* Option Row styling (Radio buttons) */
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      min-height: 44px;
+      padding: 12px 14px;
+      background: var(--white);
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .option-item:hover:not(.disabled) {
+      border-color: var(--jade);
+      background: var(--sage-pale);
+    }
+
+    .option-item.selected {
+      border-color: var(--jade-deep);
+      background: var(--correct-bg);
+    }
+
+    .option-item.disabled {
+      cursor: not-allowed;
+      opacity: 0.85;
+    }
+
+    .option-radio {
+      margin-top: 4px;
+      accent-color: var(--jade-deep);
+      width: 18px;
+      height: 18px;
+    }
+
+    .option-text {
+      font-size: 14px;
+      color: var(--ink);
+      font-weight: 500;
+      line-height: 1.5;
+    }
+
+    /* Summary display elements */
+    .summary-box {
+      background: var(--white);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 5px 0;
+      border-bottom: 1px dashed var(--paper-line-2);
+    }
+
+    .summary-row:last-child {
+      border-bottom: none;
+    }
+
+    .summary-label {
+      color: var(--ink-3);
+      font-weight: 600;
+    }
+
+    .summary-val {
+      color: var(--ink);
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+    }
+
+    /* Inequalities list check (Step 2) */
+    .bpt-check-list {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .bpt-check-row {
+      background: var(--white);
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bpt-check-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-2);
+    }
+
+    .bpt-select {
+      width: 100%;
+      min-height: 44px;
+      padding: 8px 10px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--paper-line-2);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 14px;
+      color: var(--ink);
+      outline: none;
+      background: var(--white);
+      cursor: pointer;
+    }
+
+    .bpt-select:focus {
+      border-color: var(--jade-deep);
+      box-shadow: 0 0 0 3px rgba(60, 165, 122, 0.15);
+    }
+
+    .bpt-select:disabled {
+      background: var(--cream-2);
+      cursor: not-allowed;
+    }
+
+    /* Button and status styling */
+    .btn-primary {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 16px;
+      background: var(--jade);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, opacity .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--jade-deep);
+    }
+
+    .btn-primary:disabled {
+      opacity: .45;
+      cursor: default;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 16px;
+      background: var(--white);
+      color: var(--ink-2);
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-secondary:hover:not(:disabled) {
+      border-color: var(--jade-deep);
+      color: var(--jade-deep);
+    }
+
+    .btn-secondary:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    /* Caption box */
+    .sim-caption {
+      background: var(--sage-pale);
+      border-left: 4px solid var(--jade-deep);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 14px;
+      color: var(--jade-text);
+      line-height: 1.6;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: auto;
+    }
+
+    .sim-caption i {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: var(--jade-deep);
+    }
+
+    .sim-caption.green {
+      background: var(--correct-bg);
+      border-left-color: var(--correct);
+      color: var(--jade-text);
+    }
+
+    .sim-caption.red {
+      background: var(--wrong-bg);
+      border-left-color: var(--wrong);
+      color: var(--wrong);
+    }
+    .sim-caption.red i { color: var(--wrong); }
+
+    .info-box {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .info-box.blue {
+      background: var(--info-bg);
+      border-color: var(--info);
+      color: var(--ink);
+    }
+
+    .info-box.gold {
+      background: var(--warning-bg);
+      border-color: var(--warning);
+      color: var(--accent-text);
+    }
+
+    .ib-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .calc-row {
+      background: var(--white);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      padding: 10px 12px;
+      font-size: 14px;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+    }
+
+    .feedback-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .feedback-badge.ok {
+      background: var(--correct-bg);
+      color: var(--jade-text);
+    }
+
+    .feedback-badge.err {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+    }
+
+    .celebration {
+      text-align: center;
+      padding: 20px;
+      background: var(--sage-pale);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--jade-deep);
+    }
+
+    .celebration .emoji {
+      font-size: 36px;
+      margin-bottom: 4px;
+    }
+
+    .celebration h3 {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--jade-dark);
+      margin: 4px 0;
+    }
+
+    .sdiv {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--ink-3);
+      margin: 6px 0;
+    }
+
+    .sdiv::before, .sdiv::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--paper-line-2);
+    }
+
+    /* RIGHT CANVAS */
+    .sim-right {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--white);
+    }
+
+    .canvas-wrap {
+      flex: 1;
+      position: relative;
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--cream);
+      min-height: 380px;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .tooltip-box {
+      position: absolute;
+      background: rgba(26, 26, 26, 0.9);
+      color: var(--white);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+      pointer-events: none;
+      display: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .coord-bar {
+      font-size: 13px;
+      color: var(--ink-3);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      padding: 2px 4px;
+      height: 20px;
+    }
+
+    .zoom-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-zoom {
+      min-height: 44px;
+      padding: 8px 16px;
+      background: var(--white);
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      color: var(--ink-2);
+    }
+
+    .btn-zoom:hover {
+      border-color: var(--jade-deep);
+      color: var(--jade-deep);
+    }
+
+    .btn-zoom.accent {
+      background: var(--jade-deep);
+      color: var(--white);
+      border-color: var(--jade-deep);
+    }
+
+    .btn-zoom.accent:hover {
+      background: var(--jade-dark);
+    }
+
+    /* Point check table */
+    .pc-table {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .pc-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--white);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-family: var(--font-mono);
+    }
+
+    .pc-badge {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 2px 8px;
+      border-radius: 10px;
+    }
+
+    .pc-badge.ok {
+      background: var(--correct-bg);
+      color: var(--jade-text);
+    }
+
+    .pc-badge.err {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+    }
+
+    .hidden { display: none !important; }
+  </style>
+</head>
+
+<body>
+
+  <!-- BODY CONTAINER (KHÔNG CÓ HEADER BANNER TRÊN CÙNG) -->
+  <div class="app-body">
+    <div class="sim-card">
+      <div class="sim-header">
+        <div class="sim-title-wrap">
+          <div class="sim-title" id="simTitle">Tìm Phương Án Tối Ưu Thực Tế</div>
+          <div class="sim-sub" id="simSubtitle">Trải nghiệm quy trình đặt ẩn, lập hệ, vẽ miền và tối ưu hóa</div>
+        </div>
+      </div>
+
+      <div class="sim-body">
+        <!-- LEFT CONTROL SIDEBAR -->
+        <div class="sim-left">
+
+          <!-- Scenario info -->
+          <div class="scenario-card">
+            <div class="panel-section-label" id="scenarioName">TÌNH HUỐNG 1</div>
+            <div class="scenario-desc" id="scenarioDesc">Loading...</div>
+          </div>
+
+          <!-- Dynamic Step Content -->
+          <div id="stepContent" style="display:flex; flex-direction:column; gap:14px;"></div>
+
+          <!-- Sidebar variables summary -->
+          <div id="sidebarSummary" class="summary-box hidden">
+            <div class="panel-section-label">Tóm tắt mô hình</div>
+            <div id="summaryDetails"></div>
+          </div>
+
+          <!-- General caption -->
+          <div class="sim-caption" id="capBox">
+            <i class="ti ti-info-circle"></i>
+            <span id="capText">Loading caption...</span>
+          </div>
+
+        </div>
+
+        <!-- RIGHT GRAPH CANVAS -->
+        <div class="sim-right">
+          <div class="canvas-wrap" id="canvasWrap">
+            <canvas id="simCanvas"></canvas>
+            <div class="tooltip-box" id="simTooltip"></div>
+          </div>
+          <div class="coord-bar" id="coordBar">x: 0.00 · y: 0.00</div>
+          <div class="zoom-row">
+            <button class="btn-zoom accent" onclick="applyZoom(0.7)">＋ Phóng to</button>
+            <button class="btn-zoom accent" onclick="applyZoom(1.4)">－ Thu nhỏ</button>
+            <button class="btn-zoom" onclick="resetView()">↺ Mặc định</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== LMS Safe Accessor (PHẦN 7.2) =====
+    function LMS() {
+      return window.AiducationLMS || { ready: function () { }, progress: function () { }, event: function () { }, state: function () { }, complete: function () { }, resize: function () { } };
+    }
+
+    // ──────────────────────────────────────
+    // 1. DATA CONFIGURATION (5 SCENARIOS)
+    // ──────────────────────────────────────
+    const scenarios = [
+      {
+        name: "☕ TÌNH HUỐNG 1 — QUÁN CÀ PHÊ",
+        desc: "Một quán cà phê có 12 lít sữa và 8 lít cà phê mỗi ngày. Mỗi ly Latte cần 0.3 lít sữa và 0.2 lít cà phê, lãi 25.000đ. Mỗi ly Cappuccino cần 0.2 lít sữa và 0.3 lít cà phê, lãi 30.000đ. Hỏi cần pha bao nhiêu ly mỗi loại để lãi nhiều nhất?",
+        isReal: false,
+        step1: {
+          question: "Chọn cách đặt ẩn x, y phù hợp nhất với yêu cầu bài toán:",
+          options: [
+            { text: "x là số ly Latte, y là số ly Cappuccino cần pha mỗi ngày (x, y là các số nguyên không âm).", explain: "Chính xác! Ẩn số phải trực tiếp đại diện cho đại lượng cần tìm ở câu hỏi.", correct: true },
+            { text: "x là số lít sữa pha Latte, y là số lít sữa pha Cappuccino.", explain: "Chưa đúng. Bài toán hỏi cần pha bao nhiêu ly mỗi loại để lãi nhiều nhất, không hỏi lượng sữa sử dụng.", correct: false },
+            { text: "x là số ly Latte, y là số lít cà phê pha Cappuccino.", explain: "Chưa đúng. Hai ẩn số x và y phải tương thích về mặt đơn vị đo lường (đều là số ly).", correct: false }
+          ]
+        },
+        step2: {
+          constraints: [
+            {
+              title: "Ràng buộc về sữa (Quán có tối đa 12 lít sữa):",
+              correctIndex: 0,
+              choices: [
+                { text: "0.3x + 0.2y ≤ 12", explain: "Chính xác! Mỗi Latte cần 0.3L sữa (0.3x), mỗi Cappuccino cần 0.2L sữa (0.2y), tổng lượng sữa tối đa là 12L." },
+                { text: "0.3x + 0.2y ≥ 12", explain: "Sai dấu. Quán chỉ có tối đa 12L sữa, lượng sữa sử dụng phải nhỏ hơn hoặc bằng 12L." },
+                { text: "0.2x + 0.3y ≤ 12", explain: "Sai hệ số. Latte cần 0.3L sữa (hệ số của x phải là 0.3) chứ không phải 0.2L." },
+                { text: "0.3x + 0.2y < 12", explain: "Sai dấu. Quán có thể dùng vừa hết đúng 12L sữa nên lấy cả trường hợp bằng (dấu ≤)." }
+              ]
+            },
+            {
+              title: "Ràng buộc về cà phê (Quán có tối đa 8 lít cà phê):",
+              correctIndex: 0,
+              choices: [
+                { text: "0.2x + 0.3y ≤ 8", explain: "Chính xác! Latte cần 0.2L cà phê (0.2x), Cappuccino cần 0.3L cà phê (0.3y), tổng lượng cà phê không quá 8L." },
+                { text: "0.2x + 0.3y ≥ 8", explain: "Sai dấu. Cà phê hiện có tối đa 8L, không thể pha nhiều hơn lượng cà phê này." },
+                { text: "0.3x + 0.2y ≤ 8", explain: "Sai hệ số. Latte cần 0.2L cà phê, Cappuccino cần 0.3L cà phê. Đã nhầm hệ số của hai loại ly." }
+              ]
+            },
+            {
+              title: "Điều kiện không âm của số lượng ly:",
+              correctIndex: 0,
+              choices: [
+                { text: "x ≥ 0, y ≥ 0", explain: "Chính xác! Số ly pha ra thực tế không thể âm." },
+                { text: "x > 0, y > 0", explain: "Chưa chuẩn. Vẫn có thể không pha ly Latte nào (x = 0) hoặc không pha Cappuccino nào (y = 0)." },
+                { text: "Không cần ràng buộc này", explain: "Bạn đã có đủ điều kiện nghiệp vụ chưa? Số lượng thực tế có thể âm không?" }
+              ]
+            }
+          ]
+        },
+        objective: {
+          label: "Hàm lãi F(x, y)",
+          formula: "F(x, y) = 25000x + 30000y (đồng)",
+          target: "maximize",
+          unit: "đồng",
+          calc: (x, y) => 25000 * x + 30000 * y,
+          format: val => val.toLocaleString() + " đ"
+        },
+        optimal: { x: 40, y: 0, val: 1000000 },
+        conclusions: [
+          { text: "Pha 40 ly Latte và 0 ly Cappuccino để đạt lãi nhiều nhất là 1.000.000đ.", correct: true, explain: "Chính xác! Đây là phương án đem lại lợi nhuận cao nhất trong vùng khả thi." },
+          { text: "Pha 10 ly Latte và 20 ly Cappuccino để đạt lãi nhiều nhất là 850.000đ.", correct: false, explain: "Chưa đúng. Phương án này thỏa mãn hệ nhưng lãi thu về chưa phải là lớn nhất." },
+          { text: "Lựa chọn phương án tối ưu x = 40, y = 0.", correct: false, explain: "Đúng về toán học, nhưng bài hỏi gì? Hãy trả lời bằng ngôn ngữ của bài toán. Hãy kết luận có đơn vị và ý nghĩa thực tế." }
+        ],
+        vBounds: { xMin: -50, xMax: 50, yMin: -35, yMax: 35 },
+        constraints: [
+          { a: 0.3, b: 0.2, c: 12, sign: 'le', colorHex: '#CE8A33', fillRGB: [206, 138, 51], label: "0.3x + 0.2y = 12 (Sữa)" },
+          { a: 0.2, b: 0.3, c: 8, sign: 'le', colorHex: '#4E7F92', fillRGB: [78, 127, 146], label: "0.2x + 0.3y = 8 (Cà phê)" },
+          { a: 1, b: 0, c: 0, sign: 'ge', colorHex: '#2D8B6F', fillRGB: [45, 139, 111], label: "x = 0" },
+          { a: 0, b: 1, c: 0, sign: 'ge', colorHex: '#46685A', fillRGB: [70, 104, 90], label: "y = 0" }
+        ],
+        vertices: [
+          { x: 0, y: 0, label: "A(0,0)" },
+          { x: 40, y: 0, label: "B(40,0)" },
+          { x: 0, y: 26.67, label: "C(0, 26.7)" }
+        ]
+      },
+      {
+        name: "👕 TÌNH HUỐNG 2 — XƯỞNG MAY",
+        desc: "Một xưởng may cần hoàn thành đơn hàng ít nhất 30 áo sơ mi và 20 áo khoác trong tuần. Xưởng có tối đa 200 giờ máy. Mỗi áo sơ mi cần 2 giờ máy và 1 giờ thợ. Mỗi áo khoác cần 3 giờ máy và 2 giờ thợ. Lên kế hoạch sản xuất để tổng giờ thợ ít nhất (tiết kiệm chi phí nhân công)?",
+        isReal: false,
+        step1: {
+          question: "Chọn cách đặt ẩn x, y phù hợp nhất với yêu cầu bài toán:",
+          options: [
+            { text: "x là số áo sơ mi, y là số áo khoác cần sản xuất (x, y là các số nguyên).", explain: "Chính xác! Ẩn số đại diện cho số lượng áo của hai loại sản phẩm.", correct: true },
+            { text: "x là số giờ máy cho sơ mi, y là số giờ máy cho áo khoác.", explain: "Chưa đúng. Bài toán hỏi về kế hoạch sản xuất áo chứ không phải số giờ máy.", correct: false },
+            { text: "x là số áo sơ mi, y là số giờ thợ may sản xuất sơ mi.", explain: "Chưa đúng. Hai ẩn số cần đồng nhất về đối tượng sản phẩm đầu ra.", correct: false }
+          ]
+        },
+        step2: {
+          constraints: [
+            {
+              title: "Đơn hàng tối thiểu sơ mi (ít nhất 30 áo):",
+              correctIndex: 0,
+              choices: [
+                { text: "x ≥ 30", explain: "Chính xác! 'ít nhất 30 áo' tức là số lượng áo x phải lớn hơn hoặc bằng 30." },
+                { text: "x ≤ 30", explain: "Sai dấu. Cần sản xuất ít nhất 30 áo, tức phải từ 30 áo trở lên." },
+                { text: "x > 30", explain: "Thiếu dấu bằng. Xưởng vẫn có thể sản xuất đúng 30 áo để hoàn thành đơn hàng." }
+              ]
+            },
+            {
+              title: "Đơn hàng tối thiểu áo khoác (ít nhất 20 áo):",
+              correctIndex: 0,
+              choices: [
+                { text: "y ≥ 20", explain: "Chính xác! y phải lớn hơn hoặc bằng 20." },
+                { text: "y ≤ 20", explain: "Sai dấu. 'ít nhất 20 áo' nghĩa là y không nhỏ hơn 20." }
+              ]
+            },
+            {
+              title: "Ràng buộc về giờ máy tối đa (tối đa 200 giờ):",
+              correctIndex: 0,
+              choices: [
+                { text: "2x + 3y ≤ 200", explain: "Chính xác! Mỗi sơ mi cần 2 giờ máy (2x), áo khoác cần 3 giờ máy (3y), tổng giờ máy không vượt quá 200." },
+                { text: "2x + 3y ≥ 200", explain: "Sai dấu. 'Tối đa 200 giờ máy' tương ứng với dấu nhỏ hơn hoặc bằng (≤)." },
+                { text: "x + 2y ≤ 200", explain: "Sai hệ số. x và y đang tính theo giờ thợ (1 giờ và 2 giờ) chứ không phải giờ máy." }
+              ]
+            }
+          ]
+        },
+        objective: {
+          label: "Hàm giờ thợ G(x, y)",
+          formula: "G(x, y) = x + 2y (giờ)",
+          target: "minimize",
+          unit: "giờ",
+          calc: (x, y) => x + 2 * y,
+          format: val => val + " giờ"
+        },
+        optimal: { x: 30, y: 20, val: 70 },
+        conclusions: [
+          { text: "Sản xuất 30 áo sơ mi và 20 áo khoác để tổng giờ thợ ít nhất là 70 giờ.", correct: true, explain: "Chính xác! Đây là điểm nguyên khả thi cho tổng giờ thợ nhỏ nhất." },
+          { text: "Sản xuất 40 áo sơ mi và 20 áo khoác để tổng giờ thợ ít nhất là 80 giờ.", correct: false, explain: "Chưa đúng. Điểm này có số giờ thợ lớn hơn điểm (30, 20)." },
+          { text: "Lựa chọn phương án tối ưu x = 30, y = 20.", correct: false, explain: "Đúng về toán học, nhưng bài hỏi gì? Hãy trả lời bằng ngôn ngữ của bài toán. Hãy kết luận có đơn vị và ý nghĩa thực tế." }
+        ],
+        vBounds: { xMin: -110, xMax: 110, yMin: -70, yMax: 70 },
+        constraints: [
+          { a: 1, b: 0, c: 30, sign: 'ge', colorHex: '#CE8A33', fillRGB: [206, 138, 51], label: "x = 30 (Sơ mi)" },
+          { a: 0, b: 1, c: 20, sign: 'ge', colorHex: '#4E7F92', fillRGB: [78, 127, 146], label: "y = 20 (Áo khoác)" },
+          { a: 2, b: 3, c: 200, sign: 'le', colorHex: '#2D8B6F', fillRGB: [45, 139, 111], label: "2x + 3y = 200 (Giờ máy)" }
+        ],
+        vertices: [
+          { x: 30, y: 20, label: "A(30,20)" },
+          { x: 30, y: 46.67, label: "B(30, 46.7)" },
+          { x: 70, y: 20, label: "C(70,20)" }
+        ]
+      },
+      {
+        name: "🥦 TÌNH HUỐNG 3 — NÔNG TRẠI RAU",
+        desc: "Một nông dân có 10 sào đất và 6 triệu đồng vốn. Trồng rau muống tốn 400.000đ/sào, doanh thu 1.200.000đ/sào. Trồng rau cải tốn 800.000đ/sào, doanh thu 2.000.000đ/sào. Cần trồng bao nhiêu sào mỗi loại để doanh thu cao nhất? (Diện tích đất gieo trồng có thể chia nhỏ, số sào là số thực).",
+        isReal: true,
+        step1: {
+          question: "Chọn cách đặt ẩn x, y phù hợp nhất với yêu cầu bài toán:",
+          options: [
+            { text: "x là số sào trồng rau muống, y là số sào trồng rau cải (x, y là các số thực không âm).", explain: "Chính xác! Đất đai có thể gieo trồng nửa sào hoặc sào lẻ, nên ẩn số thuộc tập số thực.", correct: true },
+            { text: "x là số sào trồng rau muống, y là số sào trồng rau cải (x, y là các số nguyên).", explain: "Chưa chính xác. Đất đai có thể chia nhỏ sào lẻ nên không nhất thiết phải nguyên.", correct: false },
+            { text: "x là chi phí trồng rau muống, y là chi phí trồng rau cải.", explain: "Chưa đúng. Bài toán hỏi về diện tích (số sào) gieo trồng mỗi loại.", correct: false }
+          ]
+        },
+        step2: {
+          constraints: [
+            {
+              title: "Giới hạn diện tích gieo trồng (tối đa 10 sào):",
+              correctIndex: 0,
+              choices: [
+                { text: "x + y ≤ 10", explain: "Chính xác! Tổng diện tích trồng rau muống và rau cải không vượt quá 10 sào đất hiện có." },
+                { text: "x + y ≥ 10", explain: "Sai chiều. Không thể gieo trồng nhiều hơn 10 sào đất." }
+              ]
+            },
+            {
+              title: "Giới hạn vốn đầu tư tối đa (tối đa 6 triệu đồng):",
+              correctIndex: 0,
+              choices: [
+                { text: "0.4x + 0.8y ≤ 6", explain: "Chính xác! Chi phí trồng mỗi sào rau muống là 0.4 triệu (0.4x), rau cải là 0.8 triệu (0.8y), tổng vốn tối đa là 6 triệu." },
+                { text: "400x + 800y ≤ 6", explain: "Sai đơn vị. Vế trái đang tính theo nghìn đồng, vế phải lại là triệu đồng." },
+                { text: "1.2x + 2y ≤ 6", explain: "Nhầm lẫn. 1.2 triệu và 2 triệu là doanh thu, không phải chi phí vốn đầu tư." }
+              ]
+            },
+            {
+              title: "Điều kiện không âm của diện tích đất:",
+              correctIndex: 0,
+              choices: [
+                { text: "x ≥ 0, y ≥ 0", explain: "Chính xác! Diện tích đất gieo trồng không thể âm." },
+                { text: "Không cần ràng buộc", explain: "Bạn đã có đủ điều kiện nghiệp vụ chưa? Diện tích đất gieo trồng thực tế có thể âm không?" }
+              ]
+            }
+          ]
+        },
+        objective: {
+          label: "Hàm doanh thu F(x, y)",
+          formula: "F(x, y) = 1.2x + 2.0y (triệu đồng)",
+          target: "maximize",
+          unit: "triệu đồng",
+          calc: (x, y) => 1.2 * x + 2.0 * y,
+          format: val => (val * 1000000).toLocaleString() + " đ"
+        },
+        optimal: { x: 5, y: 5, val: 16 },
+        conclusions: [
+          { text: "Trồng 5 sào rau muống và 5 sào rau cải để doanh thu tối đa là 16 triệu đồng.", correct: true, explain: "Chính xác! Đây là phương án sử dụng tối ưu diện tích đất và vốn." },
+          { text: "Trồng 0 sào rau muống và 7.5 sào rau cải để doanh thu tối đa là 15 triệu đồng.", correct: false, explain: "Chưa đúng. Phương án này khả thi nhưng doanh thu thấp hơn phương án (5, 5)." },
+          { text: "Lựa chọn phương án tối ưu x = 5, y = 5.", correct: false, explain: "Đúng về toán học, nhưng bài hỏi gì? Hãy trả lời bằng ngôn ngữ của bài toán. Hãy kết luận có đơn vị và ý nghĩa thực tế." }
+        ],
+        vBounds: { xMin: -17, xMax: 17, yMin: -12, yMax: 12 },
+        constraints: [
+          { a: 1, b: 1, c: 10, sign: 'le', colorHex: '#CE8A33', fillRGB: [206, 138, 51], label: "x + y = 10 (Diện tích)" },
+          { a: 0.4, b: 0.8, c: 6, sign: 'le', colorHex: '#4E7F92', fillRGB: [78, 127, 146], label: "0.4x + 0.8y = 6 (Vốn)" },
+          { a: 1, b: 0, c: 0, sign: 'ge', colorHex: '#2D8B6F', fillRGB: [45, 139, 111], label: "x = 0" },
+          { a: 0, b: 1, c: 0, sign: 'ge', colorHex: '#46685A', fillRGB: [70, 104, 90], label: "y = 0" }
+        ],
+        vertices: [
+          { x: 0, y: 0, label: "A(0,0)" },
+          { x: 10, y: 0, label: "B(10,0)" },
+          { x: 5, y: 5, label: "C(5,5)" },
+          { x: 0, y: 7.5, label: "D(0, 7.5)" }
+        ]
+      },
+      {
+        name: "🍰 TÌNH HUỐNG 4 — CỬA HÀNG BÁNH",
+        desc: "Một tiệm bánh có 9kg bột mì và 6kg đường mỗi ngày. Bánh mì ngọt cần 150g bột và 50g đường. Bánh bông lan cần 100g bột và 100g đường. Làm bao nhiêu cái mỗi loại để tổng số bánh nhiều nhất (tối đa hóa năng suất)?",
+        isReal: false,
+        step1: {
+          question: "Chọn cách đặt ẩn x, y phù hợp nhất với yêu cầu bài toán:",
+          options: [
+            { text: "x là số bánh mì ngọt, y là số bánh bông lan sản xuất (x, y là các số nguyên không âm).", explain: "Chính xác! Số lượng bánh làm ra phải là số nguyên và không âm.", correct: true },
+            { text: "x là số kg bột làm bánh mì, y là số kg đường làm bánh bông lan.", explain: "Chưa đúng. Đề bài hỏi cần làm bao nhiêu cái bánh mỗi loại.", correct: false },
+            { text: "x là số bánh mì ngọt, y là lượng bột làm bánh bông lan.", explain: "Chưa đúng. Hai ẩn số cần đồng nhất về loại đại lượng đo lường.", correct: false }
+          ]
+        },
+        step2: {
+          constraints: [
+            {
+              title: "Ràng buộc về bột mì (tối đa 9kg = 9000g):",
+              correctIndex: 0,
+              choices: [
+                { text: "0.15x + 0.1y ≤ 9", explain: "Chính xác! Đổi 150g = 0.15kg, 100g = 0.1kg. Tổng lượng bột sử dụng không quá 9kg." },
+                { text: "150x + 100y ≤ 9", explain: "Sai đơn vị. Vế trái dùng đơn vị gam (g), vế phải dùng kilogam (kg) nên không tương thích." },
+                { text: "0.15x + 0.1y ≥ 9", explain: "Sai dấu. Lượng bột sử dụng tối đa là 9kg, tức phải nhỏ hơn hoặc bằng 9." }
+              ]
+            },
+            {
+              title: "Ràng buộc về lượng đường (tối đa 6kg = 6000g):",
+              correctIndex: 0,
+              choices: [
+                { text: "0.05x + 0.1y ≤ 6", explain: "Chính xác! Đổi 50g = 0.05kg, 100g = 0.1kg. Lượng đường sử dụng tối đa là 6kg." },
+                { text: "0.05x + 0.1y ≥ 6", explain: "Sai dấu. Lượng đường không được vượt quá số đường hiện có." },
+                { text: "50x + 100y ≤ 6", explain: "Sai đơn vị đo lường giữa gam và kilogam." }
+              ]
+            },
+            {
+              title: "Điều kiện không âm của số bánh:",
+              correctIndex: 0,
+              choices: [
+                { text: "x ≥ 0, y ≥ 0", explain: "Chính xác! Số lượng bánh không thể âm." },
+                { text: "Không cần điều kiện", explain: "Bạn đã có đủ điều kiện nghiệp vụ chưa? Số lượng bánh thực tế có thể âm không?" }
+              ]
+            }
+          ]
+        },
+        objective: {
+          label: "Tổng số bánh F(x, y)",
+          formula: "F(x, y) = x + y (cái)",
+          target: "maximize",
+          unit: "cái",
+          calc: (x, y) => x + y,
+          format: val => val + " cái"
+        },
+        optimal: { x: 30, y: 45, val: 75 },
+        conclusions: [
+          { text: "Sản xuất 30 cái bánh mì ngọt và 45 cái bánh bông lan để tổng số bánh nhiều nhất là 75 cái.", correct: true, explain: "Chính xác! Đây là phương án cho tổng lượng bánh tối đa." },
+          { text: "Sản xuất 60 cái bánh mì ngọt và 0 cái bánh bông lan để tổng số bánh là 60 cái.", correct: false, explain: "Chưa đúng. 60 cái ít hơn 75 cái bánh." },
+          { text: "Lựa chọn phương án tối ưu x = 30, y = 45.", correct: false, explain: "Đúng về toán học, nhưng bài hỏi gì? Hãy trả lời bằng ngôn ngữ của bài toán. Hãy kết luận có đơn vị và ý nghĩa thực tế." }
+        ],
+        vBounds: { xMin: -130, xMax: 130, yMin: -100, yMax: 100 },
+        constraints: [
+          { a: 0.15, b: 0.1, c: 9, sign: 'le', colorHex: '#CE8A33', fillRGB: [206, 138, 51], label: "0.15x + 0.1y = 9 (Bột)" },
+          { a: 0.05, b: 0.1, c: 6, sign: 'le', colorHex: '#4E7F92', fillRGB: [78, 127, 146], label: "0.05x + 0.1y = 6 (Đường)" },
+          { a: 1, b: 0, c: 0, sign: 'ge', colorHex: '#2D8B6F', fillRGB: [45, 139, 111], label: "x = 0" },
+          { a: 0, b: 1, c: 0, sign: 'ge', colorHex: '#46685A', fillRGB: [70, 104, 90], label: "y = 0" }
+        ],
+        vertices: [
+          { x: 0, y: 0, label: "A(0,0)" },
+          { x: 60, y: 0, label: "B(60,0)" },
+          { x: 30, y: 45, label: "C(30,45)" },
+          { x: 0, y: 60, label: "D(0,60)" }
+        ]
+      },
+      {
+        name: "🚚 TÌNH HUỐNG 5 — CÔNG TY VẬN TẢI",
+        desc: "Một công ty vận tải cần thực hiện ít nhất 30 chuyến/tuần, trong đó ít nhất 10 chuyến bằng xe tải lớn. Xe tải lớn tiêu thụ 80 lít dầu/chuyến. Xe tải nhỏ tiêu thụ 40 lít dầu/chuyến. Phân bổ số chuyến mỗi loại xe để tiêu thụ nhiên liệu ít nhất?",
+        isReal: false,
+        step1: {
+          question: "Chọn cách đặt ẩn x, y phù hợp nhất với yêu cầu bài toán:",
+          options: [
+            { text: "x là số chuyến xe lớn, y là số chuyến xe nhỏ cần thực hiện (x, y là các số nguyên không âm).", explain: "Chính xác! Ẩn số đại diện cho số chuyến đi của hai loại xe tải.", correct: true },
+            { text: "x là lượng dầu xe lớn tiêu thụ, y là lượng dầu xe nhỏ tiêu thụ.", explain: "Chưa đúng. Bài toán hỏi về việc phân bổ số chuyến đi của mỗi xe.", correct: false },
+            { text: "x là số chuyến xe lớn, y là chi phí dầu.", explain: "Chưa đúng. Ẩn y phải là số chuyến xe nhỏ để hoàn chỉnh bài toán.", correct: false }
+          ]
+        },
+        step2: {
+          constraints: [
+            {
+              title: "Tổng số chuyến xe ít nhất là 30 chuyến:",
+              correctIndex: 0,
+              choices: [
+                { text: "x + y ≥ 30", explain: "Chính xác! 'ít nhất 30 chuyến' có nghĩa là tổng x + y phải từ 30 trở lên." },
+                { text: "x + y ≤ 30", explain: "Sai dấu. 'ít nhất' tương ứng với lớn hơn hoặc bằng (≥) chứ không phải nhỏ hơn hoặc bằng (≤)." },
+                { text: "x + y > 30", explain: "Thiếu dấu bằng. Vẫn có thể chạy đúng tròn 30 chuyến." }
+              ]
+            },
+            {
+              title: "Số chuyến bằng xe tải lớn ít nhất là 10 chuyến:",
+              correctIndex: 0,
+              choices: [
+                { text: "x ≥ 10", explain: "Chính xác! Số chuyến xe lớn x phải lớn hơn hoặc bằng 10." },
+                { text: "x ≤ 10", explain: "Sai dấu. Cần ít nhất 10 chuyến." },
+                { text: "x > 10", explain: "Thiếu dấu bằng." }
+              ]
+            },
+            {
+              title: "Ràng buộc không âm của số chuyến xe nhỏ:",
+              correctIndex: 0,
+              choices: [
+                { text: "y ≥ 0", explain: "Chính xác! Số chuyến đi không thể là số âm." },
+                { text: "Không cần ràng buộc", explain: "Bạn đã có đủ điều kiện nghiệp vụ chưa? Số chuyến xe nhỏ thực tế có thể âm không?" }
+              ]
+            }
+          ]
+        },
+        objective: {
+          label: "Lượng dầu tiêu thụ G(x, y)",
+          formula: "G(x, y) = 80x + 40y (lít)",
+          target: "minimize",
+          unit: "lít",
+          calc: (x, y) => 80 * x + 40 * y,
+          format: val => val.toLocaleString() + " lít"
+        },
+        optimal: { x: 10, y: 20, val: 1600 },
+        conclusions: [
+          { text: "Phân bổ 10 chuyến xe lớn và 20 chuyến xe nhỏ để tiêu thụ nhiên liệu ít nhất là 1600 lít.", correct: true, explain: "Chính xác! Đây là phân bổ tối ưu nhất giúp tiết kiệm nhiên liệu." },
+          { text: "Phân bổ 30 chuyến xe lớn và 0 chuyến xe nhỏ để tiêu thụ nhiên liệu ít nhất là 2400 lít.", correct: false, explain: "Chưa đúng. Phương án này tốn dầu hơn phương án (10, 20)." },
+          { text: "Lựa chọn phương án tối ưu x = 10, y = 20.", correct: false, explain: "Đúng về toán học, nhưng bài hỏi gì? Hãy trả lời bằng ngôn ngữ của bài toán. Hãy kết luận có đơn vị và ý nghĩa thực tế." }
+        ],
+        vBounds: { xMin: -45, xMax: 45, yMin: -40, yMax: 40 },
+        constraints: [
+          { a: 1, b: 1, c: 30, sign: 'ge', colorHex: '#CE8A33', fillRGB: [206, 138, 51], label: "x + y = 30 (Số chuyến)" },
+          { a: 1, b: 0, c: 10, sign: 'ge', colorHex: '#4E7F92', fillRGB: [78, 127, 146], label: "x = 10 (Xe lớn)" },
+          { a: 0, b: 1, c: 0, sign: 'ge', colorHex: '#2D8B6F', fillRGB: [45, 139, 111], label: "y = 0" }
+        ],
+        vertices: [
+          { x: 10, y: 20, label: "A(10,20)" },
+          { x: 30, y: 0, label: "B(30,0)" }
+        ]
+      }
+    ];
+
+    // ──────────────────────────────────────
+    // 2. STATE MANAGER
+    // ──────────────────────────────────────
+    let state = {
+      activeScenarioIdx: 0,
+      step: 1,
+      
+      step1_selected: null,
+      step1_checked: false,
+      
+      step2_selected: [],
+      step2_inputs: [],
+      step2_checked: false,
+      step2_errors: [],
+      
+      step3_drawing: false,
+      step3_drawnPercent: 0,
+      step3_showIntegers: false,
+      
+      step4_selectedPoint: null,
+      step4_checkedPoints: [],
+      step4_conclusion_selected: null,
+      step4_completed: false,
+      
+      stepFeedbackHtml: '',
+      
+      vXMin: -10, vXMax: 10, vYMin: -10, vYMax: 10
+    };
+
+    let completedScenarios = [];
+
+    function normalizeBPTString(str) {
+      if (!str) return '';
+      return str.toLowerCase()
+        .replace(/\s+/g, '')
+        .replace(/,/g, '.')
+        .replace(/≤/g, '<=')
+        .replace(/≥/g, '>=')
+        .replace(/=<|<=/g, '<=')
+        .replace(/=>|>=/g, '>=')
+        .replace(/;/g, ',')
+        .replace(/và/g, ',')
+        .replace(/and/g, ',');
+    }
+
+    // ──────────────────────────────────────
+    // 3. CANVAS & GEOMETRY SETUP
+    // ──────────────────────────────────────
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const canvasWrap = document.getElementById('canvasWrap');
+
+    let CW = 0, CH = 0;   // CSS pixels
+    let PW = 0, PH = 0;   // Physical pixels
+
+    function resizeCanvas() {
+      const rect = canvasWrap.getBoundingClientRect();
+      CW = rect.width;
+      CH = rect.height;
+      if (CW === 0 || CH === 0) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      PW = Math.round(CW * dpr);
+      PH = Math.round(CH * dpr);
+
+      canvas.width = PW;
+      canvas.height = PH;
+
+      fullRedraw();
+    }
+
+    let roTimer = null;
+    const ro = new ResizeObserver(() => {
+      clearTimeout(roTimer);
+      roTimer = setTimeout(resizeCanvas, 30);
+    });
+    ro.observe(canvasWrap);
+
+    function m2c(mx, my) {
+      return {
+        px: (mx - state.vXMin) / (state.vXMax - state.vXMin) * CW,
+        py: (1 - (my - state.vYMin) / (state.vYMax - state.vYMin)) * CH
+      };
+    }
+
+    function c2m(px, py) {
+      return {
+        x: state.vXMin + (px / CW) * (state.vXMax - state.vXMin),
+        y: state.vYMin + (1 - py / CH) * (state.vYMax - state.vYMin)
+      };
+    }
+
+    function applyZoom(factor) {
+      const xc = (state.vXMin + state.vXMax) / 2;
+      const yc = (state.vYMin + state.vYMax) / 2;
+      const xr = (state.vXMax - state.vXMin) * factor / 2;
+      const yr = (state.vYMax - state.vYMin) * factor / 2;
+
+      if (xr < 1 || xr > 1000) return;
+
+      state.vXMin = xc - xr; state.vXMax = xc + xr;
+      state.vYMin = yc - yr; state.vYMax = yc + yr;
+      fullRedraw();
+    }
+
+    function zoomAt(cx, cy, factor) {
+      const { x: mx, y: my } = c2m(cx, cy);
+      const newXRange = (state.vXMax - state.vXMin) * factor;
+      const newYRange = (state.vYMax - state.vYMin) * factor;
+
+      if (newXRange < 1 || newXRange > 2000) return;
+
+      const pctX = (cx / CW);
+      const pctY = 1 - (cy / CH);
+
+      state.vXMin = mx - pctX * newXRange;
+      state.vXMax = state.vXMin + newXRange;
+      state.vYMin = my - pctY * newYRange;
+      state.vYMax = state.vYMin + newYRange;
+
+      fullRedraw();
+    }
+
+    function resetView() {
+      const sc = scenarios[state.activeScenarioIdx];
+      state.vXMin = sc.vBounds.xMin;
+      state.vXMax = sc.vBounds.xMax;
+      state.vYMin = sc.vBounds.yMin;
+      state.vYMax = sc.vBounds.yMax;
+      fullRedraw();
+    }
+
+    function bptSatisfied(bpt, x, y) {
+      const lhs = bpt.a * x + bpt.b * y;
+      const eps = 1e-9;
+      if (bpt.sign === 'lt') return lhs < bpt.c - eps;
+      if (bpt.sign === 'le') return lhs <= bpt.c + eps;
+      if (bpt.sign === 'gt') return lhs > bpt.c + eps;
+      if (bpt.sign === 'ge') return lhs >= bpt.c - eps;
+      return false;
+    }
+
+    // ──────────────────────────────────────
+    // 4. DRAWING & RENDERING ENGINE (v2.2)
+    // ──────────────────────────────────────
+    function shadeRegions(ctx, CW, CH, PW, PH) {
+      const dpr = window.devicePixelRatio || 1;
+      const xRange = state.vXMax - state.vXMin;
+      const yRange = state.vYMax - state.vYMin;
+
+      const imgData = ctx.createImageData(PW, PH);
+      const data = imgData.data;
+
+      const sc = scenarios[state.activeScenarioIdx];
+
+      if (state.step < 3) {
+        for (let i = 0; i < data.length; i += 4) {
+          data[i] = 250; data[i+1] = 247; data[i+2] = 240; data[i+3] = 255; // --cream #FAF7F0
+        }
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.putImageData(imgData, 0, 0);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        return;
+      }
+
+      const maxVisible = state.step3_drawnPercent >= 1 ? sc.constraints.length : Math.floor(state.step3_drawnPercent * sc.constraints.length);
+
+      for (let py = 0; py < PH; py++) {
+        const my = state.vYMin + (1 - py / PH) * yRange;
+        for (let px = 0; px < PW; px++) {
+          const mx = state.vXMin + (px / PW) * xRange;
+          const idx = (py * PW + px) * 4;
+
+          let r = 250, g = 247, b = 240, a = 0;
+
+          if (maxVisible > 0) {
+            let satCount = 0;
+            for (let i = 0; i < maxVisible; i++) {
+              if (bptSatisfied(sc.constraints[i], mx, my)) {
+                satCount++;
+              }
+            }
+
+            const isAllSatisfied = (satCount === sc.constraints.length);
+
+            if (isAllSatisfied && state.step3_drawnPercent >= 1) {
+              r = 206; g = 138; b = 51; a = 140; // --accent-deep highlight
+            } else {
+              let tr = 0, tg = 0, tb = 0, cnt = 0;
+              for (let i = 0; i < maxVisible; i++) {
+                const bpt = sc.constraints[i];
+                if (bptSatisfied(bpt, mx, my)) {
+                  tr += bpt.fillRGB[0];
+                  tg += bpt.fillRGB[1];
+                  tb += bpt.fillRGB[2];
+                  cnt++;
+                }
+              }
+              if (cnt > 0) {
+                r = tr / cnt; g = tg / cnt; b = tb / cnt;
+                a = cnt === 1 ? 35 : 70;
+              }
+            }
+          }
+
+          if (a > 0) {
+            const an = a / 255;
+            data[idx]   = Math.round(r * an + 250 * (1 - an));
+            data[idx+1] = Math.round(g * an + 247 * (1 - an));
+            data[idx+2] = Math.round(b * an + 240 * (1 - an));
+            data[idx+3] = 255;
+          } else {
+            data[idx] = 250; data[idx+1] = 247; data[idx+2] = 240; data[idx+3] = 255;
+          }
+        }
+      }
+
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.putImageData(imgData, 0, 0);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+    }
+
+    function drawGrid(ctx, CW, CH) {
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const xRange = state.vXMax - state.vXMin;
+      let step = 1;
+      if (xRange > 15) step = 2;
+      if (xRange > 40) step = 10;
+      if (xRange > 100) step = 20;
+      if (xRange < 4) step = 0.5;
+
+      ctx.strokeStyle = 'rgba(26, 26, 26, 0.06)'; ctx.lineWidth = 1;
+      for (let x = Math.ceil(state.vXMin / step) * step; x <= state.vXMax; x += step) {
+        const { px } = m2c(x, 0);
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, CH); ctx.stroke();
+      }
+      for (let y = Math.ceil(state.vYMin / step) * step; y <= state.vYMax; y += step) {
+        const { py } = m2c(0, y);
+        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(CW, py); ctx.stroke();
+      }
+
+      // Main axes
+      ctx.strokeStyle = '#514C44'; ctx.lineWidth = 1.5;
+      const { px: x0, py: y0 } = m2c(0, 0);
+      if (x0 >= 0 && x0 <= CW) { ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, CH); ctx.stroke(); }
+      if (y0 >= 0 && y0 <= CH) { ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(CW, y0); ctx.stroke(); }
+
+      // Ticks and labels
+      ctx.font = "bold 12px 'JetBrains Mono', monospace"; ctx.fillStyle = '#514C44';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      for (let x = Math.ceil(state.vXMin / step) * step; x <= state.vXMax; x += step) {
+        if (Math.abs(x) < 0.001) continue;
+        const { px } = m2c(x, 0);
+        let ly = y0 + 4; if (ly > CH - 16) ly = CH - 16; if (ly < 2) ly = 2;
+        ctx.fillText(x % 1 === 0 ? x : x.toFixed(1), px, ly);
+      }
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      for (let y = Math.ceil(state.vYMin / step) * step; y <= state.vYMax; y += step) {
+        if (Math.abs(y) < 0.001) continue;
+        const { py } = m2c(0, y);
+        let lx = x0 - 5; if (lx < 24) lx = 24; if (lx > CW - 6) lx = CW - 6;
+        ctx.fillText(y % 1 === 0 ? y : y.toFixed(1), lx, py);
+      }
+
+      if (x0 >= 0 && x0 <= CW && y0 >= 0 && y0 <= CH) {
+        ctx.font = "bold 12px 'JetBrains Mono', monospace"; ctx.fillStyle = '#514C44';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+        ctx.fillText('O', x0 - 4, y0 + 4);
+      }
+
+      // Arrows on axes
+      ctx.fillStyle = '#514C44';
+      if (y0 >= 0 && y0 <= CH) {
+        ctx.beginPath(); ctx.moveTo(CW - 10, y0 - 4); ctx.lineTo(CW, y0); ctx.lineTo(CW - 10, y0 + 4); ctx.fill();
+      }
+      if (x0 >= 0 && x0 <= CW) {
+        ctx.beginPath(); ctx.moveTo(x0 - 4, 10); ctx.lineTo(x0, 0); ctx.lineTo(x0 + 4, 10); ctx.fill();
+      }
+
+      // Axis variable labels
+      ctx.font = "bold 13px 'JetBrains Mono', monospace";
+      if (y0 >= 0 && y0 <= CH) {
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillText('x', CW - 12, y0 + 6);
+      }
+      if (x0 >= 0 && x0 <= CW) {
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        ctx.fillText('y', x0 - 8, 12);
+      }
+    }
+
+    function drawBoundaryLine(ctx, bpt, drawPercent = 1) {
+      const { a, b, c } = bpt;
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      ctx.strokeStyle = bpt.colorHex;
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+
+      let p1, p2;
+      if (b !== 0) {
+        p1 = m2c(state.vXMin, (c - a * state.vXMin) / b);
+        p2 = m2c(state.vXMax, (c - a * state.vXMax) / b);
+      } else if (a !== 0) {
+        p1 = m2c(c / a, state.vYMin);
+        p2 = m2c(c / a, state.vYMax);
+      } else {
+        return;
+      }
+
+      const startPX = p1.px;
+      const startPY = p1.py;
+      const targetPX = startPX + (p2.px - p1.px) * drawPercent;
+      const targetPY = startPY + (p2.py - p1.py) * drawPercent;
+
+      ctx.moveTo(startPX, startPY);
+      ctx.lineTo(targetPX, targetPY);
+      ctx.stroke();
+    }
+
+    function drawLineLabel(ctx, bpt, labelText) {
+      const { a, b, c } = bpt;
+      let mx = (state.vXMin + state.vXMax) / 2;
+      let my = 0;
+
+      if (b !== 0) {
+        my = (c - a * mx) / b;
+      } else if (a !== 0) {
+        mx = c / a;
+        my = (state.vYMin + state.vYMax) / 2 + 3;
+      } else {
+        return;
+      }
+
+      if (my < state.vYMin || my > state.vYMax) return;
+
+      const { px, py } = m2c(mx, my);
+
+      ctx.font = "bold 12px 'JetBrains Mono', monospace";
+      const tw = ctx.measureText(labelText).width;
+      const PAD = 5, H = 18;
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.93)';
+      ctx.strokeStyle = bpt.colorHex;
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(px - tw / 2 - PAD, py - H / 2, tw + PAD * 2, H, 4);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = bpt.colorHex;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(labelText, px, py);
+    }
+
+    function drawVertexMark(ctx, pt) {
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const { px, py } = m2c(pt.x, pt.y);
+
+      ctx.beginPath(); ctx.arc(px, py, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#FFFFFF'; ctx.fill();
+      ctx.strokeStyle = '#1A1A1A'; ctx.lineWidth = 2; ctx.stroke();
+    }
+
+    function drawIntegerPoints(ctx, sc) {
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const xMin = Math.max(0, Math.floor(state.vXMin));
+      const xMax = Math.ceil(state.vXMax);
+      const yMin = Math.max(0, Math.floor(state.vYMin));
+      const yMax = Math.ceil(state.vYMax);
+
+      const stepGrid = sc.isReal ? 0.5 : 1;
+
+      for (let x = xMin; x <= xMax; x += stepGrid) {
+        for (let y = yMin; y <= yMax; y += stepGrid) {
+          let satisfied = isPointFeasible(x, y, sc);
+          if (satisfied) {
+            const { px, py } = m2c(x, y);
+            ctx.beginPath(); ctx.arc(px, py, 3.5, 0, Math.PI * 2);
+            ctx.fillStyle = 'rgba(78, 127, 146, 0.85)'; ctx.fill();
+          }
+        }
+      }
+    }
+
+    function drawInteractiveMarkers(ctx) {
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const pt = state.step4_selectedPoint;
+      if (pt) {
+        const sc = scenarios[state.activeScenarioIdx];
+        const isOptimal = (Math.abs(pt.x - sc.optimal.x) < 1e-4 && Math.abs(pt.y - sc.optimal.y) < 1e-4);
+        const color = isOptimal ? '#2D8B6F' : '#CE8A33';
+        const { px, py } = m2c(pt.x, pt.y);
+
+        ctx.beginPath(); ctx.arc(px, py, 10, 0, Math.PI * 2);
+        ctx.fillStyle = isOptimal ? 'rgba(45, 139, 111, 0.25)' : 'rgba(206, 138, 51, 0.25)'; ctx.fill();
+
+        ctx.beginPath(); ctx.arc(px, py, 5, 0, Math.PI * 2);
+        ctx.fillStyle = color; ctx.fill();
+        ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 1.5; ctx.stroke();
+      }
+    }
+
+    function fullRedraw() {
+      if (CW === 0) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, PW, PH);
+
+      shadeRegions(ctx, CW, CH, PW, PH);
+      drawGrid(ctx, CW, CH);
+
+      const sc = scenarios[state.activeScenarioIdx];
+
+      if (state.step >= 3) {
+        const drawCount = Math.floor(state.step3_drawnPercent * sc.constraints.length);
+        const remainder = (state.step3_drawnPercent * sc.constraints.length) - drawCount;
+
+        for (let i = 0; i < sc.constraints.length; i++) {
+          if (i < drawCount) {
+            drawBoundaryLine(ctx, sc.constraints[i], 1);
+            drawLineLabel(ctx, sc.constraints[i], `d${i + 1}`);
+          } else if (i === drawCount && remainder > 0) {
+            drawBoundaryLine(ctx, sc.constraints[i], remainder);
+          }
+        }
+
+        if (state.step3_drawnPercent >= 1) {
+          sc.vertices.forEach(v => drawVertexMark(ctx, v));
+
+          if (state.step3_showIntegers || state.step === 4) {
+            drawIntegerPoints(ctx, sc);
+          }
+        }
+      }
+
+      if (state.step === 4) {
+        drawInteractiveMarkers(ctx);
+      }
+    }
+
+    // ──────────────────────────────────────
+    // 5. INTERACTION LOGIC
+    // ──────────────────────────────────────
+    function loadScenario(idx) {
+      state.activeScenarioIdx = idx;
+      state.step = 1;
+      state.step1_selected = null;
+      state.step1_checked = false;
+      state.step2_selected = [];
+      state.step2_inputs = Array(scenarios[idx].step2.constraints.length).fill('');
+      state.step2_checked = false;
+      state.step2_errors = [];
+      state.step3_drawing = false;
+      state.step3_drawnPercent = 0;
+      state.step3_showIntegers = false;
+      state.step4_selectedPoint = null;
+      state.step4_checkedPoints = [];
+      state.step4_conclusion_selected = null;
+      state.step4_completed = false;
+      state.stepFeedbackHtml = '';
+
+      const sc = scenarios[idx];
+      document.getElementById('scenarioName').innerText = sc.name;
+      document.getElementById('scenarioDesc').innerText = sc.desc;
+
+      document.getElementById('sidebarSummary').className = 'summary-box hidden';
+
+      resetView();
+      renderStepUI();
+      fullRedraw();
+    }
+
+    function selectStep1Option(optIdx) {
+      if (state.step1_checked) return;
+      state.step1_selected = optIdx;
+      state.stepFeedbackHtml = '';
+      renderStepUI();
+    }
+
+    function checkStep1() {
+      if (state.step1_selected === null) {
+        state.stepFeedbackHtml = '<span class="feedback-badge err">Chưa chọn đáp án!</span>';
+        renderStepUI();
+        return;
+      }
+      state.step1_checked = true;
+
+      const sc = scenarios[state.activeScenarioIdx];
+      const opt = sc.step1.options[state.step1_selected];
+
+      if (opt.correct) {
+        state.stepFeedbackHtml = `<span class="feedback-badge ok">✓ Đúng</span>`;
+        const xName = state.activeScenarioIdx === 0 ? 'số ly Latte cần pha mỗi ngày' : state.activeScenarioIdx === 1 ? 'số áo sơ mi cần sản xuất' : state.activeScenarioIdx === 2 ? 'số sào gieo trồng rau muống' : state.activeScenarioIdx === 3 ? 'số bánh mì ngọt cần sản xuất' : 'số chuyến xe tải lớn cần thực hiện';
+        const yName = state.activeScenarioIdx === 0 ? 'số ly Cappuccino cần pha mỗi ngày' : state.activeScenarioIdx === 1 ? 'số áo khoác cần sản xuất' : state.activeScenarioIdx === 2 ? 'số sào gieo trồng rau cải' : state.activeScenarioIdx === 3 ? 'số bánh bông lan cần sản xuất' : 'số chuyến xe tải nhỏ cần thực hiện';
+        setCaptionText(`Tốt! x là ${xName}, y là ${yName}. Giờ ta chuyển các điều kiện thành BPT.`);
+        document.getElementById('capBox').className = 'sim-caption green';
+
+        const summaryDetails = document.getElementById('summaryDetails');
+        summaryDetails.innerHTML = `
+          <div class="summary-row"><span class="summary-label">Ẩn x:</span><span class="summary-val">${state.activeScenarioIdx === 0 ? 'Latte (ly)' : state.activeScenarioIdx === 1 ? 'Sơ mi (áo)' : state.activeScenarioIdx === 2 ? 'Rau muống (sào)' : state.activeScenarioIdx === 3 ? 'Bánh mì (cái)' : 'Xe lớn (chuyến)'}</span></div>
+          <div class="summary-row"><span class="summary-label">Ẩn y:</span><span class="summary-val">${state.activeScenarioIdx === 0 ? 'Cappuccino (ly)' : state.activeScenarioIdx === 1 ? 'Áo khoác (áo)' : state.activeScenarioIdx === 2 ? 'Rau cải (sào)' : state.activeScenarioIdx === 3 ? 'Bông lan (cái)' : 'Xe nhỏ (chuyến)'}</span></div>
+        `;
+        document.getElementById('sidebarSummary').classList.remove('hidden');
+      } else {
+        state.stepFeedbackHtml = `<span class="feedback-badge err">✗ Sai</span>`;
+        setCaptionText(`Ẩn này chưa phù hợp. ${opt.explain} Thử lại nhé!`);
+        document.getElementById('capBox').className = 'sim-caption red';
+        state.step1_checked = false;
+      }
+      renderStepUI();
+    }
+
+    function nextStep1() {
+      state.step = 2;
+      state.step2_selected = Array(scenarios[state.activeScenarioIdx].step2.constraints.length).fill(null);
+      state.step2_inputs = Array(scenarios[state.activeScenarioIdx].step2.constraints.length).fill('');
+      state.step2_checked = false;
+      state.stepFeedbackHtml = '';
+      renderStepUI();
+      fullRedraw();
+    }
+
+    function onBptInput(cIdx, val) {
+      state.step2_inputs[cIdx] = val;
+      state.step2_selected[cIdx] = null;
+      state.stepFeedbackHtml = '';
+    }
+
+    function onBptSuggestSelect(cIdx, selectEl) {
+      if (selectEl.value === "") return;
+      const optIdx = parseInt(selectEl.value);
+      const sc = scenarios[state.activeScenarioIdx];
+      const text = sc.step2.constraints[cIdx].choices[optIdx].text;
+
+      state.step2_inputs[cIdx] = text;
+      state.step2_selected[cIdx] = optIdx;
+
+      const inputEl = document.getElementById(`bptInput_${cIdx}`);
+      if (inputEl) inputEl.value = text;
+
+      state.stepFeedbackHtml = '';
+      selectEl.value = "";
+      renderStepUI();
+    }
+
+    function checkStep2() {
+      const sc = scenarios[state.activeScenarioIdx];
+      let anyEmpty = state.step2_inputs.some(val => !val || val.trim() === "");
+      if (anyEmpty) {
+        state.stepFeedbackHtml = '<span class="feedback-badge err">Vui lòng điền đủ tất cả BPT!</span>';
+        renderStepUI();
+        return;
+      }
+
+      let allCorrect = true;
+      let errMsgs = [];
+
+      state.step2_inputs.forEach((typedVal, cIdx) => {
+        const constraintConfig = sc.step2.constraints[cIdx];
+        const correctText = constraintConfig.choices[constraintConfig.correctIndex].text;
+
+        const normTyped = normalizeBPTString(typedVal);
+        const normCorrect = normalizeBPTString(correctText);
+
+        if (normTyped !== normCorrect) {
+          allCorrect = false;
+
+          let matchedExplanation = null;
+          for (let choice of constraintConfig.choices) {
+            if (normalizeBPTString(choice.text) === normTyped) {
+              matchedExplanation = choice.explain;
+              break;
+            }
+          }
+
+          if (matchedExplanation) {
+            errMsgs.push(matchedExplanation);
+          } else {
+            errMsgs.push(`Giá trị "${typedVal}" chưa đúng. Hãy kiểm tra lại số liệu hoặc chiều dấu bất đẳng thức.`);
+          }
+        }
+      });
+
+      state.step2_checked = allCorrect;
+
+      if (allCorrect) {
+        state.stepFeedbackHtml = `<span class="feedback-badge ok">✓ Chính xác!</span>`;
+        setCaptionText(`Hệ BPT đã đầy đủ! Bây giờ vẽ miền nghiệm để tìm vùng thỏa mãn tất cả điều kiện.`);
+        document.getElementById('capBox').className = 'sim-caption green';
+
+        const summaryDetails = document.getElementById('summaryDetails');
+        let sysHtml = '';
+        sc.constraints.forEach((bpt, idx) => {
+          let signChar = '≤';
+          if (bpt.sign === 'ge') signChar = '≥';
+          else if (bpt.sign === 'lt') signChar = '<';
+          else if (bpt.sign === 'gt') signChar = '>';
+
+          const displayBpt = bpt.label.split('(')[0].replace('=', signChar);
+          sysHtml += `<div class="summary-row"><span class="summary-label">BPT ${idx + 1}:</span><span class="summary-val">${displayBpt}</span></div>`;
+        });
+        summaryDetails.innerHTML += `
+          <div class="sdiv">Hệ Bất Phương Trình</div>
+          ${sysHtml}
+        `;
+      } else {
+        state.stepFeedbackHtml = `<span class="feedback-badge err">✗ Chưa đúng!</span>`;
+        setCaptionText(`BPT này chưa đúng: ${errMsgs[0]}`);
+        document.getElementById('capBox').className = 'sim-caption red';
+      }
+      renderStepUI();
+    }
+
+    function nextStep2() {
+      state.step = 3;
+      state.stepFeedbackHtml = '';
+      renderStepUI();
+      startStep3Animation();
+    }
+
+    let animId = null;
+    function startStep3Animation() {
+      state.step3_drawing = true;
+      state.step3_drawnPercent = 0;
+
+      const startTime = performance.now();
+      const duration = 2000;
+
+      function loop(now) {
+        if (!state.step3_drawing) return;
+        const elapsed = now - startTime;
+        state.step3_drawnPercent = Math.min(1, elapsed / duration);
+
+        fullRedraw();
+
+        if (state.step3_drawnPercent < 1) {
+          animId = requestAnimationFrame(loop);
+        } else {
+          state.step3_drawing = false;
+          renderStepUI();
+        }
+      }
+      cancelAnimationFrame(animId);
+      animId = requestAnimationFrame(loop);
+    }
+
+    function skipStep3Animation() {
+      state.step3_drawing = false;
+      state.step3_drawnPercent = 1;
+      cancelAnimationFrame(animId);
+      renderStepUI();
+      fullRedraw();
+    }
+
+    function toggleStep3Integers() {
+      state.step3_showIntegers = !state.step3_showIntegers;
+      const btn = document.getElementById('btnShowInts');
+      const sc = scenarios[state.activeScenarioIdx];
+      if (btn) {
+        btn.innerText = state.step3_showIntegers ? (sc.isReal ? "Ẩn điểm chia nhỏ" : "Ẩn điểm nguyên") : (sc.isReal ? "Hiện điểm chia nhỏ" : "Hiện điểm nguyên");
+      }
+      fullRedraw();
+    }
+
+    function nextStep3() {
+      state.step = 4;
+      state.stepFeedbackHtml = '';
+      renderStepUI();
+      fullRedraw();
+    }
+
+    function isPointFeasible(x, y, sc) {
+      const satisfiesAll = sc.constraints.every(b => bptSatisfied(b, x, y));
+      if (!satisfiesAll) return false;
+      if (!sc.isReal && (x % 1 !== 0 || y % 1 !== 0)) return false;
+      return true;
+    }
+
+    function checkPointOptimal(x, y) {
+      const sc = scenarios[state.activeScenarioIdx];
+      state.step4_selectedPoint = { x, y };
+
+      if (isPointFeasible(x, y, sc)) {
+        const val = sc.objective.calc(x, y);
+        const isOptimal = (Math.abs(x - sc.optimal.x) < 1e-4 && Math.abs(y - sc.optimal.y) < 1e-4);
+
+        if (!state.step4_checkedPoints.some(pt => Math.abs(pt.x - x) < 1e-4 && Math.abs(pt.y - y) < 1e-4)) {
+          state.step4_checkedPoints.push({ x, y, val, optimal: isOptimal });
+        }
+      }
+
+      state.stepFeedbackHtml = '';
+      renderStepUI();
+      fullRedraw();
+    }
+
+    function checkManualPoint() {
+      const xEl = document.getElementById('manualX');
+      const yEl = document.getElementById('manualY');
+      if (!xEl || !yEl) return;
+
+      const xVal = parseFloat(xEl.value);
+      const yVal = parseFloat(yEl.value);
+
+      if (isNaN(xVal) || isNaN(yVal)) {
+        state.stepFeedbackHtml = '<span class="feedback-badge err">Vui lòng nhập đủ x và y!</span>';
+        renderStepUI();
+        return;
+      }
+
+      checkPointOptimal(xVal, yVal);
+    }
+
+    function selectStep4Conclusion(idx) {
+      state.step4_conclusion_selected = idx;
+      state.stepFeedbackHtml = '';
+      renderStepUI();
+    }
+
+    function markCurrentScenarioCompleted() {
+      if (!completedScenarios.includes(state.activeScenarioIdx)) {
+        completedScenarios.push(state.activeScenarioIdx);
+      }
+    }
+
+    function checkConclusion() {
+      if (state.step4_conclusion_selected === null) return;
+
+      const sc = scenarios[state.activeScenarioIdx];
+      const choice = sc.conclusions[state.step4_conclusion_selected];
+
+      if (choice.correct) {
+        state.stepFeedbackHtml = `<span class="feedback-badge ok">✓ Chính xác!</span>`;
+        setCaptionText(`Chúc mừng! Bạn đã giải thành công bài toán thực tế.`);
+        document.getElementById('capBox').className = 'sim-caption green';
+        state.step4_completed = true;
+        markCurrentScenarioCompleted();
+        triggerConfetti();
+      } else {
+        state.stepFeedbackHtml = `<span class="feedback-badge err">✗ Chưa đúng!</span>`;
+        setCaptionText(choice.explain);
+        document.getElementById('capBox').className = 'sim-caption red';
+      }
+      renderStepUI();
+    }
+
+    function loadNextScenario() {
+      let uncompleted = [];
+      for (let i = 0; i < scenarios.length; i++) {
+        if (!completedScenarios.includes(i)) {
+          uncompleted.push(i);
+        }
+      }
+
+      let nextIdx;
+      if (uncompleted.length > 0) {
+        const randIdx = Math.floor(Math.random() * uncompleted.length);
+        nextIdx = uncompleted[randIdx];
+      } else {
+        completedScenarios = [];
+        let choices = [];
+        for (let i = 0; i < scenarios.length; i++) {
+          if (i !== state.activeScenarioIdx) {
+            choices.push(i);
+          }
+        }
+        nextIdx = choices[Math.floor(Math.random() * choices.length)];
+      }
+      loadScenario(nextIdx);
+    }
+
+    // ──────────────────────────────────────
+    // 6. SIDEBAR STEP RENDER ENGINE
+    // ──────────────────────────────────────
+    function renderStepUI() {
+      const step = state.step;
+      const sc = scenarios[state.activeScenarioIdx];
+      const stepContent = document.getElementById('stepContent');
+
+      if (step === 1) {
+        const isDone = state.step1_checked && sc.step1.options[state.step1_selected]?.correct;
+
+        let listHtml = '';
+        sc.step1.options.forEach((opt, idx) => {
+          const selected = state.step1_selected === idx;
+          listHtml += `
+            <div class="option-item ${selected ? 'selected' : ''} ${isDone ? 'disabled' : ''}" onclick="selectStep1Option(${idx})">
+              <input class="option-radio" type="radio" name="optStep1" ${selected ? 'checked' : ''} ${isDone ? 'disabled' : ''}>
+              <span class="option-text">${opt.text}</span>
+            </div>
+          `;
+        });
+
+        stepContent.innerHTML = `
+          <div class="sdiv">Bước 1 — Đặt ẩn số</div>
+          <div class="panel-section-label">${sc.step1.question}</div>
+          <div class="option-list">
+            ${listHtml}
+          </div>
+          
+          <div style="display:flex; gap:10px; margin-top:6px;">
+            <button class="btn-primary" onclick="checkStep1()" ${isDone ? 'disabled' : ''}>Kiểm tra</button>
+            <button class="btn-primary" id="btnNext1" onclick="nextStep1()" ${isDone ? '' : 'disabled'}>
+              Tiếp tục <i class="ti ti-chevron-right"></i>
+            </button>
+          </div>
+          <div id="fbStep" class="hint-text" style="min-height:24px; font-weight:600;"></div>
+        `;
+
+        if (!isDone) {
+          setCaptionText('Đọc kỹ bài toán, xác định bài hỏi tìm gì — đó chính là ẩn cần đặt.');
+          document.getElementById('capBox').className = 'sim-caption';
+        }
+      }
+
+      else if (step === 2) {
+        const isDone = state.step2_checked;
+        let rowsHtml = '';
+
+        sc.step2.constraints.forEach((c, cIdx) => {
+          let optionsHtml = '<option value="">-- Hoặc chọn gợi ý để điền nhanh --</option>';
+          c.choices.forEach((opt, optIdx) => {
+            optionsHtml += `<option value="${optIdx}">${opt.text}</option>`;
+          });
+
+          rowsHtml += `
+            <div class="bpt-check-row" style="gap: 6px;">
+              <span class="bpt-check-title">${c.title}</span>
+              <input type="text" id="bptInput_${cIdx}" class="bpt-select" placeholder="Nhập bất phương trình..." value="${state.step2_inputs[cIdx] || ''}" oninput="onBptInput(${cIdx}, this.value)" ${isDone ? 'disabled' : ''}>
+              <select class="bpt-select" style="font-family: inherit; font-size: 13px; font-weight: 500; color: var(--ink-2); height: 36px; min-height: 36px; padding: 4px 8px;" onchange="onBptSuggestSelect(${cIdx}, this)" ${isDone ? 'disabled' : ''}>
+                ${optionsHtml}
+              </select>
+            </div>
+          `;
+        });
+
+        stepContent.innerHTML = `
+          <div class="sdiv">Bước 2 — Lập hệ BPT</div>
+          <div class="bpt-check-list">
+            ${rowsHtml}
+          </div>
+          
+          <div style="display:flex; gap:10px; margin-top:6px;">
+            <button class="btn-primary" onclick="checkStep2()" ${isDone ? 'disabled' : ''}>Kiểm tra</button>
+            <button class="btn-primary" id="btnNext2" onclick="nextStep2()" ${isDone ? '' : 'disabled'}>
+              Tiếp tục <i class="ti ti-chevron-right"></i>
+            </button>
+          </div>
+          <div id="fbStep" class="hint-text" style="min-height:24px; font-weight:600;"></div>
+        `;
+
+        if (!isDone) {
+          setCaptionText('Hãy dịch các câu từ lời văn sang dạng biểu thức toán học. Chú ý từ khóa "ít nhất", "tối đa".');
+          document.getElementById('capBox').className = 'sim-caption';
+        }
+      }
+
+      else if (step === 3) {
+        const isDone = !state.step3_drawing && state.step3_drawnPercent >= 1;
+
+        stepContent.innerHTML = `
+          <div class="sdiv">Bước 3 — Vẽ miền nghiệm</div>
+          <div class="info-box blue" style="margin-bottom:6px;">
+            <div class="ib-icon"><i class="ti ti-chart-dots"></i></div>
+            <div>
+              <div class="ib-title">Biểu diễn đồ thị</div>
+              <div style="font-size:13px;">Mỗi đường thẳng tương ứng với một đường biên của BPT. Vùng giao thoa cam đậm là miền nghiệm chung.</div>
+            </div>
+          </div>
+          
+          <div style="display:flex; flex-direction:column; gap:10px;">
+            <button class="btn-secondary" id="btnShowInts" onclick="toggleStep3Integers()" ${isDone ? '' : 'disabled'}>
+              ${state.step3_showIntegers ? (sc.isReal ? "Ẩn điểm chia nhỏ" : "Ẩn điểm nguyên") : (sc.isReal ? "Hiện điểm chia nhỏ" : "Hiện điểm nguyên")}
+            </button>
+            
+            <div style="display:flex; gap:10px; margin-top:4px;">
+              <button class="btn-secondary" onclick="skipStep3Animation()" ${state.step3_drawing ? '' : 'disabled'}>Bỏ qua vẽ</button>
+              <button class="btn-primary" onclick="nextStep3()" ${isDone ? '' : 'disabled'}>
+                Tiếp tục <i class="ti ti-chevron-right"></i>
+              </button>
+            </div>
+          </div>
+        `;
+
+        if (state.step3_drawing) {
+          setCaptionText('Mỗi màu là 1 BPT. Vùng tô đậm là nơi TẤT CẢ điều kiện đều thỏa mãn.');
+          document.getElementById('capBox').className = 'sim-caption';
+        } else {
+          if (sc.isReal) {
+            setCaptionText('Đất có thể chia nhỏ — số sào không cần nguyên, nên đỉnh đa giác là nghiệm hợp lệ.');
+          } else {
+            setCaptionText('Miền giao là tập hợp các phương án khả thi. Các đỉnh là ứng viên tối ưu — nhưng cần kiểm tra xem có nguyên không!');
+          }
+          document.getElementById('capBox').className = 'sim-caption green';
+        }
+      }
+
+      else if (step === 4) {
+        const isOptimalSelected = state.step4_selectedPoint &&
+          Math.abs(state.step4_selectedPoint.x - sc.optimal.x) < 1e-4 &&
+          Math.abs(state.step4_selectedPoint.y - sc.optimal.y) < 1e-4;
+
+        let pointsTableHtml = '';
+        if (state.step4_checkedPoints.length > 0) {
+          let rows = '';
+          state.step4_checkedPoints.forEach(pt => {
+            rows += `
+              <div class="pc-row">
+                <span>M(${pt.x.toFixed(sc.isReal ? 1 : 0)}, ${pt.y.toFixed(sc.isReal ? 1 : 0)})</span>
+                <span style="font-weight:bold;">${sc.objective.format(pt.val)}</span>
+                <span class="pc-badge ${pt.optimal ? 'ok' : 'err'}">${pt.optimal ? 'Tối ưu' : 'Thường'}</span>
+              </div>
+            `;
+          });
+          pointsTableHtml = `
+            <div class="panel-section-label" style="margin-top:6px;">Lịch sử thử điểm</div>
+            <div class="pc-table" style="max-height:100px; overflow-y:auto; margin-bottom:8px;">
+              ${rows}
+            </div>
+          `;
+        }
+
+        if (!isOptimalSelected) {
+          stepContent.innerHTML = `
+            <div class="sdiv">Bước 4 — Nghiệm tối ưu</div>
+            <div class="info-box gold" style="margin-bottom:8px;">
+              <div class="ib-icon"><i class="ti ti-bulb"></i></div>
+              <div style="font-size:13px;">
+                Cần tối ưu hàm: <strong>${sc.objective.formula}</strong> → <strong>${sc.objective.target.toUpperCase()}</strong>.
+                <br><em>Click vào điểm ${sc.isReal ? 'chia nhỏ' : 'nguyên'} (chấm xanh) trên đồ thị hoặc nhập tọa độ để thử điểm.</em>
+              </div>
+            </div>
+            
+            <div style="display:flex; align-items:center; gap:8px; background:var(--white); padding:10px; border:1.5px solid var(--paper-line); border-radius:var(--radius-sm); margin-bottom:8px; flex-wrap:wrap;">
+              <span style="font-size:13px; font-weight:700; color:var(--ink-2);">Nhập tọa độ:</span>
+              <div style="display:flex; align-items:center; gap:4px;">
+                <span style="font-family:var(--font-mono); font-weight:700; font-size:13px;">x=</span>
+                <input type="number" id="manualX" step="${sc.isReal ? '0.5' : '1'}" placeholder="0" style="width:60px; height:36px; padding:4px 6px; border-radius:var(--radius-sm); border:1.5px solid var(--paper-line-2); outline:none; font-family:var(--font-mono); font-weight:700; font-size:13px;">
+              </div>
+              <div style="display:flex; align-items:center; gap:4px;">
+                <span style="font-family:var(--font-mono); font-weight:700; font-size:13px;">y=</span>
+                <input type="number" id="manualY" step="${sc.isReal ? '0.5' : '1'}" placeholder="0" style="width:60px; height:36px; padding:4px 6px; border-radius:var(--radius-sm); border:1.5px solid var(--paper-line-2); outline:none; font-family:var(--font-mono); font-weight:700; font-size:13px;">
+              </div>
+              <button class="btn-primary" onclick="checkManualPoint()" style="padding:6px 12px; font-size:13px; font-weight:700; width:auto; height:36px; margin-left:auto;">Thử điểm</button>
+            </div>
+            
+            ${pointsTableHtml}
+            
+            <div id="fbStep" class="hint-text" style="min-height:24px; font-weight:600;"></div>
+          `;
+
+          if (state.step4_selectedPoint) {
+            const pt = state.step4_selectedPoint;
+            const satisfiesAll = isPointFeasible(pt.x, pt.y, sc);
+            const fName = sc.objective.formula.split('=')[0].trim();
+            if (!satisfiesAll) {
+              setCaptionText('Điểm này nằm ngoài miền nghiệm của hệ! Hãy chọn điểm nằm trong phần cam đậm.');
+              document.getElementById('capBox').className = 'sim-caption red';
+            } else if (!sc.isReal && (pt.x % 1 !== 0 || pt.y % 1 !== 0)) {
+              setCaptionText('Điểm này có tọa độ thập phân — không hợp lệ với bài toán thực tế. Tìm điểm nguyên trong miền giao.');
+              document.getElementById('capBox').className = 'sim-caption red';
+            } else {
+              if (sc.objective.target === 'minimize') {
+                setCaptionText(`Bài này yêu cầu TỐI THIỂU — ta cần ${fName} nhỏ nhất, không phải lớn nhất. Điểm này có ${fName} = ${sc.objective.format(sc.objective.calc(pt.x, pt.y))}. Thử ${sc.isReal ? 'các điểm khác' : 'các điểm nguyên khác'} xem sao?`);
+              } else {
+                setCaptionText(`Điểm này hợp lệ nhưng chưa tối ưu. ${fName} = ${sc.objective.format(sc.objective.calc(pt.x, pt.y))}. Thử ${sc.isReal ? 'các điểm khác' : 'các điểm nguyên khác'} xem?`);
+              }
+              document.getElementById('capBox').className = 'sim-caption red';
+            }
+          } else {
+            setCaptionText('Hãy chọn các điểm để kiểm tra giá trị tối ưu của hàm mục tiêu.');
+            document.getElementById('capBox').className = 'sim-caption';
+          }
+        }
+        else if (!state.step4_completed) {
+          let listHtml = '';
+          sc.conclusions.forEach((opt, idx) => {
+            const selected = state.step4_conclusion_selected === idx;
+            listHtml += `
+              <div class="option-item ${selected ? 'selected' : ''}" onclick="selectStep4Conclusion(${idx})">
+                <input class="option-radio" type="radio" name="optStep4" ${selected ? 'checked' : ''}>
+                <span class="option-text">${opt.text}</span>
+              </div>
+            `;
+          });
+
+          stepContent.innerHTML = `
+            <div class="sdiv">Bước 4 — Kết luận thực tế</div>
+            <div class="info-box gold" style="margin-bottom:8px;">
+              <div class="ib-icon"><i class="ti ti-check"></i></div>
+              <div style="font-size:13px;">Đã tìm thấy điểm tối ưu <strong>(${sc.optimal.x}, ${sc.optimal.y})</strong>! Chọn câu kết luận thực tế đúng:</div>
+            </div>
+            
+            <div class="option-list">
+              ${listHtml}
+            </div>
+            
+            <button class="btn-primary" onclick="checkConclusion()" style="margin-top:10px;">Kiểm tra kết luận</button>
+            <div id="fbStep" class="hint-text" style="min-height:24px; font-weight:600;"></div>
+          `;
+
+          setCaptionText('Xuất sắc! Đây là phương án tối ưu. Bây giờ hãy kết luận bằng ngôn ngữ thực tiễn của bài toán.');
+          document.getElementById('capBox').className = 'sim-caption green';
+        }
+        else {
+          stepContent.innerHTML = `
+            <div class="celebration" style="margin-top: 10px;">
+              <div class="emoji">🎉</div>
+              <h3>Tuyệt vời!</h3>
+              <p style="margin-top:4px; font-size:13.5px; color:var(--ink-2); margin-bottom: 14px;">
+                Bạn đã hoàn thành chính xác và tìm được nghiệm tối ưu của bài toán thực tế này.
+              </p>
+              
+              <button class="btn-primary" onclick="loadNextScenario()"><i class="ti ti-dice"></i> Tình huống mới</button>
+            </div>
+          `;
+
+          setCaptionText('Hoàn thành! Bạn muốn thử tình huống mới?');
+          document.getElementById('capBox').className = 'sim-caption green';
+        }
+      }
+
+      const fb = document.getElementById('fbStep');
+      if (fb) {
+        fb.innerHTML = state.stepFeedbackHtml || '';
+      }
+    }
+
+    // ──────────────────────────────────────
+    // 7. MOUSE & TOUCH EVENT MANAGER
+    // ──────────────────────────────────────
+    let isPanning = false;
+    let startPX = 0, startPY = 0;
+    let startXMin = 0, startXMax = 0, startYMin = 0, startYMax = 0;
+
+    function updatePointerHover(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const px = clientX - rect.left;
+      const py = clientY - rect.top;
+      const { x, y } = c2m(px, py);
+
+      document.getElementById('coordBar').innerText = `x: ${x.toFixed(2)} · y: ${y.toFixed(2)}`;
+
+      const tooltip = document.getElementById('simTooltip');
+      tooltip.style.display = 'block';
+      tooltip.style.left = (px + 14) + 'px';
+      tooltip.style.top = (py - 8) + 'px';
+      tooltip.innerText = `(${x.toFixed(1)}, ${y.toFixed(1)})`;
+    }
+
+    canvas.addEventListener('mousemove', e => {
+      updatePointerHover(e.clientX, e.clientY);
+      if (isPanning) {
+        const dx = e.clientX - startPX;
+        const dy = e.clientY - startPY;
+        const xRange = startXMax - startXMin;
+        const yRange = startYMax - startYMin;
+        const mxDiff = (dx / CW) * xRange;
+        const myDiff = (dy / CH) * yRange;
+        state.vXMin = startXMin - mxDiff;
+        state.vXMax = startXMax - mxDiff;
+        state.vYMin = startYMin + myDiff;
+        state.vYMax = startYMax + myDiff;
+        fullRedraw();
+      }
+    });
+
+    canvas.addEventListener('mouseleave', () => {
+      document.getElementById('simTooltip').style.display = 'none';
+      isPanning = false;
+    });
+
+    canvas.addEventListener('mousedown', e => {
+      isPanning = true;
+      startPX = e.clientX;
+      startPY = e.clientY;
+      startXMin = state.vXMin;
+      startXMax = state.vXMax;
+      startYMin = state.vYMin;
+      startYMax = state.vYMax;
+      canvas.style.cursor = 'grabbing';
+    });
+
+    window.addEventListener('mouseup', () => {
+      if (isPanning) {
+        isPanning = false;
+        canvas.style.cursor = 'crosshair';
+      }
+    });
+
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+      const factor = e.deltaY > 0 ? 1.15 : 0.85;
+      zoomAt(cx, cy, factor);
+    }, { passive: false });
+
+    canvas.addEventListener('touchstart', e => {
+      const t = e.touches[0];
+      isPanning = true;
+      startPX = t.clientX;
+      startPY = t.clientY;
+      startXMin = state.vXMin;
+      startXMax = state.vXMax;
+      startYMin = state.vYMin;
+      startYMax = state.vYMax;
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', e => {
+      if (e.touches[0]) updatePointerHover(e.touches[0].clientX, e.touches[0].clientY);
+      if (!isPanning) return;
+      const t = e.touches[0];
+      const dx = t.clientX - startPX;
+      const dy = t.clientY - startPY;
+
+      const xRange = startXMax - startXMin;
+      const yRange = startYMax - startYMin;
+
+      const mxDiff = (dx / CW) * xRange;
+      const myDiff = (dy / CH) * yRange;
+
+      state.vXMin = startXMin - mxDiff;
+      state.vXMax = startXMax - mxDiff;
+      state.vYMin = startYMin + myDiff;
+      state.vYMax = startYMax + myDiff;
+
+      fullRedraw();
+    }, { passive: true });
+
+    canvas.addEventListener('touchend', () => {
+      document.getElementById('simTooltip').style.display = 'none';
+      isPanning = false;
+    });
+
+    canvas.addEventListener('click', e => {
+      if (isPanning) {
+        const dx = Math.abs(e.clientX - startPX);
+        const dy = Math.abs(e.clientY - startPY);
+        if (dx > 3 || dy > 3) return;
+      }
+
+      if (state.step !== 4 || state.step4_completed) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const px = e.clientX - rect.left;
+      const py = e.clientY - rect.top;
+
+      const sc = scenarios[state.activeScenarioIdx];
+
+      let clickedVertex = null;
+      for (let i = 0; i < sc.vertices.length; i++) {
+        const v = sc.vertices[i];
+        const vP = m2c(v.x, v.y);
+        const dx = px - vP.px;
+        const dy = py - vP.py;
+        const dist = Math.sqrt(dx * dx + dy * dy);
+        if (dist <= 10) {
+          clickedVertex = v;
+          break;
+        }
+      }
+
+      let rx, ry;
+      if (clickedVertex) {
+        rx = clickedVertex.x;
+        ry = clickedVertex.y;
+      } else {
+        const { x: mx, y: my } = c2m(px, py);
+        if (sc.isReal) {
+          rx = Math.round(mx * 2) / 2;
+          ry = Math.round(my * 2) / 2;
+        } else {
+          rx = Math.round(mx);
+          ry = Math.round(my);
+        }
+      }
+
+      checkPointOptimal(rx, ry);
+    });
+
+    function setCaptionText(text) {
+      document.getElementById('capText').innerHTML = text;
+    }
+
+    function setOverviewCaption(text) {
+      document.getElementById('capText').innerHTML = text;
+    }
+
+    function triggerConfetti() {
+      const colors = ['#3CA57A', '#FAF7F0', '#4E7F92', '#CE8A33', '#C15F3C'];
+      const count = 50;
+      for (let i = 0; i < count; i++) {
+        const el = document.createElement('div');
+        el.style.position = 'fixed';
+        el.style.width = Math.random() * 8 + 6 + 'px';
+        el.style.height = Math.random() * 12 + 6 + 'px';
+        el.style.backgroundColor = colors[Math.floor(Math.random() * colors.length)];
+        el.style.left = Math.random() * 100 + 'vw';
+        el.style.top = '-10px';
+        el.style.opacity = Math.random() * 0.8 + 0.2;
+        el.style.transform = 'rotate(' + Math.random() * 360 + 'deg)';
+        el.style.zIndex = '9999';
+        el.style.pointerEvents = 'none';
+        el.style.transition = 'transform 3.5s ease-out, top 3.5s ease-out, opacity 3.5s ease-out';
+
+        document.body.appendChild(el);
+
+        setTimeout(() => {
+          el.style.top = '105vh';
+          el.style.transform = 'rotate(' + (Math.random() * 720 + 360) + 'deg)';
+          el.style.opacity = '0';
+        }, 50);
+
+        setTimeout(() => el.remove(), 3600);
+      }
+    }
+
+    // ──────────────────────────────────────
+    // 8. TEXT FORMATTING UTILS
+    // ──────────────────────────────────────
+    function formatBPTText(bpt, useEqual = false) {
+      const { a, b, c, sign } = bpt;
+      let lhs = '';
+      if (a === 0 && b === 0) return '0 ' + (useEqual ? '=' : getSignSymbol(sign)) + ' ' + c;
+
+      if (a !== 0) {
+        lhs += (a === 1 ? '' : (a === -1 ? '−' : a)) + 'x';
+      }
+
+      if (b !== 0) {
+        const bAbs = Math.abs(b);
+        if (a === 0) {
+          lhs += (b === 1 ? '' : (b === -1 ? '−' : b)) + 'y';
+        } else {
+          lhs += ' ' + (b > 0 ? '+ ' : '− ') + (bAbs === 1 ? '' : bAbs) + 'y';
+        }
+      }
+
+      const op = useEqual ? '=' : getSignSymbol(sign);
+      return lhs + ' ' + op + ' ' + c;
+    }
+
+    function getSignSymbol(sign) {
+      const syms = { lt: '<', le: '≤', gt: '>', ge: '≥' };
+      return syms[sign] || '≤';
+    }
+
+    // ──────────────────────────────────────
+    // 9. INITIALIZATION
+    // ──────────────────────────────────────
+    window.addEventListener('load', () => {
+      loadScenario(0);
+
+      const rect = canvasWrap.getBoundingClientRect();
+      CW = rect.width;
+      CH = rect.height;
+
+      resizeCanvas();
+
+      setTimeout(() => {
+        resizeCanvas();
+      }, 100);
+    });
+
+    window.addEventListener('resize', () => {
+      clearTimeout(roTimer);
+      roTimer = setTimeout(resizeCanvas, 30);
+    });
+
+    // ===== LMS Height Report =====
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    const _athenaResizeObserver = new ResizeObserver(() => {
+      clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+    });
+    _athenaResizeObserver.observe(document.body);
+</script>
+</body>
+
+</html>

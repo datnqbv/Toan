@@ -179,7 +179,7 @@
       padding: 0 16px 60px;
       display: flex;
       flex-direction: column;
-      gap: 24px;
+      gap: 20px;
     }
 
     /* ── MODULE CARDS ── */
@@ -201,7 +201,7 @@
     .mod-header {
       background: var(--cream-2);
       border-bottom: 1.5px solid var(--paper-line);
-      padding: 14px 20px;
+      padding: 12px 18px;
       display: flex;
       align-items: center;
       gap: 12px;
@@ -266,6 +266,10 @@
     }
 
     @media (max-width: 1023px) {
+      .app-body {
+        margin: 12px auto;
+        gap: 14px;
+      }
       .sim-body {
         display: flex;
         flex-direction: column;
@@ -275,24 +279,24 @@
       }
       .sim-left {
         order: 2; /* Controls hiện sau */
+        border-right: none;
+        border-top: 1.5px solid var(--paper-line);
+        padding: 12px 14px !important;
+        gap: 8px !important;
+      }
+      .sim-caption {
+        margin-top: 4px !important;
       }
     }
 
     /* LEFT CONTROL PANEL */
     .sim-left {
       border-right: 1.5px solid var(--paper-line);
-      padding: 20px 18px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 10px;
       background: var(--cream);
-    }
-
-    @media (max-width: 1023px) {
-      .sim-left {
-        border-right: none;
-        border-top: 1.5px solid var(--paper-line);
-      }
     }
 
     .panel-section-label {
@@ -301,7 +305,7 @@
       text-transform: uppercase;
       letter-spacing: .06em;
       color: var(--ink-3);
-      margin-bottom: 6px;
+      margin-bottom: 4px;
     }
 
     /* Input Controls */
@@ -661,49 +665,96 @@
       z-index: 10;
     }
 
-    .zoom-row {
+    /* Floating Canvas Zoom Controls (Unified Vertical Widget) */
+    .canvas-zoom-controls {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 15;
       display: flex;
-      gap: 8px;
-      justify-content: center;
-      flex-wrap: wrap;
+      flex-direction: column;
+      background: rgba(250, 247, 240, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(229, 222, 207, 0.6);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+      opacity: 0.8;
+      transition: opacity 0.2s ease, background 0.2s ease;
     }
 
-    .btn-zoom {
-      min-height: 44px;
-      padding: 8px 16px;
-      background: var(--white);
-      border: 1.5px solid var(--paper-line-2);
-      border-radius: var(--radius-sm);
-      font-size: 13px;
+    .canvas-zoom-controls:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .btn-canvas-zoom {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: all .2s;
+      transition: background .2s, color .2s;
       color: var(--ink-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .btn-zoom:hover {
-      border-color: var(--jade-deep);
+    .btn-canvas-zoom:not(:last-child) {
+      border-bottom: 1px solid rgba(229, 222, 207, 0.6);
+    }
+
+    .btn-canvas-zoom:hover {
+      background: var(--jade-pale);
       color: var(--jade-deep);
     }
 
-    .btn-zoom.accent {
-      background: var(--jade-deep);
-      color: var(--white);
-      border-color: var(--jade-deep);
+    .btn-canvas-zoom:active {
+      background: var(--sage-pale);
     }
 
-    .btn-zoom.accent:hover {
-      background: var(--jade-dark);
+    .btn-draw-boundary {
+      width: 100%;
+      min-height: 46px;
+      margin-top: 4px;
+    }
+
+    @media (max-width: 600px) {
+      .canvas-zoom-controls {
+        top: 8px;
+        right: 8px;
+      }
+
+      .btn-canvas-zoom {
+        width: 34px;
+        height: 34px;
+        font-size: 15px;
+      }
     }
 
     .coord-bar {
-      font-size: 13px;
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      z-index: 12;
+      font-size: 11px;
+      font-weight: 500;
       color: var(--ink-3);
       font-family: var(--font-mono);
       font-variant-numeric: tabular-nums;
-      text-align: right;
-      padding: 2px 4px;
-      height: 20px;
+      background: rgba(250, 247, 240, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(229, 222, 207, 0.5);
+      opacity: 0.8;
+      pointer-events: none;
     }
 
     .info-box {
@@ -809,6 +860,10 @@
       margin-top: 2px;
     }
 
+    .hint-text:empty {
+      display: none;
+    }
+
     .sdiv {
       display: flex;
       align-items: center;
@@ -818,7 +873,7 @@
       text-transform: uppercase;
       letter-spacing: .06em;
       color: var(--ink-3);
-      margin: 4px 0;
+      margin: 2px 0;
     }
 
     .sdiv::before, .sdiv::after {
@@ -897,7 +952,7 @@
               <input class="point-input" id="pt1y" type="number" placeholder="?">
               <button class="btn-check" id="btnCheckP1" onclick="checkPoint(1)">Kiểm tra</button>
             </div>
-            <div id="fb1" class="hint-text" style="min-height:18px;"></div>
+            <div id="fb1" class="hint-text"></div>
           </div>
 
           <!-- Point 2: y=0 -->
@@ -908,12 +963,9 @@
               <input class="point-input" id="pt2x" type="number" placeholder="?">
               <button class="btn-check" id="btnCheckP2" onclick="checkPoint(2)">Kiểm tra</button>
             </div>
-            <div id="fb2" class="hint-text" style="min-height:18px;"></div>
+            <div id="fb2" class="hint-text"></div>
           </div>
 
-          <button class="btn-primary" id="btnDrawBoundary" onclick="drawBoundaryLine()" disabled>
-            <i class="ti ti-pencil"></i> Vẽ đường biên
-          </button>
           <button class="btn-secondary" onclick="resetMod1()">
             <i class="ti ti-refresh"></i> Đặt lại
           </button>
@@ -929,13 +981,16 @@
           <div class="canvas-wrap" id="cw1">
             <canvas id="canvas1"></canvas>
             <div class="tooltip-box" id="tip1"></div>
+            <div class="canvas-zoom-controls">
+              <button class="btn-canvas-zoom" onclick="doZoom1(0.7)" title="Phóng to"><i class="ti ti-plus"></i></button>
+              <button class="btn-canvas-zoom" onclick="doZoom1(1.4)" title="Thu nhỏ"><i class="ti ti-minus"></i></button>
+              <button class="btn-canvas-zoom" onclick="resetView1()" title="Đặt lại"><i class="ti ti-refresh"></i></button>
+            </div>
+            <div class="coord-bar" id="coord1">x: 0.00 · y: 0.00</div>
           </div>
-          <div class="coord-bar" id="coord1">x: 0.00 · y: 0.00</div>
-          <div class="zoom-row">
-            <button class="btn-zoom accent" onclick="doZoom1(0.7)">＋ Phóng to</button>
-            <button class="btn-zoom accent" onclick="doZoom1(1.4)">－ Thu nhỏ</button>
-            <button class="btn-zoom" onclick="resetView1()">↺ Đặt lại</button>
-          </div>
+          <button class="btn-primary btn-draw-boundary" id="btnDrawBoundary" onclick="drawBoundaryLine()" disabled>
+            <i class="ti ti-pencil"></i> Vẽ đường biên
+          </button>
         </div>
       </div>
     </div>
@@ -1027,12 +1082,12 @@
           <div class="canvas-wrap" id="cw2">
             <canvas id="canvas2"></canvas>
             <div class="tooltip-box" id="tip2"></div>
-          </div>
-          <div class="coord-bar" id="coord2">x: 0.00 · y: 0.00</div>
-          <div class="zoom-row">
-            <button class="btn-zoom accent" onclick="doZoom2(0.7)">＋ Phóng to</button>
-            <button class="btn-zoom accent" onclick="doZoom2(1.4)">－ Thu nhỏ</button>
-            <button class="btn-zoom" onclick="resetView2()">↺ Đặt lại</button>
+            <div class="canvas-zoom-controls">
+              <button class="btn-canvas-zoom" onclick="doZoom2(0.7)" title="Phóng to"><i class="ti ti-plus"></i></button>
+              <button class="btn-canvas-zoom" onclick="doZoom2(1.4)" title="Thu nhỏ"><i class="ti ti-minus"></i></button>
+              <button class="btn-canvas-zoom" onclick="resetView2()" title="Đặt lại"><i class="ti ti-refresh"></i></button>
+            </div>
+            <div class="coord-bar" id="coord2">x: 0.00 · y: 0.00</div>
           </div>
         </div>
       </div>
@@ -1100,14 +1155,13 @@
           <div class="canvas-wrap" id="cw3">
             <canvas id="canvas3"></canvas>
             <div class="tooltip-box" id="tip3"></div>
+            <div class="canvas-zoom-controls">
+              <button class="btn-canvas-zoom" onclick="doZoom3(0.7)" title="Phóng to"><i class="ti ti-plus"></i></button>
+              <button class="btn-canvas-zoom" onclick="doZoom3(1.4)" title="Thu nhỏ"><i class="ti ti-minus"></i></button>
+              <button class="btn-canvas-zoom" onclick="resetView3()" title="Đặt lại"><i class="ti ti-refresh"></i></button>
+            </div>
+            <div class="coord-bar" id="coord3">x: 0.00 · y: 0.00</div>
           </div>
-          <div class="coord-bar" id="coord3">x: 0.00 · y: 0.00</div>
-          <div class="zoom-row">
-            <button class="btn-zoom accent" onclick="doZoom3(0.7)">＋ Phóng to</button>
-            <button class="btn-zoom accent" onclick="doZoom3(1.4)">－ Thu nhỏ</button>
-            <button class="btn-zoom" onclick="resetView3()">↺ Đặt lại</button>
-          </div>
-        </div>
       </div>
     </div>
 
