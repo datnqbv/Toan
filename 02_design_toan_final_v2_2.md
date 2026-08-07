@@ -567,6 +567,36 @@ function zoomAt(cx, cy, factor) {
 }
 ```
 
+### 2.4 Quy tắc chống lỗi Offset Tọa độ Click (BẮT BUỘC)
+
+> [!CAUTION]
+> **BẮT BUỘC:** Không được tính `c2m` dựa vào `canvas.width` (`PW`) hoặc lưu biến `rect` cố định từ trước. Luôn tuân thủ 3 quy tắc sau để tránh lệch điểm chạm khi click/chạm:
+
+1. **Lấy `getBoundingClientRect()` trực tiếp tại thời điểm phát sinh sự kiện chuột/cảm ứng:**
+   ```javascript
+   function getCanvasPos(e) {
+     const rect = canvas.getBoundingClientRect();
+     const t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]) || e;
+     return {
+       px: t.clientX - rect.left,
+       py: t.clientY - rect.top
+     };
+   }
+   ```
+2. **Hàm quy đổi `c2m` luôn dùng kích thước CSS Pixels (`CW, CH`), KHÔNG dùng Retina Physical Pixels (`PW, PH`):**
+   ```javascript
+   // ✅ ĐÚNG: Chia theo CW/CH
+   const x = vXMin + (px / CW) * (vXMax - vXMin);
+   const y = vYMin + (1 - py / CH) * (vYMax - vYMin);
+   ```
+3. **Bỏ qua sự kiện click khi người dùng vừa thực hiện kéo rê di chuyển (`Pan Dragging`):**
+   ```javascript
+   canvas.addEventListener('click', e => {
+     if (Math.abs(e.clientX - startPX) > 4 || Math.abs(e.clientY - startPY) > 4) return; // Bỏ qua click giả do kéo pan
+     // Logic tương tác click thực tế...
+   });
+   ```
+
 ### 2.3 Vẽ lưới và trục tọa độ chuẩn
 
 ```javascript

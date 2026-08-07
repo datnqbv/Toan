@@ -1,0 +1,1256 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Giá Trị Lượng Giác của Góc từ 0° đến 180°</title>
+  <script type="application/json" id="athena-context">
+{
+  "title": "Giá Trị Lượng Giác của Góc từ 0° đến 180°",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Hiểu điểm M luôn nằm trên nửa đường tròn lượng giác đơn vị khi góc α thay đổi từ 0° đến 180°.",
+    "Nhận biết sin α = tung độ y₀, cos α = hoành độ x₀ của điểm M, và quan hệ tan α, cot α tương ứng.",
+    "Đoán đúng dấu (âm/dương) của sin, cos, tan, cot theo vị trí góc α trên nửa đường tròn."
+  ],
+  "structure": [
+    { "id": "canvasWrap", "title": "Mô phỏng tương tác — kéo điểm M trên đường tròn" },
+    { "id": "quizSection", "title": "Quiz đoán dấu" }
+  ],
+  "athenaGuidance": "Bài học về giá trị lượng giác của góc từ 0° đến 180°, dùng đường tròn lượng giác đơn vị. Phần mô phỏng chính: học sinh kéo điểm M (đỏ) dọc theo nửa đường tròn, quan sát bảng thông số cập nhật theo thời gian thực gồm góc α, toạ độ M (x₀;y₀), cos α (= x₀), sin α (= y₀), tan α, cot α; có thể bật/tắt hiển thị từng đường chiếu sin/cos/tan/cot để quan sát trực quan hình học. Đây là phần khám phá tự do, không có câu hỏi chấm điểm — Athena có thể gợi ý học sinh thử kéo M đến các vị trí đặc biệt (0°, 90°, 180°) để quan sát tan α không xác định tại 90°, cot α không xác định tại 0°/180°. Phần Quiz đoán dấu (mục 'quizSection'): mỗi lần app chọn một vị trí GÓC NGẪU NHIÊN cho điểm M, học sinh phải đoán DẤU (dương/âm/bằng 0/không xác định) của từng giá trị sin, cos, tan, cot ứng với góc đó, có nút 'Bảng dấu tóm tắt' hỗ trợ tra cứu. Vì góc được sinh ngẫu nhiên mỗi lượt nên KHÔNG có bộ câu hỏi/đáp án cố định để liệt kê — Athena chỉ nên nhắc lại quy tắc dấu theo góc phần tư (góc 0°-90°: sin/cos/tan/cot đều dương; góc 90°-180°: chỉ sin dương, cos/tan/cot âm) để học sinh tự suy luận, không tự đoán hộ và đọc thẳng đáp án."
+}
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    /* DESIGN TOKENS - Preset 5: Cá Chép Hoá Rồng */
+    :root {
+  /* Neutrals · giấy & mực */
+  --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC;
+  --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
+  --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+
+  /* Jade · hành động chính */
+  --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F;
+  --jade-text:#1B5E48; --jade-soft:#A9D0BE; --jade-pale:#DCEAE1;
+
+  /* Sage · phụ trợ */
+  --sage:#A8C9B8; --sage-deep:#7CA792; --sage-text:#46685A; --sage-pale:#E1ECE4;
+
+  /* Accent · điểm nhấn ấm */
+  --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+
+  /* Semantic · đúng/sai/cảnh báo/info */
+  --correct:#2D8B6F; --correct-bg:#DCEAE1;
+  --wrong:#C15F3C;   --wrong-bg:#F3E2D6;
+  --warning:#C58A2E; --warning-bg:#F5E7CB;
+  --info:#4E7F92;    --info-bg:#DCE7EB;
+
+  --white:#FFFFFF;
+  --radius:10px; --radius-lg:14px; --radius-sm:6px;
+  --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+  --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+  --shadow-lg: 0 14px 38px rgba(20, 67, 47, 0.12);
+
+  /* Illustration only · fill phẳng cho minh hoạ (KHÔNG dùng cho UI/text) */
+  --il-terracotta:#C1704B; --il-brick:#9E4A2E; --il-ochre:#C99A3C; --il-olive:#8A9A5B;
+  --il-forest:#2E6B52; --il-dusty-blue:#6E93A6; --il-slate:#4E6E7E; --il-mauve:#8A6A7E; --il-sand:#D8C4A0;
+
+  /* Vector màu canvas Vật lý/Toán (cộng lực, cộng vận tốc...) — PHẦN 1.1 file design Toán */
+  --color-v1: var(--jade); --color-v2: var(--info);
+  --color-resultant: var(--accent); --color-force-red: var(--wrong); --color-gravity: var(--ink-3);
+
+  /* --- alias cho code cũ (giữ để var(--ten-cu) phía dưới vẫn chạy đúng màu mới) --- */
+  --primary: var(--jade-deep);
+  --primary-mid: var(--jade);
+  --primary-light: var(--jade-pale);
+  --accent-dark: var(--accent-deep);
+  --accent-light: var(--accent-pale);
+  --teal-mid: var(--jade-text);
+  --teal-light: var(--jade-pale);
+  --green: var(--correct);
+  --green-light: var(--correct-bg);
+  --red: var(--wrong);
+  --red-light: var(--wrong-bg);
+  --amber: var(--warning);
+  --blue: var(--info);
+  --bg: var(--cream);
+  --surface: var(--white);
+  --border: var(--paper-line);
+  --text: var(--ink);
+  --text-2: var(--ink-2);
+  --text-3: var(--ink-3);
+}
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      font-size: 15px; line-height: 1.6;
+      color: var(--text); background: var(--bg);
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+
+    /* HEADER */
+    /* Pass 2 (mục A, Loại B) — header hero trang trí, không có id JS-bound bên trong -> ẩn. */
+    .p5-header { display: none !important; }
+    .p5-header {
+      width: 100%; background-image: var(--header-img);
+      background-position: center 30%; background-size: cover; background-repeat: no-repeat;
+      border-radius: var(--radius-lg); padding: 1.5rem 2rem;
+      position: relative; overflow: hidden;
+      box-shadow: 0 4px 20px rgba(45, 139, 111, 0.2);
+    }
+    .p5-header::before {
+      content: ''; position: absolute; top: 0; left: 0; right: 0; bottom: 0;
+      background: linear-gradient(90deg, rgba(45, 139, 111,0.85) 0%, rgba(45, 139, 111,0.4) 100%);
+      z-index: 1;
+    }
+    .p5-header > * { position: relative; z-index: 2; }
+    .p5-badge {
+      color: var(--accent); font-size: 0.85rem; font-weight: 700; text-transform: uppercase;
+      margin-bottom: 6px; display: flex; align-items: center; gap: 8px; letter-spacing: 0.05em;
+    }
+    .p5-header h1 {
+      color: #ffffff; font-size: 1.6rem; font-weight: 700; margin-bottom: 4px;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.35);
+    }
+    .p5-desc {
+      color: rgba(255,255,255,0.85); font-size: 0.9rem; text-shadow: 0 1px 3px rgba(0,0,0,0.2);
+    }
+
+    /* INFO PANEL */
+    .p5-info-panel { display: flex; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .p5-col { flex: 1; padding: 1.1rem 1.25rem; }
+    .p5-col-observe { background: #FCF9FB; border: 1px solid #FFABC7; border-radius: 14px 0 0 14px; border-right: none; }
+    .p5-col-guide { background: #EAF6FC; border: 1px solid #7BB9E5; border-radius: 0 14px 14px 0; }
+    .p5-col-label {
+      display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 0.6px; color: var(--primary); margin-bottom: 8px;
+    }
+    .p5-col ul { list-style: none; }
+    .p5-col ul li { font-size: 0.85rem; color: var(--text-2); margin-bottom: 4px; display: flex; gap: 6px; }
+    .p5-col ul li i { color: var(--primary); font-size: 14px; margin-top: 3px; }
+
+    /* SIMULATION CANVAS WRAPPER */
+    .sim-wrap {
+      background: var(--surface); border-radius: var(--radius-lg); padding: 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+    }
+    @media (max-width: 1023px) {
+      .sim-wrap { min-height: 480px; }
+    }
+    .sim-canvas-wrap {
+      position: relative; width: 100%; height: 420px;
+      border: 1px solid var(--border); border-radius: var(--radius);
+      overflow: hidden; background: #FAFAFA; margin-bottom: 1rem;
+      cursor: crosshair; touch-action: none;
+    }
+    canvas { display: block; width: 100%; height: 100%; }
+
+    /* Floating Canvas Zoom Controls (Unified Vertical Widget) */
+    .canvas-zoom-controls {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 15;
+      display: flex;
+      flex-direction: column;
+      background: rgba(250, 247, 240, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(229, 222, 207, 0.6);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+      opacity: 0.8;
+      transition: opacity 0.2s ease, background 0.2s ease;
+    }
+
+    .canvas-zoom-controls:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .btn-canvas-zoom {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+      color: var(--ink-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-canvas-zoom:not(:last-child) {
+      border-bottom: 1px solid rgba(229, 222, 207, 0.6);
+    }
+
+    .btn-canvas-zoom:hover {
+      background: var(--jade-pale);
+      color: var(--jade-deep);
+    }
+
+    .btn-canvas-zoom:active {
+      background: var(--sage-pale);
+    }
+
+    .coord-bar {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      z-index: 12;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink-3);
+      font-family: 'JetBrains Mono', monospace;
+      font-variant-numeric: tabular-nums;
+      background: rgba(250, 247, 240, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(229, 222, 207, 0.5);
+      opacity: 0.8;
+      pointer-events: none;
+    }
+
+    .hint-text:empty { display: none; }
+    
+    .tooltip {
+      position: absolute; background: rgba(45, 139, 111, 0.95); color: #fff;
+      padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: 'JetBrains Mono', 'Courier New', monospace;
+      pointer-events: none; opacity: 0; transition: opacity 0.2s; transform: translate(-50%, -100%);
+      margin-top: -10px; white-space: nowrap; z-index: 10; font-weight: 700;
+    }
+
+    /* DATA MONITOR DISPLAY */
+    .data-monitor {
+      display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 10px; margin-bottom: 1rem;
+    }
+    .data-card {
+      background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px;
+      padding: 10px 14px; text-align: center; transition: all 0.3s ease;
+    }
+    .data-card .label { font-size: 11px; color: var(--text-3); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+    .data-card .value { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 1.15rem; font-weight: 700; color: var(--primary); display: flex; align-items: center; justify-content: center; gap: 4px; }
+
+    /* CONTROLS */
+    .p5-controls { border: 1px solid #B0D4C4; border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1rem; }
+    .p5-ctrl-header {
+      padding: 0.6rem 1.2rem; font-size: 11px; font-weight: 700; text-transform: uppercase;
+      letter-spacing: 0.6px; color: var(--primary); display: flex; align-items: center; gap: 5px;
+      background: #F4FBF7; border-bottom: 1px solid #B0D4C4;
+    }
+    .p5-ctrl-row { display: flex; align-items: center; padding: 0.7rem 1.2rem; gap: 12px; border-bottom: 1px solid #E2E8F0; }
+    .p5-ctrl-row:last-child { border-bottom: none; }
+    .p5-row-1 { background: #FFF5F8; }
+    .p5-row-2 { background: #EAF6FC; }
+    
+    .p5-ctrl-label { min-width: 140px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .p5-ctrl-label i { color: var(--primary); font-size: 16px; }
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
+
+    /* BUTTONS */
+    .p5-btn {
+      padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
+      cursor: pointer; transition: all .2s; border: 1.5px solid var(--border);
+      background: #F8FAFC; color: var(--text-2); display: inline-flex; align-items: center; gap: 5px;
+    }
+    .p5-btn:hover:not(:disabled):not(.active) { border-color: var(--primary); color: var(--primary); }
+    .p5-btn.active {
+      background: var(--primary); color: #fff; border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(45, 139, 111,0.25);
+    }
+    .p5-btn-reset { border: 1.5px dashed var(--border); background: transparent; }
+    .p5-btn-reset:hover { border-style: solid; border-color: var(--primary-mid); color: var(--primary-mid); background: #F0FDF8; }
+
+    /* EXPLANATION BOX */
+    .p5-explain {
+      background: #F0FDF8; border: 1px solid #6EE7B7; border-left: 4px solid var(--primary-mid);
+      border-radius: var(--radius-lg); padding: 1rem 1.2rem; transition: all 0.3s;
+    }
+    .p5-explain.alert { background: #FFF8E1; border-color: #FFE082; border-left-color: var(--amber); }
+    .p5-explain-title {
+      display: flex; align-items: center; gap: 7px; font-size: 0.9rem; font-weight: 700;
+      color: var(--primary); margin-bottom: 6px;
+    }
+    .p5-explain.alert .p5-explain-title { color: var(--amber-dark); }
+    .p5-explain-body { font-size: 0.85rem; color: var(--text-2); }
+    .p5-explain-body b { color: var(--text); }
+    .highlight-val { font-family: 'JetBrains Mono', 'Courier New', monospace; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: rgba(0,0,0,0.05); }
+
+    /* SECTION DIVIDER */
+    .sdiv { display: flex; align-items: center; text-align: center; margin: 1.5rem 0 0.5rem; }
+    .sdiv::before, .sdiv::after { content: ''; flex: 1; border-bottom: 1px solid var(--border); }
+    .sdiv span { padding: 0 15px; font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: 1px; text-transform: uppercase; }
+
+    /* QUIZ SECTION */
+    .quiz-wrap { background: var(--surface); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; }
+    .quiz-title { font-weight: 700; font-size: 1.1rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    
+    .mini-table {
+      width: 100%; border-collapse: collapse; margin-bottom: 1rem; font-size: 0.85rem;
+      border: 1px solid var(--border); border-radius: 8px; overflow: hidden; display: none;
+    }
+    .mini-table.show { display: table; }
+    .mini-table th, .mini-table td { padding: 6px 10px; border: 1px solid var(--border); text-align: center; }
+    .mini-table th { background: #F8FAFC; font-weight: 600; color: var(--text-2); }
+
+    .quiz-row {
+      display: flex; align-items: center; padding: 12px 0; border-bottom: 1px dashed var(--border); gap: 15px;
+    }
+    .quiz-row:last-of-type { border-bottom: none; }
+    .quiz-label { width: 60px; font-family: 'JetBrains Mono', 'Courier New', monospace; font-weight: 700; font-size: 1.1rem; }
+    .quiz-options { display: flex; gap: 8px; flex: 1; }
+    
+    .quiz-btn {
+      width: 45px; height: 36px; border-radius: 8px; border: 1px solid var(--border);
+      background: #F8FAFC; cursor: pointer; font-weight: 700; font-size: 1rem; transition: all 0.2s;
+    }
+    .quiz-btn:hover { border-color: var(--primary); background: #DCEAE1; color: var(--primary); }
+    .quiz-btn.selected { background: var(--primary); color: #fff; border-color: var(--primary); }
+
+    .quiz-feedback { margin-top: 1.5rem; display: none; }
+    .fb-item { padding: 10px 14px; border-radius: 8px; margin-bottom: 8px; font-size: 0.85rem; display: flex; gap: 10px; align-items: flex-start; }
+    .fb-item i { font-size: 18px; flex-shrink: 0; margin-top: 2px; }
+    .fb-correct { background: #E8FDF5; border: 1px solid #6EE7B7; color: var(--green); }
+    .fb-wrong { background: #F3E2D6; border: 1px solid #FFCDD2; color: var(--red); }
+
+    .quiz-actions { display: flex; gap: 10px; margin-top: 1.5rem; }
+  
+    /* Pass 2 (mục E) — vùng chạm tối thiểu 44px cho nút bấm thật trên mobile.
+       Không đụng desktop, không thu nhỏ phần tử nào — chỉ nới ra nếu đang < 44px. */
+    @media (max-width: 767px) {
+      button, .btn, a.btn, input[type="button"], input[type="submit"] {
+        min-height: 44px;
+      }
+    }
+
+    /* Pass 2 (mục C) — thu gọn nội dung dài phía trên canvas, mặc định đóng trên mobile
+       (mẫu playbook mục 5.1). Dùng token canonical trực tiếp (var(--white)/(--ink)...) để
+       chắc chắn có sẵn dù file gốc không khai báo alias --surface/--text riêng. */
+    .collapsible-panel { width: 100%; }
+    .cp-toggle {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      min-height: 44px; padding: 0.65rem 1rem; background: var(--white);
+      border: 1px solid var(--paper-line); border-radius: var(--radius-lg);
+      cursor: pointer; font-weight: 600; font-size: 0.85rem; color: var(--ink);
+    }
+    .cp-toggle span { display: flex; align-items: center; gap: 6px; }
+    .cp-chevron { transition: transform 0.25s ease; color: var(--ink-3); }
+    .cp-body {
+      overflow: hidden; max-height: 1200px; margin-top: 0.5rem;
+      transition: max-height 0.3s ease, opacity 0.2s ease, margin-top 0.3s ease;
+    }
+    .collapsible-panel.collapsed .cp-body { max-height: 0; opacity: 0; margin-top: 0; }
+    .collapsible-panel.collapsed .cp-chevron { transform: rotate(180deg); }
+</style>
+</head>
+<body>
+
+<div class="container">
+  <header class="p5-header">
+    <div class="p5-badge"><i class="ti ti-geometry"></i> Lượng Giác Lớp 10</div>
+    <h1>GIÁ TRỊ LƯỢNG GIÁC CỦA MỘT GÓC 0°–180°</h1>
+    <div class="p5-desc">Khám phá mối liên hệ trực quan giữa điểm M nằm trên đường tròn và các giá trị sin, cos, tan, cot.</div>
+  </header>
+
+  <!-- Pass 2 (mục C) — bọc collapsible-panel, mặc định thu gọn trên mobile để canvas
+       hiện ngay không cần cuộn qua hết chữ. -->
+  <div class="collapsible-panel" id="guidePanel1">
+    <button class="cp-toggle" onclick="toggleCollapsible('guidePanel1')"
+            aria-expanded="true" aria-controls="guidePanel1-body">
+      <span><i class="ti ti-info-circle"></i> Mục đích & hướng dẫn</span>
+      <i class="ti ti-chevron-up cp-chevron"></i>
+    </button>
+    <div class="cp-body" id="guidePanel1-body">
+      <div class="p5-info-panel">
+        <div class="p5-col p5-col-observe">
+          <div class="p5-col-label"><i class="ti ti-target"></i> Mục đích</div>
+          <p style="font-size: 0.85rem; color: var(--text-2);">Hiểu rõ đầu mút M luôn bám chính xác trên nửa đường tròn đơn vị. Quan sát góc lượng giác α và các giá trị hình chiếu thực tế x₀, y₀.</p>
+        </div>
+        <div class="p5-col p5-col-guide">
+          <div class="p5-col-label"><i class="ti ti-hand-click"></i> Hướng dẫn</div>
+          <ul>
+            <li><i class="ti ti-circle-number-1"></i><span>Kéo điểm mút đỏ M dọc theo cung từ 0° đến 180°.</span></li>
+            <li><i class="ti ti-circle-number-2"></i><span>Quan sát sự biến đổi động của cung góc α và bảng thông số.</span></li>
+            <li><i class="ti ti-circle-number-3"></i><span>Bật/Tắt các đường chiếu để nhìn rõ hình học minh họa.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="sim-wrap">
+    <div class="sim-canvas-wrap" id="canvasWrap">
+      <canvas id="simCanvas"></canvas>
+      <div class="tooltip" id="tooltip"></div>
+      <div class="canvas-zoom-controls">
+        <button class="btn-canvas-zoom" onclick="applyZoom(0.7)" title="Phóng to"><i class="ti ti-plus"></i></button>
+        <button class="btn-canvas-zoom" onclick="applyZoom(1.4)" title="Thu nhỏ"><i class="ti ti-minus"></i></button>
+        <button class="btn-canvas-zoom" onclick="resetView()" title="Mặc định"><i class="ti ti-refresh"></i></button>
+      </div>
+      <div class="coord-bar" id="coordBar">x: 0.00 · y: 1.00</div>
+    </div>
+
+    <div class="data-monitor">
+      <div class="data-card">
+        <div class="label">Góc Lượng Giác α</div>
+        <div class="value" id="valAlpha">90°</div>
+      </div>
+      <div class="data-card">
+        <div class="label">Tọa độ M (x₀ ; y₀)</div>
+        <div class="value" id="valPointM">(0.00 ; 1.00)</div>
+      </div>
+      <div class="data-card">
+        <div class="label">cos α (x₀)</div>
+        <div class="value" id="valCos" style="color: var(--blue);">0.00</div>
+      </div>
+      <div class="data-card">
+        <div class="label">sin α (y₀)</div>
+        <div class="value" id="valSin" style="color: var(--green);">1.00</div>
+      </div>
+      <div class="data-card">
+        <div class="label">tan α</div>
+        <div class="value" id="valTan" style="color: #9C27B0;">KXĐ</div>
+      </div>
+      <div class="data-card">
+        <div class="label">cot α</div>
+        <div class="value" id="valCot" style="color: #C58A2E;">0.00</div>
+      </div>
+    </div>
+
+    <div class="p5-controls">
+      <div class="p5-ctrl-header"><i class="ti ti-adjustments-horizontal"></i> Điều khiển hiển thị</div>
+      <div class="p5-ctrl-row p5-row-1">
+        <div class="p5-ctrl-label"><i class="ti ti-eye"></i> Đường chiếu:</div>
+        <div class="btn-group">
+          <button class="p5-btn active" id="btnSin" onclick="toggleView('sin')">sin α (y)</button>
+          <button class="p5-btn active" id="btnCos" onclick="toggleView('cos')">cos α (x)</button>
+          <button class="p5-btn" id="btnTan" onclick="toggleView('tan')">tan α</button>
+          <button class="p5-btn" id="btnCot" onclick="toggleView('cot')">cot α</button>
+        </div>
+      </div>
+      <div class="p5-ctrl-row p5-row-2">
+        <div class="p5-ctrl-label"><i class="ti ti-settings"></i> Mặc định:</div>
+        <div class="btn-group">
+          <button class="p5-btn p5-btn-reset" onclick="resetSim()"><i class="ti ti-refresh"></i> Đưa M về 90°</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="p5-explain" id="mainCaptionBox">
+      <div class="p5-explain-title" id="captionTitle"><i class="ti ti-info-circle"></i> Trạng thái hiện tại</div>
+      <div class="p5-explain-body" id="captionBody">Kéo điểm M dọc theo cung để khám phá các giá trị lượng giác.</div>
+    </div>
+  </div>
+
+  <div class="sdiv"><span>QUIZ ĐOÁN DẤU</span></div>
+
+  <div class="quiz-wrap" id="quizSection">
+    <div class="quiz-header">
+      <div class="quiz-title"><i class="ti ti-device-gamepad-2"></i> Thử thách Đoán dấu dựa vào góc Alpha phía trên</div>
+      <button class="p5-btn" onclick="toggleMiniTable()"><i class="ti ti-table"></i> Bảng dấu tóm tắt</button>
+    </div>
+    
+    <table class="mini-table" id="miniTable">
+      <thead><tr><th>Góc α</th><th>sin</th><th>cos</th><th>tan</th><th>cot</th></tr></thead>
+      <tbody>
+        <tr><td>Nhọn (0°-90°)</td><td>+</td><td>+</td><td>+</td><td>+</td></tr>
+        <tr><td>90°</td><td>+</td><td>0</td><td>KXĐ</td><td>0</td></tr>
+        <tr><td>Tù (90°-180°)</td><td>+</td><td>-</td><td>-</td><td>-</td></tr>
+      </tbody>
+    </table>
+
+    <p style="font-size:0.85rem; margin-bottom: 15px; color: var(--text-2);" id="quizInstr">
+      Hệ thống đã chọn một vị trí ngẫu nhiên cho điểm M (nhìn lên hình vẽ). Hãy đoán dấu của từng giá trị lượng giác!
+    </p>
+
+    <div id="quizRows"></div>
+    <div class="quiz-feedback" id="quizFeedback"></div>
+
+    <div class="quiz-actions">
+      <button class="p5-btn active p5-btn-action" id="btnCheckQuiz" onclick="checkQuiz()"><i class="ti ti-check"></i> Kiểm tra</button>
+      <button class="p5-btn p5-btn-action" onclick="newQuizAngle()"><i class="ti ti-dice-5"></i> Góc mới</button>
+      <button class="p5-btn p5-btn-reset" onclick="window.scrollTo({top: 0, behavior: 'smooth'})"><i class="ti ti-arrow-up"></i> Xem lại đồ thị</button>
+    </div>
+  </div>
+</div>
+
+<script>
+    // ===== LMS safe accessor (PHẦN 7.2 design Toán) — tự thêm, không đụng logic khác =====
+    function LMS(){return window.AiducationLMS||{ready:function(){},progress:function(){},event:function(){},state:function(){},complete:function(){},resize:function(){}};}
+
+    // Pass 2 (mục C) — toggle thu gọn/mở rộng panel nội dung dài, mặc định thu gọn trên
+    // mobile khi tải trang (mẫu playbook mục 5.1). Không lưu trạng thái qua LMS.
+    function toggleCollapsible(id) { document.getElementById(id).classList.toggle('collapsed'); }
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.collapsible-panel').forEach(p => {
+        if (window.matchMedia('(max-width: 768px)').matches) p.classList.add('collapsed');
+      });
+    });
+
+  // ─── 1. CONSTANTS & STATE ───────────────────────
+  const wrap = document.getElementById('canvasWrap');
+  const canvas = document.getElementById('simCanvas');
+  const ctx = canvas.getContext('2d');
+  const tooltip = document.getElementById('tooltip');
+
+  let CW = 0, CH = 0;
+  let PW = 0, PH = 0;
+  let scale = 150;
+  let centerX = 0, centerY = 0;
+
+  // Viewport toán học chuẩn hóa lề thoáng an toàn (sẽ cập nhật động)
+  let vXMin = -1.3, vXMax = 1.3;
+  let vYMin = -0.4, vYMax = 1.6;
+
+  let angleDeg = 90; 
+  let isDragging = false;
+  let simMode = 'explore'; 
+  
+  const showState = { sin: true, cos: true, tan: false, cot: false };
+  const quizAnswers = { sin: null, cos: null, tan: null, cot: null };
+  const quizKeys = ['sin', 'cos', 'tan', 'cot'];
+  const signs = ['+', '-', '0', 'KXĐ'];
+
+  // Lấy bán kính thực tế quy đổi theo Pixel của Canvas
+  function getRadiusPx() {
+    return scale;
+  }
+
+  // ─── 2. CANVAS SETUP & COORDS ───────────────────
+  function resizeCanvas() {
+    const rect = wrap.getBoundingClientRect();
+    CW = rect.width; CH = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+    PW = Math.round(CW * dpr); PH = Math.round(CH * dpr);
+    canvas.width = PW; canvas.height = PH;
+
+    // Thiết lập tâm hệ tọa độ (O) và scale đồng nhất
+    centerX = CW / 2;
+    centerY = CH * 0.75; // O ở 75% chiều cao của canvas
+
+    // Bán kính R=1 của vòng tròn lượng giác
+    // Đảm bảo vừa khít cả chiều ngang lẫn chiều dọc
+    const scaleX = (CW / 2) / 1.4; // chừa lề 1.4 lần R
+    const scaleY = (CH * 0.75) / 1.35; // chừa lề 1.35 lần R ở trên
+    scale = Math.min(scaleX, scaleY);
+
+    // Tính toán lại vXMin, vXMax, vYMin, vYMax
+    vXMin = -centerX / scale;
+    vXMax = (CW - centerX) / scale;
+    vYMin = (centerY - CH) / scale;
+    vYMax = centerY / scale;
+
+    fullDraw();
+  }
+
+  // Sử dụng ResizeObserver đã debounced tránh lỗi ResizeObserver loop
+  let roTimer = null;
+  const ro = new ResizeObserver(() => {
+    clearTimeout(roTimer);
+    roTimer = setTimeout(resizeCanvas, 30);
+  });
+  ro.observe(wrap);
+
+  function m2c(mx, my) {
+    return {
+      px: centerX + mx * scale,
+      py: centerY - my * scale
+    };
+  }
+
+  function c2m(px, py) {
+    return {
+      x: (px - centerX) / scale,
+      y: (centerY - py) / scale
+    };
+  }
+
+  // ─── 3. DRAWING ──────────────────────────────────
+  function fullDraw() {
+    const dpr = window.devicePixelRatio || 1;
+    ctx.setTransform(1, 0, 0, 1, 0, 0);
+    ctx.clearRect(0, 0, PW, PH);
+    ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+    drawGrid();
+    drawUnitCircle();
+    drawProjectionsAndPoint();
+  }
+
+  function drawGrid() {
+    ctx.strokeStyle = 'rgba(0,0,0,0.1)';
+    ctx.lineWidth = 1;
+    
+    // Vẽ lưới nền mờ tọa độ
+    for(let x = -1; x <= 1; x += 0.5) {
+      if(x !== 0) {
+        let p1 = m2c(x, vYMin), p2 = m2c(x, vYMax);
+        ctx.beginPath(); ctx.moveTo(p1.px, p1.py); ctx.lineTo(p2.px, p2.py); ctx.stroke();
+      }
+    }
+    for(let y = 0; y <= 1.5; y += 0.5) {
+      if(y !== 0) {
+        let p1 = m2c(vXMin, y), p2 = m2c(vXMax, y);
+        ctx.beginPath(); ctx.moveTo(p1.px, p1.py); ctx.lineTo(p2.px, p2.py); ctx.stroke();
+      }
+    }
+
+    ctx.strokeStyle = '#4A5568';
+    ctx.lineWidth = 1.5;
+    
+    // Trục Ox
+    let pLeft = m2c(vXMin, 0), pRight = m2c(vXMax, 0);
+    ctx.beginPath(); ctx.moveTo(pLeft.px, pLeft.py); ctx.lineTo(pRight.px, pRight.py); ctx.stroke();
+    ctx.fillStyle = '#4A5568';
+    ctx.beginPath(); ctx.moveTo(pRight.px, pRight.py); ctx.lineTo(pRight.px - 8, pRight.py - 4);
+    ctx.lineTo(pRight.px - 8, pRight.py + 4); ctx.fill();
+    ctx.font = 'bold 13px "Courier New"';
+    ctx.fillText('x', pRight.px - 15, pRight.py + 18);
+
+    // Trục Oy
+    let pBottom = m2c(0, vYMin), pTop = m2c(0, vYMax);
+    ctx.beginPath(); ctx.moveTo(pBottom.px, pBottom.py); ctx.lineTo(pTop.px, pTop.py); ctx.stroke();
+    ctx.beginPath(); ctx.moveTo(pTop.px, pTop.py); ctx.lineTo(pTop.px - 4, pTop.py + 8);
+    ctx.lineTo(pTop.px + 4, pTop.py + 8); ctx.fill();
+    ctx.fillText('y', pTop.px + 12, pTop.py + 14);
+
+    // Tâm O
+    let pOrg = m2c(0, 0);
+    ctx.fillText('O', pOrg.px - 16, pOrg.py + 18);
+
+    // Ticks chỉ số 1, -1
+    [[1,0], [-1,0]].forEach(pt => {
+      let p = m2c(pt[0], pt[1]);
+      ctx.beginPath(); ctx.moveTo(p.px, p.py - 3); ctx.lineTo(p.px, p.py + 3); ctx.stroke();
+      ctx.font = 'bold 12px "Courier New"';
+      ctx.fillText(pt[0], p.px - (pt[0]>0?4:10), p.py + 16);
+    });
+    let p1Y = m2c(0, 1);
+    ctx.beginPath(); ctx.moveTo(p1Y.px - 3, p1Y.py); ctx.lineTo(p1Y.px + 3, p1Y.py); ctx.stroke();
+    ctx.font = 'bold 12px "Courier New"';
+    ctx.fillText('1', p1Y.px - 14, p1Y.py + 4);
+  }
+
+  function drawUnitCircle() {
+    ctx.strokeStyle = 'rgba(15, 27, 53, 0.25)';
+    ctx.lineWidth = 1.2;
+    let pOrg = m2c(0, 0);
+    let rPx = getRadiusPx();
+    
+    // Nửa vòng tròn dưới mờ đứt đoạn
+    ctx.setLineDash([4, 4]);
+    ctx.beginPath(); ctx.arc(pOrg.px, pOrg.py, rPx, 0, Math.PI); ctx.stroke();
+    
+    // Nửa đường tròn lượng giác đơn vị chính (Nét liền đậm)
+    ctx.setLineDash([]);
+    ctx.strokeStyle = '#1A1A1A';
+    ctx.lineWidth = 3;
+    ctx.beginPath(); ctx.arc(pOrg.px, pOrg.py, rPx, Math.PI, 0); ctx.stroke();
+  }
+
+  function drawProjectionsAndPoint() {
+    const rad = angleDeg * Math.PI / 180;
+    
+    const x0 = Math.cos(rad);
+    const y0 = Math.sin(rad);
+    
+    const pO = m2c(0, 0);
+    const rPx = getRadiusPx();
+    
+    const pM = {
+      px: pO.px + rPx * Math.cos(rad),
+      py: pO.py - rPx * Math.sin(rad)
+    };
+    
+    const pN = { px: pM.px, py: pO.py }; // Chi chiếu Ox
+    const pP = { px: pO.px, py: pM.py }; // Chi chiếu Oy
+
+    // Vẽ cung góc alpha trực quan
+    ctx.lineWidth = 1.5;
+    ctx.strokeStyle = '#C58A2E';
+    ctx.fillStyle = 'rgba(239, 159, 39, 0.1)';
+    ctx.beginPath();
+    ctx.moveTo(pO.px, pO.py);
+    ctx.arc(pO.px, pO.py, 32, 0, -rad, true);
+    ctx.lineTo(pO.px, pO.py);
+    ctx.fill(); ctx.stroke();
+    
+    ctx.fillStyle = '#C58A2E';
+    ctx.font = 'italic bold 13px "Courier New"';
+    let textRad = -rad / 2;
+    ctx.fillText('α', pO.px + 45 * Math.cos(textRad) - 4, pO.py + 45 * Math.sin(textRad) + 4);
+
+    // Đường dóng nét đứt hình chiếu
+    ctx.lineWidth = 1.5;
+
+    // Đường biểu diễn tan
+    if (showState.tan && Math.abs(x0) > 0.001) {
+      let pT2 = m2c(1, Math.tan(rad));
+      let pT1 = m2c(1, 0);
+      
+      // Vẽ đường kéo dài từ O qua M (hoặc hướng ngược lại) đến x = 1
+      ctx.strokeStyle = 'rgba(156, 39, 176, 0.4)';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(pO.px, pO.py); ctx.lineTo(pT2.px, pT2.py); ctx.stroke();
+      
+      // Vẽ đoạn thẳng biểu diễn tan trên trục tangent x = 1
+      ctx.strokeStyle = '#9C27B0';
+      ctx.setLineDash([]);
+      ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(pT1.px, pT1.py); ctx.lineTo(pT2.px, pT2.py); ctx.stroke();
+      
+      // Điểm giao tangent
+      ctx.fillStyle = '#9C27B0';
+      ctx.beginPath(); ctx.arc(pT2.px, pT2.py, 4.5, 0, 2 * Math.PI); ctx.fill();
+    }
+    
+    // Đường biểu diễn cot
+    if (showState.cot && Math.abs(y0) > 0.001) {
+      let pC2 = m2c(1/Math.tan(rad), 1);
+      let pC1 = m2c(0, 1);
+      
+      // Vẽ đường kéo dài từ O qua M (hoặc hướng ngược lại) đến y = 1
+      ctx.strokeStyle = 'rgba(230, 81, 0, 0.4)';
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(pO.px, pO.py); ctx.lineTo(pC2.px, pC2.py); ctx.stroke();
+      
+      // Vẽ đoạn thẳng biểu diễn cot trên trục cotangent y = 1
+      ctx.strokeStyle = '#C58A2E';
+      ctx.setLineDash([]);
+      ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(pC1.px, pC1.py); ctx.lineTo(pC2.px, pC2.py); ctx.stroke();
+      
+      // Điểm giao cotangent
+      ctx.fillStyle = '#C58A2E';
+      ctx.beginPath(); ctx.arc(pC2.px, pC2.py, 4.5, 0, 2 * Math.PI); ctx.fill();
+    }
+
+    // Cos α (Ox)
+    if (showState.cos) {
+      // Đường dóng từ M xuống N
+      ctx.strokeStyle = '#8A92A3';
+      ctx.setLineDash([4, 4]);
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(pM.px, pM.py); ctx.lineTo(pN.px, pN.py); ctx.stroke();
+      
+      // Khối cos đậm màu trên Ox
+      ctx.strokeStyle = (x0 < 0) ? '#E53935' : '#1E88E5';
+      ctx.setLineDash([]);
+      ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(pO.px, pO.py); ctx.lineTo(pN.px, pN.py); ctx.stroke();
+      
+      // Vẽ nhãn cos α ngay trên trục hoành
+      if (Math.abs(x0) > 0.05) {
+        ctx.fillStyle = (x0 < 0) ? '#E53935' : '#1E88E5';
+        ctx.font = 'bold 12px "Courier New"';
+        ctx.textAlign = 'center';
+        ctx.fillText('cos α', pN.px, pO.py + (x0 < 0 ? -12 : 16));
+      }
+    }
+
+    // Sin α (Oy)
+    if (showState.sin) {
+      // Đường dóng từ M sang P
+      ctx.strokeStyle = '#8A92A3';
+      ctx.setLineDash([4, 4]);
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(pM.px, pM.py); ctx.lineTo(pP.px, pP.py); ctx.stroke();
+      
+      // Khối sin đậm màu trên Oy
+      ctx.strokeStyle = '#43A047';
+      ctx.setLineDash([]);
+      ctx.lineWidth = 4;
+      ctx.beginPath(); ctx.moveTo(pO.px, pO.py); ctx.lineTo(pP.px, pP.py); ctx.stroke();
+      
+      // Vẽ nhãn sin α ngay trên trục tung
+      if (Math.abs(y0) > 0.05) {
+        ctx.fillStyle = '#43A047';
+        ctx.font = 'bold 12px "Courier New"';
+        ctx.textAlign = 'right';
+        ctx.fillText('sin α', pO.px - 8, pP.py);
+      }
+    }
+    
+    // Đoạn thẳng bán kính OM nối tâm
+    ctx.setLineDash([]);
+    ctx.strokeStyle = '#1A7A5E';
+    ctx.lineWidth = 2.5;
+    ctx.beginPath(); ctx.moveTo(pO.px, pO.py); ctx.lineTo(pM.px, pM.py); ctx.stroke();
+
+    // Điểm đầu mút M đỏ
+    ctx.fillStyle = '#C15F3C';
+    ctx.beginPath(); ctx.arc(pM.px, pM.py, 7.5, 0, 2 * Math.PI); ctx.fill();
+    ctx.strokeStyle = '#FFF'; ctx.lineWidth = 1.5; ctx.stroke();
+    
+    ctx.fillStyle = '#1A1A1A';
+    ctx.font = 'bold 13px "Courier New"';
+    ctx.textAlign = 'left';
+    ctx.fillText('M', pM.px + 10, pM.py - 10);
+
+    // Hover Zones Tooltip text ẩn số đo khi ở chế độ Quiz
+    if (simMode === 'quiz') {
+      window.hoverZones = {
+        M: { px: pM.px, py: pM.py, text: `Điểm M đại diện góc α` },
+        N: { px: pN.px, py: pN.py, text: `Hình chiếu N lên Ox → x₀ = cos α` },
+        P: { px: pP.px, py: pP.py, text: `Hình chiếu P lên Oy → y₀ = sin α` }
+      };
+    } else {
+      window.hoverZones = {
+        M: { px: pM.px, py: pM.py, text: `Điểm M đại diện góc α = ${angleDeg.toFixed(0)}°` },
+        N: { px: pN.px, py: pN.py, text: `Hình chiếu N lên Ox → x₀ = cos α = ${x0.toFixed(2)}` },
+        P: { px: pP.px, py: pP.py, text: `Hình chiếu P lên Oy → y₀ = sin α = ${y0.toFixed(2)}` }
+      };
+    }
+
+    updateMonitorValues(angleDeg, x0, y0);
+  }
+
+  // ─── 4. INTERACTION & EVENTS ──────────────────────
+  function getMouseAngle(evt) {
+    const rect = canvas.getBoundingClientRect();
+    const t = (evt.touches && evt.touches[0]) ? evt.touches[0] : (evt.changedTouches && evt.changedTouches[0] ? evt.changedTouches[0] : evt);
+    const px = t.clientX - rect.left;
+    const py = t.clientY - rect.top;
+    
+    const { x, y } = c2m(px, py);
+    let rad = Math.atan2(y, x);
+    if (rad < 0) rad += 2 * Math.PI;
+    
+    let deg = rad * 180 / Math.PI;
+    if (deg > 180 && deg < 270) deg = 180;
+    if (deg >= 270) deg = 0;
+    
+    return deg;
+  }
+
+  function startDrag(evt) {
+    const rect = canvas.getBoundingClientRect();
+    const t = (evt.touches && evt.touches[0]) ? evt.touches[0] : (evt.changedTouches && evt.changedTouches[0] ? evt.changedTouches[0] : evt);
+    const px = t.clientX - rect.left;
+    const py = t.clientY - rect.top;
+
+    const rad = angleDeg * Math.PI / 180;
+    const pO = m2c(0, 0);
+    const rPx = getRadiusPx();
+    const pM = {
+      px: pO.px + rPx * Math.cos(rad),
+      py: pO.py - rPx * Math.sin(rad)
+    };
+    
+    // Vùng bao click bắt điểm mút rộng 24px linh hoạt
+    if (Math.hypot(px - pM.px, py - pM.py) < 24) {
+      isDragging = true;
+      if(simMode === 'quiz') simMode = 'explore'; 
+      updateFromMouse(evt);
+    }
+  }
+  
+  function drag(evt) {
+    if (!isDragging) {
+      handleHover(evt);
+      return;
+    }
+    updateFromMouse(evt);
+  }
+  
+  function stopDrag() { isDragging = false; }
+
+  function updateFromMouse(evt) {
+    evt.preventDefault();
+    angleDeg = Math.round(getMouseAngle(evt)); // Làm tròn độ nguyên
+    if (simMode === 'quiz') {
+      simMode = 'explore';
+      document.getElementById('quizFeedback').style.display = 'none';
+      document.getElementById('quizInstr').textContent = 'Hệ thống đã chọn một vị trí ngẫu nhiên cho điểm M (nhìn lên hình vẽ). Hãy đoán dấu của từng giá trị lượng giác!';
+      buildQuizRows();
+    }
+    updateCaption();
+    fullDraw();
+  }
+
+  function applyZoom(factor) {
+    if (CW === 0 || CH === 0) return;
+    zoomAt(CW / 2, CH / 2, factor);
+  }
+
+  function resetView() {
+    resizeCanvas();
+  }
+
+  function zoomAt(cx, cy, factor) {
+    if (CW === 0 || CH === 0) return;
+    const { x: mx, y: my } = c2m(cx, cy);
+    const xRange = vXMax - vXMin;
+    const yRange = vYMax - vYMin;
+    const newXR = xRange * factor;
+    const newYR = yRange * factor;
+    if (newXR < 0.2 || newXR > 50) return;
+    const pctX = cx / CW;
+    const pctY = 1 - cy / CH;
+    vXMin = mx - pctX * newXR;
+    vXMax = vXMin + newXR;
+    vYMin = my - pctY * newYR;
+    vYMax = vYMin + newYR;
+    scale = CW / newXR;
+    fullDraw();
+  }
+
+  function handleHover(evt) {
+    const rect = canvas.getBoundingClientRect();
+    const px = evt.clientX - rect.left;
+    const py = evt.clientY - rect.top;
+    const { x, y } = c2m(px, py);
+    const cb = document.getElementById('coordBar');
+    if (cb) cb.textContent = `x: ${x.toFixed(2)} · y: ${y.toFixed(2)}`;
+
+    if (!window.hoverZones) return;
+
+    let hit = null;
+    for (const key in window.hoverZones) {
+      const z = window.hoverZones[key];
+      if (Math.hypot(px - z.px, py - z.py) < 16) { hit = z; break; }
+    }
+
+    if (hit) {
+      tooltip.style.opacity = 1;
+      tooltip.style.left = px + 'px';
+      tooltip.style.top = py + 'px';
+      tooltip.textContent = hit.text;
+    } else {
+      tooltip.style.opacity = 0;
+    }
+  }
+
+  canvas.addEventListener('mousedown', startDrag);
+  canvas.addEventListener('mousemove', drag);
+  window.addEventListener('mouseup', stopDrag);
+  
+  canvas.addEventListener('touchstart', startDrag, {passive: false});
+  canvas.addEventListener('touchmove', drag, {passive: false});
+  window.addEventListener('touchend', stopDrag);
+
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const cx = e.clientX - rect.left;
+    const cy = e.clientY - rect.top;
+    const factor = e.deltaY > 0 ? 1.15 : 0.85;
+    zoomAt(cx, cy, factor);
+  }, { passive: false });
+
+  // ─── 5. UI UPDATES, MONITORS & CAPTIONS ───────────
+  function updateMonitorValues(deg, x0, y0) {
+    const valAlpha = document.getElementById('valAlpha');
+    const valPointM = document.getElementById('valPointM');
+    const valCos = document.getElementById('valCos');
+    const valSin = document.getElementById('valSin');
+    const valTan = document.getElementById('valTan');
+    const valCot = document.getElementById('valCot');
+
+    const cosCard = valCos.parentElement;
+    const tanCard = valTan.parentElement;
+
+    if (simMode === 'quiz') {
+      valAlpha.textContent = `?°`;
+      valPointM.textContent = `(? ; ?)`;
+      valCos.textContent = `?`;
+      valSin.textContent = `?`;
+      valTan.textContent = `?`;
+      valCot.textContent = `?`;
+      
+      // Reset styles của các card
+      cosCard.style.background = '#F8FAFC';
+      cosCard.style.borderColor = 'var(--border)';
+      tanCard.style.background = '#F8FAFC';
+      tanCard.style.borderColor = 'var(--border)';
+      return;
+    }
+
+    // explore mode
+    valAlpha.textContent = `${deg.toFixed(0)}°`;
+    valPointM.textContent = `(${x0.toFixed(2)} ; ${y0.toFixed(2)})`;
+    valSin.textContent = y0.toFixed(2);
+
+    // tan
+    if (Math.abs(x0) < 0.001) {
+      valTan.textContent = 'KXĐ';
+    } else {
+      valTan.textContent = (y0 / x0).toFixed(2);
+    }
+
+    // cot
+    if (Math.abs(y0) < 0.001) {
+      valCot.textContent = 'KXĐ';
+    } else {
+      valCot.textContent = (x0 / y0).toFixed(2);
+    }
+
+    // Highlight cos và tan khi giá trị bị âm (góc tù)
+    if (x0 < 0) {
+      cosCard.style.background = '#FFF8E1';
+      cosCard.style.borderColor = '#FFE082';
+      valCos.innerHTML = `<i class="ti ti-alert-triangle" style="color: var(--amber); font-size: 14px;"></i> ${x0.toFixed(2)}`;
+
+      tanCard.style.background = '#FFF8E1';
+      tanCard.style.borderColor = '#FFE082';
+      if (Math.abs(x0) >= 0.001) {
+        valTan.innerHTML = `<i class="ti ti-alert-triangle" style="color: var(--amber); font-size: 14px;"></i> ${(y0 / x0).toFixed(2)}`;
+      }
+    } else {
+      cosCard.style.background = '#F8FAFC';
+      cosCard.style.borderColor = 'var(--border)';
+      valCos.textContent = x0.toFixed(2);
+
+      tanCard.style.background = '#F8FAFC';
+      tanCard.style.borderColor = 'var(--border)';
+    }
+  }
+
+  function toggleView(key) {
+    showState[key] = !showState[key];
+    const btn = document.getElementById('btn' + key.charAt(0).toUpperCase() + key.slice(1));
+    if (showState[key]) btn.classList.add('active');
+    else btn.classList.remove('active');
+    fullDraw();
+  }
+
+  function resetSim() {
+    simMode = 'explore';
+    angleDeg = 90;
+    document.getElementById('quizInstr').textContent = 'Hệ thống đã chọn một vị trí ngẫu nhiên cho điểm M (nhìn lên hình vẽ). Hãy đoán dấu của từng giá trị lượng giác!';
+    document.getElementById('quizFeedback').style.display = 'none';
+    buildQuizRows();
+    updateCaption();
+    fullDraw();
+  }
+
+  function updateCaption() {
+    if (simMode === 'quiz') {
+      setCaption('Chế độ thử thách', 'Hệ thống đang ẩn giải thích phân tích. Hãy điền đáp án bài Quiz ở dưới dựa vào góc hiện tại!', 'alert');
+      return;
+    }
+
+    let title = '', body = '', isAlert = false;
+
+    if (angleDeg > 0 && angleDeg < 90) {
+      title = `Góc nhọn α = ${angleDeg.toFixed(0)}°`;
+      body = `Góc nhọn nằm ở góc phần tư thứ I: Hoành độ và tung độ của M đều <span class="highlight-val">dương (+)</span> → <p style="margin-top:4px;"><b>cos α > 0</b> và <b>sin α > 0</b>.</p>`;
+    } else if (angleDeg > 90 && angleDeg < 180) {
+      title = `Góc tù α = ${angleDeg.toFixed(0)}°`;
+      body = `Góc tù nằm ở góc phần tư thứ II: Điểm M nằm bên trái trục Oy nên hoành độ âm, tung độ dương → <p style="margin-top:4px;"><b>cos α < 0</b> và <b>sin α > 0</b>.</p>`;
+      isAlert = true;
+    } else if (Math.abs(angleDeg - 90) < 0.1) {
+      title = `Góc vuông α = 90°`;
+      body = `Điểm M trùng với đỉnh trên trục tung. Tại đây hoành độ bằng 0 và tung độ bằng 1 → <p style="margin-top:4px;"><b>cos 90° = 0</b> và <b>sin 90° = 1</b>.</p>`;
+    } else if (angleDeg === 0) {
+      title = `Góc đặc biệt α = 0°`;
+      body = `M nằm trên tia Ox trùng điểm đầu cố định → <p style="margin-top:4px;"><b>cos 0° = 1</b> và <b>sin 0° = 0</b>.</p>`;
+    } else if (angleDeg === 180) {
+      title = `Góc bẹt α = 180°`;
+      body = `M nằm đối xứng qua trục tung ở cực bên trái Ox → <p style="margin-top:4px;"><b>cos 180° = -1</b> và <b>sin 180° = 0</b>.</p>`;
+      isAlert = true;
+    }
+
+    setCaption(title, body, isAlert ? 'alert' : '');
+  }
+
+  function setCaption(title, body, cls) {
+    const box = document.getElementById('mainCaptionBox');
+    document.getElementById('captionTitle').innerHTML = `<i class="ti ti-info-circle"></i> ${title}`;
+    document.getElementById('captionBody').innerHTML = body;
+    if (cls) box.classList.add(cls); else box.classList.remove('alert');
+  }
+
+  // ─── 6. QUIZ LOGIC ────────────────────────────────
+  function toggleMiniTable() {
+    document.getElementById('miniTable').classList.toggle('show');
+  }
+
+  function buildQuizRows() {
+    const container = document.getElementById('quizRows');
+    container.innerHTML = '';
+    quizKeys.forEach(k => {
+      quizAnswers[k] = null; 
+      const row = document.createElement('div');
+      row.className = 'quiz-row';
+      row.innerHTML = `<div class="quiz-label">${k} α</div><div class="quiz-options" id="opt-${k}"></div>`;
+      container.appendChild(row);
+      
+      const optContainer = row.querySelector('.quiz-options');
+      signs.forEach(s => {
+        const btn = document.createElement('button');
+        btn.className = 'quiz-btn';
+        btn.textContent = s;
+        btn.onclick = () => selectQuizAnswer(k, s, btn);
+        optContainer.appendChild(btn);
+      });
+    });
+  }
+
+  function selectQuizAnswer(key, sign, btn) {
+    quizAnswers[key] = sign;
+    const btns = document.getElementById(`opt-${key}`).querySelectorAll('.quiz-btn');
+    btns.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+  }
+
+  function newQuizAngle() {
+    simMode = 'quiz';
+    // Mở rộng các góc thử thách gồm cả các góc biên đặc biệt 0, 90, 180
+    const angles = [0, 30, 45, 60, 90, 120, 135, 150, 180];
+    let newAngle;
+    do { newAngle = angles[Math.floor(Math.random() * angles.length)]; } while (newAngle === angleDeg);
+    angleDeg = newAngle;
+    
+    document.getElementById('quizFeedback').style.display = 'none';
+    document.getElementById('quizInstr').textContent = 'Hệ thống đã chọn một vị trí ngẫu nhiên cho điểm M (nhìn lên hình vẽ). Hãy đoán dấu của từng giá trị lượng giác!';
+    buildQuizRows();
+    updateCaption();
+    fullDraw();
+  }
+
+  function getCorrectSign(key, angle) {
+    const rad = angle * Math.PI / 180;
+    const c = Math.cos(rad), s = Math.sin(rad);
+    // Xử lý sai số làm tròn số thực
+    const approxZero = (val) => Math.abs(val) < 0.001;
+
+    if (key === 'sin') return approxZero(s) ? '0' : (s > 0 ? '+' : '-');
+    if (key === 'cos') return approxZero(c) ? '0' : (c > 0 ? '+' : '-');
+    if (key === 'tan') return approxZero(c) ? 'KXĐ' : (approxZero(s/c) ? '0' : (s/c > 0 ? '+' : '-'));
+    if (key === 'cot') return approxZero(s) ? 'KXĐ' : (approxZero(c/s) ? '0' : (c/s > 0 ? '+' : '-'));
+  }
+
+  function checkQuiz() {
+    let unanswered = [];
+    quizKeys.forEach(k => {
+      if (quizAnswers[k] === null) unanswered.push(k);
+    });
+    
+    if (unanswered.length > 0) {
+      alert("Vui lòng chọn dấu cho tất cả các giá trị lượng giác trước khi kiểm tra!");
+      return;
+    }
+    
+    const feedbackBox = document.getElementById('quizFeedback');
+    feedbackBox.innerHTML = '';
+    feedbackBox.style.display = 'block';
+    
+    let allCorrect = true;
+    
+    quizKeys.forEach(k => {
+      const userAns = quizAnswers[k];
+      const correctAns = getCorrectSign(k, angleDeg);
+      const isCorrect = userAns === correctAns;
+      if (!isCorrect) allCorrect = false;
+      
+      let explainText = '';
+      if (isCorrect) {
+        if (correctAns === '+') {
+          if (k === 'sin') explainText = 'Chính xác! Tung độ y₀ của M nằm phía trên trục hoành nên sin α > 0.';
+          else if (k === 'cos') explainText = 'Chính xác! Hoành độ x₀ của M nằm bên phải trục tung nên cos α > 0.';
+          else explainText = `Chính xác! Cả sin α và cos α đều dương nên ${k} α > 0.`;
+        } else if (correctAns === '-') {
+          if (k === 'cos') explainText = 'Chính xác! Hoành độ x₀ của M nằm bên trái trục tung (góc tù) nên cos α < 0.';
+          else explainText = `Chính xác! Do sin α > 0 và cos α < 0 nên ${k} α < 0.`;
+        } else if (correctAns === '0') {
+          explainText = `Chính xác! Tại góc này, ${k} α = 0.`;
+        } else {
+          explainText = `Chính xác! Tại góc này, ${k} α không xác định do mẫu số bằng 0.`;
+        }
+      } else {
+        if (k === 'sin') {
+          if (correctAns === '0') {
+            explainText = 'Chưa đúng. Tại đây điểm M nằm trên trục hoành nên tung độ y₀ = 0 → sin α = 0.';
+          } else {
+            explainText = 'Chưa đúng. Tung độ y₀ của M nằm phía trên trục hoành nên sin α luôn dương (+) với mọi góc từ 0° đến 180° (ngoại trừ 0° và 180° bằng 0).';
+          }
+        } else if (k === 'cos') {
+          if (correctAns === '-') {
+            explainText = 'Chưa đúng. cos α = hoành độ x₀ của M. M đang ở bên TRÁI trục tung (góc tù) nên hoành độ x₀ < 0 → cos α < 0.';
+          } else if (correctAns === '0') {
+            explainText = 'Chưa đúng. Tại 90° M nằm trên trục tung nên hoành độ x₀ = 0 → cos α = 0.';
+          } else {
+            explainText = 'Chưa đúng. cos α = hoành độ x₀ của M. M đang ở bên PHẢI trục tung nên cos α > 0.';
+          }
+        } else if (k === 'tan') {
+          if (correctAns === 'KXĐ') {
+            explainText = 'Chưa đúng. Tại 90°, cos 90° = 0 nên tan 90° = sin/cos không xác định (mẫu số bằng 0).';
+          } else if (correctAns === '-') {
+            explainText = 'Chưa đúng. Vì sin α > 0 và cos α < 0 (góc tù) nên tan α = sin/cos phải mang dấu âm (-).';
+          } else if (correctAns === '0') {
+            explainText = 'Chưa đúng. Vì sin α = 0 nên tan α = 0.';
+          } else {
+            explainText = 'Chưa đúng. Vì cả sin α và cos α đều dương nên tan α phải mang dấu dương (+).';
+          }
+        } else if (k === 'cot') {
+          if (correctAns === 'KXĐ') {
+            explainText = 'Chưa đúng. Tại đây sin α = 0 nên cot α = cos/sin không xác định (mẫu số bằng 0).';
+          } else if (correctAns === '-') {
+            explainText = 'Chưa đúng. Vì sin α > 0 và cos α < 0 (góc tù) nên cot α = cos/sin phải mang dấu âm (-).';
+          } else if (correctAns === '0') {
+            explainText = 'Chưa đúng. Vì cos α = 0 nên cot α = 0.';
+          } else {
+            explainText = 'Chưa đúng. Vì cả sin α và cos α đều dương nên cot α phải mang dấu dương (+).';
+          }
+        }
+      }
+      
+      const item = document.createElement('div');
+      item.className = `fb-item ${isCorrect ? 'fb-correct' : 'fb-wrong'}`;
+      item.innerHTML = `
+        <i class="ti ti-${isCorrect ? 'check' : 'x'}"></i>
+        <div>
+          <strong>${k.toUpperCase()} α:</strong> Bạn chọn [${userAns}], Đáp án đúng [${correctAns}].
+          <div style="margin-top: 4px; font-size: 0.8rem; opacity: 0.9;">${explainText}</div>
+        </div>
+      `;
+      feedbackBox.appendChild(item);
+    });
+    
+    const instr = document.getElementById('quizInstr');
+    if (allCorrect) {
+      instr.innerHTML = '<span style="color: var(--green); font-weight: bold;"><i class="ti ti-trophy"></i> Xuất sắc! Bạn đã đoán chính xác tất cả các dấu! 🎉</span>';
+    } else {
+      instr.innerHTML = '<span style="color: var(--red); font-weight: bold;"><i class="ti ti-alert-circle"></i> Có một vài câu chưa đúng. Hãy xem lại giải thích ở dưới nhé!</span>';
+    }
+  }
+
+  document.addEventListener("DOMContentLoaded", function() {
+    buildQuizRows();
+    resizeCanvas();
+    setTimeout(resizeCanvas, 150);
+  });
+
+    // ===== Báo chiều cao thật cho LMS (PHẦN 7.7) — tự thêm =====
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    const _athenaResizeObserver = new ResizeObserver(() => {
+      clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+    });
+    _athenaResizeObserver.observe(document.body);
+</script>
+</body>
+</html>
