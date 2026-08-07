@@ -99,7 +99,6 @@
       -webkit-font-smoothing: antialiased;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
     }
 
     /* ── MAIN CONTAINER (KHÔNG CÓ HEADER BANNER TRÊN CÙNG) ── */
@@ -145,28 +144,41 @@
     }
 
     @media (max-width: 1023px) {
+      .app-body {
+        margin: 12px auto;
+        gap: 14px;
+      }
       .sim-body {
         display: flex;
         flex-direction: column;
       }
       .sim-right {
         order: 1; /* Canvas nhảy lên TRƯỚC trên Mobile */
+        padding: 12px;
+        gap: 8px;
       }
       .sim-left {
         order: 2; /* Sidebar điều khiển ở SAU */
         border-right: none;
         border-top: 1.5px solid var(--paper-line);
+        padding: 12px 14px !important;
+        gap: 8px !important;
+        min-height: 480px;
+      }
+      .sim-caption {
+        margin-top: 4px !important;
       }
     }
 
-    /* ── LEFT SIDEBAR ── */
+    /* ── LEFT SIDEBAR (Khóa chiều cao theo bước dài nhất) ── */
     .sim-left {
       border-right: 1.5px solid var(--paper-line);
-      padding: 20px 18px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 10px;
       background: var(--cream);
+      min-height: 520px;
     }
 
     /* Stepper */
@@ -547,34 +559,78 @@
       z-index: 10;
     }
 
+    /* Floating Canvas Zoom Controls (Unified Vertical Widget) */
+    .canvas-zoom-controls {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 15;
+      display: flex;
+      flex-direction: column;
+      background: rgba(250, 247, 240, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(229, 222, 207, 0.6);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+      opacity: 0.8;
+      transition: opacity 0.2s ease, background 0.2s ease;
+    }
+
+    .canvas-zoom-controls:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .btn-canvas-zoom {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      font-size: 16px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s, color .2s;
+      color: var(--ink-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .btn-canvas-zoom:not(:last-child) {
+      border-bottom: 1px solid rgba(229, 222, 207, 0.6);
+    }
+
+    .btn-canvas-zoom:hover {
+      background: var(--jade-pale);
+      color: var(--jade-deep);
+    }
+
+    .btn-canvas-zoom:active {
+      background: var(--sage-pale);
+    }
+
     .coord-bar {
-      font-size: 13px;
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      z-index: 12;
+      font-size: 11px;
+      font-weight: 500;
       color: var(--ink-3);
       font-family: var(--font-mono);
       font-variant-numeric: tabular-nums;
-      text-align: right;
-      padding: 2px 4px;
-      height: 20px;
+      background: rgba(250, 247, 240, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(229, 222, 207, 0.5);
+      opacity: 0.8;
+      pointer-events: none;
     }
-
-    .zoom-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
-    
-    .btn-zoom {
-      min-height: 44px;
-      padding: 8px 16px;
-      background: var(--white);
-      border: 1.5px solid var(--paper-line-2);
-      border-radius: var(--radius-sm);
-      font-size: 13px;
-      font-weight: 600;
-      cursor: pointer;
-      transition: all .2s;
-      color: var(--ink-2);
-    }
-
-    .btn-zoom:hover { border-color: var(--jade-deep); color: var(--jade-deep); }
-    .btn-zoom.accent { background: var(--jade-deep); color: var(--white); border-color: var(--jade-deep); }
-    .btn-zoom.accent:hover { background: var(--jade-dark); }
 
     .point-picker-hint {
       padding: 10px 12px;
@@ -589,6 +645,7 @@
       align-items: flex-start;
     }
 
+    .hint-text:empty { display: none; }
     .hidden { display: none !important; }
     input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
     #progressWrap { display: none !important; }
@@ -672,12 +729,12 @@
         <div class="canvas-wrap" id="canvasWrap">
           <canvas id="simCanvas"></canvas>
           <div class="tooltip-box" id="simTooltip"></div>
-        </div>
-        <div class="coord-bar" id="coordBar">x: — · y: —</div>
-        <div class="zoom-row">
-          <button class="btn-zoom accent" onclick="applyZoom(0.7)">＋ Phóng to</button>
-          <button class="btn-zoom accent" onclick="applyZoom(1.4)">－ Thu nhỏ</button>
-          <button class="btn-zoom" onclick="resetView()">↺ Mặc định</button>
+          <div class="canvas-zoom-controls">
+            <button class="btn-canvas-zoom" onclick="applyZoom(0.7)" title="Phóng to"><i class="ti ti-plus"></i></button>
+            <button class="btn-canvas-zoom" onclick="applyZoom(1.4)" title="Thu nhỏ"><i class="ti ti-minus"></i></button>
+            <button class="btn-canvas-zoom" onclick="resetView()" title="Mặc định"><i class="ti ti-refresh"></i></button>
+          </div>
+          <div class="coord-bar" id="coordBar">x: — · y: —</div>
         </div>
       </div>
     </div>

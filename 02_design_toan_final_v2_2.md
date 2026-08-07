@@ -859,6 +859,28 @@ function drawLineLabel(label, color, bndFn) {
 .hint-text:empty { display: none; } /* Ẩn khoảng trắng rỗng khi chưa có thông báo */
 ```
 
+```javascript
+/* JS chuẩn cho tính năng Lăn chuột Zoom (Mouse Wheel Zoom) trên Canvas */
+function setupWheel(canvas, getCW, getCH) {
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const rect = canvas.getBoundingClientRect();
+    const factor = e.deltaY > 0 ? 1.15 : 0.87;
+    const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+    const CW = getCW(), CH = getCH();
+    if (CW === 0 || CH === 0) return;
+    const { x: mx, y: my } = c2m(cx, cy, CW, CH);
+    const xRange = vXMax - vXMin, yRange = vYMax - vYMin;
+    const newXR = xRange * factor, newYR = yRange * factor;
+    if (newXR < 2 || newXR > 500) return;
+    const pctX = cx / CW, pctY = 1 - cy / CH;
+    vXMin = mx - pctX * newXR; vXMax = vXMin + newXR;
+    vYMin = my - pctY * newYR; vYMax = vYMin + newYR;
+    fullRedraw();
+  }, { passive: false });
+}
+```
+
 ### 3.2 Trạng thái nút
 
 ```css
