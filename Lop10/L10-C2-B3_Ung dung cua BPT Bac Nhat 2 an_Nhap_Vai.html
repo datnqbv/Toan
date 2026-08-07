@@ -1251,9 +1251,40 @@ function fullRedraw() {
 }
 
 // ═══════════════════════════════════════════════
-// 5. MOUSE & TOUCH EVENTS
+// 5. MOUSE & TOUCH EVENTS (ZOOM & PAN)
 // ═══════════════════════════════════════════════
-let isPanning = false, panStartX, panStartY, panVX0, panVY0;
+let isPanning = false, panStartPX = 0, panStartPY = 0;
+let panVX0 = 0, panVY0 = 0;
+
+function applyZoom(factor) {
+  if (CW === 0 || CH === 0) return;
+  zoomAt(CW / 2, CH / 2, factor);
+}
+
+function resetView() {
+  const sc = scenarios[state.scIdx];
+  if (sc && sc.vBounds) {
+    state.vXMin = sc.vBounds.xMin;
+    state.vXMax = sc.vBounds.xMax;
+    state.vYMin = sc.vBounds.yMin;
+    state.vYMax = sc.vBounds.yMax;
+  } else {
+    state.vXMin = -10; state.vXMax = 100;
+    state.vYMin = -10; state.vYMax = 100;
+  }
+  fullRedraw();
+}
+
+function zoomAt(cx, cy, factor) {
+  const { x: mx, y: my } = c2m(cx, cy);
+  const xr = (state.vXMax - state.vXMin) * factor / 2;
+  const yr = (state.vYMax - state.vYMin) * factor / 2;
+  if (xr < 0.5 || xr > 2000) return;
+  const pctX = cx / CW, pctY = 1 - cy / CH;
+  state.vXMin = mx - pctX * (xr * 2); state.vXMax = state.vXMin + xr * 2;
+  state.vYMin = my - pctY * (yr * 2); state.vYMax = state.vYMin + yr * 2;
+  fullRedraw();
+}
 
 function updatePointerHover(clientX, clientY) {
   const rect = canvas.getBoundingClientRect();
@@ -1278,17 +1309,18 @@ canvas.addEventListener('mousemove', e => {
   if (isPanning) {
     const rect = canvas.getBoundingClientRect();
     const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
-    const dx = cx - panStartX, dy = cy - panStartY;
+    const dx = cx - (panStartPX - rect.left);
+    const dy = cy - (panStartPY - rect.top);
     const xRange = state.vXMax - state.vXMin, yRange = state.vYMax - state.vYMin;
-    state.vXMin = panVX0 - dx/CW*xRange; state.vXMax = state.vXMin + xRange;
-    state.vYMin = panVY0 + dy/CH*yRange; state.vYMax = state.vYMin + yRange;
+    state.vXMin = panVX0 - (dx / CW) * xRange; state.vXMax = state.vXMin + xRange;
+    state.vYMin = panVY0 + (dy / CH) * yRange; state.vYMax = state.vYMin + yRange;
     fullRedraw();
   }
 });
 
 canvas.addEventListener('mouseleave', () => {
   document.getElementById('simTooltip').style.display = 'none';
-  isPanning = false;
+  if (isPanning) { isPanning = false; canvas.style.cursor = 'crosshair'; }
 });
 
 canvas.addEventListener('wheel', e => {
@@ -1296,26 +1328,32 @@ canvas.addEventListener('wheel', e => {
   const rect = canvas.getBoundingClientRect();
   const factor = e.deltaY > 0 ? 1.15 : 0.87;
   const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
-  const {x:mx,y:my} = c2m(cx,cy);
-  const xr = (state.vXMax-state.vXMin)*factor/2, yr = (state.vYMax-state.vYMin)*factor/2;
-  if(xr<0.5||xr>2000) return;
-  const pctX=cx/CW, pctY=1-cy/CH;
-  state.vXMin=mx-pctX*(xr*2); state.vXMax=state.vXMin+xr*2;
-  state.vYMin=my-pctY*(yr*2); state.vYMax=state.vYMin+yr*2;
-  fullRedraw();
+  zoomAt(cx, cy, factor);
 }, {passive:false});
 
 canvas.addEventListener('mousedown', e => {
-  if (e.shiftKey) {
-    const rect = canvas.getBoundingClientRect();
-    panStartX = e.clientX-rect.left; panStartY = e.clientY-rect.top;
-    panVX0 = state.vXMin; panVY0 = state.vYMin; isPanning = true;
-    return;
+  isPanning = true;
+  panStartPX = e.clientX; panStartPY = e.clientY;
+  panVX0 = state.vXMin; panVY0 = state.vYMin;
+  canvas.style.cursor = 'grabbing';
+});
+
+window.addEventListener('mouseup', () => {
+  if (isPanning) {
+    isPanning = false;
+    canvas.style.cursor = 'crosshair';
   }
+});
+
+canvas.addEventListener('click', e => {
+  const rect = canvas.getBoundingClientRect();
+  const dx = Math.abs(e.clientX - panStartPX);
+  const dy = Math.abs(e.clientY - panStartPY);
+  if (dx > 4 || dy > 4) return; // Dragged, not click
+
   const sc = scenarios[state.scIdx];
   if (sc.isPickMode && state.step === 4 && state.pickedPoints.length < 3) {
-    const rect = canvas.getBoundingClientRect();
-    const cx = e.clientX-rect.left, cy = e.clientY-rect.top;
+    const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
     const {x,y} = c2m(cx,cy);
     const rx = Math.round(x), ry = Math.round(y);
     if (rx >= 0 && ry >= 0 && bptOk(sc, rx, ry)) {
@@ -1327,15 +1365,34 @@ canvas.addEventListener('mousedown', e => {
     }
   }
 });
-canvas.addEventListener('mouseup', () => { isPanning = false; });
+
+canvas.addEventListener('touchstart', e => {
+  if (e.touches.length === 1) {
+    const t = e.touches[0];
+    isPanning = true;
+    panStartPX = t.clientX; panStartPY = t.clientY;
+    panVX0 = state.vXMin; panVY0 = state.vYMin;
+  }
+}, {passive:true});
 
 canvas.addEventListener('touchmove', e => {
   const t = e.touches[0];
   if (t) updatePointerHover(t.clientX, t.clientY);
+  if (isPanning && e.touches.length === 1) {
+    const rect = canvas.getBoundingClientRect();
+    const cx = t.clientX - rect.left, cy = t.clientY - rect.top;
+    const dx = cx - (panStartPX - rect.left);
+    const dy = cy - (panStartPY - rect.top);
+    const xRange = state.vXMax - state.vXMin, yRange = state.vYMax - state.vYMin;
+    state.vXMin = panVX0 - (dx / CW) * xRange; state.vXMax = state.vXMin + xRange;
+    state.vYMin = panVY0 + (dy / CH) * yRange; state.vYMax = state.vYMin + yRange;
+    fullRedraw();
+  }
 }, {passive:true});
 
 canvas.addEventListener('touchend', () => {
   document.getElementById('simTooltip').style.display = 'none';
+  isPanning = false;
 });
 
 // ═══════════════════════════════════════════════

@@ -97,7 +97,6 @@
       -webkit-font-smoothing: antialiased;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
     }
 
     /* ── MAIN LAYOUT (KHÔNG CÓ HEADER BANNER TRÊN CÙNG) ── */
@@ -186,18 +185,41 @@
     }
 
     @media (max-width: 1023px) {
+      .app-body {
+        margin: 12px auto;
+        gap: 14px;
+      }
       .sim-body {
         display: flex;
         flex-direction: column;
       }
       .sim-right {
         order: 1; /* Canvas hiện trước trên Mobile */
+        padding: 12px;
+        gap: 8px;
       }
       .sim-left {
         order: 2; /* Sidebar điều khiển ở sau */
         border-right: none;
         border-top: 1.5px solid var(--paper-line);
+        padding: 12px 14px !important;
+        gap: 8px !important;
+        min-height: 480px;
       }
+      .sim-caption {
+        margin-top: 4px !important;
+      }
+    }
+
+    /* LEFT SIDEBAR (Khóa chiều cao theo bước dài nhất) */
+    .sim-left {
+      border-right: 1.5px solid var(--paper-line);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      background: var(--cream);
+      min-height: 520px;
     }
 
     /* LEFT SIDEBAR */
@@ -546,49 +568,77 @@
       z-index: 10;
     }
 
-    .coord-bar {
-      font-size: 13px;
-      color: var(--ink-3);
-      font-family: var(--font-mono);
-      font-variant-numeric: tabular-nums;
-      text-align: right;
-      padding: 2px 4px;
-      height: 20px;
-    }
-
-    .zoom-row {
+    /* Floating Canvas Zoom Controls (Unified Vertical Widget) */
+    .canvas-zoom-controls {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 15;
       display: flex;
-      gap: 8px;
-      justify-content: center;
-      flex-wrap: wrap;
+      flex-direction: column;
+      background: rgba(250, 247, 240, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(229, 222, 207, 0.6);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+      opacity: 0.8;
+      transition: opacity 0.2s ease, background 0.2s ease;
     }
 
-    .btn-zoom {
-      min-height: 44px;
-      padding: 8px 16px;
-      background: var(--white);
-      border: 1.5px solid var(--paper-line-2);
-      border-radius: var(--radius-sm);
-      font-size: 13px;
+    .canvas-zoom-controls:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .btn-canvas-zoom {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: all .2s;
+      transition: background .2s, color .2s;
       color: var(--ink-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .btn-zoom:hover {
-      border-color: var(--jade-deep);
+    .btn-canvas-zoom:not(:last-child) {
+      border-bottom: 1px solid rgba(229, 222, 207, 0.6);
+    }
+
+    .btn-canvas-zoom:hover {
+      background: var(--jade-pale);
       color: var(--jade-deep);
     }
 
-    .btn-zoom.accent {
-      background: var(--jade-deep);
-      color: var(--white);
-      border-color: var(--jade-deep);
+    .btn-canvas-zoom:active {
+      background: var(--sage-pale);
     }
 
-    .btn-zoom.accent:hover {
-      background: var(--jade-dark);
+    .coord-bar {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      z-index: 12;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink-3);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      background: rgba(250, 247, 240, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(229, 222, 207, 0.5);
+      opacity: 0.8;
+      pointer-events: none;
     }
 
     .info-box {
@@ -880,12 +930,12 @@
           <div class="canvas-wrap" id="canvasWrap">
             <canvas id="simCanvas"></canvas>
             <div class="tooltip-box" id="simTooltip"></div>
-          </div>
-          <div class="coord-bar" id="coordBar">x: 0.00 · y: 0.00</div>
-          <div class="zoom-row">
-            <button class="btn-zoom accent" onclick="applyZoom(0.7)">＋ Phóng to</button>
-            <button class="btn-zoom accent" onclick="applyZoom(1.4)">－ Thu nhỏ</button>
-            <button class="btn-zoom" onclick="resetView()">↺ Mặc định</button>
+            <div class="canvas-zoom-controls">
+              <button class="btn-canvas-zoom" onclick="applyZoom(0.7)" title="Phóng to"><i class="ti ti-plus"></i></button>
+              <button class="btn-canvas-zoom" onclick="applyZoom(1.4)" title="Thu nhỏ"><i class="ti ti-minus"></i></button>
+              <button class="btn-canvas-zoom" onclick="resetView()" title="Mặc định"><i class="ti ti-refresh"></i></button>
+            </div>
+            <div class="coord-bar" id="coordBar">x: 0.00 · y: 0.00</div>
           </div>
         </div>
       </div>
@@ -2213,6 +2263,33 @@
     let startPX = 0, startPY = 0;
     let startXMin = 0, startXMax = 0, startYMin = 0, startYMax = 0;
 
+    function applyZoom(factor) {
+      if (CW === 0 || CH === 0) return;
+      zoomAt(CW / 2, CH / 2, factor);
+    }
+
+    function resetView() {
+      autoScaleViewport();
+      fullRedraw();
+    }
+
+    function zoomAt(cx, cy, factor) {
+      if (CW === 0 || CH === 0) return;
+      const { x: mx, y: my } = c2m(cx, cy, CW, CH);
+      const xRange = state.vXMax - state.vXMin;
+      const yRange = state.vYMax - state.vYMin;
+      const newXR = xRange * factor;
+      const newYR = yRange * factor;
+      if (newXR < 2 || newXR > 500) return;
+      const pctX = cx / CW;
+      const pctY = 1 - cy / CH;
+      state.vXMin = mx - pctX * newXR;
+      state.vXMax = state.vXMin + newXR;
+      state.vYMin = my - pctY * newYR;
+      state.vYMax = state.vYMin + newYR;
+      fullRedraw();
+    }
+
     function updatePointerHover(clientX, clientY) {
       const rect = canvas.getBoundingClientRect();
       const px = clientX - rect.left;
@@ -2251,16 +2328,14 @@
     });
 
     canvas.addEventListener('mousedown', e => {
-      if (e.button === 1 || e.shiftKey || state.activeTab === 2) {
-        isPanning = true;
-        startPX = e.clientX;
-        startPY = e.clientY;
-        startXMin = state.vXMin;
-        startXMax = state.vXMax;
-        startYMin = state.vYMin;
-        startYMax = state.vYMax;
-        canvas.style.cursor = 'grabbing';
-      }
+      isPanning = true;
+      startPX = e.clientX;
+      startPY = e.clientY;
+      startXMin = state.vXMin;
+      startXMax = state.vXMax;
+      startYMin = state.vYMin;
+      startYMax = state.vYMax;
+      canvas.style.cursor = 'grabbing';
     });
 
     window.addEventListener('mouseup', () => {
@@ -2271,7 +2346,7 @@
     });
 
     canvas.addEventListener('touchstart', e => {
-      if (state.activeTab === 2 && e.touches.length === 1) {
+      if (e.touches.length === 1) {
         const t = e.touches[0];
         isPanning = true;
         startPX = t.clientX;
@@ -2315,7 +2390,9 @@
     }, { passive: false });
 
     canvas.addEventListener('click', e => {
-      if (isPanning) return;
+      const dx = Math.abs(e.clientX - startPX);
+      const dy = Math.abs(e.clientY - startPY);
+      if (dx > 4 || dy > 4) return;
       const rect = canvas.getBoundingClientRect();
       const px = e.clientX - rect.left;
       const py = e.clientY - rect.top;
