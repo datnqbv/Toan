@@ -879,6 +879,55 @@ function setupWheel(canvas, getCW, getCH) {
     fullRedraw();
   }, { passive: false });
 }
+
+/* JS chuẩn cho tính năng Kéo di chuyển (Pan Dragging) bằng chuột & cảm ứng */
+let isPanning = false, startPX = 0, startPY = 0;
+let startXMin = 0, startXMax = 0, startYMin = 0, startYMax = 0;
+
+function setupPan(canvas, getCW, getCH) {
+  canvas.addEventListener('mousedown', e => {
+    isPanning = true;
+    startPX = e.clientX; startPY = e.clientY;
+    startXMin = vXMin; startXMax = vXMax; startYMin = vYMin; startYMax = vYMax;
+    canvas.style.cursor = 'grabbing';
+  });
+
+  canvas.addEventListener('mousemove', e => {
+    if (!isPanning) return;
+    const CW = getCW(), CH = getCH(); if (!CW || !CH) return;
+    const dx = e.clientX - startPX, dy = e.clientY - startPY;
+    const xRange = startXMax - startXMin, yRange = startYMax - startYMin;
+    const mxDiff = (dx / CW) * xRange, myDiff = (dy / CH) * yRange;
+    vXMin = startXMin - mxDiff; vXMax = startXMax - mxDiff;
+    vYMin = startYMin + myDiff; vYMax = startYMax + myDiff;
+    fullRedraw();
+  });
+
+  canvas.addEventListener('mouseleave', () => { if (isPanning) { isPanning = false; canvas.style.cursor = 'crosshair'; } });
+  window.addEventListener('mouseup', () => { if (isPanning) { isPanning = false; canvas.style.cursor = 'crosshair'; } });
+
+  canvas.addEventListener('touchstart', e => {
+    if (e.touches.length === 1) {
+      const t = e.touches[0];
+      isPanning = true;
+      startPX = t.clientX; startPY = t.clientY;
+      startXMin = vXMin; startXMax = vXMax; startYMin = vYMin; startYMax = vYMax;
+    }
+  }, { passive: true });
+
+  canvas.addEventListener('touchmove', e => {
+    if (!isPanning || e.touches.length !== 1) return;
+    const t = e.touches[0], CW = getCW(), CH = getCH(); if (!CW || !CH) return;
+    const dx = t.clientX - startPX, dy = t.clientY - startPY;
+    const xRange = startXMax - startXMin, yRange = startYMax - startYMin;
+    const mxDiff = (dx / CW) * xRange, myDiff = (dy / CH) * yRange;
+    vXMin = startXMin - mxDiff; vXMax = startXMax - mxDiff;
+    vYMin = startYMin + myDiff; vYMax = startYMax + myDiff;
+    fullRedraw();
+  }, { passive: true });
+
+  canvas.addEventListener('touchend', () => { isPanning = false; });
+}
 ```
 
 ### 3.2 Trạng thái nút

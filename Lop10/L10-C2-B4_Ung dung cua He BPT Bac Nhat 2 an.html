@@ -9,7 +9,9 @@
   <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap"
+    rel="stylesheet">
   <!-- Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 
@@ -91,7 +93,13 @@
       --font-mono: 'JetBrains Mono', 'Courier New', monospace;
     }
 
-    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
 
     body {
       font-family: 'Be Vietnam Pro', system-ui, sans-serif;
@@ -102,7 +110,6 @@
       -webkit-font-smoothing: antialiased;
       display: flex;
       flex-direction: column;
-      min-height: 100vh;
     }
 
     /* ── MAIN LAYOUT (KHÔNG CÓ HEADER BANNER TRÊN CÙNG) ── */
@@ -163,28 +170,47 @@
     }
 
     @media (max-width: 1023px) {
+      .app-body {
+        margin: 12px auto;
+        gap: 14px;
+      }
+
       .sim-body {
         display: flex;
         flex-direction: column;
       }
+
       .sim-right {
-        order: 1; /* Canvas hiện trước trên Mobile */
+        order: 1;
+        /* Canvas hiện trước trên Mobile */
+        padding: 12px;
+        gap: 8px;
       }
+
       .sim-left {
-        order: 2; /* Sidebar câu hỏi điều khiển ở dưới */
+        order: 2;
+        /* Sidebar câu hỏi điều khiển ở dưới */
         border-right: none;
         border-top: 1.5px solid var(--paper-line);
+        padding: 12px 14px !important;
+        gap: 8px !important;
+        min-height: 480px;
+      }
+
+      .sim-caption {
+        margin-top: 4px !important;
       }
     }
 
-    /* LEFT SIDEBAR */
+    /* LEFT SIDEBAR (Khóa chiều cao theo bước dài nhất) */
     .sim-left {
       border-right: 1.5px solid var(--paper-line);
-      padding: 20px 18px;
+      padding: 14px 16px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 10px;
       background: var(--cream);
+      min-height: 520px;
     }
 
     .panel-section-label {
@@ -196,7 +222,9 @@
       margin-bottom: 4px;
     }
 
-    .progress-wrap { display: none !important; }
+    .progress-wrap {
+      display: none !important;
+    }
 
     /* Scenario Card */
     .scenario-card {
@@ -432,7 +460,10 @@
       border-left-color: var(--wrong);
       color: var(--wrong);
     }
-    .sim-caption.red i { color: var(--wrong); }
+
+    .sim-caption.red i {
+      color: var(--wrong);
+    }
 
     .info-box {
       display: flex;
@@ -525,7 +556,8 @@
       margin: 6px 0;
     }
 
-    .sdiv::before, .sdiv::after {
+    .sdiv::before,
+    .sdiv::after {
       content: '';
       flex: 1;
       height: 1px;
@@ -577,49 +609,77 @@
       z-index: 10;
     }
 
-    .coord-bar {
-      font-size: 13px;
-      color: var(--ink-3);
-      font-family: var(--font-mono);
-      font-variant-numeric: tabular-nums;
-      text-align: right;
-      padding: 2px 4px;
-      height: 20px;
-    }
-
-    .zoom-row {
+    /* Floating Canvas Zoom Controls (Unified Vertical Widget) */
+    .canvas-zoom-controls {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      z-index: 15;
       display: flex;
-      gap: 8px;
-      justify-content: center;
-      flex-wrap: wrap;
+      flex-direction: column;
+      background: rgba(250, 247, 240, 0.55);
+      backdrop-filter: blur(6px);
+      -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(229, 222, 207, 0.6);
+      border-radius: var(--radius);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      overflow: hidden;
+      opacity: 0.8;
+      transition: opacity 0.2s ease, background 0.2s ease;
     }
 
-    .btn-zoom {
-      min-height: 44px;
-      padding: 8px 16px;
-      background: var(--white);
-      border: 1.5px solid var(--paper-line-2);
-      border-radius: var(--radius-sm);
-      font-size: 13px;
+    .canvas-zoom-controls:hover {
+      opacity: 1;
+      background: rgba(255, 255, 255, 0.92);
+    }
+
+    .btn-canvas-zoom {
+      width: 36px;
+      height: 36px;
+      padding: 0;
+      background: transparent;
+      border: none;
+      font-size: 16px;
       font-weight: 600;
       cursor: pointer;
-      transition: all .2s;
+      transition: background .2s, color .2s;
       color: var(--ink-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
-    .btn-zoom:hover {
-      border-color: var(--jade-deep);
+    .btn-canvas-zoom:not(:last-child) {
+      border-bottom: 1px solid rgba(229, 222, 207, 0.6);
+    }
+
+    .btn-canvas-zoom:hover {
+      background: var(--jade-pale);
       color: var(--jade-deep);
     }
 
-    .btn-zoom.accent {
-      background: var(--jade-deep);
-      color: var(--white);
-      border-color: var(--jade-deep);
+    .btn-canvas-zoom:active {
+      background: var(--sage-pale);
     }
 
-    .btn-zoom.accent:hover {
-      background: var(--jade-dark);
+    .coord-bar {
+      position: absolute;
+      bottom: 4px;
+      right: 4px;
+      z-index: 12;
+      font-size: 11px;
+      font-weight: 500;
+      color: var(--ink-3);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      background: rgba(250, 247, 240, 0.5);
+      backdrop-filter: blur(4px);
+      -webkit-backdrop-filter: blur(4px);
+      padding: 2px 6px;
+      border-radius: 4px;
+      border: 1px solid rgba(229, 222, 207, 0.5);
+      opacity: 0.8;
+      pointer-events: none;
     }
 
     /* Point check table */
@@ -660,7 +720,13 @@
       color: var(--wrong);
     }
 
-    .hidden { display: none !important; }
+    .hint-text:empty {
+      display: none;
+    }
+
+    .hidden {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -708,12 +774,15 @@
           <div class="canvas-wrap" id="canvasWrap">
             <canvas id="simCanvas"></canvas>
             <div class="tooltip-box" id="simTooltip"></div>
-          </div>
-          <div class="coord-bar" id="coordBar">x: 0.00 · y: 0.00</div>
-          <div class="zoom-row">
-            <button class="btn-zoom accent" onclick="applyZoom(0.7)">＋ Phóng to</button>
-            <button class="btn-zoom accent" onclick="applyZoom(1.4)">－ Thu nhỏ</button>
-            <button class="btn-zoom" onclick="resetView()">↺ Mặc định</button>
+            <div class="canvas-zoom-controls">
+              <button class="btn-canvas-zoom" onclick="applyZoom(0.7)" title="Phóng to"><i
+                  class="ti ti-plus"></i></button>
+              <button class="btn-canvas-zoom" onclick="applyZoom(1.4)" title="Thu nhỏ"><i
+                  class="ti ti-minus"></i></button>
+              <button class="btn-canvas-zoom" onclick="resetView()" title="Mặc định"><i
+                  class="ti ti-refresh"></i></button>
+            </div>
+            <div class="coord-bar" id="coordBar">x: 0.00 · y: 0.00</div>
           </div>
         </div>
       </div>
@@ -1083,26 +1152,26 @@
     let state = {
       activeScenarioIdx: 0,
       step: 1,
-      
+
       step1_selected: null,
       step1_checked: false,
-      
+
       step2_selected: [],
       step2_inputs: [],
       step2_checked: false,
       step2_errors: [],
-      
+
       step3_drawing: false,
       step3_drawnPercent: 0,
       step3_showIntegers: false,
-      
+
       step4_selectedPoint: null,
       step4_checkedPoints: [],
       step4_conclusion_selected: null,
       step4_completed: false,
-      
+
       stepFeedbackHtml: '',
-      
+
       vXMin: -10, vXMax: 10, vYMin: -10, vYMax: 10
     };
 
@@ -1234,7 +1303,7 @@
 
       if (state.step < 3) {
         for (let i = 0; i < data.length; i += 4) {
-          data[i] = 250; data[i+1] = 247; data[i+2] = 240; data[i+3] = 255; // --cream #FAF7F0
+          data[i] = 250; data[i + 1] = 247; data[i + 2] = 240; data[i + 3] = 255; // --cream #FAF7F0
         }
         ctx.setTransform(1, 0, 0, 1, 0, 0);
         ctx.putImageData(imgData, 0, 0);
@@ -1284,12 +1353,12 @@
 
           if (a > 0) {
             const an = a / 255;
-            data[idx]   = Math.round(r * an + 250 * (1 - an));
-            data[idx+1] = Math.round(g * an + 247 * (1 - an));
-            data[idx+2] = Math.round(b * an + 240 * (1 - an));
-            data[idx+3] = 255;
+            data[idx] = Math.round(r * an + 250 * (1 - an));
+            data[idx + 1] = Math.round(g * an + 247 * (1 - an));
+            data[idx + 2] = Math.round(b * an + 240 * (1 - an));
+            data[idx + 3] = 255;
           } else {
-            data[idx] = 250; data[idx+1] = 247; data[idx+2] = 240; data[idx+3] = 255;
+            data[idx] = 250; data[idx + 1] = 247; data[idx + 2] = 240; data[idx + 3] = 255;
           }
         }
       }
@@ -2369,7 +2438,7 @@
       clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
     });
     _athenaResizeObserver.observe(document.body);
-</script>
+  </script>
 </body>
 
 </html>

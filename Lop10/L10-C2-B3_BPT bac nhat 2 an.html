@@ -1622,6 +1622,90 @@
       }, { passive: false });
     }
 
+    let isPanning = false;
+    let startPX = 0, startPY = 0;
+    let startXMin = 0, startXMax = 0, startYMin = 0, startYMax = 0;
+
+    function setupPan(canvas, getCW, getCH) {
+      canvas.addEventListener('mousedown', e => {
+        isPanning = true;
+        startPX = e.clientX; startPY = e.clientY;
+        startXMin = vXMin; startXMax = vXMax;
+        startYMin = vYMin; startYMax = vYMax;
+        canvas.style.cursor = 'grabbing';
+      });
+
+      canvas.addEventListener('mousemove', e => {
+        if (!isPanning) return;
+        const CW = getCW(), CH = getCH();
+        if (CW === 0 || CH === 0) return;
+        const dx = e.clientX - startPX, dy = e.clientY - startPY;
+        const xRange = startXMax - startXMin, yRange = startYMax - startYMin;
+        const mxDiff = (dx / CW) * xRange, myDiff = (dy / CH) * yRange;
+        vXMin = startXMin - mxDiff; vXMax = startXMax - mxDiff;
+        vYMin = startYMin + myDiff; vYMax = startYMax + myDiff;
+        fullRedraw();
+      });
+
+      canvas.addEventListener('mouseleave', () => {
+        if (isPanning) { isPanning = false; canvas.style.cursor = 'crosshair'; }
+      });
+
+      window.addEventListener('mouseup', () => {
+        if (isPanning) { isPanning = false; canvas.style.cursor = 'crosshair'; }
+      });
+
+      canvas.addEventListener('touchstart', e => {
+        if (e.touches.length === 1) {
+          const t = e.touches[0];
+          isPanning = true;
+          startPX = t.clientX; startPY = t.clientY;
+          startXMin = vXMin; startXMax = vXMax;
+          startYMin = vYMin; startYMax = vYMax;
+        }
+      }, { passive: true });
+
+      canvas.addEventListener('touchmove', e => {
+        if (!isPanning || e.touches.length !== 1) return;
+        const t = e.touches[0];
+        const CW = getCW(), CH = getCH();
+        if (CW === 0 || CH === 0) return;
+        const dx = t.clientX - startPX, dy = t.clientY - startPY;
+        const xRange = startXMax - startXMin, yRange = startYMax - startYMin;
+        const mxDiff = (dx / CW) * xRange, myDiff = (dy / CH) * yRange;
+        vXMin = startXMin - mxDiff; vXMax = startXMax - mxDiff;
+        vYMin = startYMin + myDiff; vYMax = startYMax + myDiff;
+        fullRedraw();
+      }, { passive: true });
+
+      canvas.addEventListener('touchend', () => { isPanning = false; });
+    }
+
+    function doZoom1(factor) { doZoom(factor, CW1, CH1); }
+    function doZoom2(factor) { doZoom(factor, CW2, CH2); }
+    function doZoom3(factor) { doZoom(factor, CW3, CH3); }
+
+    function doZoom(factor, CW, CH) {
+      if (!CW || !CH) { CW = CW1 || 400; CH = CH1 || 400; }
+      const cx = CW / 2, cy = CH / 2;
+      const { x: mx, y: my } = c2m(cx, cy, CW, CH);
+      const xRange = vXMax - vXMin, yRange = vYMax - vYMin;
+      const newXR = xRange * factor, newYR = yRange * factor;
+      if (newXR < 2 || newXR > 500) return;
+      const pctX = cx / CW, pctY = 1 - cy / CH;
+      vXMin = mx - pctX * newXR; vXMax = vXMin + newXR;
+      vYMin = my - pctY * newYR; vYMax = my - pctY * newYR;
+      fullRedraw();
+    }
+
+    function resetView1() { resetView(); }
+    function resetView2() { resetView(); }
+    function resetView3() { resetView(); }
+    function resetView() {
+      vXMin = -10; vXMax = 10; vYMin = -10; vYMax = 10;
+      fullRedraw();
+    }
+
     setupHover(canvas1, 'coord1', 'tip1', () => CW1, () => CH1);
     setupHover(canvas2, 'coord2', 'tip2', () => CW2, () => CH2);
     setupHover(canvas3, 'coord3', 'tip3', () => CW3, () => CH3);
@@ -1629,6 +1713,10 @@
     setupWheel(canvas1, () => CW1, () => CH1);
     setupWheel(canvas2, () => CW2, () => CH2);
     setupWheel(canvas3, () => CW3, () => CH3);
+
+    setupPan(canvas1, () => CW1, () => CH1);
+    setupPan(canvas2, () => CW2, () => CH2);
+    setupPan(canvas3, () => CW3, () => CH3);
 
     canvas2.addEventListener('click', e => {
       if (document.getElementById('regionSection').classList.contains('hidden')) return;
