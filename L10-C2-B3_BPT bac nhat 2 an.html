@@ -1,0 +1,1902 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Biểu diễn miền nghiệm BPT bậc nhất hai ẩn</title>
+  <script type="application/json" id="athena-context">
+{
+  "title": "Biểu diễn miền nghiệm bất phương trình bậc nhất hai ẩn",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Vẽ đường biên ax+by=c bằng cách tìm 2 điểm đặc biệt (giao Ox khi y=0, giao Oy khi x=0)",
+    "Dùng điểm thử (thường là gốc O(0,0) nếu đường biên không đi qua O) để xác định miền nghiệm nằm ở phía nào",
+    "Kết luận đường biên có thuộc miền nghiệm hay không dựa vào dấu của bất phương trình (< hoặc > → nét đứt, không thuộc; ≤ hoặc ≥ → nét liền, thuộc)"
+  ],
+  "structure": [
+    { "id": "mod1", "title": "Module 1 — Vẽ đường biên: nhập hệ số a, b, c và dấu bất phương trình (mặc định 2x − y < 4), tìm điểm 1 (x=0 → y=?) và điểm 2 (y=0 → x=?), rồi vẽ đường thẳng" },
+    { "id": "mod2", "title": "Module 2 — Xác định miền nghiệm: thay điểm thử (mặc định O(0,0)) vào BPT, tính toán, kết luận điểm có thỏa mãn không, xác định điểm thử nằm trong/ngoài miền nghiệm, rồi click chọn đúng vùng miền nghiệm trên đồ thị" },
+    { "id": "mod3", "title": "Module 3 — Kiểu đường biên: chọn nét liền (khi dấu ≤ hoặc ≥) hay nét đứt (khi dấu < hoặc >) dựa vào dấu của BPT hiện tại" }
+  ],
+  "athenaGuidance": "Đây là công cụ luyện tập TỔNG QUÁT với hệ số a,b,c và dấu BPT do học sinh tự nhập (mặc định ban đầu: 2x − y < 4, tức a=2, b=-1, c=4, dấu 'lt'), và có nút 'Làm bài khác' (newGame) để sinh đề mới — vì vậy KHÔNG có một đáp số cố định duy nhất để liệt kê, đáp án luôn phụ thuộc vào a,b,c,dấu hiện tại trên màn hình của học sinh. Athena phải hướng dẫn theo QUY TẮC chung, không đưa số cụ thể: Module 1 — điểm 1 tìm bằng cách cho x=0 rồi giải ra y = c/b (nếu b≠0); điểm 2 tìm bằng cách cho y=0 rồi giải ra x = c/a (nếu a≠0). Module 2 — thay tọa độ điểm thử vào vế trái ax+by, so sánh với c theo đúng dấu BPT để kết luận thỏa mãn hay không; nếu điểm thử thỏa mãn BPT thì miền nghiệm là phía chứa điểm thử, ngược lại là phía đối diện; sau đó học sinh phải tự click đúng vùng trên đồ thị. Module 3 — quy tắc cố định: dấu < hoặc > (không có '=') → đường biên KHÔNG thuộc miền nghiệm → vẽ nét đứt; dấu ≤ hoặc ≥ (có '=') → đường biên thuộc miền nghiệm → vẽ nét liền. TUYỆT ĐỐI không tính hộ hoặc đọc thẳng kết quả số cụ thể (giá trị y ở điểm 1, giá trị x ở điểm 2, kết quả phép tính ax+by) cho học sinh — chỉ hướng dẫn công thức và cách làm từng bước, để hệ thống tự chấm qua các nút Kiểm tra."
+}
+  </script>
+
+  <!-- Google Fonts: Be Vietnam Pro (Body & UI) & JetBrains Mono (Math & Canvas Labels) -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+
+  <style>
+    /* ── DESIGN TOKENS (v2.2 — Cream · Jade · Sage · Accent) ── */
+    :root {
+      /* Neutrals · giấy & mực */
+      --cream: #FAF7F0;
+      --cream-2: #F0EADD;
+      --cream-3: #E7DECC;
+      --paper-line: #E5DECF;
+      --paper-line-2: #D6CCB6;
+      --ink: #1A1A1A;
+      --ink-2: #514C44;
+      --ink-3: #7C756A;
+      --ink-faint: #ABA396;
+
+      /* Jade · hành động chính & đúng */
+      --jade: #3CA57A;
+      --jade-deep: #2D8B6F;
+      --jade-dark: #14432F;
+      --jade-text: #1B5E48;
+      --jade-soft: #A9D0BE;
+      --jade-pale: #DCEAE1;
+
+      /* Sage · phụ trợ */
+      --sage: #A8C9B8;
+      --sage-deep: #7CA792;
+      --sage-text: #46685A;
+      --sage-pale: #E1ECE4;
+
+      /* Accent · điểm nhấn ấm */
+      --accent: #E8A24A;
+      --accent-deep: #CE8A33;
+      --accent-text: #8A551A;
+      --accent-pale: #F7E7CD;
+
+      /* Semantic · phản hồi đúng/sai/cảnh báo/info */
+      --correct: #2D8B6F;
+      --correct-bg: #DCEAE1;
+      --wrong: #C15F3C;
+      --wrong-bg: #F3E2D6;
+      --warning: #C58A2E;
+      --warning-bg: #F5E7CB;
+      --info: #4E7F92;
+      --info-bg: #DCE7EB;
+
+      --white: #FFFFFF;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --radius-sm: 6px;
+      --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+      --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+
+      /* Monospace font */
+      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--ink);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+    }
+
+    /* ── HEADER BANNER ── */
+    .app-header, .btn-show-header {
+      display: none !important;
+    }
+
+    .app-header .logo {
+      width: 42px;
+      height: 42px;
+      background: var(--accent);
+      color: var(--ink);
+      border-radius: var(--radius);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 22px;
+      flex-shrink: 0;
+    }
+
+    .app-header h1 {
+      font-size: 22px;
+      font-weight: 700;
+      color: var(--white);
+      line-height: 1.3;
+    }
+
+    .app-header .subtitle {
+      font-size: 14px;
+      color: var(--sage-pale);
+      font-weight: 400;
+    }
+
+    .btn-toggle-header {
+      margin-left: auto;
+      background: rgba(255, 255, 255, 0.15);
+      color: var(--cream);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius-sm);
+      padding: 6px 12px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: background 0.2s;
+    }
+
+    .btn-toggle-header:hover {
+      background: rgba(255, 255, 255, 0.25);
+    }
+
+    .btn-show-header {
+      position: fixed;
+      top: 12px;
+      right: 12px;
+      z-index: 99;
+      background: var(--jade-deep);
+      color: var(--white);
+      border: none;
+      border-radius: 20px;
+      padding: 6px 14px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      box-shadow: var(--shadow);
+      display: none;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* ── MAIN CONTAINER ── */
+    .app-body {
+      max-width: 960px;
+      margin: 24px auto;
+      padding: 0 16px 60px;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* ── MODULE CARDS ── */
+    .mod-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--paper-line);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      transition: opacity 0.3s, filter 0.3s;
+    }
+
+    .mod-card.locked {
+      opacity: 0.55;
+      filter: grayscale(0.5);
+      pointer-events: none;
+    }
+
+    .mod-header {
+      background: var(--cream-2);
+      border-bottom: 1.5px solid var(--paper-line);
+      padding: 14px 20px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .mod-num {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      background: var(--jade-deep);
+      color: var(--white);
+      font-size: 15px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .mod-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+    }
+
+    .mod-sub {
+      font-size: 14px;
+      color: var(--ink-3);
+    }
+
+    .mod-lock-badge {
+      margin-left: auto;
+      background: var(--cream-3);
+      color: var(--ink-3);
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .mod-done-badge {
+      margin-left: auto;
+      background: var(--jade-pale);
+      color: var(--jade-text);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: 20px;
+      display: none;
+      align-items: center;
+      gap: 5px;
+    }
+
+    /* ── SIM BODY (RESPONSIVE GRID) ── */
+    .sim-body {
+      display: grid;
+      grid-template-columns: 3.3fr 6.7fr;
+      min-height: 430px;
+    }
+
+    @media (max-width: 1023px) {
+      .sim-body {
+        display: flex;
+        flex-direction: column;
+      }
+      .sim-right {
+        order: 1; /* Canvas hiện trước trên Mobile */
+      }
+      .sim-left {
+        order: 2; /* Controls hiện sau */
+      }
+    }
+
+    /* LEFT CONTROL PANEL */
+    .sim-left {
+      border-right: 1.5px solid var(--paper-line);
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--cream);
+    }
+
+    @media (max-width: 1023px) {
+      .sim-left {
+        border-right: none;
+        border-top: 1.5px solid var(--paper-line);
+      }
+    }
+
+    .panel-section-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--ink-3);
+      margin-bottom: 6px;
+    }
+
+    /* Input Controls */
+    .bpt-input-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .coeff-input {
+      width: 52px;
+      height: 44px;
+      padding: 0 8px;
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      color: var(--ink);
+      background: var(--white);
+      text-align: center;
+      outline: none;
+      transition: border-color .2s;
+    }
+
+    .coeff-input:focus {
+      border-color: var(--jade-deep);
+      box-shadow: 0 0 0 3px rgba(60, 165, 122, 0.15);
+    }
+
+    .bpt-label {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink-2);
+    }
+
+    .sign-select {
+      height: 44px;
+      padding: 0 10px;
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      font-weight: 700;
+      background: var(--white);
+      color: var(--jade-deep);
+      cursor: pointer;
+      outline: none;
+    }
+
+    .sign-select:focus {
+      border-color: var(--jade-deep);
+    }
+
+    .bpt-display {
+      background: var(--jade-dark);
+      color: var(--accent);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      padding: 10px 14px;
+      border-radius: var(--radius-sm);
+      text-align: center;
+      letter-spacing: .03em;
+    }
+
+    /* Point input */
+    .point-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .point-label {
+      font-size: 15px;
+      color: var(--ink-2);
+      min-width: 120px;
+      font-family: var(--font-mono);
+    }
+
+    .point-input {
+      width: 68px;
+      height: 44px;
+      padding: 0 8px;
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      font-size: 16px;
+      font-weight: 700;
+      font-family: var(--font-mono);
+      text-align: center;
+      outline: none;
+      background: var(--white);
+      transition: border-color .2s;
+    }
+
+    .point-input:focus {
+      border-color: var(--jade-deep);
+      box-shadow: 0 0 0 3px rgba(60, 165, 122, 0.15);
+    }
+
+    .point-input.correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: var(--jade-text);
+    }
+
+    .point-input.wrong {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+      color: var(--wrong);
+    }
+
+    /* Buttons */
+    .btn-check {
+      height: 44px;
+      padding: 0 16px;
+      background: var(--jade-deep);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: background .2s;
+      white-space: nowrap;
+    }
+
+    .btn-check:hover:not(:disabled) {
+      background: var(--jade-dark);
+    }
+
+    .btn-check:disabled {
+      background: var(--paper-line-2);
+      color: var(--ink-3);
+      cursor: default;
+    }
+
+    .btn-primary {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 16px;
+      background: var(--jade);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, opacity .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--jade-deep);
+    }
+
+    .btn-primary:disabled {
+      opacity: .45;
+      cursor: default;
+    }
+
+    .btn-secondary {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 16px;
+      background: var(--white);
+      color: var(--ink-2);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-secondary:hover {
+      border-color: var(--jade-deep);
+      color: var(--jade-deep);
+    }
+
+    /* Choice buttons */
+    .choice-row {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-choice {
+      flex: 1;
+      min-height: 44px;
+      padding: 10px;
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+      line-height: 1.3;
+      color: var(--ink);
+    }
+
+    .btn-choice:hover:not(:disabled) {
+      border-color: var(--jade);
+      color: var(--jade-text);
+    }
+
+    .btn-choice.selected {
+      background: var(--jade-deep);
+      color: var(--white);
+      border-color: var(--jade-deep);
+    }
+
+    /* Line type buttons */
+    .btn-linetype {
+      flex: 1;
+      padding: 14px 10px;
+      min-height: 60px;
+      border: 2px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      background: var(--white);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      text-align: center;
+      line-height: 1.4;
+      color: var(--ink);
+    }
+
+    .btn-linetype:hover {
+      border-color: var(--jade);
+      color: var(--jade-text);
+    }
+
+    .btn-linetype.selected {
+      background: var(--jade-deep);
+      color: var(--white);
+      border-color: var(--jade-deep);
+    }
+
+    /* Calc row */
+    .calc-row {
+      background: var(--white);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      font-size: 15px;
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      color: var(--ink);
+    }
+
+    .calc-blank {
+      display: inline-block;
+      width: 48px;
+      height: 36px;
+      border: none;
+      border-bottom: 2.5px solid var(--jade-deep);
+      text-align: center;
+      font-family: var(--font-mono);
+      font-weight: 700;
+      outline: none;
+      background: var(--cream-2);
+      font-size: 16px;
+      color: var(--jade-dark);
+      border-radius: 4px 4px 0 0;
+    }
+
+    /* Caption */
+    .sim-caption {
+      background: var(--sage-pale);
+      border-left: 4px solid var(--jade-deep);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 15px;
+      color: var(--jade-text);
+      line-height: 1.6;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: auto;
+    }
+
+    .sim-caption i {
+      font-size: 18px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: var(--jade-deep);
+    }
+
+    .sim-caption.green {
+      background: var(--correct-bg);
+      border-left-color: var(--correct);
+      color: var(--jade-text);
+    }
+
+    .sim-caption.red {
+      background: var(--wrong-bg);
+      border-left-color: var(--wrong);
+      color: var(--wrong);
+    }
+    .sim-caption.red i {
+      color: var(--wrong);
+    }
+
+    /* RIGHT CANVAS AREA */
+    .sim-right {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--white);
+    }
+
+    .canvas-wrap {
+      flex: 1;
+      position: relative;
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--cream);
+      min-height: 380px;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .tooltip-box {
+      position: absolute;
+      background: rgba(26, 26, 26, 0.9);
+      color: var(--white);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+      pointer-events: none;
+      display: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .zoom-row {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    .btn-zoom {
+      min-height: 44px;
+      padding: 8px 16px;
+      background: var(--white);
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      color: var(--ink-2);
+    }
+
+    .btn-zoom:hover {
+      border-color: var(--jade-deep);
+      color: var(--jade-deep);
+    }
+
+    .btn-zoom.accent {
+      background: var(--jade-deep);
+      color: var(--white);
+      border-color: var(--jade-deep);
+    }
+
+    .btn-zoom.accent:hover {
+      background: var(--jade-dark);
+    }
+
+    .coord-bar {
+      font-size: 13px;
+      color: var(--ink-3);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      padding: 2px 4px;
+      height: 20px;
+    }
+
+    .info-box {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .info-box.blue {
+      background: var(--info-bg);
+      border-color: var(--info);
+      color: var(--ink);
+    }
+
+    .info-box.gold {
+      background: var(--warning-bg);
+      border-color: var(--warning);
+      color: var(--accent-text);
+    }
+
+    .ib-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+    }
+
+    .ib-title {
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    /* Celebration */
+    .celebration {
+      text-align: center;
+      padding: 24px;
+      background: var(--sage-pale);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--jade-deep);
+    }
+
+    .celebration .emoji {
+      font-size: 40px;
+    }
+
+    .celebration h3 {
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--jade-dark);
+      margin: 8px 0 4px;
+    }
+
+    .celebration p {
+      font-size: 15px;
+      color: var(--ink-2);
+    }
+
+    .btn-newgame {
+      margin-top: 14px;
+      min-height: 44px;
+      padding: 10px 24px;
+      background: var(--jade-deep);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s;
+    }
+
+    .btn-newgame:hover {
+      background: var(--jade-dark);
+    }
+
+    .feedback-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 20px;
+    }
+
+    .feedback-badge.ok {
+      background: var(--correct-bg);
+      color: var(--jade-text);
+    }
+
+    .feedback-badge.err {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+    }
+
+    .hint-text {
+      font-size: 13px;
+      color: var(--ink-3);
+      font-style: italic;
+      margin-top: 2px;
+    }
+
+    .sdiv {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--ink-3);
+      margin: 4px 0;
+    }
+
+    .sdiv::before, .sdiv::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--paper-line-2);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+  </style>
+</head>
+
+<body>
+
+  <button class="btn-show-header" id="btnShowHeader" onclick="toggleHeader()">
+    <i class="ti ti-eye"></i> Hiện tiêu đề
+  </button>
+
+  <header class="app-header" id="appHeader">
+    <div class="logo"><i class="ti ti-math-function"></i></div>
+    <div>
+      <h1>Biểu diễn miền nghiệm BPT bậc nhất hai ẩn</h1>
+      <div class="subtitle">Khám phá từng bước · Đồ thị trực quan · Phản hồi tức thì</div>
+    </div>
+    <button class="btn-toggle-header" onclick="toggleHeader()">
+      <i class="ti ti-eye-off"></i> Ẩn banner
+    </button>
+  </header>
+
+  <div class="app-body">
+
+    <!-- ══════════════════════════════════════
+     MODULE 1 — VẼ ĐƯỜNG BIÊN
+══════════════════════════════════════ -->
+    <div class="mod-card" id="mod1">
+      <div class="mod-header">
+        <div class="mod-num">1</div>
+        <div>
+          <div class="mod-title">Vẽ đường biên</div>
+          <div class="mod-sub">Tìm 2 điểm đặc biệt thuộc ax + by = c rồi vẽ đường thẳng</div>
+        </div>
+        <div class="mod-done-badge" id="m1done"><i class="ti ti-check"></i> Xong</div>
+      </div>
+
+      <div class="sim-body">
+        <!-- LEFT CONTROL PANEL -->
+        <div class="sim-left">
+          <div>
+            <div class="panel-section-label">Nhập bất phương trình</div>
+            <div class="bpt-input-row" style="margin-bottom:10px;">
+              <input class="coeff-input" id="coA" value="2" type="number" step="1">
+              <span class="bpt-label">x +</span>
+              <input class="coeff-input" id="coB" value="-1" type="number" step="1">
+              <span class="bpt-label">y</span>
+              <select class="sign-select" id="coSign">
+                <option value="lt">&lt;</option>
+                <option value="le">&le;</option>
+                <option value="gt">&gt;</option>
+                <option value="ge">&ge;</option>
+              </select>
+              <input class="coeff-input" id="coC" value="4" type="number" step="1">
+            </div>
+            <div class="bpt-display" id="bptDisplay">2x − y &lt; 4</div>
+          </div>
+
+          <div class="sdiv">Tìm 2 điểm trên đường biên</div>
+
+          <!-- Point 1: x=0 -->
+          <div>
+            <div class="panel-section-label">Điểm 1 (Giao Oy)</div>
+            <div class="point-row">
+              <span class="point-label">Khi x = 0, y = ?</span>
+              <input class="point-input" id="pt1y" type="number" placeholder="?">
+              <button class="btn-check" id="btnCheckP1" onclick="checkPoint(1)">Kiểm tra</button>
+            </div>
+            <div id="fb1" class="hint-text" style="min-height:18px;"></div>
+          </div>
+
+          <!-- Point 2: y=0 -->
+          <div>
+            <div class="panel-section-label">Điểm 2 (Giao Ox)</div>
+            <div class="point-row">
+              <span class="point-label">Khi y = 0, x = ?</span>
+              <input class="point-input" id="pt2x" type="number" placeholder="?">
+              <button class="btn-check" id="btnCheckP2" onclick="checkPoint(2)">Kiểm tra</button>
+            </div>
+            <div id="fb2" class="hint-text" style="min-height:18px;"></div>
+          </div>
+
+          <button class="btn-primary" id="btnDrawBoundary" onclick="drawBoundaryLine()" disabled>
+            <i class="ti ti-pencil"></i> Vẽ đường biên
+          </button>
+          <button class="btn-secondary" onclick="resetMod1()">
+            <i class="ti ti-refresh"></i> Đặt lại
+          </button>
+
+          <div class="sim-caption" id="cap1">
+            <i class="ti ti-info-circle"></i>
+            <span>Nhập hệ số a, b, c rồi tìm 2 điểm thuộc đường biên bằng cách cho <strong>x = 0</strong> và <strong>y = 0</strong>.</span>
+          </div>
+        </div>
+
+        <!-- RIGHT CANVAS -->
+        <div class="sim-right">
+          <div class="canvas-wrap" id="cw1">
+            <canvas id="canvas1"></canvas>
+            <div class="tooltip-box" id="tip1"></div>
+          </div>
+          <div class="coord-bar" id="coord1">x: 0.00 · y: 0.00</div>
+          <div class="zoom-row">
+            <button class="btn-zoom accent" onclick="doZoom1(0.7)">＋ Phóng to</button>
+            <button class="btn-zoom accent" onclick="doZoom1(1.4)">－ Thu nhỏ</button>
+            <button class="btn-zoom" onclick="resetView1()">↺ Đặt lại</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+     MODULE 2 — XÁC ĐỊNH MIỀN NGHIỆM
+══════════════════════════════════════ -->
+    <div class="mod-card locked" id="mod2">
+      <div class="mod-header">
+        <div class="mod-num">2</div>
+        <div>
+          <div class="mod-title">Xác định miền nghiệm</div>
+          <div class="mod-sub">Thử điểm O(0,0) để biết miền nghiệm nằm ở phía nào</div>
+        </div>
+        <div class="mod-lock-badge" id="m2lock"><i class="ti ti-lock"></i> Hoàn thành Bước 1 trước</div>
+        <div class="mod-done-badge" id="m2done"><i class="ti ti-check"></i> Xong</div>
+      </div>
+
+      <div class="sim-body">
+        <div class="sim-left">
+          <div class="info-box blue" id="m2TestPointInfo">
+            <div class="ib-icon"><i class="ti ti-bulb"></i></div>
+            <div>
+              <div class="ib-title">Điểm thử: <span id="testPointLabel">O(0, 0)</span></div>
+              <div style="font-size:13px;">Thay vào phương trình và so sánh hai vế.</div>
+            </div>
+          </div>
+
+          <!-- Calc -->
+          <div>
+            <div class="panel-section-label">Tính toán vế trái</div>
+            <div class="calc-row" id="calcRow">
+              Thay điểm vào vế trái: <span id="calcExpr">2(0) − 1(0)</span> = <input class="calc-blank" id="calcInput" type="number" placeholder="?"> so với <strong id="calcRhs">4</strong>
+            </div>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:10px;">
+              <button class="btn-check" onclick="checkCalc()">Kiểm tra</button>
+              <div id="fbCalc" class="hint-text"></div>
+            </div>
+          </div>
+
+          <!-- Step 2: Satisfy? -->
+          <div id="choiceSection" class="hidden">
+            <div class="panel-section-label">Kết luận — điểm có thỏa mãn BPT?</div>
+            <div class="choice-row">
+              <button class="btn-choice" id="choiceYes" onclick="selectSatisfy(true)">✓ Thỏa mãn BPT</button>
+              <button class="btn-choice" id="choiceNo" onclick="selectSatisfy(false)">✗ Không thỏa mãn</button>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
+              <button class="btn-check" onclick="checkSatisfy()">Kiểm tra</button>
+              <div id="fbSatisfy" class="hint-text"></div>
+            </div>
+          </div>
+
+          <!-- Step 3: Where is test point? -->
+          <div id="testPointSideSection" class="hidden">
+            <div class="panel-section-label">Vị trí điểm thử so với miền nghiệm</div>
+            <div style="font-size:13px;color:var(--ink-2);margin-bottom:8px;" id="testPointSideHint"></div>
+            <div class="choice-row">
+              <button class="btn-choice" id="sideInside" onclick="selectTestSide(true)">📍 Trong miền nghiệm</button>
+              <button class="btn-choice" id="sideOutside" onclick="selectTestSide(false)">🚫 Ngoài miền nghiệm</button>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
+              <button class="btn-check" onclick="checkTestSide()">Kiểm tra</button>
+              <div id="fbTestSide" class="hint-text"></div>
+            </div>
+          </div>
+
+          <!-- Step 4: Click region -->
+          <div id="regionSection" class="hidden">
+            <div class="panel-section-label">Xác nhận miền nghiệm trên đồ thị</div>
+            <div class="info-box gold">
+              <div class="ib-icon"><i class="ti ti-hand-click"></i></div>
+              <div style="font-size:13px;"><strong>Click vào vùng miền nghiệm</strong> trên đồ thị bên phải rồi nhấn Kiểm tra vùng.</div>
+            </div>
+            <div style="margin-top:10px;display:flex;gap:8px;align-items:center;">
+              <button class="btn-check" id="btnCheckRegion" onclick="checkRegion()" disabled>Kiểm tra vùng</button>
+              <div id="fbRegion" class="hint-text"></div>
+            </div>
+          </div>
+
+          <div class="sim-caption" id="cap2">
+            <i class="ti ti-info-circle"></i>
+            <span>Để xác định miền nghiệm, ta thử một điểm không thuộc đường biên. O(0,0) thường là lựa chọn tiện nhất!</span>
+          </div>
+        </div>
+
+        <div class="sim-right">
+          <div class="canvas-wrap" id="cw2">
+            <canvas id="canvas2"></canvas>
+            <div class="tooltip-box" id="tip2"></div>
+          </div>
+          <div class="coord-bar" id="coord2">x: 0.00 · y: 0.00</div>
+          <div class="zoom-row">
+            <button class="btn-zoom accent" onclick="doZoom2(0.7)">＋ Phóng to</button>
+            <button class="btn-zoom accent" onclick="doZoom2(1.4)">－ Thu nhỏ</button>
+            <button class="btn-zoom" onclick="resetView2()">↺ Đặt lại</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- ══════════════════════════════════════
+     MODULE 3 — KIỂU ĐƯỜNG BIÊN
+══════════════════════════════════════ -->
+    <div class="mod-card locked" id="mod3">
+      <div class="mod-header">
+        <div class="mod-num">3</div>
+        <div>
+          <div class="mod-title">Kiểu đường biên: nét liền hay nét đứt?</div>
+          <div class="mod-sub">Dấu BPT quyết định đường biên có thuộc miền nghiệm không</div>
+        </div>
+        <div class="mod-lock-badge" id="m3lock"><i class="ti ti-lock"></i> Hoàn thành Bước 2 trước</div>
+        <div class="mod-done-badge" id="m3done"><i class="ti ti-check"></i> Xong</div>
+      </div>
+
+      <div class="sim-body">
+        <div class="sim-left">
+          <div>
+            <div class="panel-section-label">BPT hiện tại</div>
+            <div class="bpt-display" id="bptDisplay3">2x − y &lt; 4</div>
+            <div style="margin-top:10px;font-size:14px;color:var(--ink-2);">
+              Dấu <strong id="signHighlight" style="color:var(--jade-deep);font-size:17px;"></strong> quyết định kiểu đường biên.
+            </div>
+          </div>
+
+          <div class="sdiv">Chọn kiểu đường</div>
+
+          <div class="choice-row">
+            <button class="btn-linetype" id="btnSolid" onclick="selectLineType('solid')">
+              <div style="font-size:20px;font-family:var(--font-mono);letter-spacing:2px;margin-bottom:2px;">——</div>
+              Nét liền (≤, ≥)
+            </button>
+            <button class="btn-linetype" id="btnDashed" onclick="selectLineType('dashed')">
+              <div style="font-size:20px;font-family:var(--font-mono);letter-spacing:2px;margin-bottom:2px;">- - -</div>
+              Nét đứt (&lt;, &gt;)
+            </button>
+          </div>
+
+          <div style="display:flex;gap:8px;align-items:center;">
+            <button class="btn-check" onclick="checkLineType()">Kiểm tra</button>
+            <div id="fbLineType" class="hint-text"></div>
+          </div>
+
+          <div id="celebrationSection" class="hidden">
+            <div class="celebration">
+              <div class="emoji">🎉</div>
+              <h3>Hoàn thành xuất sắc!</h3>
+              <p>Bạn đã biểu diễn hoàn toàn chính xác miền nghiệm của BPT.</p>
+              <button class="btn-newgame" onclick="newGame()"><i class="ti ti-refresh"></i> Làm bài khác</button>
+            </div>
+          </div>
+
+          <div class="sim-caption" id="cap3">
+            <i class="ti ti-info-circle"></i>
+            <span>Bước cuối: nhìn vào dấu của BPT — đường biên có thuộc miền nghiệm không?</span>
+          </div>
+        </div>
+
+        <div class="sim-right">
+          <div class="canvas-wrap" id="cw3">
+            <canvas id="canvas3"></canvas>
+            <div class="tooltip-box" id="tip3"></div>
+          </div>
+          <div class="coord-bar" id="coord3">x: 0.00 · y: 0.00</div>
+          <div class="zoom-row">
+            <button class="btn-zoom accent" onclick="doZoom3(0.7)">＋ Phóng to</button>
+            <button class="btn-zoom accent" onclick="doZoom3(1.4)">－ Thu nhỏ</button>
+            <button class="btn-zoom" onclick="resetView3()">↺ Đặt lại</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- end app-body -->
+
+  <script>
+    // ===== LMS Safe Accessor (PHẦN 7.2) =====
+    function LMS() {
+      return window.AiducationLMS || { ready: function () { }, progress: function () { }, event: function () { }, state: function () { }, complete: function () { }, resize: function () { } };
+    }
+
+    // Header toggle
+    function toggleHeader() {
+      const header = document.getElementById('appHeader');
+      const btnShow = document.getElementById('btnShowHeader');
+      if (header.classList.contains('collapsed')) {
+        header.classList.remove('collapsed');
+        btnShow.style.display = 'none';
+      } else {
+        header.classList.add('collapsed');
+        btnShow.style.display = 'inline-flex';
+      }
+      reportHeight();
+    }
+
+    // ──────────────────────────────────────
+    // 1. STATE
+    // ──────────────────────────────────────
+    let state = {
+      a: 2, b: -1, c: 4,
+      sign: 'lt',
+      pt1ok: false, pt2ok: false,
+      pt1Attempts: 0, pt2Attempts: 0,
+      boundaryDrawn: false,
+      testPoint: { x: 0, y: 0 },
+      calcOk: false,
+      satisfyResult: null,
+      satisfySelected: null,
+      testSideSelected: null,
+      regionClicked: null,
+      regionClickedMX: null, regionClickedMY: null,
+      regionCorrect: null,
+      mod2done: false,
+      lineTypeSelected: null,
+      mod3done: false,
+    };
+
+    // ──────────────────────────────────────
+    // 2. CANVAS SETUP (Retina PW/PH vs CW/CH)
+    // ──────────────────────────────────────
+    const canvas1 = document.getElementById('canvas1'); ctx1 = canvas1.getContext('2d');
+    const canvas2 = document.getElementById('canvas2'); ctx2 = canvas2.getContext('2d');
+    const canvas3 = document.getElementById('canvas3'); ctx3 = canvas3.getContext('2d');
+
+    let CW1 = 0, CH1 = 0, PW1 = 0, PH1 = 0;
+    let CW2 = 0, CH2 = 0, PW2 = 0, PH2 = 0;
+    let CW3 = 0, CH3 = 0, PW3 = 0, PH3 = 0;
+
+    let vXMin = -10, vXMax = 10, vYMin = -10, vYMax = 10;
+
+    function resizeOne(canvas, wrapper, setter) {
+      const rect = wrapper.getBoundingClientRect();
+      const dpr = window.devicePixelRatio || 1;
+      const W = rect.width;
+      const H = rect.height;
+      if (W === 0 || H === 0) return;
+      const PW = Math.round(W * dpr);
+      const PH = Math.round(H * dpr);
+      canvas.width = PW;
+      canvas.height = PH;
+      setter(W, H, PW, PH);
+    }
+
+    function setC1(w, h, pw, ph) { CW1 = w; CH1 = h; PW1 = pw; PH1 = ph; }
+    function setC2(w, h, pw, ph) { CW2 = w; CH2 = h; PW2 = pw; PH2 = ph; }
+    function setC3(w, h, pw, ph) { CW3 = w; CH3 = h; PW3 = pw; PH3 = ph; }
+
+    const wrap1 = document.getElementById('cw1');
+    const wrap2 = document.getElementById('cw2');
+    const wrap3 = document.getElementById('cw3');
+
+    function resizeAll() {
+      resizeOne(canvas1, wrap1, setC1);
+      resizeOne(canvas2, wrap2, setC2);
+      resizeOne(canvas3, wrap3, setC3);
+    }
+
+    let roT = null;
+    const ro = new ResizeObserver(() => {
+      clearTimeout(roT);
+      roT = setTimeout(() => { resizeAll(); fullRedraw(); }, 30);
+    });
+    ro.observe(wrap1);
+    ro.observe(wrap2);
+    ro.observe(wrap3);
+
+    // ──────────────────────────────────────
+    // 3. SIGN UTILS
+    // ──────────────────────────────────────
+    const SIGNS = { lt: '<', le: '≤', gt: '>', ge: '≥' };
+    function signStr() { return SIGNS[state.sign]; }
+    function signIsStrict() { return state.sign === 'lt' || state.sign === 'gt'; }
+    function bptSatisfied(x, y) {
+      const lhs = state.a * x + state.b * y;
+      if (state.sign === 'lt') return lhs < state.c;
+      if (state.sign === 'le') return lhs <= state.c;
+      if (state.sign === 'gt') return lhs > state.c;
+      return lhs >= state.c;
+    }
+
+    // ──────────────────────────────────────
+    // 4. COORD HELPERS
+    // ──────────────────────────────────────
+    function m2c(mx, my, CW, CH) {
+      return {
+        px: (mx - vXMin) / (vXMax - vXMin) * CW,
+        py: (1 - (my - vYMin) / (vYMax - vYMin)) * CH
+      };
+    }
+    function c2m(px, py, CW, CH) {
+      return {
+        x: vXMin + (px / CW) * (vXMax - vXMin),
+        y: vYMin + (1 - py / CH) * (vYMax - vYMin)
+      };
+    }
+    function applyZoom(factor) {
+      const xc = (vXMin + vXMax) / 2, yc = (vYMin + vYMax) / 2;
+      const xr = (vXMax - vXMin) * factor / 2, yr = (vYMax - vYMin) * factor / 2;
+      if (xr < 0.5 || xr > 500) return;
+      vXMin = xc - xr; vXMax = xc + xr; vYMin = yc - yr; vYMax = yc + yr;
+      fullRedraw();
+    }
+    function doZoom1(f) { applyZoom(f); }
+    function doZoom2(f) { applyZoom(f); }
+    function doZoom3(f) { applyZoom(f); }
+    function resetView1() { vXMin = -10; vXMax = 10; vYMin = -10; vYMax = 10; fullRedraw(); }
+    function resetView2() { resetView1(); }
+    function resetView3() { resetView1(); }
+
+    // ──────────────────────────────────────
+    // 5. BPT DISPLAY FORMATTING
+    // ──────────────────────────────────────
+    function formatBPT() {
+      const a = state.a, b = state.b, c = state.c, s = signStr();
+      let lhs = '';
+      if (a === 0 && b === 0) return '0 ' + s + ' ' + c;
+      if (a !== 0) lhs += (a === 1 ? '' : (a === -1 ? '−' : a)) + 'x';
+      if (b !== 0) {
+        const bAbs = Math.abs(b);
+        if (a === 0) lhs += (b === 1 ? '' : (b === -1 ? '−' : b)) + 'y';
+        else lhs += ' ' + (b > 0 ? '+ ' : '− ') + (bAbs === 1 ? '' : bAbs) + 'y';
+      }
+      return lhs + ' ' + s + ' ' + c;
+    }
+
+    function updateBPTDisplay() {
+      const txt = formatBPT();
+      document.getElementById('bptDisplay').textContent = txt;
+      document.getElementById('bptDisplay3').textContent = txt;
+      document.getElementById('signHighlight').textContent = signStr();
+      const tp = state.testPoint;
+      const a = state.a, b = state.b;
+      const bStr = b >= 0 ? '+ ' + b : '− ' + Math.abs(b);
+      document.getElementById('calcExpr').textContent =
+        a + '(' + tp.x + ') ' + bStr + '(' + tp.y + ')';
+      document.getElementById('calcRhs').textContent = state.c;
+    }
+
+    // ──────────────────────────────────────
+    // 6. DRAW FUNCTIONS (DESIGN TOKENS v2.2)
+    // ──────────────────────────────────────
+    function drawGrid(ctx, CW, CH) {
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const xRange = vXMax - vXMin;
+      let step = 1;
+      if (xRange > 40) step = 5; if (xRange > 100) step = 10; if (xRange < 4) step = 0.5;
+
+      // Lưới mờ
+      ctx.strokeStyle = 'rgba(26, 26, 26, 0.06)'; ctx.lineWidth = 1;
+      for (let x = Math.ceil(vXMin / step) * step; x <= vXMax; x += step) {
+        const { px } = m2c(x, 0, CW, CH);
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, CH); ctx.stroke();
+      }
+      for (let y = Math.ceil(vYMin / step) * step; y <= vYMax; y += step) {
+        const { py } = m2c(0, y, CW, CH);
+        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(CW, py); ctx.stroke();
+      }
+
+      // Trục chính
+      ctx.strokeStyle = '#514C44'; ctx.lineWidth = 1.5; // --ink-2
+      const { px: x0, py: y0 } = m2c(0, 0, CW, CH);
+      if (x0 >= 0 && x0 <= CW) { ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, CH); ctx.stroke(); }
+      if (y0 >= 0 && y0 <= CH) { ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(CW, y0); ctx.stroke(); }
+
+      // Mũi tên
+      ctx.fillStyle = '#514C44';
+      if (y0 >= 0 && y0 <= CH) {
+        ctx.beginPath(); ctx.moveTo(CW - 10, y0 - 4); ctx.lineTo(CW, y0); ctx.lineTo(CW - 10, y0 + 4); ctx.fill();
+      }
+      if (x0 >= 0 && x0 <= CW) {
+        ctx.beginPath(); ctx.moveTo(x0 - 4, 10); ctx.lineTo(x0, 0); ctx.lineTo(x0 + 4, 10); ctx.fill();
+      }
+
+      // Nhãn Ticks — LUÔN dùng JetBrains Mono
+      ctx.font = "bold 12px 'JetBrains Mono', monospace"; ctx.fillStyle = '#514C44';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      for (let x = Math.ceil(vXMin / step) * step; x <= vXMax; x += step) {
+        if (Math.abs(x) < 0.001) continue;
+        const { px } = m2c(x, 0, CW, CH);
+        let ly = y0 + 4; if (ly > CH - 16) ly = CH - 16; if (ly < 2) ly = 2;
+        ctx.fillText(x % 1 === 0 ? x : x.toFixed(1), px, ly);
+      }
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      for (let y = Math.ceil(vYMin / step) * step; y <= vYMax; y += step) {
+        if (Math.abs(y) < 0.001) continue;
+        const { py } = m2c(0, y, CW, CH);
+        let lx = x0 - 5; if (lx < 24) lx = 24; if (lx > CW - 6) lx = CW - 6;
+        ctx.fillText(y % 1 === 0 ? y : y.toFixed(1), lx, py);
+      }
+      if (x0 >= 0 && x0 <= CW && y0 >= 0 && y0 <= CH) {
+        ctx.font = "bold 12px 'JetBrains Mono', monospace"; ctx.fillStyle = '#514C44';
+        ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+        ctx.fillText('O', x0 - 4, y0 + 4);
+      }
+      ctx.font = "bold 13px 'JetBrains Mono', monospace";
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      const { px: xEnd } = m2c(vXMax, 0, CW, CH); ctx.fillText('x', xEnd - 16, y0 + 4);
+      ctx.textAlign = 'left'; ctx.textBaseline = 'top';
+      const { py: yTop } = m2c(0, vYMax, CW, CH); ctx.fillText('y', x0 + 6, yTop + 4);
+    }
+
+    function drawBoundary(ctx, CW, CH, dashed, color) {
+      const a = state.a, b = state.b, c = state.c;
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.strokeStyle = color || '#1A1A1A'; ctx.lineWidth = 2.5;
+      ctx.setLineDash(dashed ? [7, 5] : []);
+      ctx.beginPath();
+      let pts = [];
+      function tryPoint(mx, my) {
+        const { px, py } = m2c(mx, my, CW, CH);
+        if (px >= -20 && px <= CW + 20 && py >= -20 && py <= CH + 20) pts.push({ px, py });
+      }
+      if (b !== 0) {
+        tryPoint(vXMin, (c - a * vXMin) / b);
+        tryPoint(vXMax, (c - a * vXMax) / b);
+      }
+      if (a !== 0) {
+        tryPoint((c - b * vYMin) / a, vYMin);
+        tryPoint((c - b * vYMax) / a, vYMax);
+      }
+      pts = pts.filter((p, i) => !pts.slice(0, i).some(q => Math.abs(p.px - q.px) < 1 && Math.abs(p.py - q.py) < 1));
+      if (pts.length >= 2) {
+        ctx.moveTo(pts[0].px, pts[0].py);
+        ctx.lineTo(pts[pts.length - 1].px, pts[pts.length - 1].py);
+        ctx.stroke();
+      }
+      ctx.setLineDash([]);
+    }
+
+    function drawLineLabel(ctx, CW, CH) {
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const txt = formatBPT();
+      const a = state.a, b = state.b, c = state.c;
+      let bestX = null, bestY = null, bestDist = Infinity;
+      for (let i = 0; i <= 60; i++) {
+        const mx = vXMin + (0.2 + i / 60 * 0.6) * (vXMax - vXMin);
+        if (b === 0) continue;
+        const my = (c - a * mx) / b;
+        if (!isFinite(my) || my < vYMin || my > vYMax) continue;
+        const { px, py } = m2c(mx, my, CW, CH);
+        const dist = Math.abs(py - CH / 2);
+        if (dist < bestDist) { bestDist = dist; bestX = px; bestY = py; }
+      }
+      if (bestX === null) return;
+      ctx.font = "bold 13px 'JetBrains Mono', monospace";
+      const tw = ctx.measureText(txt).width;
+      const PAD = 6, H = 20;
+      let lx = bestX + 16; if (lx + tw + PAD * 2 > CW - 8) lx = bestX - tw - PAD * 2 - 10;
+      let ly = bestY - H - 8; if (ly < 8) ly = bestY + 10;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.93)';
+      ctx.strokeStyle = '#1A1A1A'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.roundRect(lx - PAD, ly, tw + PAD * 2, H, 4); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#1A1A1A'; ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+      ctx.fillText(txt, lx, ly + H / 2);
+    }
+
+    function drawPoint(ctx, mx, my, label, color, CW, CH, pulse) {
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      const { px, py } = m2c(mx, my, CW, CH);
+      if (pulse) {
+        ctx.beginPath(); ctx.arc(px, py, 11, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(232, 162, 74, 0.25)'; ctx.fill(); // --accent-pale
+      }
+      ctx.beginPath(); ctx.arc(px, py, 5.5, 0, Math.PI * 2);
+      ctx.fillStyle = color; ctx.fill();
+      ctx.strokeStyle = '#FFFFFF'; ctx.lineWidth = 1.5; ctx.stroke();
+      if (label) {
+        ctx.font = "bold 12px 'JetBrains Mono', monospace"; ctx.fillStyle = color;
+        ctx.textAlign = 'left'; ctx.textBaseline = 'bottom';
+        ctx.fillText(label, px + 8, py - 3);
+      }
+    }
+
+    // Tô miền nghiệm — Pixel Shading trên Physical Pixels PW x PH
+    function drawShading(ctx, CW, CH, PW, PH) {
+      const xRange = vXMax - vXMin, yRange = vYMax - vYMin;
+      const imgData = ctx.createImageData(PW, PH);
+      const data = imgData.data;
+
+      // Jade tint: rgb(60, 165, 122), Cream bg: rgb(250, 247, 240)
+      const rT = 60, gT = 165, bT = 122, alpha = 0.22;
+
+      for (let py = 0; py < PH; py++) {
+        const my = vYMin + (1 - py / PH) * yRange;
+        for (let px = 0; px < PW; px++) {
+          const mx = vXMin + (px / PW) * xRange;
+          const idx = (py * PW + px) * 4;
+          if (bptSatisfied(mx, my)) {
+            data[idx]   = Math.round(rT * alpha + 250 * (1 - alpha));
+            data[idx+1] = Math.round(gT * alpha + 247 * (1 - alpha));
+            data[idx+2] = Math.round(bT * alpha + 240 * (1 - alpha));
+            data[idx+3] = 255;
+          } else {
+            data[idx] = 250; data[idx+1] = 247; data[idx+2] = 240; data[idx+3] = 255;
+          }
+        }
+      }
+      // putImageData TRƯỚC setTransform
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.putImageData(imgData, 0, 0);
+    }
+
+    // ──────────────────────────────────────
+    // 7. CANVAS REDRAW ROUTINES
+    // ──────────────────────────────────────
+    function drawCanvas1() {
+      if (CW1 === 0) return;
+      const dpr = window.devicePixelRatio || 1;
+      ctx1.setTransform(1, 0, 0, 1, 0, 0);
+      ctx1.fillStyle = '#FAF7F0'; ctx1.fillRect(0, 0, PW1, PH1);
+      ctx1.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      drawGrid(ctx1, CW1, CH1);
+      const a = state.a, b = state.b, c = state.c;
+      if (!state.pt1ok && b !== 0) {
+        const yv = c / b; const { px, py } = m2c(0, yv, CW1, CH1);
+        ctx1.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx1.beginPath(); ctx1.arc(px, py, 5, 0, Math.PI * 2);
+        ctx1.fillStyle = 'rgba(124, 117, 106, 0.35)'; ctx1.fill();
+      }
+      if (!state.pt2ok && a !== 0) {
+        const xv = c / a; const { px, py } = m2c(xv, 0, CW1, CH1);
+        ctx1.setTransform(dpr, 0, 0, dpr, 0, 0);
+        ctx1.beginPath(); ctx1.arc(px, py, 5, 0, Math.PI * 2);
+        ctx1.fillStyle = 'rgba(124, 117, 106, 0.35)'; ctx1.fill();
+      }
+      if (state.pt1ok && b !== 0) {
+        const yv = c / b;
+        drawPoint(ctx1, 0, yv, '(0,' + fmt(yv) + ')', '#2D8B6F', CW1, CH1); // --jade-deep
+      }
+      if (state.pt2ok && a !== 0) {
+        const xv = c / a;
+        drawPoint(ctx1, xv, 0, '(' + fmt(xv) + ',0)', '#4E7F92', CW1, CH1); // --info
+      }
+      if (state.boundaryDrawn) {
+        drawBoundary(ctx1, CW1, CH1, false, '#1A1A1A');
+        drawLineLabel(ctx1, CW1, CH1);
+      }
+    }
+
+    function drawCanvas2() {
+      if (CW2 === 0) return;
+      const dpr = window.devicePixelRatio || 1;
+      if (state.mod2done) {
+        drawShading(ctx2, CW2, CH2, PW2, PH2);
+      } else {
+        ctx2.setTransform(1, 0, 0, 1, 0, 0);
+        ctx2.fillStyle = '#FAF7F0'; ctx2.fillRect(0, 0, PW2, PH2);
+      }
+      drawGrid(ctx2, CW2, CH2);
+      const a = state.a, b = state.b, c = state.c;
+      if (b !== 0) drawPoint(ctx2, 0, c / b, '', '#2D8B6F', CW2, CH2);
+      if (a !== 0) drawPoint(ctx2, c / a, 0, '', '#4E7F92', CW2, CH2);
+      drawBoundary(ctx2, CW2, CH2, false, '#1A1A1A');
+      drawLineLabel(ctx2, CW2, CH2);
+      const tp = state.testPoint;
+      drawPoint(ctx2, tp.x, tp.y, '(' + tp.x + ',' + tp.y + ')',
+        state.calcOk ? '#CE8A33' : '#E8A24A', CW2, CH2, true);
+      if (state.regionClickedMX !== null) {
+        const col = state.regionCorrect === null ? '#7C756A' : state.regionCorrect ? '#2D8B6F' : '#C15F3C';
+        drawPoint(ctx2, state.regionClickedMX, state.regionClickedMY, null, col, CW2, CH2);
+      }
+    }
+
+    function drawCanvas3() {
+      if (CW3 === 0) return;
+      drawShading(ctx3, CW3, CH3, PW3, PH3);
+      drawGrid(ctx3, CW3, CH3);
+      const a = state.a, b = state.b, c = state.c;
+      if (b !== 0) drawPoint(ctx3, 0, c / b, '', '#2D8B6F', CW3, CH3);
+      if (a !== 0) drawPoint(ctx3, c / a, 0, '', '#4E7F92', CW3, CH3);
+      const dashed = state.lineTypeSelected === 'dashed' || (state.lineTypeSelected === null && signIsStrict());
+      drawBoundary(ctx3, CW3, CH3, dashed, '#1A1A1A');
+      drawLineLabel(ctx3, CW3, CH3);
+    }
+
+    function fullRedraw() {
+      drawCanvas1();
+      if (!document.getElementById('mod2').classList.contains('locked')) drawCanvas2();
+      if (!document.getElementById('mod3').classList.contains('locked')) drawCanvas3();
+    }
+
+    // ──────────────────────────────────────
+    // 8. HOVER & CLICK EVENTS
+    // ──────────────────────────────────────
+    function setupHover(canvas, coordId, tipId, getCW, getCH) {
+      function updatePos(clientX, clientY) {
+        const rect = canvas.getBoundingClientRect();
+        const px = clientX - rect.left, py = clientY - rect.top;
+        const { x, y } = c2m(px, py, getCW(), getCH());
+        document.getElementById(coordId).textContent = 'x: ' + x.toFixed(2) + ' · y: ' + y.toFixed(2);
+        const tip = document.getElementById(tipId);
+        tip.style.display = 'block';
+        tip.style.left = (px + 14) + 'px'; tip.style.top = (py - 8) + 'px';
+        tip.textContent = '(' + x.toFixed(1) + ', ' + y.toFixed(1) + ')';
+      }
+      canvas.addEventListener('mousemove', e => updatePos(e.clientX, e.clientY));
+      canvas.addEventListener('mouseleave', () => { document.getElementById(tipId).style.display = 'none'; });
+      canvas.addEventListener('touchmove', e => {
+        const t = e.touches[0];
+        if (t) updatePos(t.clientX, t.clientY);
+      }, { passive: true });
+      canvas.addEventListener('touchend', () => { document.getElementById(tipId).style.display = 'none'; });
+    }
+    setupHover(canvas1, 'coord1', 'tip1', () => CW1, () => CH1);
+    setupHover(canvas2, 'coord2', 'tip2', () => CW2, () => CH2);
+    setupHover(canvas3, 'coord3', 'tip3', () => CW3, () => CH3);
+
+    canvas2.addEventListener('click', e => {
+      if (document.getElementById('regionSection').classList.contains('hidden')) return;
+      const rect = canvas2.getBoundingClientRect();
+      const px = e.clientX - rect.left, py = e.clientY - rect.top;
+      const { x, y } = c2m(px, py, CW2, CH2);
+      state.regionClicked = bptSatisfied(x, y) ? 'in' : 'out';
+      state.regionClickedMX = x; state.regionClickedMY = y;
+      state.regionCorrect = null;
+      document.getElementById('btnCheckRegion').disabled = false;
+      document.getElementById('fbRegion').textContent = 'Đã chọn (' + x.toFixed(1) + ', ' + y.toFixed(1) + ') — nhấn Kiểm tra vùng.';
+      drawCanvas2();
+    });
+
+    // ──────────────────────────────────────
+    // 9. INPUT & MODULE LOGIC
+    // ──────────────────────────────────────
+    ['coA', 'coB', 'coC', 'coSign'].forEach(id => {
+      const el = document.getElementById(id);
+      el.addEventListener('change', onBPTChange);
+      if (id !== 'coSign') el.addEventListener('input', onBPTChange);
+    });
+
+    function onBPTChange() {
+      state.a = parseFloat(document.getElementById('coA').value) || 0;
+      state.b = parseFloat(document.getElementById('coB').value) || 0;
+      state.c = parseFloat(document.getElementById('coC').value) || 0;
+      state.sign = document.getElementById('coSign').value;
+      state.pt1ok = false; state.pt2ok = false;
+      state.pt1Attempts = 0; state.pt2Attempts = 0;
+      state.boundaryDrawn = false;
+      document.getElementById('pt1y').value = ''; document.getElementById('pt2x').value = '';
+      document.getElementById('pt1y').className = 'point-input'; document.getElementById('pt2x').className = 'point-input';
+      document.getElementById('fb1').textContent = ''; document.getElementById('fb2').textContent = '';
+      document.getElementById('btnDrawBoundary').disabled = true;
+      updateTestPoint(); updateBPTDisplay();
+      setCaption1('default'); drawCanvas1();
+    }
+
+    function updateTestPoint() {
+      const c = state.c;
+      if (c === 0) {
+        if (state.a !== 0) state.testPoint = { x: 1, y: 0 };
+        else if (state.b !== 0) state.testPoint = { x: 0, y: 1 };
+        else state.testPoint = { x: 0, y: 0 };
+        document.getElementById('testPointLabel').textContent =
+          'A(' + state.testPoint.x + ', ' + state.testPoint.y + ')';
+      } else {
+        state.testPoint = { x: 0, y: 0 };
+        document.getElementById('testPointLabel').textContent = 'O(0, 0)';
+      }
+      const tp = state.testPoint, a = state.a, b = state.b;
+      const bStr = b >= 0 ? '+ ' + b : '− ' + Math.abs(b);
+      document.getElementById('calcExpr').textContent = a + '(' + tp.x + ') ' + bStr + '(' + tp.y + ')';
+      document.getElementById('calcRhs').textContent = state.c;
+    }
+
+    function checkPoint(n) {
+      const a = state.a, b = state.b, c = state.c;
+      if (n === 1) {
+        if (b === 0) { setFb1('Không giải được y khi b = 0!', 'warn'); return; }
+        const expected = c / b, entered = parseFloat(document.getElementById('pt1y').value);
+        state.pt1Attempts++;
+        if (Math.abs(entered - expected) < 0.001) {
+          state.pt1ok = true;
+          document.getElementById('pt1y').className = 'point-input correct';
+          setFb1('✓ Đúng! Điểm (0, ' + fmt(expected) + ')', 'ok');
+        } else {
+          document.getElementById('pt1y').className = 'point-input wrong';
+          if (state.pt1Attempts >= 2)
+            setFb1('Gợi ý: ' + a + '(0)+' + b + 'y=' + c + ' → y = ' + fmt(expected), 'hint');
+          else
+            setFb1('Chưa đúng — thử tính lại nhé!', 'err');
+        }
+      } else {
+        if (a === 0) { setFb2('Không giải được x khi a = 0!', 'warn'); return; }
+        const expected = c / a, entered = parseFloat(document.getElementById('pt2x').value);
+        state.pt2Attempts++;
+        if (Math.abs(entered - expected) < 0.001) {
+          state.pt2ok = true;
+          document.getElementById('pt2x').className = 'point-input correct';
+          setFb2('✓ Đúng! Điểm (' + fmt(expected) + ', 0)', 'ok');
+        } else {
+          document.getElementById('pt2x').className = 'point-input wrong';
+          if (state.pt2Attempts >= 2)
+            setFb2('Gợi ý: ' + a + 'x+' + b + '(0)=' + c + ' → x = ' + fmt(expected), 'hint');
+          else
+            setFb2('Chưa đúng — thử tính lại nhé!', 'err');
+        }
+      }
+      checkBothPoints(); drawCanvas1();
+    }
+
+    function checkBothPoints() {
+      const need1 = (state.b !== 0), need2 = (state.a !== 0);
+      const ok = (need1 ? state.pt1ok : true) && (need2 ? state.pt2ok : true);
+      if (ok) { document.getElementById('btnDrawBoundary').disabled = false; setCaption1('ready'); }
+    }
+
+    function drawBoundaryLine() {
+      state.boundaryDrawn = true;
+      document.getElementById('btnDrawBoundary').disabled = true;
+      setCaption1('drawn'); drawCanvas1();
+      setTimeout(() => unlockMod2(), 600);
+    }
+
+    function resetMod1() {
+      state.pt1ok = false; state.pt2ok = false; state.pt1Attempts = 0; state.pt2Attempts = 0;
+      state.boundaryDrawn = false;
+      document.getElementById('pt1y').value = ''; document.getElementById('pt2x').value = '';
+      document.getElementById('pt1y').className = 'point-input'; document.getElementById('pt2x').className = 'point-input';
+      document.getElementById('fb1').textContent = ''; document.getElementById('fb2').textContent = '';
+      document.getElementById('btnDrawBoundary').disabled = true;
+      setCaption1('default'); drawCanvas1();
+    }
+
+    function checkCalc() {
+      const tp = state.testPoint;
+      const expected = state.a * tp.x + state.b * tp.y;
+      const entered = parseFloat(document.getElementById('calcInput').value);
+      const fb = document.getElementById('fbCalc');
+      if (Math.abs(entered - expected) < 0.001) {
+        state.calcOk = true;
+        fb.innerHTML = '<span class="feedback-badge ok">✓ Đúng!</span>';
+        document.getElementById('choiceSection').classList.remove('hidden');
+        setCaption2('calc_ok'); drawCanvas2();
+      } else {
+        fb.innerHTML = '<span class="feedback-badge err">✗ Thử lại</span>';
+      }
+    }
+
+    let satisfySelected = null;
+    function selectSatisfy(val) {
+      satisfySelected = val;
+      document.getElementById('choiceYes').className = 'btn-choice' + (val === true ? ' selected' : '');
+      document.getElementById('choiceNo').className = 'btn-choice' + (val === false ? ' selected' : '');
+    }
+    function checkSatisfy() {
+      if (satisfySelected === null) { document.getElementById('fbSatisfy').textContent = 'Chọn đáp án trước!'; return; }
+      const tp = state.testPoint, correct = bptSatisfied(tp.x, tp.y);
+      const fb = document.getElementById('fbSatisfy');
+      if (satisfySelected === correct) {
+        fb.innerHTML = '<span class="feedback-badge ok">✓ Chính xác!</span>';
+        state.satisfyResult = correct;
+        document.getElementById('choiceYes').disabled = true;
+        document.getElementById('choiceNo').disabled = true;
+        const hint = document.getElementById('testPointSideHint');
+        const tpName = '(' + tp.x + ', ' + tp.y + ')';
+        hint.innerHTML = 'Vừa xác nhận: <strong>' + tpName + (correct ? ' thỏa mãn' : ' không thỏa mãn') + ' BPT</strong>.<br>Vậy ' + tpName + ' đang nằm ở đâu so với miền nghiệm?';
+        document.getElementById('testPointSideSection').classList.remove('hidden');
+        setCaption2('satisfy_ok'); drawCanvas2();
+      } else {
+        fb.innerHTML = '<span class="feedback-badge err">✗ Xem lại: ' + state.a + '(' + tp.x + ')+' + state.b + '(' + tp.y + ')=' + (state.a * tp.x + state.b * tp.y) + '. So sánh với ' + state.c + '.</span>';
+      }
+    }
+
+    let testSideSelected = null;
+    function selectTestSide(isInside) {
+      testSideSelected = isInside;
+      document.getElementById('sideInside').className = 'btn-choice' + (isInside ? ' selected' : '');
+      document.getElementById('sideOutside').className = 'btn-choice' + (!isInside ? ' selected' : '');
+    }
+
+    function checkTestSide() {
+      if (testSideSelected === null) { document.getElementById('fbTestSide').textContent = 'Chọn đáp án trước!'; return; }
+      const correct = (testSideSelected === state.satisfyResult);
+      const fb = document.getElementById('fbTestSide');
+      if (correct) {
+        fb.innerHTML = '<span class="feedback-badge ok">✓ Đúng!</span>';
+        document.getElementById('sideInside').disabled = true;
+        document.getElementById('sideOutside').disabled = true;
+        document.getElementById('regionSection').classList.remove('hidden');
+        setCaption2('side_ok');
+      } else {
+        fb.innerHTML = '<span class="feedback-badge err">✗ Nếu điểm <strong>thỏa mãn</strong> BPT → nó nằm <strong>trong</strong> miền nghiệm. Nếu <strong>không thỏa</strong> → nằm <strong>ngoài</strong>.</span>';
+        testSideSelected = null;
+        document.getElementById('sideInside').className = 'btn-choice';
+        document.getElementById('sideOutside').className = 'btn-choice';
+      }
+    }
+
+    function checkRegion() {
+      if (state.regionClicked === null) return;
+      const tp = state.testPoint, tpOk = bptSatisfied(tp.x, tp.y);
+      const clickedOk = (state.regionClicked === 'in');
+      const correct = (clickedOk === tpOk);
+      state.regionCorrect = correct;
+      const fb = document.getElementById('fbRegion');
+      if (correct) {
+        fb.innerHTML = '<span class="feedback-badge ok">✓ Đúng! Miền nghiệm đã được tô màu.</span>';
+        state.mod2done = true;
+        setCaption2('region_ok');
+        document.getElementById('m2done').style.display = 'flex';
+        document.getElementById('m2lock').style.display = 'none';
+        drawCanvas2();
+        setTimeout(() => unlockMod3(), 700);
+      } else {
+        fb.innerHTML = '<span class="feedback-badge err">✗ Chưa đúng. Nhớ lại: điểm thử vừa xác định nằm ' + (tpOk ? 'trong' : 'ngoài') + ' miền nghiệm — hãy click vào vùng ' + (tpOk ? 'chứa' : 'không chứa') + ' điểm đó.</span>';
+        state.regionClicked = null; state.regionClickedMX = null; state.regionClickedMY = null;
+        drawCanvas2();
+      }
+    }
+
+    function selectLineType(type) {
+      state.lineTypeSelected = type;
+      document.getElementById('btnSolid').className = 'btn-linetype' + (type === 'solid' ? ' selected' : '');
+      document.getElementById('btnDashed').className = 'btn-linetype' + (type === 'dashed' ? ' selected' : '');
+      drawCanvas3();
+    }
+
+    function checkLineType() {
+      if (!state.lineTypeSelected) { document.getElementById('fbLineType').textContent = 'Chọn kiểu đường trước!'; return; }
+      const correct = signIsStrict() ? 'dashed' : 'solid';
+      const fb = document.getElementById('fbLineType');
+      if (state.lineTypeSelected === correct) {
+        fb.innerHTML = '<span class="feedback-badge ok">✓ Chính xác!</span>';
+        setCaption3(correct === 'dashed' ? 'correct_dashed' : 'correct_solid');
+        state.mod3done = true;
+        document.getElementById('m3done').style.display = 'flex';
+        document.getElementById('m3lock').style.display = 'none';
+        document.getElementById('celebrationSection').classList.remove('hidden');
+        drawCanvas3();
+      } else {
+        fb.innerHTML = '<span class="feedback-badge err">✗ Dấu ' + signStr() + ' → ' + (correct === 'dashed' ? 'nét đứt' : 'nét liền') + '!</span>';
+        setCaption3('wrong_type');
+      }
+    }
+
+    function unlockMod2() {
+      document.getElementById('m1done').style.display = 'flex';
+      document.getElementById('mod2').classList.remove('locked');
+      document.getElementById('m2lock').style.display = 'none';
+      updateTestPoint(); drawCanvas2();
+      document.getElementById('mod2').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function unlockMod3() {
+      document.getElementById('mod3').classList.remove('locked');
+      document.getElementById('m3lock').style.display = 'none';
+      drawCanvas3();
+      document.getElementById('mod3').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+
+    function newGame() {
+      const as = [1, 2, -1, -2, 3, -3], bs = [1, -1, 2, -2, 1, 3], cs = [2, 3, 4, -2, 6, 1, -3], sigs = ['lt', 'le', 'gt', 'ge'];
+      state.a = as[Math.floor(Math.random() * as.length)];
+      state.b = bs[Math.floor(Math.random() * bs.length)];
+      state.c = cs[Math.floor(Math.random() * cs.length)];
+      state.sign = sigs[Math.floor(Math.random() * sigs.length)];
+      state.pt1ok = false; state.pt2ok = false; state.pt1Attempts = 0; state.pt2Attempts = 0;
+      state.boundaryDrawn = false; state.calcOk = false; state.satisfyResult = null; state.testSideSelected = null;
+      state.regionClicked = null; state.regionClickedMX = null; state.regionClickedMY = null;
+      state.regionCorrect = null; state.mod2done = false; state.lineTypeSelected = null; state.mod3done = false;
+      document.getElementById('coA').value = state.a;
+      document.getElementById('coB').value = state.b;
+      document.getElementById('coC').value = state.c;
+      document.getElementById('coSign').value = state.sign;
+      document.getElementById('pt1y').value = ''; document.getElementById('pt2x').value = '';
+      document.getElementById('pt1y').className = 'point-input'; document.getElementById('pt2x').className = 'point-input';
+      document.getElementById('fb1').textContent = ''; document.getElementById('fb2').textContent = '';
+      document.getElementById('btnDrawBoundary').disabled = true;
+      document.getElementById('calcInput').value = ''; document.getElementById('fbCalc').textContent = '';
+      document.getElementById('choiceSection').classList.add('hidden');
+      document.getElementById('testPointSideSection').classList.add('hidden');
+      document.getElementById('regionSection').classList.add('hidden');
+      document.getElementById('fbSatisfy').textContent = ''; document.getElementById('fbRegion').textContent = '';
+      document.getElementById('fbTestSide').textContent = '';
+      satisfySelected = null; testSideSelected = null;
+      document.getElementById('choiceYes').className = 'btn-choice'; document.getElementById('choiceNo').className = 'btn-choice';
+      document.getElementById('choiceYes').disabled = false; document.getElementById('choiceNo').disabled = false;
+      document.getElementById('sideInside').className = 'btn-choice'; document.getElementById('sideOutside').className = 'btn-choice';
+      document.getElementById('sideInside').disabled = false; document.getElementById('sideOutside').disabled = false;
+      document.getElementById('fbLineType').textContent = '';
+      document.getElementById('btnSolid').className = 'btn-linetype'; document.getElementById('btnDashed').className = 'btn-linetype';
+      document.getElementById('celebrationSection').classList.add('hidden');
+      document.getElementById('mod2').classList.add('locked');
+      document.getElementById('mod3').classList.add('locked');
+      document.getElementById('m1done').style.display = 'none';
+      document.getElementById('m2done').style.display = 'none'; document.getElementById('m2lock').style.display = 'flex';
+      document.getElementById('m3done').style.display = 'none'; document.getElementById('m3lock').style.display = 'flex';
+      updateTestPoint(); updateBPTDisplay();
+      setCaption1('default'); setCaption2('default'); setCaption3('default');
+      vXMin = -10; vXMax = 10; vYMin = -10; vYMax = 10;
+      fullRedraw(); window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Captions Feedback
+    function setCaption(id, type, text) {
+      const el = document.getElementById(id);
+      el.className = 'sim-caption' + (type === 'ok' ? ' green' : (type === 'err' ? ' red' : ''));
+      el.querySelector('span').innerHTML = text;
+    }
+    function setCaption1(s) {
+      const m = {
+        default: 'Nhập hệ số a, b, c rồi tìm 2 điểm thuộc đường biên bằng cách cho <strong>x = 0</strong> và <strong>y = 0</strong>.',
+        ready: 'Tốt lắm! Đủ 2 điểm — nhấn <strong>Vẽ đường biên</strong> để tiếp tục.',
+        drawn: 'Đường biên đã vẽ! Chuyển sang Bước 2 →',
+      }; setCaption('cap1', s === 'drawn' ? 'ok' : '', m[s] || '');
+    }
+    function setFb1(txt, type) { const el = document.getElementById('fb1'); el.style.color = type === 'ok' ? 'var(--jade-text)' : type === 'err' ? 'var(--wrong)' : 'var(--ink-3)'; el.textContent = txt; }
+    function setFb2(txt, type) { const el = document.getElementById('fb2'); el.style.color = type === 'ok' ? 'var(--jade-text)' : type === 'err' ? 'var(--wrong)' : 'var(--ink-3)'; el.textContent = txt; }
+    function setCaption2(s) {
+      const tp = state.testPoint;
+      const tpName = '(' + tp.x + ',' + tp.y + ')';
+      const m = {
+        default: 'Để xác định miền nghiệm, ta thử một điểm không thuộc đường biên. O(0,0) thường là lựa chọn tiện nhất!',
+        calc_ok: 'Tính đúng! Vậy điểm ' + tpName + ' có thỏa mãn BPT không? Chọn đáp án bên dưới.',
+        satisfy_ok: 'Chính xác! Tiếp theo: ' + tpName + ' đang nằm trong hay ngoài miền nghiệm?',
+        side_ok: 'Đúng! Bây giờ hãy click vào vùng miền nghiệm trên đồ thị bên phải.',
+        region_ok: 'Miền nghiệm đã xác định! Bước cuối: chọn kiểu đường biên →',
+      }; setCaption('cap2', s === 'region_ok' ? 'ok' : '', m[s] || m['default']);
+    }
+    function setCaption3(s) {
+      const m = {
+        default: 'Bước cuối: nhìn vào dấu của BPT — đường biên có thuộc miền nghiệm không?',
+        correct_dashed: 'Chính xác! Dấu ' + signStr() + ' → đường biên không thuộc miền nghiệm → nét đứt ✓',
+        correct_solid: 'Chính xác! Dấu ' + signStr() + ' → đường biên thuộc miền nghiệm → nét liền ✓',
+        wrong_type: 'Dấu ' + signStr() + ' → ' + (signIsStrict() ? 'nét đứt' : 'nét liền') + '!',
+      }; setCaption('cap3', s.startsWith('correct') ? 'ok' : (s === 'wrong_type' ? 'err' : ''), m[s] || m['default']);
+    }
+
+    function fmt(n) { return n % 1 === 0 ? n : parseFloat(n.toFixed(2)); }
+
+    // Init
+    updateBPTDisplay();
+    setCaption1('default'); setCaption2('default'); setCaption3('default');
+    document.getElementById('signHighlight').textContent = signStr();
+
+    window.addEventListener('load', () => {
+      resizeAll();
+      fullRedraw();
+      setTimeout(() => { resizeAll(); fullRedraw(); }, 200);
+    });
+    window.addEventListener('resize', () => {
+      clearTimeout(roT); roT = setTimeout(() => { resizeAll(); fullRedraw(); }, 30);
+    });
+
+    // LMS Height Report
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    const _athenaResizeObserver = new ResizeObserver(() => {
+      clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+    });
+    _athenaResizeObserver.observe(document.body);
+  </script>
+</body>
+
+</html>

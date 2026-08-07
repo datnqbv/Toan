@@ -1,0 +1,1699 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Nhập Vai: Ứng Dụng BPT Bậc Nhất Hai Ẩn</title>
+  <script type="application/json" id="athena-context">
+{
+  "title": "Nhập Vai: Ứng Dụng Bất Phương Trình Bậc Nhất Hai Ẩn",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Chọn đúng 2 ẩn số x, y đại diện cho đại lượng cần tìm trong bài toán thực tế (không nhầm với chi phí/doanh thu/tổng)",
+    "Lập bất phương trình bậc nhất hai ẩn từ tình huống thực tế và rút gọn hệ số về dạng số nguyên đẹp",
+    "Vẽ đường thẳng biên ax+by=c và xác định miền nghiệm của bất phương trình trên mặt phẳng toạ độ",
+    "Kiểm tra một điểm cụ thể có thuộc miền nghiệm hay không bằng cách thay tọa độ vào bất phương trình"
+  ],
+  "structure": [
+    { "id": "scenario-0", "title": "Tình huống 1 — Đêm Nhạc Trường: bán vé thường 50.000đ và vé VIP 120.000đ, cần thu ít nhất 6.000.000đ" },
+    { "id": "scenario-1", "title": "Tình huống 2 — Giải Marathon: mua áo 150.000đ/cái và huy chương 80.000đ/cái, ngân sách tối đa 12.000.000đ" },
+    { "id": "scenario-2", "title": "Tình huống 3 — Kế Hoạch Dinh Dưỡng: bánh mì 250 calo/cái và trứng 80 calo/quả, cần nạp ít nhất 500 calo" },
+    { "id": "scenario-3", "title": "Tình huống 4 — Gói Cước Viễn Thông: gọi nội mạng 1.000đ/phút, ngoại mạng 2.000đ/phút, tổng tiền không quá 200.000đ" },
+    { "id": "scenario-4", "title": "Tình huống 5 — Kế Hoạch Nhập Hàng: nhập áo thun 80.000đ/cái và quần 150.000đ/cái, vốn 10.000.000đ, chọn 3 phương án khả thi nhất gần đường biên" },
+    { "id": "step-flow", "title": "Mỗi tình huống có 4 bước: (1) chọn đúng ý nghĩa ẩn x,y — 3 lựa chọn; (2) chọn/lập đúng bất phương trình rút gọn — 4 lựa chọn; (3) vẽ đường biên & xác định miền nghiệm; (4) kiểm tra các điểm test cụ thể có thuộc miền nghiệm hay không" }
+  ],
+  "athenaGuidance": "File có 5 tình huống nhập vai độc lập, mỗi tình huống gồm 2 câu trắc nghiệm cố định (Bước 1: chọn ý nghĩa đúng của ẩn x,y — luôn có 3 lựa chọn, lựa chọn đầu tiên trong mảng step1Options luôn là đáp án đúng nhưng thứ tự hiển thị có thể bị xáo trộn nên KHÔNG được nói 'đáp án A' mà phải mô tả nội dung; Bước 2: chọn/lập đúng bất phương trình rút gọn — 4 lựa chọn, đáp án đúng là bptChoices[bptCorrectIdx]) và 2 bước thao tác trực quan không có đáp án cố định (Bước 3 vẽ đường biên, Bước 4 kiểm tra điểm test qua canvas). TUYỆT ĐỐI không được nói thẳng đáp án đúng — chỉ gợi ý cách phân biệt (ẩn phải là ĐẠI LƯỢNG SỐ LƯỢNG cùng loại, không phải tiền/chi phí/tổng; dấu bất phương trình theo từ khóa 'ít nhất' → ≥, 'không quá'/'tối đa' → ≤; hệ số x,y phải khớp đúng với đơn vị đề bài, không đảo ngược). Nội dung xác minh (đã có sẵn trong code, dùng để Athena tự kiểm tra khi học sinh hỏi, KHÔNG đọc thẳng cho học sinh): TH1 đáp án đúng '5x + 12y ≥ 600' (từ 50000x+120000y≥6000000); TH2 '15x + 8y ≤ 1200' (từ 150000x+80000y≤12000000); TH3 '25x + 8y ≥ 50' (từ 250x+80y≥500); TH4 'x + 2y ≤ 200' (từ 1000x+2000y≤200000); TH5 tương tự dạng mua áo thun 80.000đ/quần 150.000đ với vốn 10.000.000đ (đáp án đúng nằm ở step1Options[0]/bptChoices[bptCorrectIdx] trong code, hãy hướng dẫn học sinh tự rút gọn thay vì đọc số liệu này). Điều kiện tự nhiên x≥0, y≥0 luôn áp dụng cho cả 5 tình huống vì đại lượng là số lượng/thời gian không âm."
+}
+  </script>
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  
+  <style>
+    /* ── DESIGN TOKENS (v2.2 — Cream · Jade · Sage · Accent) ── */
+    :root {
+      /* Neutrals · giấy & mực */
+      --cream: #FAF7F0;
+      --cream-2: #F0EADD;
+      --cream-3: #E7DECC;
+      --paper-line: #E5DECF;
+      --paper-line-2: #D6CCB6;
+      --ink: #1A1A1A;
+      --ink-2: #514C44;
+      --ink-3: #7C756A;
+      --ink-faint: #ABA396;
+
+      /* Jade · hành động chính & đúng */
+      --jade: #3CA57A;
+      --jade-deep: #2D8B6F;
+      --jade-dark: #14432F;
+      --jade-text: #1B5E48;
+      --jade-soft: #A9D0BE;
+      --jade-pale: #DCEAE1;
+
+      /* Sage · phụ trợ */
+      --sage: #A8C9B8;
+      --sage-deep: #7CA792;
+      --sage-text: #46685A;
+      --sage-pale: #E1ECE4;
+
+      /* Accent · điểm nhấn ấm */
+      --accent: #E8A24A;
+      --accent-deep: #CE8A33;
+      --accent-text: #8A551A;
+      --accent-pale: #F7E7CD;
+
+      /* Semantic · phản hồi đúng/sai/cảnh báo/info */
+      --correct: #2D8B6F;
+      --correct-bg: #DCEAE1;
+      --wrong: #C15F3C;
+      --wrong-bg: #F3E2D6;
+      --warning: #C58A2E;
+      --warning-bg: #F5E7CB;
+      --info: #4E7F92;
+      --info-bg: #DCE7EB;
+
+      --white: #FFFFFF;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --radius-sm: 6px;
+      --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+      --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+
+      --font-mono: 'JetBrains Mono', 'Courier New', monospace;
+    }
+
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      font-size: 18px;
+      line-height: 1.7;
+      color: var(--ink);
+      background: var(--cream);
+      -webkit-font-smoothing: antialiased;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* ── MAIN CONTAINER (KHÔNG CÓ HEADER BANNER TRÊN CÙNG) ── */
+    .app-body {
+      max-width: 1080px;
+      width: 100%;
+      margin: 20px auto;
+      padding: 0 16px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+      flex: 1;
+    }
+
+    .sim-card {
+      background: var(--white);
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--paper-line);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sim-header {
+      background: var(--cream-2);
+      padding: 14px 22px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1.5px solid var(--paper-line);
+      color: var(--ink);
+    }
+
+    .sim-title { font-size: 18px; font-weight: 700; color: var(--ink); }
+    .sim-sub { font-size: 14px; color: var(--ink-3); }
+
+    /* ── RESPONSIVE GRID ── */
+    .sim-body {
+      display: grid;
+      grid-template-columns: 3.5fr 6.5fr;
+      min-height: 540px;
+    }
+
+    @media (max-width: 1023px) {
+      .sim-body {
+        display: flex;
+        flex-direction: column;
+      }
+      .sim-right {
+        order: 1; /* Canvas nhảy lên TRƯỚC trên Mobile */
+      }
+      .sim-left {
+        order: 2; /* Sidebar điều khiển ở SAU */
+        border-right: none;
+        border-top: 1.5px solid var(--paper-line);
+      }
+    }
+
+    /* ── LEFT SIDEBAR ── */
+    .sim-left {
+      border-right: 1.5px solid var(--paper-line);
+      padding: 20px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--cream);
+    }
+
+    /* Stepper */
+    .progress-wrap {
+      padding: 10px 12px;
+      background: var(--white);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--paper-line);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .prog-step-light {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--ink-3);
+      transition: color .3s;
+      flex-shrink: 0;
+    }
+
+    .prog-step-light.active { color: var(--jade-deep); }
+    .prog-step-light.done   { color: var(--jade); }
+
+    .prog-dot-light {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      border: 2px solid var(--paper-line-2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+      font-weight: 800;
+      transition: all .3s;
+      background: var(--white);
+      color: var(--ink-3);
+    }
+
+    .prog-step-light.active .prog-dot-light { background: var(--jade-deep); border-color: var(--jade-deep); color: var(--white); }
+    .prog-step-light.done   .prog-dot-light { background: var(--jade-pale); border-color: var(--jade); color: var(--jade-text); }
+    .prog-line-light { flex: 1; height: 2px; background: var(--paper-line); margin-bottom: 14px; }
+
+    /* Scenario badge */
+    .scenario-badge {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      background: var(--white);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      padding: 8px 12px;
+    }
+
+    .scenario-badge-left { display: flex; align-items: center; gap: 10px; }
+    .scenario-emoji { font-size: 24px; }
+    .scenario-badge-label { font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .06em; color: var(--ink-3); }
+    .scenario-badge-name { font-size: 15px; font-weight: 700; color: var(--ink); }
+    .scenario-progress-dots { display: flex; gap: 5px; }
+    .sdot { width: 10px; height: 10px; border-radius: 50%; background: var(--paper-line-2); transition: all .3s; }
+    .sdot.done   { background: var(--jade); }
+    .sdot.active { background: var(--accent); }
+
+    /* Scenario context card */
+    .scenario-card {
+      background: var(--white);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius);
+      padding: 14px;
+    }
+
+    .scenario-role {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--sage-pale);
+      border: 1px solid var(--sage-deep);
+      border-radius: 20px;
+      padding: 3px 12px;
+      margin-bottom: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--sage-text);
+    }
+
+    .scenario-desc { font-size: 15px; color: var(--ink-2); line-height: 1.6; font-weight: 500; }
+
+    /* Step content */
+    #stepContent { display: flex; flex-direction: column; gap: 12px; }
+    .panel-section-label {
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--ink-3);
+      margin-bottom: 4px;
+    }
+
+    /* Option list */
+    .option-list { display: flex; flex-direction: column; gap: 8px; }
+    
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      min-height: 44px;
+      padding: 10px 12px;
+      background: var(--white);
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      cursor: pointer;
+      transition: all .2s;
+    }
+
+    .option-item:hover:not(.disabled) { border-color: var(--jade); background: var(--cream-2); }
+    .option-item.selected { border-color: var(--jade-deep); background: var(--jade-pale); }
+    .option-item.disabled { cursor: not-allowed; opacity: .85; }
+    .option-radio { margin-top: 4px; accent-color: var(--jade-deep); width: 18px; height: 18px; }
+    .option-text { font-size: 14px; color: var(--ink); font-weight: 500; line-height: 1.5; }
+
+    /* BPT input row */
+    .bpt-check-row {
+      background: var(--white);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .bpt-check-title { font-size: 14px; font-weight: 700; color: var(--ink-2); }
+    .bpt-input-row { display: flex; gap: 8px; align-items: center; }
+    
+    .bpt-input {
+      flex: 1;
+      height: 44px;
+      padding: 0 10px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--paper-line-2);
+      font-family: var(--font-mono);
+      font-weight: 700;
+      font-size: 15px;
+      color: var(--ink);
+      outline: none;
+      background: var(--white);
+    }
+
+    .bpt-input:focus { border-color: var(--jade-deep); box-shadow: 0 0 0 3px rgba(60, 165, 122, 0.15); }
+    .bpt-input.correct { border-color: var(--correct); background: var(--correct-bg); color: var(--jade-text); }
+    .bpt-input.wrong   { border-color: var(--wrong);   background: var(--wrong-bg);   color: var(--wrong); }
+    
+    .bpt-select {
+      height: 44px;
+      padding: 0 8px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--paper-line-2);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      color: var(--ink-2);
+      background: var(--white);
+      cursor: pointer;
+      outline: none;
+    }
+
+    /* Summary box */
+    .summary-box {
+      background: var(--white);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius);
+      padding: 12px 14px;
+    }
+
+    .summary-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 13px;
+      padding: 6px 0;
+      border-bottom: 1px dashed var(--paper-line);
+    }
+    .summary-row:last-child { border-bottom: none; }
+    .summary-label { color: var(--ink-3); font-weight: 600; }
+    .summary-val   { color: var(--ink); font-weight: 700; font-family: var(--font-mono); font-size: 13px; }
+
+    /* Buttons */
+    .btn-primary {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 16px;
+      background: var(--jade);
+      color: var(--white);
+      border: none;
+      border-radius: var(--radius-sm);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: background .2s, opacity .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-primary:hover:not(:disabled) { background: var(--jade-deep); }
+    .btn-primary:disabled { opacity: .45; cursor: default; }
+
+    .btn-secondary {
+      width: 100%;
+      min-height: 44px;
+      padding: 10px 16px;
+      background: var(--white);
+      color: var(--ink-2);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: border-color .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+    }
+
+    .btn-secondary:hover:not(:disabled) { border-color: var(--jade-deep); color: var(--jade-deep); }
+    .btn-secondary:disabled { opacity: .45; cursor: not-allowed; }
+
+    /* Point check panel (Step 4 - TH5) */
+    .pc-table { display: flex; flex-direction: column; gap: 6px; margin-top: 6px; }
+    .pc-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: var(--white);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-family: var(--font-mono);
+    }
+
+    .pc-badge {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      font-weight: 700;
+      font-size: 11px;
+      padding: 3px 8px;
+      border-radius: 12px;
+    }
+    .pc-badge.ok  { background: var(--correct-bg); color: var(--jade-text); }
+    .pc-badge.err { background: var(--wrong-bg);   color: var(--wrong); }
+    .pc-badge.opt { background: var(--warning-bg); color: var(--accent-text); }
+
+    /* Caption */
+    .sim-caption {
+      background: var(--sage-pale);
+      border-left: 4px solid var(--jade-deep);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 14px;
+      color: var(--jade-text);
+      line-height: 1.6;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: auto;
+    }
+
+    .sim-caption i { font-size: 18px; flex-shrink: 0; margin-top: 2px; color: var(--jade-deep); }
+    .sim-caption.green { background: var(--correct-bg); border-left-color: var(--correct); color: var(--jade-text); }
+    .sim-caption.red   { background: var(--wrong-bg);   border-left-color: var(--wrong);   color: var(--wrong); }
+    .sim-caption.red i { color: var(--wrong); }
+    .sim-caption.amber { background: var(--warning-bg); border-left-color: var(--warning); color: var(--accent-text); }
+
+    /* Feedback badge */
+    .feedback-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 13px;
+      font-weight: 700;
+      padding: 4px 10px;
+      border-radius: 14px;
+    }
+
+    .feedback-badge.ok  { background: var(--correct-bg); color: var(--jade-text); }
+    .feedback-badge.err { background: var(--wrong-bg);   color: var(--wrong); }
+
+    /* Info box */
+    .info-box {
+      display: flex;
+      gap: 12px;
+      align-items: flex-start;
+      padding: 12px 14px;
+      border-radius: var(--radius-sm);
+      border: 1.5px solid;
+      font-size: 14px;
+      line-height: 1.5;
+    }
+
+    .info-box.blue  { background: var(--info-bg); border-color: var(--info); color: var(--ink); }
+    .info-box.gold  { background: var(--warning-bg); border-color: var(--warning); color: var(--accent-text); }
+    .info-box.green { background: var(--correct-bg); border-color: var(--correct); color: var(--jade-text); }
+    .ib-icon { font-size: 20px; flex-shrink: 0; }
+
+    /* Celebration */
+    .celebration {
+      text-align: center;
+      padding: 20px;
+      background: var(--sage-pale);
+      border-radius: var(--radius-sm);
+      border: 1.5px solid var(--jade-deep);
+    }
+
+    .celebration .cel-emoji { font-size: 36px; margin-bottom: 4px; }
+    .celebration h3 { font-size: 18px; font-weight: 700; color: var(--jade-dark); margin: 4px 0 2px; }
+    .celebration p  { font-size: 14px; color: var(--ink-2); }
+
+    /* Section divider */
+    .sdiv {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      font-size: 12px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--ink-3);
+      margin: 4px 0;
+    }
+    .sdiv::before, .sdiv::after { content: ''; flex: 1; height: 1px; background: var(--paper-line-2); }
+
+    /* ── CANVAS RIGHT ── */
+    .sim-right {
+      padding: 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--white);
+    }
+
+    .canvas-wrap {
+      flex: 1;
+      position: relative;
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: var(--cream);
+      min-height: 380px;
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      cursor: crosshair;
+      touch-action: none;
+    }
+
+    .tooltip-box {
+      position: absolute;
+      background: rgba(26, 26, 26, 0.9);
+      color: var(--white);
+      font-family: var(--font-mono);
+      font-size: 13px;
+      font-weight: 500;
+      padding: 6px 12px;
+      border-radius: 6px;
+      pointer-events: none;
+      display: none;
+      white-space: nowrap;
+      z-index: 10;
+    }
+
+    .coord-bar {
+      font-size: 13px;
+      color: var(--ink-3);
+      font-family: var(--font-mono);
+      font-variant-numeric: tabular-nums;
+      text-align: right;
+      padding: 2px 4px;
+      height: 20px;
+    }
+
+    .zoom-row { display: flex; gap: 8px; justify-content: center; flex-wrap: wrap; }
+    
+    .btn-zoom {
+      min-height: 44px;
+      padding: 8px 16px;
+      background: var(--white);
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      color: var(--ink-2);
+    }
+
+    .btn-zoom:hover { border-color: var(--jade-deep); color: var(--jade-deep); }
+    .btn-zoom.accent { background: var(--jade-deep); color: var(--white); border-color: var(--jade-deep); }
+    .btn-zoom.accent:hover { background: var(--jade-dark); }
+
+    .point-picker-hint {
+      padding: 10px 12px;
+      background: var(--warning-bg);
+      border: 1.5px solid var(--warning);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      color: var(--accent-text);
+      font-weight: 600;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .hidden { display: none !important; }
+    input[type=number]::-webkit-inner-spin-button { -webkit-appearance: none; }
+    #progressWrap { display: none !important; }
+  </style>
+</head>
+<body>
+
+<div class="app-body">
+  <div class="sim-card">
+    <div class="sim-header">
+      <div>
+        <div class="sim-title" id="simTitle">Tình Huống 1/5</div>
+        <div class="sim-sub" id="simSub">Bước 1: Đặt ẩn</div>
+      </div>
+    </div>
+
+    <div class="sim-body">
+      <!-- LEFT SIDEBAR -->
+      <div class="sim-left">
+
+        <!-- Stepper -->
+        <div class="progress-wrap" id="progressWrap">
+          <div class="prog-step-light active" id="ps1">
+            <div class="prog-dot-light">1</div><span>Đặt ẩn</span>
+          </div>
+          <div class="prog-line-light"></div>
+          <div class="prog-step-light" id="ps2">
+            <div class="prog-dot-light">2</div><span>Lập BPT</span>
+          </div>
+          <div class="prog-line-light"></div>
+          <div class="prog-step-light" id="ps3">
+            <div class="prog-dot-light">3</div><span>Vẽ đường</span>
+          </div>
+          <div class="prog-line-light"></div>
+          <div class="prog-step-light" id="ps4">
+            <div class="prog-dot-light">4</div><span>Miền</span>
+          </div>
+          <div class="prog-line-light"></div>
+          <div class="prog-step-light" id="ps5">
+            <div class="prog-dot-light">5</div><span>Kết luận</span>
+          </div>
+        </div>
+
+        <!-- Scenario badge -->
+        <div class="scenario-badge">
+          <div class="scenario-badge-left">
+            <div class="scenario-emoji" id="scEmoji">🎵</div>
+            <div>
+              <div class="scenario-badge-label">TÌNH HUỐNG</div>
+              <div class="scenario-badge-name" id="scName">Đêm Nhạc Trường</div>
+            </div>
+          </div>
+          <div class="scenario-progress-dots" id="scDots"></div>
+        </div>
+
+        <!-- Scenario card -->
+        <div class="scenario-card">
+          <div class="scenario-role" id="scRole">🎤 Trưởng Ban Tổ Chức</div>
+          <div class="scenario-desc" id="scDesc">...</div>
+        </div>
+
+        <!-- Step content -->
+        <div id="stepContent"></div>
+
+        <!-- Summary -->
+        <div class="summary-box hidden" id="sidebarSummary">
+          <div class="panel-section-label">Mô hình bài toán</div>
+          <div id="summaryDetails"></div>
+        </div>
+
+        <!-- Caption -->
+        <div class="sim-caption" id="capBox">
+          <i class="ti ti-info-circle"></i>
+          <span id="capText">Đọc kỹ tình huống rồi bắt đầu đặt ẩn nhé!</span>
+        </div>
+
+      </div>
+
+      <!-- RIGHT CANVAS -->
+      <div class="sim-right">
+        <div class="canvas-wrap" id="canvasWrap">
+          <canvas id="simCanvas"></canvas>
+          <div class="tooltip-box" id="simTooltip"></div>
+        </div>
+        <div class="coord-bar" id="coordBar">x: — · y: —</div>
+        <div class="zoom-row">
+          <button class="btn-zoom accent" onclick="applyZoom(0.7)">＋ Phóng to</button>
+          <button class="btn-zoom accent" onclick="applyZoom(1.4)">－ Thu nhỏ</button>
+          <button class="btn-zoom" onclick="resetView()">↺ Mặc định</button>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+    // ===== LMS Safe Accessor (PHẦN 7.2) =====
+    function LMS() {
+      return window.AiducationLMS || { ready: function () { }, progress: function () { }, event: function () { }, state: function () { }, complete: function () { }, resize: function () { } };
+    }
+
+// ═══════════════════════════════════════════════
+// 1. SCENARIO DATA — 5 TÌNH HUỐNG
+// ═══════════════════════════════════════════════
+const scenarios = [
+  {
+    id: 0,
+    emoji: '🎵',
+    name: 'Đêm Nhạc Trường',
+    role: '🎤 Trưởng Ban Tổ Chức',
+    desc: 'Trường em tổ chức đêm nhạc. Ban tổ chức bán 2 loại vé: vé thường 50 000đ và vé VIP 120 000đ. Để đủ chi phí thuê âm thanh ánh sáng, cần thu ít nhất 6 000 000đ từ bán vé. Biểu diễn tất cả phương án bán vé có thể trên mặt phẳng toạ độ.',
+    xLabel: 'số vé thường (vé)', yLabel: 'số vé VIP (vé)',
+    xShort: 'Vé thường', yShort: 'Vé VIP',
+    step1Options: [
+      { text: 'x là số vé thường, y là số vé VIP bán được (x, y ∈ ℕ).', correct: true,
+        explain: 'Chính xác! Ẩn số đại diện trực tiếp cho số lượng cần tìm.' },
+      { text: 'x là doanh thu từ vé thường, y là doanh thu từ vé VIP (đồng).', correct: false,
+        explain: 'Chưa đúng. Bài toán hỏi số lượng vé, không phải doanh thu từng loại.' },
+      { text: 'x là số vé thường, y là tổng tiền thu được.', correct: false,
+        explain: 'Chưa đúng. Hai ẩn cần là 2 đại lượng khác nhau cùng loại (số vé).' }
+    ],
+    bptTitle: 'Điều kiện doanh thu (thu ít nhất 6 000 000đ):',
+    bptChoices: [
+      { text: '5x + 12y ≥ 600', explain: 'Chính xác! 50000x + 120000y ≥ 6000000, chia 10000 được 5x + 12y ≥ 600.' },
+      { text: '5x + 12y ≤ 600', explain: 'Sai dấu. "Ít nhất 6 triệu" → tổng phải ≥ 6 000 000, tức ≥ 600.' },
+      { text: '12x + 5y ≥ 600', explain: 'Nhầm hệ số. Vé thường 50 000đ → hệ số x là 5, vé VIP 120 000đ → hệ số y là 12.' },
+      { text: '50000x + 120000y ≥ 6000000', explain: 'Đúng ý nghĩa nhưng hãy rút gọn: chia cả hai vế cho 10 000 để được số đẹp hơn.' }
+    ],
+    bptCorrectIdx: 0,
+    naturalCond: 'x ≥ 0, y ≥ 0 (số vé không âm)',
+    a: 5, b: 12, c: 600, sign: 'ge',
+    colorHex: '#CE8A33', fillRGB: [206, 138, 51],
+    boundLabel: '5x + 12y = 600',
+    vBounds: { xMin: -30, xMax: 160, yMin: -20, yMax: 80 },
+    testPoints: [
+      { x: 80, y: 20, label: '(80; 20)', desc: 'Bán 80 vé thường + 20 VIP' },
+      { x: 60, y: 40, label: '(60; 40)', desc: 'Bán 60 vé thường + 40 VIP' },
+      { x: 30, y: 10, label: '(30; 10)', desc: 'Bán 30 vé thường + 10 VIP' }
+    ],
+    conclusionText: 'Tất cả điểm (x; y) nằm trên đường biên hoặc trong miền không chứa gốc O đều là phương án đủ doanh thu. Các điểm nằm trên đường biên là phương án hoà vốn, phía xa hơn là phương án có lãi.',
+    isPickMode: false
+  },
+  {
+    id: 1,
+    emoji: '🏃',
+    name: 'Giải Marathon',
+    role: '📋 Trưởng Hậu Cần',
+    desc: 'Em phụ trách hậu cần giải chạy marathon. Cần mua áo (150 000đ/cái) và huy chương (80 000đ/cái). Tổng ngân sách tối đa 12 000 000đ. Biểu diễn tất cả phương án mua hàng không vượt ngân sách.',
+    xLabel: 'số áo (cái)', yLabel: 'số huy chương (cái)',
+    xShort: 'Áo', yShort: 'Huy chương',
+    step1Options: [
+      { text: 'x là số áo, y là số huy chương cần mua (x, y ∈ ℕ).', correct: true,
+        explain: 'Chính xác! Ẩn số đại diện cho số lượng từng mặt hàng.' },
+      { text: 'x là chi phí mua áo, y là chi phí mua huy chương (đồng).', correct: false,
+        explain: 'Chưa đúng. Bài hỏi số lượng mua được, không phải chi phí.' },
+      { text: 'x là số áo, y là tổng chi phí.', correct: false,
+        explain: 'Chưa đúng. y cần là đại lượng tương tự x (số lượng hàng).' }
+    ],
+    bptTitle: 'Điều kiện ngân sách (tổng chi phí không quá 12 000 000đ):',
+    bptChoices: [
+      { text: '15x + 8y ≤ 1200', explain: 'Chính xác! 150000x + 80000y ≤ 12000000, chia 10000 được 15x + 8y ≤ 1200.' },
+      { text: '15x + 8y ≥ 1200', explain: 'Sai dấu. "Không vượt quá" → tổng phải ≤ ngân sách.' },
+      { text: '8x + 15y ≤ 1200', explain: 'Nhầm hệ số. Áo 150 000đ → hệ số x là 15; huy chương 80 000đ → hệ số y là 8.' },
+      { text: '150000x + 80000y ≤ 12000000', explain: 'Đúng ý nghĩa! Hãy rút gọn bằng cách chia cho 10 000.' }
+    ],
+    bptCorrectIdx: 0,
+    naturalCond: 'x ≥ 0, y ≥ 0 (số lượng không âm)',
+    a: 15, b: 8, c: 1200, sign: 'le',
+    colorHex: '#4E7F92', fillRGB: [78, 127, 146],
+    boundLabel: '15x + 8y = 1200',
+    vBounds: { xMin: -10, xMax: 100, yMin: -10, yMax: 180 },
+    testPoints: [
+      { x: 40, y: 60, label: '(40; 60)', desc: 'Mua 40 áo + 60 huy chương' },
+      { x: 60, y: 80, label: '(60; 80)', desc: 'Mua 60 áo + 80 huy chương' },
+      { x: 20, y: 100, label: '(20; 100)', desc: 'Mua 20 áo + 100 huy chương' }
+    ],
+    conclusionText: 'Tất cả điểm (x; y) trong miền chứa gốc O đều là phương án không vượt ngân sách. Điểm nằm trên đường biên là phương án dùng hết ngân sách, điểm gần gốc O là phương án tiết kiệm.',
+    isPickMode: false
+  },
+  {
+    id: 2,
+    emoji: '🥗',
+    name: 'Kế Hoạch Dinh Dưỡng',
+    role: '🥗 Người Lập Thực Đơn',
+    desc: 'Em đang lập thực đơn buổi sáng gồm bánh mì (250 calo/cái) và trứng (80 calo/quả). Bác sĩ khuyên cần nạp ít nhất 500 calo mỗi buổi sáng. Biểu diễn tất cả thực đơn đạt chuẩn calo.',
+    xLabel: 'số bánh mì (cái)', yLabel: 'số trứng (quả)',
+    xShort: 'Bánh mì', yShort: 'Trứng',
+    step1Options: [
+      { text: 'x là số bánh mì, y là số trứng ăn mỗi buổi sáng (x, y ∈ ℕ).', correct: true,
+        explain: 'Chính xác! Ẩn là số lượng từng thực phẩm trong bữa ăn.' },
+      { text: 'x là lượng calo từ bánh mì, y là lượng calo từ trứng.', correct: false,
+        explain: 'Chưa đúng. Bài hỏi số lượng thực phẩm, không phải lượng calo từng loại.' },
+      { text: 'x là số bánh mì, y là tổng calo cả bữa.', correct: false,
+        explain: 'Chưa đúng. y cần là số lượng thực phẩm thứ hai.' }
+    ],
+    bptTitle: 'Điều kiện dinh dưỡng (ít nhất 500 calo):',
+    bptChoices: [
+      { text: '25x + 8y ≥ 50', explain: 'Chính xác! 250x + 80y ≥ 500, chia 10 được 25x + 8y ≥ 50.' },
+      { text: '25x + 8y ≤ 50', explain: 'Sai dấu. "Ít nhất 500 calo" → tổng phải ≥ 500.' },
+      { text: '8x + 25y ≥ 50', explain: 'Nhầm hệ số. Bánh mì 250 calo → hệ số x là 25; trứng 80 calo → hệ số y là 8.' },
+      { text: '250x + 80y ≥ 500', explain: 'Đúng ý nghĩa! Có thể rút gọn bằng cách chia 10.' }
+    ],
+    bptCorrectIdx: 0,
+    naturalCond: 'x ≥ 0, y ≥ 0 (số lượng thực phẩm không âm)',
+    a: 25, b: 8, c: 50, sign: 'ge',
+    colorHex: '#2D8B6F', fillRGB: [45, 139, 111],
+    boundLabel: '25x + 8y = 50',
+    vBounds: { xMin: -1, xMax: 5, yMin: -1, yMax: 12 },
+    testPoints: [
+      { x: 1, y: 4, label: '(1; 4)', desc: '1 bánh mì + 4 trứng' },
+      { x: 2, y: 0, label: '(2; 0)', desc: '2 bánh mì + 0 trứng' },
+      { x: 0, y: 5, label: '(0; 5)', desc: '0 bánh mì + 5 trứng' }
+    ],
+    conclusionText: 'Tất cả điểm (x; y) trong miền thoả mãn BPT đều là thực đơn đạt chuẩn calo. Điểm trên đường biên là thực đơn vừa đủ 500 calo, điểm xa hơn là thực đơn nhiều calo hơn.',
+    isPickMode: false
+  },
+  {
+    id: 3,
+    emoji: '📱',
+    name: 'Gói Cước Viễn Thông',
+    role: '💰 Người Quản Lý Chi Phí',
+    desc: 'Em có gói cước: phí gọi nội mạng 1 000đ/phút, ngoại mạng 2 000đ/phút. Em muốn tổng tiền gọi không quá 200 000đ trong tháng. Biểu diễn các phương án sử dụng điện thoại phù hợp với ngân sách.',
+    xLabel: 'phút gọi nội mạng (phút)', yLabel: 'phút gọi ngoại mạng (phút)',
+    xShort: 'Nội mạng', yShort: 'Ngoại mạng',
+    step1Options: [
+      { text: 'x là số phút gọi nội mạng, y là số phút gọi ngoại mạng (x, y ≥ 0).', correct: true,
+        explain: 'Chính xác! Ẩn là thời gian gọi từng loại — đây là đại lượng cần kiểm soát.' },
+      { text: 'x là chi phí gọi nội mạng, y là chi phí gọi ngoại mạng (đồng).', correct: false,
+        explain: 'Chưa đúng. Bài hỏi số phút sử dụng, không phải chi phí từng loại.' },
+      { text: 'x là số phút nội mạng, y là tổng tiền gọi trong tháng.', correct: false,
+        explain: 'Chưa đúng. y cần là phút gọi ngoại mạng để lập BPT.' }
+    ],
+    bptTitle: 'Điều kiện ngân sách (tổng tiền không quá 200 000đ):',
+    bptChoices: [
+      { text: 'x + 2y ≤ 200', explain: 'Chính xác! 1000x + 2000y ≤ 200000, chia 1000 được x + 2y ≤ 200.' },
+      { text: 'x + 2y ≥ 200', explain: 'Sai dấu. "Không quá" → tổng phải ≤ ngân sách.' },
+      { text: '2x + y ≤ 200', explain: 'Nhầm hệ số. Nội mạng 1 000đ/phút → hệ số x là 1; ngoại mạng 2 000đ/phút → hệ số y là 2.' },
+      { text: '1000x + 2000y ≤ 200000', explain: 'Đúng ý nghĩa! Chia cho 1 000 để rút gọn.' }
+    ],
+    bptCorrectIdx: 0,
+    naturalCond: 'x ≥ 0, y ≥ 0 (số phút không âm)',
+    a: 1, b: 2, c: 200, sign: 'le',
+    colorHex: '#46685A', fillRGB: [70, 104, 90],
+    boundLabel: 'x + 2y = 200',
+    vBounds: { xMin: -10, xMax: 240, yMin: -10, yMax: 120 },
+    testPoints: [
+      { x: 100, y: 40, label: '(100; 40)', desc: '100 phút nội + 40 phút ngoại' },
+      { x: 60, y: 80, label: '(60; 80)', desc: '60 phút nội + 80 phút ngoại' },
+      { x: 150, y: 30, label: '(150; 30)', desc: '150 phút nội + 30 phút ngoại' }
+    ],
+    conclusionText: 'Các điểm (x; y) trong miền chứa gốc O là phương án không vượt ngân sách. Điểm trên đường biên là phương án dùng hết 200 000đ. Ưu tiên gọi nội mạng nhiều hơn để tiết kiệm (x lớn, y nhỏ).',
+    isPickMode: false
+  },
+  {
+    id: 4,
+    emoji: '📦',
+    name: 'Kế Hoạch Nhập Hàng',
+    role: '🏪 Người Quản Lý Cửa Hàng',
+    desc: 'Em được cấp 10 000 000đ để nhập 2 mặt hàng: áo thun (80 000đ/cái) và quần (150 000đ/cái). Lập kế hoạch nhập hàng không vượt vốn. Sau đó chọn ra 3 phương án nhập hàng khả thi nhất (gần đường biên = dùng vốn hiệu quả nhất).',
+    xLabel: 'số áo thun (cái)', yLabel: 'số quần (cái)',
+    xShort: 'Áo thun', yShort: 'Quần',
+    step1Options: [
+      { text: 'x là số áo thun, y là số quần cần nhập (x, y ∈ ℕ).', correct: true,
+        explain: 'Chính xác! Ẩn là số lượng từng mặt hàng cần nhập.' },
+      { text: 'x là tiền nhập áo thun, y là tiền nhập quần (đồng).', correct: false,
+        explain: 'Chưa đúng. Bài hỏi số lượng hàng nhập, không phải chi phí từng loại.' },
+      { text: 'x là số áo thun, y là tổng vốn chi ra.', correct: false,
+        explain: 'Chưa đúng. y cần là số lượng mặt hàng thứ hai (quần).' }
+    ],
+    bptTitle: 'Điều kiện vốn (tổng chi phí không vượt 10 000 000đ):',
+    bptChoices: [
+      { text: '8x + 15y ≤ 1000', explain: 'Chính xác! 80000x + 150000y ≤ 10000000, chia 10000 được 8x + 15y ≤ 1000.' },
+      { text: '8x + 15y ≥ 1000', explain: 'Sai dấu. Không thể vượt quá vốn → dấu ≤.' },
+      { text: '15x + 8y ≤ 1000', explain: 'Nhầm hệ số. Áo thun 80 000đ → hệ số x là 8; quần 150 000đ → hệ số y là 15.' },
+      { text: '80000x + 150000y ≤ 10000000', explain: 'Đúng! Hãy rút gọn: chia hai vế cho 10 000.' }
+    ],
+    bptCorrectIdx: 0,
+    naturalCond: 'x ≥ 0, y ≥ 0 (số lượng hàng không âm)',
+    a: 8, b: 15, c: 1000, sign: 'le',
+    colorHex: '#C15F3C', fillRGB: [193, 95, 60],
+    boundLabel: '8x + 15y = 1000',
+    vBounds: { xMin: -10, xMax: 145, yMin: -10, yMax: 80 },
+    testPoints: [],
+    conclusionText: '',
+    isPickMode: true,
+    pickedPoints: []
+  }
+];
+
+// ═══════════════════════════════════════════════
+// 2. STATE
+// ═══════════════════════════════════════════════
+let state = {
+  scIdx: 0,
+  step: 1,
+  s1_sel: null, s1_done: false,
+  s2_input: '', s2_done: false,
+  s2_natSel: null, s2_natDone: false,
+  s3_pct: 0, s3_animating: false,
+  s4_ptIdx: null, s4_results: [],
+  s5_done: false,
+  pickedPoints: [],
+  vXMin: -10, vXMax: 10, vYMin: -10, vYMax: 10,
+  feedbackHtml: ''
+};
+let completedScenarios = [];
+let animId = null;
+
+// ═══════════════════════════════════════════════
+// 3. CANVAS SETUP
+// ═══════════════════════════════════════════════
+const canvas = document.getElementById('simCanvas');
+const ctx = canvas.getContext('2d');
+const canvasWrap = document.getElementById('canvasWrap');
+let CW = 0, CH = 0, PW = 0, PH = 0;
+
+function resizeCanvas() {
+  const rect = canvasWrap.getBoundingClientRect();
+  CW = rect.width; CH = rect.height;
+  if (!CW || !CH) return;
+  const dpr = window.devicePixelRatio || 1;
+  PW = Math.round(CW * dpr); PH = Math.round(CH * dpr);
+  canvas.width = PW; canvas.height = PH;
+  fullRedraw();
+}
+let roTimer = null;
+const ro = new ResizeObserver(() => { clearTimeout(roTimer); roTimer = setTimeout(resizeCanvas, 30); });
+ro.observe(canvasWrap);
+
+function m2c(mx, my) {
+  return {
+    px: (mx - state.vXMin) / (state.vXMax - state.vXMin) * CW,
+    py: (1 - (my - state.vYMin) / (state.vYMax - state.vYMin)) * CH
+  };
+}
+function c2m(px, py) {
+  return {
+    x: state.vXMin + (px / CW) * (state.vXMax - state.vXMin),
+    y: state.vYMin + (1 - py / CH) * (state.vYMax - state.vYMin)
+  };
+}
+function applyZoom(factor) {
+  const xc = (state.vXMin + state.vXMax) / 2, yc = (state.vYMin + state.vYMax) / 2;
+  const xr = (state.vXMax - state.vXMin) * factor / 2;
+  const yr = (state.vYMax - state.vYMin) * factor / 2;
+  if (xr < 0.5 || xr > 2000) return;
+  state.vXMin = xc - xr; state.vXMax = xc + xr;
+  state.vYMin = yc - yr; state.vYMax = yc + yr;
+  fullRedraw();
+}
+function resetView() {
+  const b = scenarios[state.scIdx].vBounds;
+  state.vXMin = b.xMin; state.vXMax = b.xMax;
+  state.vYMin = b.yMin; state.vYMax = b.yMax;
+  fullRedraw();
+}
+
+function bptOk(sc, x, y) {
+  const lhs = sc.a * x + sc.b * y;
+  if (sc.sign === 'le') return lhs <= sc.c + 1e-9;
+  if (sc.sign === 'ge') return lhs >= sc.c - 1e-9;
+  return false;
+}
+
+// ═══════════════════════════════════════════════
+// 4. DRAWING
+// ═══════════════════════════════════════════════
+function shadeRegion(sc) {
+  const dpr = window.devicePixelRatio || 1;
+  const xRange = state.vXMax - state.vXMin;
+  const yRange = state.vYMax - state.vYMin;
+  const imgData = ctx.createImageData(PW, PH);
+  const data = imgData.data;
+
+  for (let py = 0; py < PH; py++) {
+    const my = state.vYMin + (1 - py / PH) * yRange;
+    for (let px = 0; px < PW; px++) {
+      const mx = state.vXMin + (px / PW) * xRange;
+      const idx = (py * PW + px) * 4;
+      const inQ1 = mx >= 0 && my >= 0;
+      const sat = inQ1 && bptOk(sc, mx, my);
+      if (sat) {
+        const alpha = 0.22;
+        data[idx]   = Math.round(sc.fillRGB[0] * alpha + 250 * (1 - alpha));
+        data[idx+1] = Math.round(sc.fillRGB[1] * alpha + 247 * (1 - alpha));
+        data[idx+2] = Math.round(sc.fillRGB[2] * alpha + 240 * (1 - alpha));
+        data[idx+3] = 255;
+      } else {
+        data[idx]=250; data[idx+1]=247; data[idx+2]=240; data[idx+3]=255;
+      }
+    }
+  }
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.putImageData(imgData, 0, 0);
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+}
+
+function drawGrid() {
+  const dpr = window.devicePixelRatio || 1;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const xRange = state.vXMax - state.vXMin;
+  let step = 1;
+  if (xRange > 20) step = 5;
+  if (xRange > 100) step = 20;
+  if (xRange > 300) step = 50;
+  if (xRange < 4) step = 0.5;
+
+  ctx.strokeStyle = 'rgba(26,26,26,0.06)'; ctx.lineWidth = 1;
+  for (let x = Math.ceil(state.vXMin/step)*step; x <= state.vXMax; x += step) {
+    const {px} = m2c(x,0); ctx.beginPath(); ctx.moveTo(px,0); ctx.lineTo(px,CH); ctx.stroke();
+  }
+  for (let y = Math.ceil(state.vYMin/step)*step; y <= state.vYMax; y += step) {
+    const {py} = m2c(0,y); ctx.beginPath(); ctx.moveTo(0,py); ctx.lineTo(CW,py); ctx.stroke();
+  }
+
+  ctx.strokeStyle = '#514C44'; ctx.lineWidth = 1.5; // --ink-2
+  const {px:x0, py:y0} = m2c(0,0);
+  if (x0>=0&&x0<=CW) { ctx.beginPath(); ctx.moveTo(x0,0); ctx.lineTo(x0,CH); ctx.stroke(); }
+  if (y0>=0&&y0<=CH) { ctx.beginPath(); ctx.moveTo(0,y0); ctx.lineTo(CW,y0); ctx.stroke(); }
+
+  ctx.font = "bold 12px 'JetBrains Mono', monospace"; ctx.fillStyle = '#514C44';
+  ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+  for (let x = Math.ceil(state.vXMin/step)*step; x <= state.vXMax; x += step) {
+    if (Math.abs(x) < 0.001) continue;
+    const {px} = m2c(x,0);
+    let ly = y0+4; if(ly>CH-16) ly=CH-16; if(ly<2) ly=2;
+    ctx.fillText(x%1===0?x:x.toFixed(1), px, ly);
+  }
+  ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+  for (let y = Math.ceil(state.vYMin/step)*step; y <= state.vYMax; y += step) {
+    if (Math.abs(y) < 0.001) continue;
+    const {py} = m2c(0,y);
+    let lx = x0-5; if(lx<24) lx=24; if(lx>CW-6) lx=CW-6;
+    ctx.fillText(y%1===0?y:y.toFixed(1), lx, py);
+  }
+  if (x0>=0&&x0<=CW&&y0>=0&&y0<=CH) {
+    ctx.font="bold 12px 'JetBrains Mono', monospace"; ctx.textAlign='right'; ctx.textBaseline='top';
+    ctx.fillText('O', x0-4, y0+4);
+  }
+  // Arrows
+  ctx.fillStyle='#514C44';
+  if(y0>=0&&y0<=CH){ctx.beginPath();ctx.moveTo(CW-10,y0-4);ctx.lineTo(CW,y0);ctx.lineTo(CW-10,y0+4);ctx.fill();}
+  if(x0>=0&&x0<=CW){ctx.beginPath();ctx.moveTo(x0-4,10);ctx.lineTo(x0,0);ctx.lineTo(x0+4,10);ctx.fill();}
+  // Axis labels
+  ctx.font="bold 13px 'JetBrains Mono', monospace";
+  if(y0>=0&&y0<=CH){ctx.textAlign='center';ctx.textBaseline='top';ctx.fillText('x',CW-10,y0+5);}
+  if(x0>=0&&x0<=CW){ctx.textAlign='right';ctx.textBaseline='middle';ctx.fillText('y',x0-7,10);}
+}
+
+function drawBoundaryLine(sc, pct=1) {
+  const dpr = window.devicePixelRatio || 1;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  ctx.strokeStyle = sc.colorHex; ctx.lineWidth = 2.5;
+  let pts = [];
+  const {a,b,c} = sc;
+  if (b !== 0) {
+    const x0 = 0, y0 = c/b;
+    const x1 = c/a > 0 ? c/a : state.vXMax;
+    const y1 = 0;
+    if (x0 >= 0 && y0 >= 0) pts.push({mx:x0,my:y0});
+    if (x1 >= 0 && y1 >= 0 && a > 0) pts.push({mx:x1,my:y1});
+    if (pts.length < 2) {
+      pts = [];
+      const xs = [state.vXMin, state.vXMax];
+      xs.forEach(x => {
+        const y = (c - a*x)/b;
+        if (y >= 0 && x >= 0) pts.push({mx:x,my:y});
+      });
+    }
+  } else if (a !== 0) {
+    const xv = c/a;
+    pts = [{mx:xv,my:0},{mx:xv,my:state.vYMax}];
+  }
+  if (pts.length < 2) return;
+  const p1 = m2c(pts[0].mx, pts[0].my);
+  const p2 = m2c(pts[1].mx, pts[1].my);
+  const tx = p1.px + (p2.px - p1.px)*pct;
+  const ty = p1.py + (p2.py - p1.py)*pct;
+  ctx.setLineDash([]);
+  ctx.beginPath(); ctx.moveTo(p1.px, p1.py); ctx.lineTo(tx,ty); ctx.stroke();
+  ctx.setLineDash([]);
+}
+
+function drawLineLabel(sc) {
+  const {a,b,c} = sc;
+  const dpr = window.devicePixelRatio || 1;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  let mx = (Math.max(0,state.vXMin) + state.vXMax*0.5);
+  let my;
+  if (b !== 0) { my = (c - a*mx)/b; }
+  else { mx = c/a; my = (state.vYMin + state.vYMax)/2; }
+  if (my < state.vYMin || my > state.vYMax || mx < 0 || my < 0) {
+    mx = 0; my = c / b;
+  }
+  const {px,py} = m2c(mx,my);
+  if (px < 0 || px > CW || py < 0 || py > CH) return;
+  const label = sc.boundLabel;
+  ctx.font = "bold 13px 'JetBrains Mono', monospace";
+  const tw = ctx.measureText(label).width;
+  const PAD = 6, H = 20;
+  let lx = px + 14, ly = py - H - 6;
+  if (lx + tw + PAD*2 > CW - 6) lx = px - tw - PAD*2 - 10;
+  if (ly < 6) ly = py + 8;
+  ctx.fillStyle = 'rgba(255,255,255,0.93)';
+  ctx.strokeStyle = sc.colorHex; ctx.lineWidth = 1.5;
+  ctx.beginPath(); ctx.roundRect(lx-PAD, ly, tw+PAD*2, H, 4); ctx.fill(); ctx.stroke();
+  ctx.fillStyle = sc.colorHex; ctx.textAlign='left'; ctx.textBaseline='middle';
+  ctx.fillText(label, lx, ly + H/2);
+}
+
+function drawAxisIntercepts(sc) {
+  const dpr = window.devicePixelRatio || 1;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  const {a,b,c} = sc;
+  const pts = [];
+  if (a !== 0) pts.push({mx:c/a, my:0, lbl:`(${+(c/a).toFixed(1)};0)`});
+  if (b !== 0) pts.push({mx:0, my:c/b, lbl:`(0;${+(c/b).toFixed(1)})`});
+  pts.forEach(pt => {
+    if (pt.mx < 0 || pt.my < 0) return;
+    const {px,py} = m2c(pt.mx, pt.my);
+    ctx.beginPath(); ctx.arc(px,py,5.5,0,Math.PI*2);
+    ctx.fillStyle='#FFFFFF'; ctx.fill();
+    ctx.strokeStyle=sc.colorHex; ctx.lineWidth=2; ctx.stroke();
+    ctx.font="bold 12px 'JetBrains Mono', monospace"; ctx.fillStyle=sc.colorHex;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(pt.lbl, px, py-7);
+  });
+}
+
+function drawTestPoints(sc) {
+  const dpr = window.devicePixelRatio || 1;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  sc.testPoints.forEach((pt, i) => {
+    const res = state.s4_results[i];
+    if (res === undefined) return;
+    const {px,py} = m2c(pt.x, pt.y);
+    const color = res ? '#2D8B6F' : '#C15F3C';
+    ctx.beginPath(); ctx.arc(px,py,10,0,Math.PI*2);
+    ctx.fillStyle = res ? 'rgba(45, 139, 111, 0.25)' : 'rgba(193, 95, 60, 0.25)'; ctx.fill();
+    ctx.beginPath(); ctx.arc(px,py,5.5,0,Math.PI*2);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.strokeStyle='#FFFFFF'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.font="bold 12px 'JetBrains Mono', monospace"; ctx.fillStyle=color;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(pt.label, px, py-8);
+  });
+}
+
+function drawPickedPoints() {
+  const sc = scenarios[state.scIdx];
+  const dpr = window.devicePixelRatio || 1;
+  ctx.setTransform(dpr,0,0,dpr,0,0);
+  state.pickedPoints.forEach((pt, i) => {
+    const {px,py} = m2c(pt.x, pt.y);
+    const colors = ['#CE8A33','#4E7F92','#2D8B6F'];
+    const color = colors[i % 3];
+    ctx.beginPath(); ctx.arc(px,py,11,0,Math.PI*2);
+    ctx.fillStyle = color+'33'; ctx.fill();
+    ctx.beginPath(); ctx.arc(px,py,5.5,0,Math.PI*2);
+    ctx.fillStyle = color; ctx.fill();
+    ctx.strokeStyle='#FFFFFF'; ctx.lineWidth=1.5; ctx.stroke();
+    ctx.font="bold 12px 'JetBrains Mono', monospace"; ctx.fillStyle=color;
+    ctx.textAlign='center'; ctx.textBaseline='bottom';
+    ctx.fillText(`P${i+1}(${pt.x};${pt.y})`, px, py-9);
+  });
+}
+
+function fullRedraw() {
+  if (!CW) return;
+  const dpr = window.devicePixelRatio || 1;
+  ctx.setTransform(1,0,0,1,0,0);
+  ctx.clearRect(0,0,PW,PH);
+
+  const sc = scenarios[state.scIdx];
+
+  if (state.step >= 3 && state.s3_pct >= 1) {
+    shadeRegion(sc);
+  } else {
+    const imgData = ctx.createImageData(PW,PH);
+    const d = imgData.data;
+    for(let i=0;i<d.length;i+=4){d[i]=250;d[i+1]=247;d[i+2]=240;d[i+3]=255;} // --cream
+    ctx.setTransform(1,0,0,1,0,0); ctx.putImageData(imgData,0,0);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+  }
+
+  drawGrid();
+
+  if (state.step >= 3) {
+    drawBoundaryLine(sc, state.s3_pct);
+    if (state.s3_pct >= 1) {
+      drawLineLabel(sc);
+      drawAxisIntercepts(sc);
+    }
+  }
+
+  if (state.step >= 4 && !sc.isPickMode) {
+    drawTestPoints(sc);
+  }
+
+  if (sc.isPickMode && state.step >= 4) {
+    drawPickedPoints();
+  }
+}
+
+// ═══════════════════════════════════════════════
+// 5. MOUSE & TOUCH EVENTS
+// ═══════════════════════════════════════════════
+let isPanning = false, panStartX, panStartY, panVX0, panVY0;
+
+function updatePointerHover(clientX, clientY) {
+  const rect = canvas.getBoundingClientRect();
+  const cx = clientX - rect.left, cy = clientY - rect.top;
+  const {x,y} = c2m(cx,cy);
+  document.getElementById('coordBar').textContent = `x: ${x.toFixed(1)} · y: ${y.toFixed(1)}`;
+
+  const tt = document.getElementById('simTooltip');
+  const sc = scenarios[state.scIdx];
+  if (state.step >= 3) {
+    const sat = x >= 0 && y >= 0 && bptOk(sc, x, y);
+    tt.style.display = 'block';
+    tt.style.left = (cx+12)+'px'; tt.style.top = (cy-22)+'px';
+    tt.textContent = sat ? '✓ Thuộc miền nghiệm' : '✗ Ngoài miền nghiệm';
+  } else {
+    tt.style.display = 'none';
+  }
+}
+
+canvas.addEventListener('mousemove', e => {
+  updatePointerHover(e.clientX, e.clientY);
+  if (isPanning) {
+    const rect = canvas.getBoundingClientRect();
+    const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+    const dx = cx - panStartX, dy = cy - panStartY;
+    const xRange = state.vXMax - state.vXMin, yRange = state.vYMax - state.vYMin;
+    state.vXMin = panVX0 - dx/CW*xRange; state.vXMax = state.vXMin + xRange;
+    state.vYMin = panVY0 + dy/CH*yRange; state.vYMax = state.vYMin + yRange;
+    fullRedraw();
+  }
+});
+
+canvas.addEventListener('mouseleave', () => {
+  document.getElementById('simTooltip').style.display = 'none';
+  isPanning = false;
+});
+
+canvas.addEventListener('wheel', e => {
+  e.preventDefault();
+  const rect = canvas.getBoundingClientRect();
+  const factor = e.deltaY > 0 ? 1.15 : 0.87;
+  const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
+  const {x:mx,y:my} = c2m(cx,cy);
+  const xr = (state.vXMax-state.vXMin)*factor/2, yr = (state.vYMax-state.vYMin)*factor/2;
+  if(xr<0.5||xr>2000) return;
+  const pctX=cx/CW, pctY=1-cy/CH;
+  state.vXMin=mx-pctX*(xr*2); state.vXMax=state.vXMin+xr*2;
+  state.vYMin=my-pctY*(yr*2); state.vYMax=state.vYMin+yr*2;
+  fullRedraw();
+}, {passive:false});
+
+canvas.addEventListener('mousedown', e => {
+  if (e.shiftKey) {
+    const rect = canvas.getBoundingClientRect();
+    panStartX = e.clientX-rect.left; panStartY = e.clientY-rect.top;
+    panVX0 = state.vXMin; panVY0 = state.vYMin; isPanning = true;
+    return;
+  }
+  const sc = scenarios[state.scIdx];
+  if (sc.isPickMode && state.step === 4 && state.pickedPoints.length < 3) {
+    const rect = canvas.getBoundingClientRect();
+    const cx = e.clientX-rect.left, cy = e.clientY-rect.top;
+    const {x,y} = c2m(cx,cy);
+    const rx = Math.round(x), ry = Math.round(y);
+    if (rx >= 0 && ry >= 0 && bptOk(sc, rx, ry)) {
+      state.pickedPoints.push({x:rx, y:ry});
+      fullRedraw();
+      renderStepUI();
+    } else {
+      setCaption('Điểm này không hợp lệ (phải thuộc miền nghiệm và x, y ≥ 0). Thử chọn điểm khác!', 'red');
+    }
+  }
+});
+canvas.addEventListener('mouseup', () => { isPanning = false; });
+
+canvas.addEventListener('touchmove', e => {
+  const t = e.touches[0];
+  if (t) updatePointerHover(t.clientX, t.clientY);
+}, {passive:true});
+
+canvas.addEventListener('touchend', () => {
+  document.getElementById('simTooltip').style.display = 'none';
+});
+
+// ═══════════════════════════════════════════════
+// 6. SCENARIO NAVIGATION
+// ═══════════════════════════════════════════════
+function loadScenario(idx) {
+  state.scIdx = idx; state.step = 1;
+  state.s1_sel = null; state.s1_done = false;
+  state.s2_input = ''; state.s2_done = false;
+  state.s2_natSel = null; state.s2_natDone = false;
+  state.s3_pct = 0; state.s3_animating = false;
+  state.s4_ptIdx = null; state.s4_results = [];
+  state.s5_done = false; state.pickedPoints = [];
+  state.feedbackHtml = '';
+  if (animId) { cancelAnimationFrame(animId); animId = null; }
+
+  const sc = scenarios[idx];
+  document.getElementById('scEmoji').textContent = sc.emoji;
+  document.getElementById('scName').textContent = sc.name;
+  document.getElementById('scRole').textContent = sc.role;
+  document.getElementById('scDesc').textContent = sc.desc;
+  document.getElementById('sidebarSummary').classList.add('hidden');
+  document.getElementById('summaryDetails').innerHTML = '';
+
+  renderDots();
+  resetView();
+  renderStepUI();
+  fullRedraw();
+}
+
+function renderDots() {
+  const dots = document.getElementById('scDots');
+  dots.innerHTML = '';
+  scenarios.forEach((sc, i) => {
+    const d = document.createElement('div');
+    d.className = 'sdot' + (completedScenarios.includes(i) ? ' done' : (i === state.scIdx ? ' active' : ''));
+    dots.appendChild(d);
+  });
+}
+
+// ═══════════════════════════════════════════════
+// 7. STEP UI RENDERING
+// ═══════════════════════════════════════════════
+function setCaption(text, cls='') {
+  document.getElementById('capText').textContent = text;
+  document.getElementById('capBox').className = 'sim-caption' + (cls ? ' '+cls : '');
+}
+
+function updateStepper() {
+  for (let i = 1; i <= 5; i++) {
+    const el = document.getElementById('ps'+i);
+    if (!el) continue;
+    el.className = 'prog-step-light' + (i === state.step ? ' active' : (i < state.step ? ' done' : ''));
+  }
+  document.getElementById('simTitle').textContent = `Tình Huống ${state.scIdx+1}/5 — ${scenarios[state.scIdx].name}`;
+  const stepNames = ['','Bước 1: Đặt ẩn','Bước 2: Lập BPT & điều kiện','Bước 3: Vẽ đường biên','Bước 4: Xác định miền & kiểm tra','Bước 5: Kết luận'];
+  document.getElementById('simSub').textContent = stepNames[state.step] || '';
+}
+
+function renderStepUI() {
+  updateStepper();
+  const sc = scenarios[state.scIdx];
+  const el = document.getElementById('stepContent');
+  el.innerHTML = '';
+
+  if (state.step === 1) renderStep1(sc, el);
+  else if (state.step === 2) renderStep2(sc, el);
+  else if (state.step === 3) renderStep3(sc, el);
+  else if (state.step === 4) renderStep4(sc, el);
+  else if (state.step === 5) renderStep5(sc, el);
+}
+
+// STEP 1 — Đặt ẩn
+function renderStep1(sc, el) {
+  const label = div('panel-section-label'); label.textContent = 'CHỌN CÁCH ĐẶT ẨN PHÙ HỢP'; el.appendChild(label);
+  const list = div('option-list'); el.appendChild(list);
+  sc.step1Options.forEach((opt, i) => {
+    const item = div('option-item' + (state.s1_sel===i?' selected':'') + (state.s1_done?' disabled':''));
+    item.innerHTML = `<input type="radio" class="option-radio" ${state.s1_sel===i?'checked':''} ${state.s1_done?'disabled':''}><span class="option-text">${opt.text}</span>`;
+    if (!state.s1_done) item.onclick = () => { state.s1_sel = i; renderStepUI(); };
+    list.appendChild(item);
+  });
+  if (state.feedbackHtml) {
+    const fb = div(''); fb.innerHTML = state.feedbackHtml; el.appendChild(fb);
+  }
+  if (!state.s1_done) {
+    const btn = document.createElement('button');
+    btn.className = 'btn-primary'; btn.textContent = 'Kiểm tra';
+    btn.onclick = checkStep1; el.appendChild(btn);
+    setCaption('Đọc kỹ tình huống — x và y đại diện cho đại lượng nào?');
+  } else {
+    const btn = document.createElement('button');
+    btn.className = 'btn-primary'; btn.innerHTML = 'Tiếp theo: Lập BPT <i class="ti ti-arrow-right"></i>';
+    btn.onclick = () => { state.step=2; state.feedbackHtml=''; renderStepUI(); };
+    el.appendChild(btn);
+  }
+}
+
+function checkStep1() {
+  if (state.s1_sel === null) { state.feedbackHtml = '<span class="feedback-badge err">Hãy chọn một đáp án!</span>'; renderStepUI(); return; }
+  const sc = scenarios[state.scIdx];
+  const opt = sc.step1Options[state.s1_sel];
+  if (opt.correct) {
+    state.s1_done = true;
+    state.feedbackHtml = '<span class="feedback-badge ok">✓ Chính xác!</span>';
+    setCaption(`Tốt! x là ${sc.xLabel}, y là ${sc.yLabel}. Tiếp theo lập BPT từ dữ liệu bài.`, 'green');
+    const sum = document.getElementById('sidebarSummary');
+    sum.classList.remove('hidden');
+    document.getElementById('summaryDetails').innerHTML =
+      `<div class="summary-row"><span class="summary-label">Ẩn x:</span><span class="summary-val">${sc.xShort}</span></div>` +
+      `<div class="summary-row"><span class="summary-label">Ẩn y:</span><span class="summary-val">${sc.yShort}</span></div>`;
+  } else {
+    state.feedbackHtml = `<span class="feedback-badge err">✗ Chưa đúng</span>`;
+    setCaption(opt.explain + ' Thử lại nhé!', 'red');
+  }
+  renderStepUI();
+}
+
+// STEP 2 — Lập BPT
+function renderStep2(sc, el) {
+  const t1 = div('panel-section-label'); t1.textContent = 'LẬP BẤT PHƯƠNG TRÌNH'; el.appendChild(t1);
+  const brow = div('bpt-check-row'); el.appendChild(brow);
+  const btitle = div('bpt-check-title'); btitle.textContent = sc.bptTitle; brow.appendChild(btitle);
+  const brow2 = div('bpt-input-row'); brow.appendChild(brow2);
+
+  const inp = document.createElement('input');
+  inp.type='text'; inp.className='bpt-input'+(state.s2_done?state.s2_input===sc.bptChoices[sc.bptCorrectIdx].text?' correct':' wrong':'');
+  inp.placeholder='Nhập BPT...'; inp.value=state.s2_input;
+  inp.disabled = state.s2_done;
+  inp.oninput = e => { state.s2_input = e.target.value; state.feedbackHtml=''; };
+  brow2.appendChild(inp);
+
+  const sel = document.createElement('select');
+  sel.className='bpt-select'; sel.disabled=state.s2_done;
+  sel.innerHTML='<option value="">Gợi ý...</option>' +
+    sc.bptChoices.map((c,i)=>`<option value="${i}">${c.text}</option>`).join('');
+  sel.onchange = () => { if(sel.value!==''){state.s2_input=sc.bptChoices[sel.value].text;inp.value=state.s2_input;renderStepUI();} };
+  brow2.appendChild(sel);
+
+  const t2 = div('panel-section-label'); t2.style.marginTop='8px'; t2.textContent = 'ĐIỀU KIỆN TỰ NHIÊN'; el.appendChild(t2);
+  const natOptions = ['x ≥ 0, y ≥ 0', 'x > 0, y > 0', 'Không cần điều kiện'];
+  const natList = div('option-list'); el.appendChild(natList);
+  natOptions.forEach((opt, i) => {
+    const item = div('option-item'+(state.s2_natSel===i?' selected':'')+(state.s2_natDone?' disabled':''));
+    item.innerHTML = `<input type="radio" class="option-radio" ${state.s2_natSel===i?'checked':''} ${state.s2_natDone?'disabled':''}><span class="option-text">${opt}</span>`;
+    if(!state.s2_natDone) item.onclick=()=>{state.s2_natSel=i;renderStepUI();};
+    natList.appendChild(item);
+  });
+
+  if (state.feedbackHtml) {
+    const fb = div(''); fb.innerHTML = state.feedbackHtml; el.appendChild(fb);
+  }
+
+  if (!state.s2_done || !state.s2_natDone) {
+    const btn = document.createElement('button');
+    btn.className='btn-primary'; btn.textContent='Kiểm tra';
+    btn.onclick=checkStep2; el.appendChild(btn);
+  } else {
+    const btn = document.createElement('button');
+    btn.className='btn-primary'; btn.innerHTML='Tiếp theo: Vẽ đường biên <i class="ti ti-arrow-right"></i>';
+    btn.onclick=()=>{state.step=3;state.feedbackHtml='';renderStepUI();startStep3Anim();};
+    el.appendChild(btn);
+  }
+}
+
+function normBPT(s) {
+  return (s||'').toLowerCase().replace(/\s+/g,'').replace(/,/g,'.').replace(/≤/g,'<=').replace(/≥/g,'>=');
+}
+
+function checkStep2() {
+  const sc = scenarios[state.scIdx];
+  if (!state.s2_done) {
+    const correct = sc.bptChoices[sc.bptCorrectIdx].text;
+    const inp = state.s2_input.trim();
+    if (!inp) { state.feedbackHtml='<span class="feedback-badge err">Hãy nhập BPT!</span>'; renderStepUI(); return; }
+    const matched = sc.bptChoices.find(c => normBPT(c.text)===normBPT(inp));
+    if (normBPT(inp)===normBPT(correct)) {
+      state.s2_done = true;
+    } else {
+      state.feedbackHtml='<span class="feedback-badge err">✗ BPT chưa đúng</span>';
+      setCaption(matched ? matched.explain : 'BPT chưa đúng. Kiểm tra lại hệ số và chiều dấu.', 'red');
+      renderStepUI(); return;
+    }
+  }
+  if (!state.s2_natDone) {
+    if (state.s2_natSel===null) { state.feedbackHtml='<span class="feedback-badge err">Hãy chọn điều kiện tự nhiên!</span>'; renderStepUI(); return; }
+    if (state.s2_natSel===0) {
+      state.s2_natDone=true;
+      state.feedbackHtml='<span class="feedback-badge ok">✓ Hoàn toàn chính xác!</span>';
+      setCaption('BPT và điều kiện đã đầy đủ. Bây giờ vẽ đường biên trên mặt phẳng toạ độ!', 'green');
+      document.getElementById('summaryDetails').innerHTML +=
+        `<div class="sdiv">Bất Phương Trình</div>` +
+        `<div class="summary-row"><span class="summary-label">BPT:</span><span class="summary-val">${sc.bptChoices[sc.bptCorrectIdx].text}</span></div>` +
+        `<div class="summary-row"><span class="summary-label">Điều kiện:</span><span class="summary-val">x ≥ 0, y ≥ 0</span></div>`;
+    } else if (state.s2_natSel===1) {
+      state.feedbackHtml='<span class="feedback-badge err">✗ Chưa đúng</span>';
+      setCaption('Cần cả trường hợp bằng 0 (x=0 hoặc y=0). "x > 0, y > 0" loại mất trường hợp không mua gì.', 'red');
+    } else {
+      state.feedbackHtml='<span class="feedback-badge err">✗ Cần có điều kiện!</span>';
+      setCaption('x và y là số lượng trong thực tế — chúng không thể âm! Hãy thêm x ≥ 0, y ≥ 0.', 'red');
+    }
+  } else {
+    state.feedbackHtml='<span class="feedback-badge ok">✓ Đúng rồi!</span>';
+    setCaption('BPT và điều kiện đã đủ!', 'green');
+  }
+  renderStepUI();
+}
+
+// STEP 3 — Vẽ đường biên (animation)
+function renderStep3(sc, el) {
+  const t = div('panel-section-label'); t.textContent = 'VẼ ĐƯỜNG BIÊN TRÊN ĐỒ THỊ'; el.appendChild(t);
+
+  const {a,b,c} = sc;
+  const xInt = a!==0 ? c/a : null;
+  const yInt = b!==0 ? c/b : null;
+  const ibox = div('info-box blue'); el.appendChild(ibox);
+  ibox.innerHTML = `<div class="ib-icon">📌</div><div style="font-size:13px">` +
+    `<b>Điểm giao trục:</b><br>` +
+    (xInt!==null&&xInt>=0 ? `Cho y=0 → x = ${+xInt.toFixed(2)} — điểm <b>(${+xInt.toFixed(1)}; 0)</b><br>` : '') +
+    (yInt!==null&&yInt>=0 ? `Cho x=0 → y = ${+yInt.toFixed(2)} — điểm <b>(0; ${+yInt.toFixed(1)})</b>` : '') +
+    `</div>`;
+
+  if (state.s3_pct < 1) {
+    const prog = div(''); prog.innerHTML=`<div style="font-size:13px;color:var(--ink-3);text-align:center">Đang vẽ đường biên...</div>`; el.appendChild(prog);
+    setCaption('Quan sát đường biên được vẽ trên mặt phẳng toạ độ!', 'amber');
+  } else {
+    const ibox2 = div('info-box gold'); el.appendChild(ibox2);
+    ibox2.innerHTML = `<div class="ib-icon">💡</div><div style="font-size:13px">Đường biên vẽ bằng <b>nét liền</b> vì BPT có dấu <b>≤ hoặc ≥</b> (điểm trên đường biên cũng thuộc miền nghiệm).</div>`;
+
+    const btn = document.createElement('button');
+    btn.className='btn-primary'; btn.innerHTML='Tiếp theo: Xác định miền <i class="ti ti-arrow-right"></i>';
+    btn.onclick=()=>{state.step=4;state.feedbackHtml='';renderStepUI();fullRedraw();};
+    el.appendChild(btn);
+    setCaption('Đường biên đã vẽ xong! Tiếp theo xác định miền nghiệm.', 'green');
+  }
+}
+
+function startStep3Anim() {
+  state.s3_pct = 0; state.s3_animating = true;
+  const start = performance.now();
+  const dur = 1800;
+  function loop(now) {
+    state.s3_pct = Math.min(1, (now-start)/dur);
+    fullRedraw();
+    if (state.s3_pct < 1) { animId = requestAnimationFrame(loop); }
+    else { state.s3_animating=false; renderStepUI(); }
+  }
+  animId = requestAnimationFrame(loop);
+}
+
+// STEP 4 — Xác định miền & kiểm tra
+function renderStep4(sc, el) {
+  if (sc.isPickMode) {
+    renderStep4Pick(sc, el);
+  } else {
+    renderStep4Test(sc, el);
+  }
+}
+
+function renderStep4Test(sc, el) {
+  const t = div('panel-section-label'); t.textContent = 'KIỂM TRA ĐIỂM — XÁC ĐỊNH MIỀN'; el.appendChild(t);
+
+  const ibox = div('info-box blue'); el.appendChild(ibox);
+  ibox.innerHTML = `<div class="ib-icon">🔍</div><div style="font-size:13px">Thế từng điểm vào BPT <b>${sc.bptChoices[sc.bptCorrectIdx].text}</b> để kiểm tra thuộc miền nghiệm không.</div>`;
+
+  const list = div('bpt-check-list'); el.appendChild(list); list.style.display='flex'; list.style.flexDirection='column'; list.style.gap='8px';
+  sc.testPoints.forEach((pt, i) => {
+    const row = div('bpt-check-row'); list.appendChild(row);
+    const title = div('bpt-check-title'); title.textContent = `${pt.label} — ${pt.desc}`; row.appendChild(title);
+    if (state.s4_results[i] !== undefined) {
+      const val = sc.a*pt.x + sc.b*pt.y;
+      const sat = state.s4_results[i];
+      const calcdiv = div(''); calcdiv.style.fontFamily='var(--font-mono)'; calcdiv.style.fontSize='13px'; calcdiv.style.color='var(--ink-2)';
+      calcdiv.textContent = `${sc.a}×${pt.x} + ${sc.b}×${pt.y} = ${val} ${sc.sign==='le'?'≤':'≥'} ${sc.c}? ${sat?'✓':'✗'}`;
+      row.appendChild(calcdiv);
+      const badge = document.createElement('span');
+      badge.className='feedback-badge '+(sat?'ok':'err');
+      badge.textContent = sat ? '✓ Thuộc miền nghiệm' : '✗ Ngoài miền nghiệm';
+      row.appendChild(badge);
+    } else {
+      const btn = document.createElement('button');
+      btn.className='btn-secondary'; btn.style.marginTop='4px'; btn.textContent='Kiểm tra điểm này';
+      btn.onclick=()=>{ checkTestPoint(sc, i); };
+      row.appendChild(btn);
+    }
+  });
+
+  if (state.s4_results.length === sc.testPoints.length) {
+    const btn = document.createElement('button');
+    btn.className='btn-primary'; btn.innerHTML='Tiếp theo: Kết luận <i class="ti ti-arrow-right"></i>';
+    btn.onclick=()=>{state.step=5;renderStepUI();};
+    el.appendChild(btn);
+    setCaption('Đã kiểm tra xong các điểm! Nhìn vào đồ thị — vùng tô màu chính là miền nghiệm.', 'green');
+  } else {
+    setCaption('Thế từng điểm vào BPT để kiểm tra. Điểm thoả BPT nằm trong miền nghiệm.');
+  }
+}
+
+function checkTestPoint(sc, i) {
+  const pt = sc.testPoints[i];
+  state.s4_results[i] = bptOk(sc, pt.x, pt.y);
+  fullRedraw();
+  renderStepUI();
+}
+
+function renderStep4Pick(sc, el) {
+  const t = div('panel-section-label'); t.textContent = 'CHỌN 3 PHƯƠNG ÁN TỐI ƯU NHẤT'; el.appendChild(t);
+
+  const hint = div('point-picker-hint');
+  hint.innerHTML = `<i class="ti ti-mouse"></i><span>Click vào đồ thị để chọn điểm (x; y) trong miền nghiệm. Điểm gần đường biên nhất = dùng vốn hiệu quả nhất!</span>`;
+  el.appendChild(hint);
+
+  if (state.pickedPoints.length > 0) {
+    const t2 = div('panel-section-label'); t2.style.marginTop='6px'; t2.textContent = 'PHƯƠNG ÁN ĐÃ CHỌN'; el.appendChild(t2);
+    const table = div('pc-table'); el.appendChild(table);
+    const colors = ['#CE8A33','#4E7F92','#2D8B6F'];
+    state.pickedPoints.forEach((pt, i) => {
+      const cost = sc.a*pt.x + sc.b*pt.y;
+      const remaining = sc.c - cost;
+      const row = div('pc-row'); table.appendChild(row);
+      const eff = remaining <= sc.c * 0.08 ? 'opt' : 'ok';
+      row.innerHTML =
+        `<span style="color:${colors[i]};font-weight:700">P${i+1}(${pt.x};${pt.y})</span>` +
+        `<span style="font-size:12px;font-family:sans-serif;color:var(--ink-2)">${sc.a}×${pt.x}+${sc.b}×${pt.y}=${cost}</span>` +
+        `<span class="pc-badge ${eff}">${eff==='opt'?'⭐ Tối ưu':'✓ Khả thi'}</span>`;
+    });
+
+    if (state.pickedPoints.length < 3) {
+      const left = div(''); left.style.cssText='font-size:13px;color:var(--ink-3);text-align:center;margin-top:4px';
+      left.textContent = `Còn ${3-state.pickedPoints.length} điểm nữa...`; el.appendChild(left);
+    }
+    if (state.pickedPoints.length > 0) {
+      const clr = document.createElement('button');
+      clr.className='btn-secondary'; clr.textContent='↺ Chọn lại';
+      clr.onclick=()=>{state.pickedPoints=[];fullRedraw();renderStepUI();};
+      el.appendChild(clr);
+    }
+  }
+
+  if (state.pickedPoints.length === 3) {
+    const btn = document.createElement('button');
+    btn.className='btn-primary'; btn.innerHTML='Tiếp theo: Kết luận <i class="ti ti-arrow-right"></i>';
+    btn.onclick=()=>{state.step=5;renderStepUI();};
+    el.appendChild(btn);
+    setCaption('Đã chọn đủ 3 phương án! Điểm ⭐ là phương án dùng vốn hiệu quả nhất.', 'green');
+  } else {
+    setCaption(`Click vào vùng màu trên đồ thị để chọn phương án. Đã chọn: ${state.pickedPoints.length}/3.`);
+  }
+}
+
+// STEP 5 — Kết luận
+function renderStep5(sc, el) {
+  const t = div('panel-section-label'); t.textContent = 'KẾT LUẬN'; el.appendChild(t);
+
+  const ibox = div('info-box green'); el.appendChild(ibox);
+  ibox.innerHTML = `<div class="ib-icon">✅</div><div style="font-size:14px"><b>Miền nghiệm</b> là tập hợp tất cả điểm (x; y) thoả mãn:<br><b>${sc.bptChoices[sc.bptCorrectIdx].text}</b><br>và điều kiện <b>x ≥ 0, y ≥ 0</b>.<br><br>${sc.conclusionText}</div>`;
+
+  if (sc.isPickMode && state.pickedPoints.length===3) {
+    const t2 = div('panel-section-label'); t2.textContent='3 PHƯƠNG ÁN ĐÃ CHỌN'; el.appendChild(t2);
+    const colors=['#CE8A33','#4E7F92','#2D8B6F'];
+    state.pickedPoints.forEach((pt,i)=>{
+      const cost=sc.a*pt.x+sc.b*pt.y;
+      const pct = Math.round(cost/sc.c*100);
+      const row=div('bpt-check-row'); el.appendChild(row);
+      row.innerHTML=`<div style="font-size:14px;font-weight:700;color:${colors[i]}">P${i+1}: Nhập ${pt.x} áo thun + ${pt.y} quần</div>` +
+        `<div style="font-size:13px;color:var(--ink-2);font-family:var(--font-mono)">Chi phí: 8×${pt.x}+15×${pt.y} = ${cost}/1000 đơn vị (${pct}% vốn)</div>`;
+    });
+  }
+
+  const cel = div('celebration'); el.appendChild(cel);
+  cel.innerHTML=`<div class="cel-emoji">🎉</div><h3>Hoàn thành tình huống!</h3><p>Bạn đã lập BPT, vẽ đường biên và xác định miền nghiệm thành công.</p>`;
+
+  if (!completedScenarios.includes(state.scIdx)) completedScenarios.push(state.scIdx);
+  renderDots();
+
+  if (state.scIdx < scenarios.length - 1) {
+    const btn = document.createElement('button');
+    btn.className='btn-primary'; btn.innerHTML='Tình huống tiếp theo <i class="ti ti-arrow-right"></i>';
+    btn.onclick=()=>loadScenario(state.scIdx+1);
+    el.appendChild(btn);
+  } else {
+    const fin = div('info-box blue'); el.appendChild(fin);
+    fin.innerHTML=`<div class="ib-icon">🏆</div><div style="font-size:14px"><b>Xuất sắc!</b> Bạn đã hoàn thành tất cả 5 tình huống.<br>Bạn đã thành thạo kỹ năng lập BPT và biểu diễn miền nghiệm từ bài toán thực tế!</div>`;
+    const btn=document.createElement('button');
+    btn.className='btn-secondary'; btn.textContent='↺ Làm lại từ đầu';
+    btn.onclick=()=>loadScenario(0);
+    el.appendChild(btn);
+  }
+  setCaption('Vùng tô màu trên đồ thị là toàn bộ miền nghiệm — tập hợp mọi phương án khả thi.', 'green');
+}
+
+// ═══════════════════════════════════════════════
+// HELPER
+// ═══════════════════════════════════════════════
+function div(cls) {
+  const d = document.createElement('div');
+  if (cls) d.className = cls;
+  return d;
+}
+
+// ═══════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════
+loadScenario(0);
+
+    // ===== Báo chiều cao thật cho LMS (PHẦN 7.7) =====
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    const _athenaResizeObserver = new ResizeObserver(() => {
+      clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+    });
+    _athenaResizeObserver.observe(document.body);
+</script>
+</body>
+</html>
