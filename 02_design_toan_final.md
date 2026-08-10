@@ -479,6 +479,94 @@ Quy tắc bắt buộc:
   4. Công thức dài trong canvas: xuống dòng hoặc rút gọn, không để tràn
 ```
 
+### 1.3b Ô nhập đáp án chứa ký hiệu toán học (symbol pad + ASCII tương đương)
+
+```
+Vấn đề: 1 số câu dùng ô nhập tự do (không phải MCQ) nhưng đáp án đúng chứa ký hiệu học
+sinh không gõ tay được bằng bàn phím thường (α, √, ², ³...). Áp dụng CẢ HAI cơ chế song
+song cho mọi ô input dạng này — không chọn 1 trong 2:
+
+  (A) Symbol pad — hàng nút nhỏ cạnh ô input, bấm để chèn ký tự Unicode
+  (B) Gõ ASCII tương đương — học sinh gõ bằng bàn phím thường, hệ thống tự chuẩn hoá khi chấm
+
+Chỉ gắn cho ô nào đáp án THẬT SỰ chứa ký hiệu đặc biệt (VD đáp án "30" thì KHÔNG cần
+symbol pad). Chỉ hiện đúng ký hiệu liên quan đến câu đó — không hiện cả bộ cho mọi ô
+(đi ngược tinh thần concise, xem `01_scenario_builder_v4_1.md`).
+```
+
+**(A) Symbol pad — markup + JS dùng chung, dán 1 lần/file:**
+
+```html
+<div class="fill-step-row">
+  cos 150° = <input class="fill-blank" id="ex3-ans" placeholder="?" oninput="checkEx3()">
+  <span class="sym-pad">
+    <button type="button" onclick="insSym('ex3-ans','√')">√</button>
+    <button type="button" onclick="insSym('ex3-ans','−')">−</button>
+  </span>
+</div>
+```
+
+```javascript
+// Nối cuối chuỗi hiện có trong ô — KHÔNG chèn theo vị trí con trỏ (selectionStart), để tránh
+// lỗi mất focus/con trỏ hay gặp trên mobile khi bấm nút nằm ngoài input.
+function insSym(id, ch){
+  const el = document.getElementById(id);
+  el.value += ch;
+  el.focus();
+  // Dispatch cả 2 loại — 1 hàm dùng chung được cho mọi ô, dù ô đó đang gắn oninput= hay onchange=
+  el.dispatchEvent(new Event('input',  {bubbles:true}));
+  el.dispatchEvent(new Event('change', {bubbles:true}));
+}
+```
+
+```css
+.sym-pad { display:inline-flex; gap:4px; margin-left:6px; vertical-align:middle; }
+.sym-pad button {
+  min-width:32px; min-height:32px;   /* vùng chạm mobile */
+  border:1px solid var(--border, #E2E6EF); border-radius:6px;
+  background:#fff; font-family:var(--font); font-size:15px; cursor:pointer;
+}
+.sym-pad button:active { background:var(--primary-light); }
+```
+
+**(B) ASCII tương đương — chuẩn hoá về 1 dạng chung trước khi so đáp án:**
+
+```
+Bảng ánh xạ ASCII ↔ Unicode (mở rộng thêm khi gặp ký hiệu mới, giữ đúng quy tắc chung):
+  sqrt / can        → √
+  pi                → π
+  alpha/beta/gamma/theta → α/β/γ/θ
+  ^2  ^3  ^n         → ²  ³  ⁿ
+  +-                 → ±
+  <=  >=  !=         → ≤  ≥  ≠
+  -   (dấu trừ thường) và − (Unicode minus) → coi là 1
+```
+
+```javascript
+// Chuẩn hoá 2 CHIỀU về cùng 1 dạng canonical — dùng cho CẢ đáp án đúng lưu trong code LẪN
+// giá trị học sinh nhập (dù gõ ASCII hay bấm symbol pad ra Unicode), rồi so sánh chuỗi đã
+// chuẩn hoá. Thay hẳn cho kiểu check thủ công nhiều biến thể như `val.includes('-√3/2') ||
+// val.includes('−√3/2')` — dễ sót biến thể mới phát sinh.
+function normMath(s){
+  return String(s).toLowerCase().replace(/\s+/g,'')
+    .replace(/−/g,'-')
+    .replace(/√/g,'sqrt').replace(/\bcan\b/g,'sqrt')
+    .replace(/π/g,'pi')
+    .replace(/α/g,'alpha').replace(/β/g,'beta').replace(/γ/g,'gamma').replace(/θ/g,'theta')
+    .replace(/±/g,'+-')
+    .replace(/≤/g,'<=').replace(/≥/g,'>=').replace(/≠/g,'!=')
+    .replace(/²/g,'^2').replace(/³/g,'^3');
+}
+// Dùng khi chấm: so sánh normMath(inp.value) với normMath(đáp_án_chuẩn) — hoặc với danh
+// sách vài đáp_án_chuẩn chấp nhận được, nếu câu có nhiều cách viết đúng.
+```
+
+**Checklist khi gắn ô nhập ký hiệu toán:**
+- [ ] Chỉ gắn `sym-pad` cho ô có đáp án chứa ký hiệu đặc biệt, không gắn tràn lan
+- [ ] `sym-pad` chỉ hiện ký hiệu liên quan đến chính câu đó (2-4 nút, không hiện cả bộ)
+- [ ] Hàm chấm dùng `normMath()` so sánh, không liệt kê thủ công từng biến thể dấu/ký tự
+- [ ] Nút symbol pad đạt vùng chạm ≥32px, không đè/che ô input trên mobile
+
 ### 1.4 Icon Library
 
 ```html
@@ -802,6 +890,8 @@ function drawLineLabel(label, color, bndFn) {
 - [ ] Reset về đúng trạng thái ban đầu
 - [ ] Caption / data display cập nhật theo trạng thái
 - [ ] Không có lỗi console
+- [ ] Ô nhập tự do có đáp án chứa ký hiệu toán (α, √, ², ³...) đã gắn symbol pad + chấm bằng
+      `normMath()` — xem Mục 1.3b, không để học sinh bó tay vì không gõ được ký hiệu
 
 **Canvas & đồ thị:**
 - [ ] Miền nghiệm và đường biên khớp chính xác (không lệch)
@@ -1811,6 +1901,11 @@ if (typeof ResizeObserver !== 'undefined') {
 > patch/sửa file đó, không chỉ áp dụng cho file build mới.
 
 ---
+
+> **Phiên bản 2.3.1** — thêm Mục 1.3b: quy tắc ô nhập đáp án chứa ký hiệu toán học (α, √, ², ³...).
+> Kết hợp 2 cơ chế song song — symbol pad (`insSym()`, chèn Unicode) và chấp nhận gõ ASCII tương
+> đương (`normMath()`, chuẩn hoá trước khi so đáp án) — thay cho cách check thủ công nhiều biến
+> thể dấu/ký tự từng gặp trong file cũ (VD `ex3-ans` phải check riêng `-√3/2` và `−√3/2`).
 
 > **Phiên bản 2.2** — sau khi đối chiếu với file design Vật Lý (bản trưởng thành hơn, tham chiếu
 > `Quy_chuan_tao_HTML_Aiducation.pdf` — nay không còn dùng file PDF đó nữa):

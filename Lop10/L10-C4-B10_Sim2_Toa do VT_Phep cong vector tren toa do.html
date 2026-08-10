@@ -1,0 +1,1480 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Robot Navigation - Vector</title>
+    <script type="application/json" id="athena-context">
+{
+  "title": "Simulation 2: Robot Navigation – Điều khiển Robot bằng Vectơ",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Tính tọa độ vectơ AB = (x_B - x_A ; y_B - y_A) qua thao tác kéo điểm trên mặt phẳng tọa độ",
+    "Thực hiện phép trừ vectơ (tìm vectơ ngược để đưa Robot quay về vị trí cũ)",
+    "Tìm tọa độ trung điểm M của đoạn thẳng AB và trọng tâm G của tam giác ABC bằng kéo thả",
+    "Thực hiện phép cộng, trừ, và nhân vectơ với số k trên tọa độ, vận dụng qua các thử thách ngẫu nhiên"
+  ],
+  "structure": [
+    { "id": "task-1", "title": "Nhiệm vụ 1 — kéo điểm B đến (8;5), tính AB = (x_B-x_A ; y_B-y_A)" },
+    { "id": "task-2", "title": "Nhiệm vụ 2 — nhập tọa độ để dịch chuyển Robot theo vectơ" },
+    { "id": "task-3", "title": "Nhiệm vụ 3 — kéo điểm A hoặc nhập tọa độ, Robot ở A(2;1) nhận lệnh dịch chuyển (+4;+1)" },
+    { "id": "task-4", "title": "Nhiệm vụ 4 — Robot ở M(6;2) nhận lệnh (-4;-1), kéo điểm A hoặc nhập tọa độ để đưa Robot về đích (phép trừ vectơ BA = A-B)" },
+    { "id": "task-5", "title": "Nhiệm vụ 5 (trắc nghiệm nút bấm) — hỏi vectơ 'đảo chiều'/'xoay 90°'/'không đổi' khi nhân với số k" },
+    { "id": "task-6", "title": "Nhiệm vụ 6 — kéo điểm M về trung điểm đoạn thẳng AB" },
+    { "id": "task-7", "title": "Nhiệm vụ 7 — kéo điểm G về trọng tâm tam giác ABC (có Drone bay đo khoảng cách kiểm chứng)" },
+    { "id": "challenge", "title": "Thử thách nhanh — sinh câu hỏi ngẫu nhiên (cộng/trừ vectơ, tìm trung điểm) và nhập đáp án tọa độ (x;y)" },
+    { "id": "summary-table", "title": "Bảng tổng kết công thức vectơ tọa độ (AB, cộng, trừ, nhân k, trung điểm, trọng tâm) — tải xuống" }
+  ],
+  "athenaGuidance": "Nhân vật 'Robot' trong bài này LÀ ĐỐI TƯỢNG của bài toán (robot được điều khiển bằng vectơ), KHÔNG phải là AI/trợ lý — do đó tên 'Robot' được giữ nguyên, không đổi thành Athena. Đây là mô phỏng kéo-thả 7 nhiệm vụ tuần tự (không có input tự do sai/đúng dạng text ở phần lớn nhiệm vụ, chủ yếu là kéo điểm để khớp vị trí mục tiêu và hệ thống tự chấm qua animation Robot di chuyển): NV1 kéo B đến (8;5) để minh họa AB = B - A = (6;4); NV2 nhập tọa độ dịch chuyển; NV3 Robot ở A(2;1) nhận lệnh dịch chuyển (+4;+1) → kéo/nhập để đưa Robot đến (6;2); NV4 Robot ở M(6;2) nhận lệnh (-4;-1) → kéo điểm A hoặc nhập tọa độ để đưa Robot về đích, đây là phép trừ vectơ BA = A - B = (-6;-4) (chuỗi callback trong code cho thấy nếu học sinh nhập sai như (6;4) sẽ nhận thông báo 'Robot đi sai hướng' và gợi ý tính lại BA = A-B); NV5 là câu hỏi trắc nghiệm 3 lựa chọn nút bấm về ảnh hưởng của phép nhân vectơ với số k (checkTask5Ans nhận giá trị 'daochieu'/'xoay'/'khongdoi') — KHÔNG được nói trước đáp án đúng, chỉ gợi ý học sinh thử với k dương và k âm để quan sát; NV6 kéo M về đúng trung điểm AB; NV7 kéo G về đúng trọng tâm tam giác ABC, có Drone bay đo khoảng cách để xác nhận đúng/sai trực quan — không cần Athena tiết lộ tọa độ chính xác, chỉ hướng dẫn công thức (x_A+x_B)/2, (x_A+x_B+x_C)/3. Ngoài 7 nhiệm vụ chính còn có mục 'Thử thách nhanh' (hàm generateChallenge/checkChallenge) sinh ngẫu nhiên các câu hỏi cộng/trừ vectơ hoặc tìm trung điểm mỗi lần bấm 'Thử thách khác' — vì đề ngẫu nhiên mỗi lần, Athena không có đáp án cố định để liệt kê, chỉ hướng dẫn công thức tương ứng (cộng: (x1+x2;y1+y2), trừ: (x1-x2;y1-y2), trung điểm: ((x_A+x_B)/2;(y_A+y_B)/2)) và không tính hộ kết quả cuối cùng."
+}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+        :root {
+  /* Neutrals · giấy & mực */
+  --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC;
+  --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
+  --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+
+  /* Jade · hành động chính */
+  --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F;
+  --jade-text:#1B5E48; --jade-soft:#A9D0BE; --jade-pale:#DCEAE1;
+
+  /* Sage · phụ trợ */
+  --sage:#A8C9B8; --sage-deep:#7CA792; --sage-text:#46685A; --sage-pale:#E1ECE4;
+
+  /* Accent · điểm nhấn ấm */
+  --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+
+  /* Semantic · đúng/sai/cảnh báo/info */
+  --correct:#2D8B6F; --correct-bg:#DCEAE1;
+  --wrong:#C15F3C;   --wrong-bg:#F3E2D6;
+  --warning:#C58A2E; --warning-bg:#F5E7CB;
+  --info:#4E7F92;    --info-bg:#DCE7EB;
+
+  --white:#FFFFFF;
+  --radius:10px; --radius-lg:14px; --radius-sm:6px;
+  --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+  --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+  --shadow-lg: 0 14px 38px rgba(20, 67, 47, 0.12);
+
+  /* Illustration only · fill phẳng cho minh hoạ (KHÔNG dùng cho UI/text) */
+  --il-terracotta:#C1704B; --il-brick:#9E4A2E; --il-ochre:#C99A3C; --il-olive:#8A9A5B;
+  --il-forest:#2E6B52; --il-dusty-blue:#6E93A6; --il-slate:#4E6E7E; --il-mauve:#8A6A7E; --il-sand:#D8C4A0;
+
+  /* Vector màu canvas Vật lý/Toán (cộng lực, cộng vận tốc...) — PHẦN 1.1 file design Toán */
+  --color-v1: var(--jade); --color-v2: var(--info);
+  --color-resultant: var(--accent); --color-force-red: var(--wrong); --color-gravity: var(--ink-3);
+
+  /* --- alias cho code cũ (giữ để var(--ten-cu) phía dưới vẫn chạy đúng màu mới) --- */
+  --primary-teal: var(--jade-deep);
+  --primary-gold: var(--accent);
+  --bg-cream: var(--cream);
+  --text-main: var(--ink);
+  --text-muted: var(--ink-3);
+  --border-light: var(--paper-line);
+  --math-blue: var(--info);
+  --math-red: var(--wrong);
+  --math-green: var(--correct);
+  --font-ui: 'Be Vietnam Pro', sans-serif;
+  --font-math: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-ui);
+            background-color: var(--bg-cream);
+            color: var(--text-main);
+            padding: 16px;
+            min-width:0;
+        }
+
+        #p5-sim-wrap {
+            width: 100%;
+            max-width: 1200px;
+            background: var(--white);
+            border-radius: 12px;
+            box-shadow: 0 8px 24px rgba(45, 139, 111, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+            border: 2px solid var(--primary-teal);
+            margin:0 auto;
+            min-width:0;
+        }
+
+        /* HEADER */
+        #p5-header {
+            background-color: var(--primary-teal);
+            color: var(--primary-gold);
+            padding: 16px 24px;
+            display:none !important;
+            border-bottom: 4px solid var(--primary-gold);
+        }
+
+        #p5-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            margin-bottom: 4px;
+            color: var(--white);
+        }
+
+        #p5-header p {
+            font-size: 13px;
+            color: var(--bg-cream);
+        }
+
+        /* MAIN CONTENT */
+        #main-content-layout {
+            display: flex;
+            flex: 1;
+            min-height: 500px;
+            min-width:0;
+        }
+
+        /* SIDEBAR */
+        #p5-sidebar {
+            width: 272px;
+            background-color: var(--bg-cream);
+            border-right: 1px solid var(--border-light);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+
+        .sidebar-section {
+            background: var(--white);
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            padding: 16px;
+        }
+
+        .sidebar-section h3 {
+            font-size: 11px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            color: var(--text-muted);
+            margin-bottom: 12px;
+        }
+
+        .checkbox-group label {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 14px;
+            margin-bottom: 8px;
+            cursor: pointer;
+        }
+
+        .robot-status {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 12px;
+        }
+
+        .robot-avatar {
+            font-size: 48px;
+        }
+
+        .robot-coord {
+            font-family: var(--font-math);
+            font-size: 18px;
+            font-weight: bold;
+            color: var(--primary-teal);
+            background: var(--bg-cream);
+            padding: 4px 12px;
+            border-radius: 16px;
+            border: 1px dashed var(--primary-teal);
+        }
+
+        /* WORKSPACE */
+        #p5-workspace {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            padding: 20px;
+            min-width:0;
+        }
+
+        /* TABS */
+        #task-navigation-tabs {
+            display: flex;
+            gap: 8px;
+            margin-bottom: 16px;
+            overflow-x:auto;
+            scrollbar-width:none;
+            scroll-snap-type:x proximity;
+        }
+        #task-navigation-tabs::-webkit-scrollbar { display:none; }
+
+        .task-tab {
+            padding: 8px 12px;
+            font-size: 13px;
+            font-weight: 600;
+            border-radius: 6px;
+            cursor: pointer;
+            background: var(--bg-cream);
+            color: var(--text-muted);
+            border: 1px solid var(--border-light);
+            transition: all 0.2s;
+            flex:0 0 auto;
+            min-height:44px;
+            display:flex; align-items:center;
+            scroll-snap-align:start;
+        }
+
+        .task-tab.active {
+            background: var(--primary-teal);
+            color: var(--white);
+            border-color: var(--primary-teal);
+        }
+
+        .task-tab.completed {
+            background: var(--primary-gold);
+            color: var(--primary-teal);
+            border-color: var(--primary-gold);
+        }
+
+        .task-tab.locked {
+            opacity: 0.5;
+            cursor: not-allowed;
+        }
+
+        /* CANVAS CONTAINER */
+        #canvas-wrapper {
+            position: relative;
+            flex: 1;
+            border: 1px solid var(--border-light);
+            border-radius: 8px;
+            overflow: hidden;
+            background: #fff;
+            min-height: 400px;
+            cursor: crosshair;
+            min-width:0;
+            touch-action:none;
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+        }
+
+        /* CONTROLS (Input / Slider) */
+        #task-controls {
+            margin-top: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 16px;
+            min-height: 40px;
+        }
+        #task-controls:empty { display:none; }
+
+        .control-input {
+            padding: 8px 12px;
+            border: 1px solid var(--primary-teal);
+            border-radius: 6px;
+            font-family: var(--font-math);
+            font-size: 14px;
+            outline: none;
+        }
+
+        .btn {
+            background: var(--primary-teal);
+            color: var(--white);
+            border: none;
+            padding: 8px 16px;
+            border-radius: 6px;
+            font-weight: 600;
+            cursor: pointer;
+            min-height:44px;
+        }
+
+        .btn:hover {
+            background: #0a2d23;
+        }
+
+        .slider-container {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+        }
+
+        /* BOTTOM CONTENT */
+        #bottom-content-layout {
+            border-top: 1px solid var(--border-light);
+            padding: 20px;
+            display: flex;
+            gap: 20px;
+            background: var(--bg-cream);
+        }
+
+        /* AI COACH */
+        #p5-explanation-box {
+            flex: 1;
+            background: var(--white);
+            border-radius: 8px;
+            border: 2px solid var(--primary-gold);
+            padding: 16px;
+            display: flex;
+            gap: 16px;
+            align-items: center;
+        }
+
+        .ai-avatar {
+            font-size: 32px;
+            background: var(--bg-cream);
+            width: 56px;
+            height: 56px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            border: 2px solid var(--primary-teal);
+        }
+
+        .ai-message {
+            font-size: 14px;
+            line-height: 1.5;
+        }
+
+        .ai-message.italic {
+            font-style: italic;
+        }
+
+        /* SUMMARY & CHALLENGE (Hidden initially) */
+        #p5-summary-table,
+        #p5-quick-challenge {
+            display: none;
+            background: var(--white);
+            border-radius: 8px;
+            padding: 16px;
+            border: 1px solid var(--border-light);
+        }
+
+        .table-wrap table {
+            width: 100%;
+            border-collapse: collapse;
+            font-size: 13px;
+        }
+
+        .table-wrap th,
+        .table-wrap td {
+            border: 1px solid var(--border-light);
+            padding: 8px;
+            text-align: center;
+            font-family: var(--font-math);
+        }
+
+        .table-wrap th {
+            background: var(--primary-teal);
+            color: white;
+            font-family: var(--font-ui);
+        }
+
+        /* Math display */
+        .math-text {
+            font-family: var(--font-math);
+            font-weight: bold;
+        }
+
+        .text-blue {
+            color: var(--math-blue);
+        }
+
+        .text-red {
+            color: var(--math-red);
+        }
+
+        .text-green {
+            color: var(--math-green);
+        }
+
+        .text-purple {
+            color: var(--math-purple);
+        }
+
+        .intro-text {
+            padding:14px 18px; background:var(--jade-pale);
+            border-left:4px solid var(--jade-deep); color:var(--ink-2);
+            font-size:.92rem; line-height:1.65; overflow-wrap:anywhere;
+        }
+        .mobile-hint { display:none; }
+
+        @media (max-width: 1024px) {
+            body { padding:10px; }
+            #main-content-layout { flex-direction:column; min-height:0; }
+            #p5-workspace { order:-1; }
+            #canvas-wrapper { min-height:430px; }
+            #p5-sidebar {
+                width:100%; border-right:0; border-top:1px solid var(--border-light);
+                display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px;
+            }
+            #bottom-content-layout > div:first-child { flex-wrap:wrap; }
+            #p5-quick-challenge { width:min(100%,350px) !important; }
+        }
+
+        @media (max-width: 640px) {
+            body { padding:0; }
+            #p5-sim-wrap { border:0; border-radius:0; box-shadow:none; }
+            .intro-text { padding:12px 14px; font-size:.86rem; }
+            #p5-workspace { padding:12px; }
+            #canvas-wrapper { min-height:340px; }
+            #task-controls { flex-wrap:wrap; gap:10px; }
+            #task-controls > * { max-width:100%; }
+            .slider-container, .slider-container > div { max-width:100%; flex-wrap:wrap; }
+            .mobile-hint { display:block; padding:10px 14px 0; color:var(--ink-3); font-size:.78rem; font-weight:600; }
+            #p5-sidebar {
+                display:flex; flex-direction:row; width:100%; padding:12px 14px 16px;
+                overflow-x:auto; scroll-snap-type:x mandatory; overscroll-behavior-inline:contain;
+            }
+            #p5-sidebar > * { flex:0 0 86vw; scroll-snap-align:center; }
+            #bottom-content-layout { padding:12px; }
+            #bottom-content-layout > div:first-child { display:block !important; }
+            #p5-explanation-box { min-height:96px !important; padding:12px; gap:10px; }
+            .ai-avatar { width:44px; height:44px; font-size:24px; flex:0 0 auto; }
+            #p5-quick-challenge { margin-top:12px; }
+            .table-wrap { overflow-x:auto; }
+            .control-input, input[type="range"], .checkbox-group label { min-height:44px; }
+        }
+    
+    /* Pass 2 (mục E) — vùng chạm tối thiểu 44px cho nút bấm thật trên mobile.
+       Không đụng desktop, không thu nhỏ phần tử nào — chỉ nới ra nếu đang < 44px. */
+    @media (max-width: 767px) {
+      button, .btn, a.btn, input[type="button"], input[type="submit"] {
+        min-height: 44px;
+      }
+    }
+</style>
+</head>
+
+<body>
+
+    <div id="p5-sim-wrap">
+        <header id="p5-header">
+            <h1>SIMULATION 2: ROBOT NAVIGATION – ĐIỀU KHIỂN ROBOT BẰNG VECTƠ</h1>
+            <p>Mục tiêu: Hiểu tọa độ vectơ là sự dịch chuyển, thực hành các phép toán vectơ, tính trung điểm và trọng
+                tâm.</p>
+        </header>
+
+        <p class="intro-text"><strong>Nhiệm vụ:</strong> Điều khiển robot trên mặt phẳng Oxy để khám phá tọa độ vectơ, phép cộng–trừ, phép nhân với một số, trung điểm và trọng tâm.</p>
+
+        <div id="main-content-layout">
+            <p class="mobile-hint">Vuốt ngang để xem bảng điều khiển, trạng thái và ghi chú.</p>
+            <aside id="p5-sidebar">
+                <div class="sidebar-section">
+                    <h3>Bảng điều khiển</h3>
+                    <div class="checkbox-group">
+                        <label><input type="checkbox" id="show-grid" checked> Hiện lưới tọa độ</label>
+                        <label><input type="checkbox" id="show-axis" checked> Hiện trục tọa độ</label>
+                    </div>
+                </div>
+                <div class="sidebar-section">
+                    <h3>Trạng thái Robot</h3>
+                    <div class="robot-status">
+                        <div class="robot-avatar">🤖</div>
+                        <div class="robot-coord" id="robot-pos-display">A(2 ; 1)</div>
+                        <button class="btn"
+                            style="width: 100%; background: #666; font-size: 11px; padding: 6px; margin-top: 8px; font-weight: 700;"
+                            onclick="resetCurrentTask()">🔁 Làm lại</button>
+                    </div>
+                </div>
+                <div class="sidebar-section"
+                    style="background: var(--primary-gold); color: var(--primary-teal); border:none;">
+                    <h3 style="color: var(--primary-teal);">Ghi chú</h3>
+                    <p style="font-size: 13px;">Robot chỉ hiểu tọa độ. <br><br><strong>Vectơ = sự dịch chuyển.</strong>
+                    </p>
+                </div>
+            </aside>
+
+            <section id="p5-workspace">
+                <div id="task-navigation-tabs">
+                    <div class="task-tab active" data-task="1">1. Tới B</div>
+                    <div class="task-tab locked" data-task="2">2. Chống lỗi</div>
+                    <div class="task-tab locked" data-task="3">3. Cộng</div>
+                    <div class="task-tab locked" data-task="4">4. Trừ</div>
+                    <div class="task-tab locked" data-task="5">5. Nhân k</div>
+                    <div class="task-tab locked" data-task="6">6. Trung điểm</div>
+                    <div class="task-tab locked" data-task="7">7. Trọng tâm</div>
+                </div>
+
+                <div id="canvas-wrapper">
+                    <canvas id="math-canvas"></canvas>
+                </div>
+
+                <div id="formula-bar"
+                    style="margin-top: 10px; background: var(--bg-cream); border: 1px solid var(--border-light); border-radius: 6px; padding: 10px; font-family: var(--font-math); font-size: 14px; font-weight: bold; text-align: center; color: var(--primary-teal); min-height: 40px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);">
+                    <!-- Công thức hiển thị realtime -->
+                </div>
+
+                <div id="task-controls">
+                </div>
+            </section>
+        </div>
+
+        <div id="bottom-content-layout" style="display: flex; flex-direction: column; gap: 16px;">
+            <div style="display: flex; gap: 20px; width: 100%;">
+                <div id="p5-explanation-box" style="flex: 1; min-height: 90px;">
+                    <div class="ai-avatar">💡</div>
+                    <div class="ai-message" id="ai-caption">
+                        Kéo điểm B đến vị trí (8 ; 5). Robot sẽ đi theo vectơ dịch chuyển.
+                    </div>
+                </div>
+
+                <div id="p5-quick-challenge"
+                    style="width: 350px; display: none; background: var(--white); border-radius: 8px; padding: 16px; border: 2px solid var(--primary-teal); box-shadow: 0 4px 12px rgba(0,0,0,0.05);">
+                    <h3
+                        style="font-size: 11px; color: var(--primary-teal); border-bottom: 2px solid var(--primary-gold); padding-bottom: 6px; margin-bottom: 10px; text-transform: uppercase; font-weight: 700; letter-spacing: 0.5px;">
+                        ⚡ Thử thách nhanh</h3>
+                    <div id="challenge-question"
+                        style="font-size: 13px; font-weight: 600; margin-bottom: 8px; line-height: 1.4;"></div>
+                    <div style="display: flex; gap: 8px; align-items: center; margin-bottom: 8px;">
+                        <input type="text" id="challenge-answer" class="control-input" placeholder="(x ; y)"
+                            style="width: 120px; padding: 6px 10px;">
+                        <button class="btn" style="padding: 6px 12px;" onclick="checkChallenge()">Trả lời</button>
+                    </div>
+                    <div id="challenge-feedback"
+                        style="font-size: 12px; font-weight: bold; min-height: 20px; line-height: 1.4;"></div>
+                    <button class="btn"
+                        style="background: var(--primary-gold); color: var(--primary-teal); margin-top: 8px; font-size: 11px; padding: 4px 8px; border: 1px solid var(--primary-gold);"
+                        onclick="generateChallenge()">Thử thách khác</button>
+                </div>
+            </div>
+
+            <div id="p5-summary-table" style="display: none; width: 100%;">
+                <div
+                    style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px; border-bottom: 2px solid var(--primary-teal); padding-bottom: 8px;">
+                    <h3
+                        style="font-size: 13px; color: var(--primary-teal); font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px;">
+                        📋 Bảng tổng kết công thức vectơ</h3>
+                    <button class="btn"
+                        style="background: var(--primary-gold); color: var(--primary-teal); font-size: 11px; padding: 6px 12px; border: 1px solid var(--primary-gold); font-weight: 700;"
+                        onclick="downloadSummary()">⬇️ Tải xuống bảng công thức</button>
+                </div>
+                <div class="table-wrap">
+                    <table>
+                        <thead>
+                            <tr>
+                                <th>Tọa độ vectơ</th>
+                                <th>Cộng vectơ</th>
+                                <th>Trừ vectơ</th>
+                                <th>Nhân k</th>
+                                <th>Trung điểm</th>
+                                <th>Trọng tâm</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>AB = (x_B - x_A ; y_B - y_A)</td>
+                                <td>u + v = (x_1+x_2 ; y_1+y_2)</td>
+                                <td>u - v = (x_1-x_2 ; y_1-y_2)</td>
+                                <td>k · u = (k · x ; k · y)</td>
+                                <td>M((x_A+x_B)/2 ; (y_A+y_B)/2)</td>
+                                <td>G((x_A+x_B+x_C)/3 ; (y_A+y_B+y_C)/3)</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <script>
+    // ===== LMS safe accessor (PHẦN 7.2 design Toán) — tự thêm, không đụng logic khác =====
+    function LMS(){return window.AiducationLMS||{ready:function(){},progress:function(){},event:function(){},state:function(){},complete:function(){},resize:function(){}};}
+
+        /**
+         * ENGINE VÀ LOGIC MÔ PHỎNG TOÁN HỌC
+         */
+
+        // 1. Khởi tạo Canvas & Context
+        const canvas = document.getElementById('math-canvas');
+        const ctx = canvas.getContext('2d');
+        let cw, ch;
+
+        // Math Grid config
+        const mathConfig = {
+            xMin: -1, xMax: 11,
+            yMin: -1, yMax: 11,
+        };
+
+        function resizeCanvas() {
+            const wrapper = document.getElementById('canvas-wrapper');
+            cw = wrapper.clientWidth;
+            ch = wrapper.clientHeight;
+            if (cw < 2 || ch < 2) return;
+            // Hỗ trợ retina display
+            const dpr = Math.min(window.devicePixelRatio || 1, 2);
+            canvas.width = Math.round(cw * dpr);
+            canvas.height = Math.round(ch * dpr);
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+            render();
+        }
+        window.addEventListener('resize', resizeCanvas);
+
+        // Các hàm chuyển đổi toạ độ Math <-> Pixel
+        function m2px(x) { return (x - mathConfig.xMin) / (mathConfig.xMax - mathConfig.xMin) * cw; }
+        function m2py(y) { return ch - (y - mathConfig.yMin) / (mathConfig.yMax - mathConfig.yMin) * ch; }
+        function p2mx(px) { return px / cw * (mathConfig.xMax - mathConfig.xMin) + mathConfig.xMin; }
+        function p2my(py) { return mathConfig.yMin + (ch - py) / ch * (mathConfig.yMax - mathConfig.yMin); }
+
+        // 2. Trạng thái Game / Bài học
+        let currentTask = 1;
+        let unlockedTasks = 1;
+        let completionSent = false;
+
+        // Tọa độ các điểm (Math coordinates)
+        let pts = {
+            A: { x: 2, y: 1, label: 'A', color: '#4E7F92' },
+            B: { x: 4, y: 3, label: 'B', color: '#7B1FA2' }, // Sẽ kéo lên 8,5 ở NV1
+            C: { x: 4, y: 7, label: 'C', color: '#2E7D32' },
+            M: { x: 5, y: 5, label: 'M', color: '#D32F2F' },
+            G: { x: 5, y: 5, label: 'G', color: '#C58A2E' },
+            Robot: { x: 2, y: 1 } // Vị trí robot trực quan
+        };
+
+        let kValue = 2; // Cho NV5
+        let dragPoint = null;
+        let shakeOffset = { x: 0, y: 0 };
+
+        // State variables for animations, drone, and challenge
+        let robotAnim = {
+            active: false,
+            startX: 0, startY: 0,
+            endX: 0, endY: 0,
+            progress: 0,
+            duration: 1000,
+            onComplete: null
+        };
+
+        let droneState = {
+            active: false,
+            targetIndex: 0,
+            x: 0, y: 0
+        };
+
+        let animLoopId = null;
+
+        let challengeState = {
+            questionText: "",
+            correctAnswer: "",
+            type: ""
+        };
+
+        // 3. UI Controls & Events
+        document.querySelectorAll('.checkbox-group input').forEach(cb => {
+            cb.addEventListener('change', render);
+        });
+
+        function setCaption(text, type = 'normal') {
+            const cap = document.getElementById('ai-caption');
+            cap.innerHTML = text;
+            cap.className = 'ai-message ' + type;
+        }
+
+        function updateRobotStatus(text) {
+            document.getElementById('robot-pos-display').innerText = text;
+        }
+
+        // Chuyển Tab
+        document.querySelectorAll('.task-tab').forEach(tab => {
+            tab.addEventListener('click', (e) => {
+                const t = parseInt(e.target.dataset.task);
+                if (t <= unlockedTasks) {
+                    switchTask(t);
+                }
+            });
+        });
+
+        function switchTask(t) {
+            currentTask = t;
+            LMS().progress({ id:`task-${t}`, value:t / 7 });
+            LMS().state({ currentTask:t, unlockedTasks });
+            // Cập nhật UI Tabs
+            document.querySelectorAll('.task-tab').forEach(tab => {
+                const taskNum = parseInt(tab.dataset.task);
+                tab.classList.remove('active');
+                if (taskNum === t) tab.classList.add('active');
+            });
+
+            // Reset setup theo từng bài
+            const controls = document.getElementById('task-controls');
+            controls.innerHTML = '';
+
+            // Hide summary and challenge unless in Task 7 and it is completed
+            if (t < 7) {
+                document.getElementById('p5-summary-table').style.display = 'none';
+                document.getElementById('p5-quick-challenge').style.display = 'none';
+            }
+
+            // Đặt vị trí mặc định tùy task để tiện demo
+            if (t === 1) {
+                pts.A = { x: 2, y: 1, label: 'A', color: '#4E7F92' };
+                pts.B = { x: 4, y: 3, label: 'B', color: '#7B1FA2' };
+                pts.Robot = { x: pts.A.x, y: pts.A.y };
+                setCaption("Kéo điểm B đến vị trí (8 ; 5). Robot sẽ đi theo vectơ dịch chuyển.");
+            } else if (t === 2) {
+                pts.A = { x: 2, y: 1, label: 'A', color: '#4E7F92' };
+                pts.B = { x: 8, y: 5, label: 'B', color: '#7B1FA2' };
+                pts.Robot = { x: pts.B.x, y: pts.B.y };
+                controls.innerHTML = `
+            <span class="math-text">Vectơ BA = </span>
+            <input type="text" id="input-ba" class="control-input" placeholder="(x ; y)" style="width: 100px;">
+            <button class="btn" onclick="checkTask2()">Kiểm tra</button>
+        `;
+                setCaption("Nếu robot quay về A, vectơ dịch chuyển là gì? Hãy nhập toạ độ ");
+            } else if (t === 3) {
+                pts.A = { x: 2, y: 1, label: 'A', color: '#4E7F92' };
+                pts.Robot = { x: 2, y: 1 };
+                pts.M = { x: 3, y: 4, label: 'M', color: '#D32F2F' };
+                controls.innerHTML = `
+            <span class="math-text">Điểm đích M = </span>
+            <input type="text" id="input-m" class="control-input" placeholder="(x ; y)" style="width: 80px;">
+            <button class="btn" onclick="checkTask3Input()">Kiểm tra</button>
+        `;
+                setCaption("Robot ở A(2;1), nhận lệnh dịch chuyển (+4;+1). Kéo M hoặc nhập tọa độ để dịch chuyển.");
+            } else if (t === 4) {
+                pts.M = { x: 6, y: 2, label: 'M', color: '#D32F2F' }; // Điểm xuất phát
+                pts.A = { x: 4, y: 4, label: 'A', color: '#4E7F92' }; // Điểm đích kéo
+                pts.Robot = { x: 6, y: 2 };
+                controls.innerHTML = `
+            <span class="math-text">Điểm đích A = </span>
+            <input type="text" id="input-a" class="control-input" placeholder="(x ; y)" style="width: 80px;">
+            <button class="btn" onclick="checkTask4Input()">Kiểm tra</button>
+        `;
+                setCaption("Robot đang ở M(6;2), nhận lệnh (-4;-1). Kéo điểm A hoặc nhập tọa độ để đưa robot về đích.");
+            } else if (t === 5) {
+                pts.A = { x: 2, y: 1, label: 'A', color: '#4E7F92' };
+                pts.B = { x: 8, y: 5, label: 'B', color: '#7B1FA2' };
+                controls.innerHTML = `
+            <div class="slider-container" style="flex-direction: column; align-items: flex-start; gap: 8px;">
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span class="math-text">Hệ số k = <span id="k-val">2.0</span></span>
+                    <input type="range" id="slider-k" min="-3" max="3" step="0.5" value="2" oninput="updateK(this.value)" style="width: 150px;">
+                </div>
+                <div style="margin-top: 8px; border-top: 1px dashed var(--border-light); padding-top: 8px;">
+                    <p style="font-size: 13px; font-weight: bold; margin-bottom: 6px;">Trắc nghiệm: Nhân vectơ với k = -1 làm gì với vectơ?</p>
+                    <div style="display: flex; gap: 10px;">
+                        <button class="btn" style="background:#fff; color:var(--text-main); border:1px solid var(--primary-teal); padding: 4px 10px; font-size: 12px;" onclick="checkTask5Ans('daochieu')">Đảo chiều</button>
+                        <button class="btn" style="background:#fff; color:var(--text-main); border:1px solid var(--primary-teal); padding: 4px 10px; font-size: 12px;" onclick="checkTask5Ans('xoay')">Xoay 90°</button>
+                        <button class="btn" style="background:#fff; color:var(--text-main); border:1px solid var(--primary-teal); padding: 4px 10px; font-size: 12px;" onclick="checkTask5Ans('khongdoi')">Không đổi</button>
+                    </div>
+                </div>
+            </div>
+        `;
+                setCaption("Kéo slider thay đổi hệ số k. Quan sát chiều mũi tên khi k < 0 và trả lời trắc nghiệm.");
+            } else if (t === 6) {
+                pts.A = { x: 2, y: 2, label: 'A', color: '#4E7F92' };
+                pts.B = { x: 8, y: 6, label: 'B', color: '#7B1FA2' };
+                pts.M = { x: 4, y: 7, label: 'M', color: '#D32F2F' };
+                setCaption("Kéo điểm M về vị trí trung điểm của đoạn thẳng AB.");
+            } else if (t === 7) {
+                pts.A = { x: 1, y: 2, label: 'A', color: '#4E7F92' };
+                pts.B = { x: 8, y: 3, label: 'B', color: '#7B1FA2' };
+                pts.C = { x: 4, y: 7, label: 'C', color: '#2E7D32' };
+                pts.G = { x: 6, y: 6, label: 'G', color: '#C58A2E' };
+                droneState.x = pts.G.x;
+                droneState.y = pts.G.y;
+                droneState.targetIndex = 0;
+                setCaption("Kéo điểm G về vị trí trọng tâm tam giác ABC. Quan sát Drone bay đo khoảng cách.");
+                startAnimLoop();
+
+                if (unlockedTasks === 7) {
+                    document.getElementById('p5-summary-table').style.display = 'block';
+                    document.getElementById('p5-quick-challenge').style.display = 'block';
+                    generateChallenge();
+                }
+            }
+            updateRobotStatus(currentTask <= 4 ? `🤖 (${pts.Robot.x.toFixed(1)} ; ${pts.Robot.y.toFixed(1)})` : "N/A");
+            updateFormulaBar();
+            render();
+        }
+
+        function unlockNext(t) {
+            if (t > unlockedTasks && t <= 7) {
+                unlockedTasks = t;
+                document.querySelector(`.task-tab[data-task="${t}"]`).classList.remove('locked');
+                document.querySelector(`.task-tab[data-task="${t - 1}"]`).classList.add('completed');
+                LMS().event({ type:'task-complete', id:`task-${t - 1}` });
+                LMS().state({ currentTask, unlockedTasks });
+            }
+        }
+
+        // Hàm khởi chạy Robot Animation
+        function startRobotAnimation(from, to, duration, onComplete) {
+            robotAnim.active = true;
+            robotAnim.startX = from.x;
+            robotAnim.startY = from.y;
+            robotAnim.endX = to.x;
+            robotAnim.endY = to.y;
+            robotAnim.progress = 0;
+            robotAnim.duration = duration;
+            robotAnim.onComplete = onComplete;
+
+            let startTime = null;
+            function anim(now) {
+                if (!startTime) startTime = now;
+                let elapsed = now - startTime;
+                let t = Math.min(elapsed / robotAnim.duration, 1.0);
+
+                pts.Robot.x = robotAnim.startX + t * (robotAnim.endX - robotAnim.startX);
+                pts.Robot.y = robotAnim.startY + t * (robotAnim.endY - robotAnim.startY);
+
+                updateRobotStatus(`🤖 (${pts.Robot.x.toFixed(1)} ; ${pts.Robot.y.toFixed(1)})`);
+                render();
+
+                if (t < 1.0) {
+                    requestAnimationFrame(anim);
+                } else {
+                    robotAnim.active = false;
+                    pts.Robot.x = robotAnim.endX;
+                    pts.Robot.y = robotAnim.endY;
+                    if (robotAnim.onComplete) robotAnim.onComplete();
+                    render();
+                }
+            }
+            requestAnimationFrame(anim);
+        }
+
+        // Logic Input cụ thể
+        function checkTask2() {
+            const val = document.getElementById('input-ba').value.replace(/\s/g, '');
+            if (val === "(-6;-4)" || val === "-6;-4" || val === "-6,-4") {
+                startRobotAnimation({ x: 8, y: 5 }, { x: 2, y: 1 }, 1500, () => {
+                    setCaption("✅ <strong>BA = A - B = (2-8 ; 1-5) = (-6 ; -4)</strong> — ngược chiều hoàn toàn với AB. Robot đã về A!", "italic");
+                    unlockNext(3);
+                });
+            } else if (val === "(6;4)" || val === "6;4" || val === "6,4") {
+                startRobotAnimation({ x: 8, y: 5 }, { x: 14, y: 9 }, 1500, () => {
+                    setCaption("⚠️ <strong>Robot đi sai hướng!</strong> Bạn nhập (6 ; 4) tức là dịch chuyển AB khiến robot đi tiếp từ B(8;5) đến (14;9) thay vì quay về A. Hãy tính phép trừ: BA = A - B = (2-8 ; 1-5) = (-6 ; -4).", "italic");
+                    triggerShake();
+                });
+            } else {
+                let coords = val.match(/-?\d+/g);
+                if (coords && coords.length === 2) {
+                    let dx = parseInt(coords[0]);
+                    let dy = parseInt(coords[1]);
+                    startRobotAnimation({ x: 8, y: 5 }, { x: 8 + dx, y: 5 + dy }, 1500, () => {
+                        setCaption(`⚠️ <strong>Robot đi sai hướng!</strong> Với dịch chuyển (${dx} ; ${dy}), robot đi tới (${(8 + dx).toFixed(1)} ; ${(5 + dy).toFixed(1)}). Hãy tính BA = A - B = (-6 ; -4).`, "italic");
+                        triggerShake();
+                    });
+                } else {
+                    setCaption("⚠️ Định dạng không hợp lệ. Vui lòng nhập dạng (x ; y) hoặc x ; y.", "italic");
+                    triggerShake();
+                }
+            }
+            render();
+        }
+
+        function checkTask3Input() {
+            const val = document.getElementById('input-m').value.replace(/\s/g, '');
+            if (val === "(6;2)" || val === "6;2" || val === "6,2") {
+                pts.M.x = 6; pts.M.y = 2;
+                startRobotAnimation(pts.A, pts.M, 1500, () => {
+                    setCaption("✅ <strong>A(2;1) + (4;1) = M(6;2)</strong>. Bạn vừa cộng một điểm với một vectơ — kết quả là một điểm mới!");
+                    unlockNext(4);
+                });
+            } else {
+                setCaption("⚠️ Chưa đúng! Hãy cộng tọa độ điểm A(2;1) với vectơ dịch chuyển (4;1).", "italic");
+                triggerShake();
+            }
+        }
+
+        function checkTask4Input() {
+            const val = document.getElementById('input-a').value.replace(/\s/g, '');
+            if (val === "(2;1)" || val === "2;1" || val === "2,1") {
+                pts.A.x = 2; pts.A.y = 1;
+                startRobotAnimation(pts.M, pts.A, 1500, () => {
+                    setCaption("✅ <strong>M(6;2) + (-4;-1) = A(2;1)</strong>. Điểm mới cộng vectơ âm sẽ dịch chuyển ngược chiều!");
+                    unlockNext(5);
+                });
+            } else {
+                setCaption("⚠️ Chưa đúng! Hãy lấy tọa độ điểm M(6;2) cộng với vectơ âm (-4;-1).", "italic");
+                triggerShake();
+            }
+        }
+
+        function checkTask5Ans(ans) {
+            if (ans === 'daochieu') {
+                setCaption("✅ <strong>Chính xác!</strong> Khi k = -1, độ dài vectơ không đổi nhưng chiều bị đảo ngược 180 độ. Bạn đã mở khóa Bước 6!", "italic");
+                unlockNext(6);
+            } else {
+                setCaption("⚠️ Chưa đúng! Bạn thử kéo slider sang k = -1 và quan sát chiều mũi tên xem thế nào nhé.", "italic");
+                triggerShake();
+            }
+        }
+
+        window.updateK = function (val) {
+            kValue = parseFloat(val);
+            document.getElementById('k-val').innerText = kValue.toFixed(1);
+            if (kValue < 0) {
+                setCaption("Khi k < 0: vectơ đảo chiều.");
+            } else if (kValue === 0) {
+                setCaption("Khi k = 0: vectơ = vectơ không.");
+            } else {
+                setCaption(`k = ${kValue} > 0: cùng chiều, dài gấp ${kValue} lần.`);
+            }
+            updateFormulaBar();
+            render();
+        }
+
+        function triggerShake() {
+            let shakeCount = 0;
+            const interval = setInterval(() => {
+                shakeOffset.x = (Math.random() - 0.5) * 10;
+                shakeOffset.y = (Math.random() - 0.5) * 10;
+                render();
+                shakeCount++;
+                if (shakeCount > 10) {
+                    clearInterval(interval);
+                    shakeOffset = { x: 0, y: 0 };
+                    render();
+                }
+            }, 50);
+        }
+
+        // 4. Pointer Events — dùng chung cho chuột, bút và cảm ứng.
+        function pointerMathPosition(e) {
+            const rect = canvas.getBoundingClientRect();
+            return { mx:p2mx(e.clientX - rect.left), my:p2my(e.clientY - rect.top) };
+        }
+
+        function canDragPoint(key) {
+            if (currentTask === 1 && key === 'B') return true;
+            if (currentTask === 3 && key === 'M') return true;
+            if (currentTask === 4 && key === 'A') return true;
+            if (currentTask === 5 && (key === 'A' || key === 'B')) return true;
+            if (currentTask === 6 && (key === 'A' || key === 'B' || key === 'M')) return true;
+            return currentTask === 7;
+        }
+
+        canvas.addEventListener('pointerdown', (e) => {
+            if (!e.isPrimary) return;
+            if (robotAnim.active) return; // Khóa kéo khi đang chạy animation
+            const { mx, my } = pointerMathPosition(e);
+
+            // Tìm điểm gần nhất
+            for (let key in pts) {
+                if (key === 'Robot') continue;
+                const p = pts[key];
+                const px1 = m2px(mx), py1 = m2py(my);
+                const px2 = m2px(p.x), py2 = m2py(p.y);
+                const dist = Math.hypot(px1 - px2, py1 - py2);
+
+                if (dist < 22 && canDragPoint(key)) {
+                    dragPoint = key;
+                    canvas.setPointerCapture(e.pointerId);
+                    break;
+                }
+            }
+        });
+
+        canvas.addEventListener('pointermove', (e) => {
+            if (!e.isPrimary) return;
+            if (!dragPoint) return;
+            const { mx, my } = pointerMathPosition(e);
+            pts[dragPoint].x = Math.round(mx * 10) / 10;
+            pts[dragPoint].y = Math.round(my * 10) / 10;
+
+            checkSnapLogic();
+            updateFormulaBar();
+            render();
+        });
+
+        function endPointerDrag(e) {
+            dragPoint = null;
+            if (e && canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+        }
+        canvas.addEventListener('pointerup', endPointerDrag);
+        canvas.addEventListener('pointercancel', endPointerDrag);
+
+        // 5. Logic bám dính (Snap) và Check
+        function checkSnapLogic() {
+            if (currentTask === 1 && dragPoint === 'B') {
+                if (Math.abs(pts.B.x - 8) < 0.5 && Math.abs(pts.B.y - 5) < 0.5) {
+                    pts.B.x = 8; pts.B.y = 5; // Snap
+                    dragPoint = null; // Thả chuột
+                    startRobotAnimation(pts.A, pts.B, 1500, () => {
+                        setCaption("✅ <strong>AB = (8-2 ; 5-1) = (6 ; 4)</strong> — Robot đi phải 6, lên 4. Đó là tọa độ vectơ!", "italic");
+                        unlockNext(2);
+                    });
+                } else {
+                    pts.Robot = { x: pts.B.x, y: pts.B.y };
+                    updateRobotStatus(`🤖 (${pts.B.x.toFixed(1)} ; ${pts.B.y.toFixed(1)})`);
+                }
+            }
+
+            if (currentTask === 3 && dragPoint === 'M') {
+                if (Math.abs(pts.M.x - 6) < 0.5 && Math.abs(pts.M.y - 2) < 0.5) {
+                    pts.M.x = 6; pts.M.y = 2; // Snap
+                    dragPoint = null;
+                    startRobotAnimation(pts.A, pts.M, 1500, () => {
+                        setCaption("✅ <strong>A(2;1) + (4;1) = M(6;2)</strong>. Bạn vừa cộng một điểm với một vectơ — kết quả là một điểm mới!");
+                        unlockNext(4);
+                    });
+                }
+            }
+
+            if (currentTask === 4 && dragPoint === 'A') {
+                if (Math.abs(pts.A.x - 2) < 0.5 && Math.abs(pts.A.y - 1) < 0.5) {
+                    pts.A.x = 2; pts.A.y = 1; // Snap
+                    dragPoint = null;
+                    startRobotAnimation(pts.M, pts.A, 1500, () => {
+                        setCaption("✅ <strong>M(6;2) + (-4;-1) = A(2;1)</strong>. Điểm mới cộng vectơ âm sẽ dịch chuyển ngược chiều!");
+                        unlockNext(5);
+                    });
+                }
+            }
+
+            if (currentTask === 6 && dragPoint === 'M') {
+                const mx = (pts.A.x + pts.B.x) / 2;
+                const my = (pts.A.y + pts.B.y) / 2;
+                if (Math.abs(pts.M.x - mx) < 0.5 && Math.abs(pts.M.y - my) < 0.5) {
+                    pts.M.x = mx; pts.M.y = my;
+                    setCaption(`✅ Đúng! M = ((${pts.A.x}+${pts.B.x})/2 ; (${pts.A.y}+${pts.B.y})/2) = (${mx};${my})`);
+                    unlockNext(7);
+                    dragPoint = null;
+                } else {
+                    setCaption("Hai đoạn MA và MB chưa bằng nhau — kéo M ra giữa hơn.");
+                }
+            }
+
+            if (currentTask === 7 && dragPoint === 'G') {
+                const gx = Math.round((pts.A.x + pts.B.x + pts.C.x) / 3 * 10) / 10;
+                const gy = Math.round((pts.A.y + pts.B.y + pts.C.y) / 3 * 10) / 10;
+                if (Math.abs(pts.G.x - gx) < 0.5 && Math.abs(pts.G.y - gy) < 0.5) {
+                    pts.G.x = gx; pts.G.y = gy;
+                    setCaption(`✅ Trọng tâm G(${gx};${gy}) là điểm cân bằng khối lượng tam giác.`);
+                    document.getElementById('p5-summary-table').style.display = 'block';
+                    document.getElementById('p5-quick-challenge').style.display = 'block';
+                    generateChallenge();
+                    dragPoint = null;
+                    LMS().event({ type:'task-complete', id:'task-7' });
+                    if (!completionSent) {
+                        completionSent = true;
+                        LMS().complete({ score:7, maxScore:7 });
+                    }
+                    reportHeight();
+                }
+            }
+        }
+
+        // 6. Draw Functions
+        function drawArrow(ctx, fromX, fromY, toX, toY, color) {
+            const headlen = 10;
+            const dx = toX - fromX;
+            const dy = toY - fromY;
+            const angle = Math.atan2(dy, dx);
+
+            ctx.beginPath();
+            ctx.moveTo(fromX, fromY);
+            ctx.lineTo(toX, toY);
+            ctx.strokeStyle = color;
+            ctx.lineWidth = 2.5;
+            ctx.stroke();
+
+            // Mũi tên
+            ctx.beginPath();
+            ctx.moveTo(toX, toY);
+            ctx.lineTo(toX - headlen * Math.cos(angle - Math.PI / 6), toY - headlen * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(toX - headlen * Math.cos(angle + Math.PI / 6), toY - headlen * Math.sin(angle + Math.PI / 6));
+            ctx.lineTo(toX, toY);
+            ctx.fillStyle = color;
+            ctx.fill();
+        }
+
+        function drawRobot(ctx, x, y) {
+            ctx.save(); ctx.translate(x, y);
+            ctx.fillStyle = '#DCEAE1'; ctx.strokeStyle = '#14432F'; ctx.lineWidth = 2;
+            ctx.fillRect(-11, -9, 22, 18); ctx.strokeRect(-11, -9, 22, 18);
+            ctx.beginPath(); ctx.moveTo(0, -9); ctx.lineTo(0, -14); ctx.stroke();
+            ctx.beginPath(); ctx.arc(0, -15, 2, 0, Math.PI * 2); ctx.fillStyle = '#E8A24A'; ctx.fill();
+            ctx.beginPath(); ctx.arc(-5, -2, 2, 0, Math.PI * 2); ctx.arc(5, -2, 2, 0, Math.PI * 2);
+            ctx.fillStyle = '#2D8B6F'; ctx.fill();
+            ctx.beginPath(); ctx.moveTo(-5, 5); ctx.lineTo(5, 5); ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawDrone(ctx, x, y) {
+            ctx.save(); ctx.translate(x, y);
+            ctx.fillStyle = '#E8A24A'; ctx.strokeStyle = '#14432F'; ctx.lineWidth = 1.5;
+            ctx.beginPath(); ctx.ellipse(0, 0, 9, 4, 0, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+            ctx.beginPath(); ctx.moveTo(-13, -5); ctx.lineTo(13, -5); ctx.stroke();
+            ctx.beginPath(); ctx.arc(-13, -5, 4, 0, Math.PI * 2); ctx.arc(13, -5, 4, 0, Math.PI * 2); ctx.stroke();
+            ctx.restore();
+        }
+
+        function drawPoint(ctx, p, color) {
+            const px = m2px(p.x);
+            const py = m2py(p.y);
+            ctx.beginPath();
+            ctx.arc(px, py, 6, 0, 2 * Math.PI);
+            ctx.fillStyle = color;
+            ctx.fill();
+            ctx.strokeStyle = '#fff';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            ctx.font = "700 13px 'JetBrains Mono', monospace";
+            ctx.fillStyle = color;
+            ctx.fillText(`${p.label}(${p.x.toFixed(1)};${p.y.toFixed(1)})`, px + 10, py - 10);
+        }
+
+        // Loop animation cho Drone và quét laser ở Task 7
+        function startAnimLoop() {
+            if (animLoopId) return;
+            function loop() {
+                let needsNextFrame = false;
+
+                if (currentTask === 7) {
+                    updateDrone();
+                    needsNextFrame = true;
+                }
+
+                render();
+
+                if (needsNextFrame) {
+                    animLoopId = requestAnimationFrame(loop);
+                } else {
+                    animLoopId = null;
+                }
+            }
+            animLoopId = requestAnimationFrame(loop);
+        }
+
+        function updateDrone() {
+            const targets = [pts.A, pts.B, pts.C, pts.G];
+            const target = targets[droneState.targetIndex];
+
+            const dx = target.x - droneState.x;
+            const dy = target.y - droneState.y;
+            const dist = Math.hypot(dx, dy);
+
+            if (dist < 0.25) {
+                droneState.targetIndex = (droneState.targetIndex + 1) % 4;
+            } else {
+                droneState.x += (dx / dist) * 0.08;
+                droneState.y += (dy / dist) * 0.08;
+            }
+        }
+
+        // Reset nhiệm vụ hiện tại
+        window.resetCurrentTask = function () {
+            switchTask(currentTask);
+        }
+
+        // Cập nhật thanh công thức realtime
+        function updateFormulaBar() {
+            const bar = document.getElementById('formula-bar');
+            if (!bar) return;
+
+            let html = "";
+            if (currentTask === 1) {
+                let dx = pts.B.x - pts.A.x;
+                let dy = pts.B.y - pts.A.y;
+                html = `Vectơ AB = B - A = (${pts.B.x.toFixed(1)} - ${pts.A.x.toFixed(1)} ; ${pts.B.y.toFixed(1)} - ${pts.A.y.toFixed(1)}) = (${dx.toFixed(1)} ; ${dy.toFixed(1)})`;
+            }
+            else if (currentTask === 2) {
+                let dx = pts.A.x - pts.B.x;
+                let dy = pts.A.y - pts.B.y;
+                html = `Vectơ BA = A - B = (${pts.A.x.toFixed(1)} - ${pts.B.x.toFixed(1)} ; ${pts.A.y.toFixed(1)} - ${pts.B.y.toFixed(1)}) = (${dx.toFixed(1)} ; ${dy.toFixed(1)})`;
+            }
+            else if (currentTask === 3) {
+                html = `A(${pts.A.x.toFixed(1)} ; ${pts.A.y.toFixed(1)}) + v(4.0 ; 1.0) = M(${pts.M.x.toFixed(1)} ; ${pts.M.y.toFixed(1)})`;
+            }
+            else if (currentTask === 4) {
+                html = `M(${pts.M.x.toFixed(1)} ; ${pts.M.y.toFixed(1)}) + v(-4.0 ; -1.0) = A(${pts.A.x.toFixed(1)} ; ${pts.A.y.toFixed(1)})`;
+            }
+            else if (currentTask === 5) {
+                let dx = pts.B.x - pts.A.x;
+                let dy = pts.B.y - pts.A.y;
+                html = `${kValue.toFixed(1)} · AB = (${kValue.toFixed(1)} · ${dx.toFixed(1)} ; ${kValue.toFixed(1)} · ${dy.toFixed(1)}) = (${(kValue * dx).toFixed(1)} ; ${(kValue * dy).toFixed(1)})`;
+            }
+            else if (currentTask === 6) {
+                let mx = ((pts.A.x + pts.B.x) / 2).toFixed(1);
+                let my = ((pts.A.y + pts.B.y) / 2).toFixed(1);
+                html = `Trung điểm lý thuyết: M_tt = ((${pts.A.x.toFixed(1)} + ${pts.B.x.toFixed(1)})/2 ; (${pts.A.y.toFixed(1)} + ${pts.B.y.toFixed(1)})/2) = (${mx} ; ${my}) | M thực tế: (${pts.M.x.toFixed(1)} ; ${pts.M.y.toFixed(1)})`;
+            }
+            else if (currentTask === 7) {
+                let gx = ((pts.A.x + pts.B.x + pts.C.x) / 3).toFixed(1);
+                let gy = ((pts.A.y + pts.B.y + pts.C.y) / 3).toFixed(1);
+                html = `Trọng tâm lý thuyết: G_tt = ((${pts.A.x.toFixed(1)} + ${pts.B.x.toFixed(1)} + ${pts.C.x.toFixed(1)})/3 ; (${pts.A.y.toFixed(1)} + ${pts.B.y.toFixed(1)} + ${pts.C.y.toFixed(1)})/3) = (${gx} ; ${gy}) | G thực tế: (${pts.G.x.toFixed(1)} ; ${pts.G.y.toFixed(1)})`;
+            }
+
+            bar.innerHTML = html;
+        }
+
+        // Thử thách nhanh
+        window.generateChallenge = function () {
+            const types = ['vector', 'midpoint', 'addition', 'subtraction'];
+            const type = types[Math.floor(Math.random() * types.length)];
+            challengeState.type = type;
+
+            const rand = (min, max) => Math.floor(Math.random() * (max - min + 1)) + min;
+
+            document.getElementById('challenge-answer').value = '';
+            document.getElementById('challenge-feedback').innerText = '';
+            document.getElementById('challenge-feedback').className = '';
+
+            if (type === 'vector') {
+                const xA = rand(-2, 8), yA = rand(-2, 8);
+                const xB = rand(-2, 8), yB = rand(-2, 8);
+                challengeState.questionText = `Cho A(${xA} ; ${yA}) và B(${xB} ; ${yB}).<br>Tìm tọa độ của vectơ AB?`;
+                challengeState.correctAnswer = `(${xB - xA};${yB - yA})`;
+            }
+            else if (type === 'midpoint') {
+                const xA = rand(-2, 8), yA = rand(-2, 8);
+                const xB = xA + 2 * rand(-2, 4);
+                const yB = yA + 2 * rand(-2, 4);
+                const xM = (xA + xB) / 2;
+                const yM = (yA + yB) / 2;
+                challengeState.questionText = `Cho A(${xA} ; ${yA}) và B(${xB} ; ${yB}).<br>Tìm tọa độ trung điểm M của AB?`;
+                challengeState.correctAnswer = `(${xM};${yM})`;
+            }
+            else if (type === 'addition') {
+                const uX = rand(-5, 5), uY = rand(-5, 5);
+                const vX = rand(-5, 5), vY = rand(-5, 5);
+                challengeState.questionText = `Cho u = (${uX} ; ${uY}) và v = (${vX} ; ${vY}).<br>Tính u + v?`;
+                challengeState.correctAnswer = `(${uX + vX};${uY + vY})`;
+            }
+            else if (type === 'subtraction') {
+                const uX = rand(-5, 5), uY = rand(-5, 5);
+                const vX = rand(-5, 5), vY = rand(-5, 5);
+                challengeState.questionText = `Cho u = (${uX} ; ${uY}) và v = (${vX} ; ${vY}).<br>Tính u - v?`;
+                challengeState.correctAnswer = `(${uX - vX};${uY - vY})`;
+            }
+
+            document.getElementById('challenge-question').innerHTML = challengeState.questionText;
+        }
+
+        window.checkChallenge = function () {
+            const val = document.getElementById('challenge-answer').value.replace(/\s/g, '');
+            const expected = challengeState.correctAnswer.replace(/\s/g, '');
+            const cleanVal = val.startsWith('(') ? val : '(' + val + ')';
+
+            const feedback = document.getElementById('challenge-feedback');
+            if (cleanVal === expected || val === expected.replace(/[()]/g, '')) {
+                feedback.innerHTML = "✅ Chính xác! Bạn làm rất tốt.";
+                feedback.style.color = "var(--math-green)";
+            } else {
+                feedback.innerHTML = `❌ Chưa đúng! Đáp án đúng là: ${challengeState.correctAnswer}`;
+                feedback.style.color = "var(--math-red)";
+            }
+        }
+
+        // Tải xuống bảng công thức
+        window.downloadSummary = function () {
+            const text = `BẢNG TỔNG KẾT CÔNG THỨC VECTƠ - TOÁN 10
+========================================
+1. Tọa độ vectơ: AB = (xB - xA ; yB - yA)
+2. Cộng vectơ: u + v = (x1 + x2 ; y1 + y2)
+3. Trừ vectơ: u - v = (x1 - x2 ; y1 - y2)
+4. Nhân vectơ với số k: k.u = (k.x ; k.y)
+5. Tọa độ trung điểm M của AB: M = ((xA + xB)/2 ; (yA + yB)/2)
+6. Tọa độ trọng tâm G của tam giác ABC: G = ((xA + xB + xC)/3 ; (yA + yB + yC)/3)
+========================================
+Cảm ơn em đã hoàn thành mô phỏng Robot Navigation!`;
+            const blob = new Blob([text], { type: 'text/plain;charset=utf-8' });
+            const link = document.createElement('a');
+            link.href = URL.createObjectURL(blob);
+            link.download = 'Cong_thuc_Vecto_Toan10.txt';
+            link.click();
+        }
+
+        function render() {
+            ctx.clearRect(0, 0, cw, ch);
+            ctx.save();
+            ctx.translate(shakeOffset.x, shakeOffset.y); // Rung khi sai
+
+            // Vẽ lưới
+            if (document.getElementById('show-grid').checked) {
+                ctx.strokeStyle = '#E0E0E0';
+                ctx.lineWidth = 1;
+                for (let x = mathConfig.xMin; x <= mathConfig.xMax; x++) {
+                    ctx.beginPath(); ctx.moveTo(m2px(x), 0); ctx.lineTo(m2px(x), ch); ctx.stroke();
+                }
+                for (let y = mathConfig.yMin; y <= mathConfig.yMax; y++) {
+                    ctx.beginPath(); ctx.moveTo(0, m2py(y)); ctx.lineTo(cw, m2py(y)); ctx.stroke();
+                }
+            }
+
+            // Vẽ trục
+            if (document.getElementById('show-axis').checked) {
+                ctx.strokeStyle = '#555';
+                ctx.lineWidth = 2;
+                // Ox
+                ctx.beginPath(); ctx.moveTo(0, m2py(0)); ctx.lineTo(cw, m2py(0)); ctx.stroke();
+                // Oy
+                ctx.beginPath(); ctx.moveTo(m2px(0), 0); ctx.lineTo(m2px(0), ch); ctx.stroke();
+                ctx.fillStyle = '#555';
+                ctx.font = "12px Arial";
+                ctx.fillText("O", m2px(0) - 15, m2py(0) + 15);
+            }
+
+            // Vẽ riêng từng Task
+            if (currentTask === 1) {
+                drawArrow(ctx, m2px(pts.A.x), m2py(pts.A.y), m2px(pts.B.x), m2py(pts.B.y), '#4E7F92');
+                drawPoint(ctx, pts.A, pts.A.color);
+                drawPoint(ctx, pts.B, pts.B.color);
+            }
+            else if (currentTask === 2) {
+                ctx.setLineDash([5, 5]);
+                drawArrow(ctx, m2px(pts.B.x), m2py(pts.B.y), m2px(pts.A.x), m2py(pts.A.y), '#D32F2F');
+                ctx.setLineDash([]);
+                drawPoint(ctx, pts.A, pts.A.color);
+                drawPoint(ctx, pts.B, pts.B.color);
+            }
+            else if (currentTask === 3) {
+                drawArrow(ctx, m2px(pts.A.x), m2py(pts.A.y), m2px(pts.M.x), m2py(pts.M.y), '#2E7D32');
+                drawPoint(ctx, pts.A, pts.A.color);
+                drawPoint(ctx, pts.M, pts.M.color);
+            }
+            else if (currentTask === 4) {
+                drawArrow(ctx, m2px(pts.M.x), m2py(pts.M.y), m2px(pts.A.x), m2py(pts.A.y), '#D32F2F');
+                drawPoint(ctx, pts.M, pts.M.color);
+                drawPoint(ctx, pts.A, pts.A.color);
+            }
+            else if (currentTask === 5) {
+                drawPoint(ctx, pts.A, pts.A.color);
+                const vecX = (pts.B.x - pts.A.x) * kValue;
+                const vecY = (pts.B.y - pts.A.y) * kValue;
+                const endX = pts.A.x + vecX;
+                const endY = pts.A.y + vecY;
+
+                ctx.globalAlpha = 0.3;
+                drawArrow(ctx, m2px(pts.A.x), m2py(pts.A.y), m2px(pts.B.x), m2py(pts.B.y), '#7B1FA2');
+                ctx.globalAlpha = 1.0;
+
+                if (kValue !== 0) {
+                    drawArrow(ctx, m2px(pts.A.x), m2py(pts.A.y), m2px(endX), m2py(endY), '#C58A2E');
+                }
+            }
+            else if (currentTask === 6) {
+                const pxA = m2px(pts.A.x), pyA = m2py(pts.A.y);
+                const pxB = m2px(pts.B.x), pyB = m2py(pts.B.y);
+                const pxM = m2px(pts.M.x), pyM = m2py(pts.M.y);
+
+                ctx.beginPath();
+                ctx.moveTo(pxA, pyA);
+                ctx.lineTo(pxM, pyM);
+                ctx.strokeStyle = '#4E7F92';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(pxM, pyM);
+                ctx.lineTo(pxB, pyB);
+                ctx.strokeStyle = '#7B1FA2';
+                ctx.lineWidth = 3;
+                ctx.stroke();
+
+                drawPoint(ctx, pts.A, pts.A.color);
+                drawPoint(ctx, pts.B, pts.B.color);
+                drawPoint(ctx, pts.M, pts.M.color);
+
+                const lenMA = Math.hypot(pts.M.x - pts.A.x, pts.M.y - pts.A.y);
+                const lenMB = Math.hypot(pts.M.x - pts.B.x, pts.M.y - pts.B.y);
+
+                ctx.font = "700 13px 'JetBrains Mono', monospace";
+                ctx.fillStyle = '#4E7F92';
+                ctx.fillText(`MA = ${lenMA.toFixed(1)}`, (pxA + pxM) / 2 + 10, (pyA + pyM) / 2);
+
+                ctx.fillStyle = '#7B1FA2';
+                ctx.fillText(`MB = ${lenMB.toFixed(1)}`, (pxB + pxM) / 2 + 10, (pyB + pyM) / 2);
+            }
+            else if (currentTask === 7) {
+                ctx.beginPath();
+                ctx.moveTo(m2px(pts.A.x), m2py(pts.A.y));
+                ctx.lineTo(m2px(pts.B.x), m2py(pts.B.y));
+                ctx.lineTo(m2px(pts.C.x), m2py(pts.C.y));
+                ctx.closePath();
+                ctx.strokeStyle = '#999'; ctx.stroke();
+                ctx.fillStyle = 'rgba(123,31,162,0.05)'; ctx.fill();
+
+                ctx.save();
+                ctx.strokeStyle = 'rgba(230,81,0,0.4)';
+                ctx.setLineDash([4, 4]);
+                ctx.beginPath(); ctx.moveTo(m2px(pts.G.x), m2py(pts.G.y)); ctx.lineTo(m2px(pts.A.x), m2py(pts.A.y)); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(m2px(pts.G.x), m2py(pts.G.y)); ctx.lineTo(m2px(pts.B.x), m2py(pts.B.y)); ctx.stroke();
+                ctx.beginPath(); ctx.moveTo(m2px(pts.G.x), m2py(pts.G.y)); ctx.lineTo(m2px(pts.C.x), m2py(pts.C.y)); ctx.stroke();
+                ctx.restore();
+
+                drawPoint(ctx, pts.A, pts.A.color);
+                drawPoint(ctx, pts.B, pts.B.color);
+                drawPoint(ctx, pts.C, pts.C.color);
+                drawPoint(ctx, pts.G, pts.G.color);
+
+                const lenGA = Math.hypot(pts.G.x - pts.A.x, pts.G.y - pts.A.y);
+                const lenGB = Math.hypot(pts.G.x - pts.B.x, pts.G.y - pts.B.y);
+                const lenGC = Math.hypot(pts.G.x - pts.C.x, pts.G.y - pts.C.y);
+
+                ctx.font = "700 12px 'JetBrains Mono', monospace";
+                ctx.fillStyle = pts.G.color;
+                ctx.fillText(`GA=${lenGA.toFixed(1)}`, (m2px(pts.G.x) + m2px(pts.A.x)) / 2 - 15, (m2py(pts.G.y) + m2py(pts.A.y)) / 2);
+                ctx.fillText(`GB=${lenGB.toFixed(1)}`, (m2px(pts.G.x) + m2px(pts.B.x)) / 2 - 15, (m2py(pts.G.y) + m2py(pts.B.y)) / 2);
+                ctx.fillText(`GC=${lenGC.toFixed(1)}`, (m2px(pts.G.x) + m2px(pts.C.x)) / 2 - 15, (m2py(pts.G.y) + m2py(pts.C.y)) / 2);
+
+                const pxDr = m2px(droneState.x);
+                const pyDr = m2py(droneState.y);
+                drawDrone(ctx, pxDr, pyDr);
+
+                ctx.save();
+                ctx.strokeStyle = 'rgba(0, 255, 0, 0.6)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(pxDr, pyDr);
+                ctx.lineTo(m2px(pts.G.x), m2py(pts.G.y));
+                ctx.stroke();
+                ctx.restore();
+            }
+
+            // Vẽ Robot Avatar nếu có trong kịch bản task đó (thường là task 1-4)
+            if (currentTask <= 4) {
+                const rx = m2px(pts.Robot.x);
+                const ry = m2py(pts.Robot.y);
+                drawRobot(ctx, rx, ry);
+            }
+
+            ctx.restore();
+        }
+
+        // Khởi chạy
+        setTimeout(() => {
+            resizeCanvas();
+            switchTask(1);
+        }, 100);
+
+    
+    // ===== Báo chiều cao thật cho LMS (PHẦN 7.7) — tự thêm =====
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      const _athenaResizeObserver = new ResizeObserver(() => {
+        clearTimeout(window._rz); window._rz = setTimeout(() => {
+          resizeCanvas(); reportHeight();
+        }, 100);
+      });
+      _athenaResizeObserver.observe(document.body);
+    } else {
+      window.setInterval(reportHeight, 1000);
+    }
+</script>
+</body>
+
+</html>
