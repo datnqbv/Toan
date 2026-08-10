@@ -2302,10 +2302,12 @@
       ctx.textAlign = 'center'; ctx.fillText('CHỌN VECTƠ', panelX + CW * .14, panelY + 16);
 
       const cx = panelX + CW * .14;
-      const startY = panelY + 45;
-      const gapY = Math.min(52, (panelH - 60) / 3);
+      const compactChoices = CW <= 420;
+      const choiceRadius = compactChoices ? 18 : 24;
+      const startY = panelY + (compactChoices ? 38 : 45);
+      const gapY = Math.min(compactChoices ? 42 : 52, (panelH - (compactChoices ? 48 : 60)) / 3);
       const positions = [[cx, startY], [cx, startY + gapY], [cx, startY + gapY * 2], [cx, startY + gapY * 3]];
-      const arrowLen = 36;
+      const arrowLen = compactChoices ? 26 : 36;
       const CHOICE_COLORS = ['#4E7F92', '#C58A2E', '#2E7D32', '#6A1B9A'];
 
       lv.choices.forEach((c, i) => {
@@ -2321,9 +2323,9 @@
 
         // circle bg
         ctx.fillStyle = isHov ? 'rgba(45, 139, 111,0.12)' : `${color}1e`;
-        ctx.beginPath(); ctx.arc(px, py, 24, 0, Math.PI * 2); ctx.fill();
+        ctx.beginPath(); ctx.arc(px, py, choiceRadius, 0, Math.PI * 2); ctx.fill();
         ctx.strokeStyle = isHov ? '#2D8B6F' : color; ctx.lineWidth = isHov ? 2.5 : 1.8;
-        ctx.beginPath(); ctx.arc(px, py, 24, 0, Math.PI * 2); ctx.stroke();
+        ctx.beginPath(); ctx.arc(px, py, choiceRadius, 0, Math.PI * 2); ctx.stroke();
 
         // arrow
         const nx = c.dx / Math.sqrt(c.dx * c.dx + c.dy * c.dy);
@@ -2333,12 +2335,13 @@
         ctx.restore();
 
         if (isPlaced) {
+          const badgeOffset = compactChoices ? 11 : 15;
           ctx.fillStyle = '#2D8B6F';
-          ctx.beginPath(); ctx.arc(px + 15, py + 15, 8, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(px + badgeOffset, py + badgeOffset, 8, 0, Math.PI * 2); ctx.fill();
           ctx.fillStyle = '#fff';
           ctx.font = 'bold 8px sans-serif';
           ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
-          ctx.fillText('✓', px + 15, py + 15);
+          ctx.fillText('✓', px + badgeOffset, py + badgeOffset);
         }
       });
 
@@ -2374,14 +2377,15 @@
       const panelY = 52;
       const panelH = CH - 62;
       const cx = panelX + CW * .14;
-      const startY = panelY + 45;
-      const gapY = Math.min(52, (panelH - 60) / 3);
+      const compactChoices = CW <= 420;
+      const startY = panelY + (compactChoices ? 38 : 45);
+      const gapY = Math.min(compactChoices ? 42 : 52, (panelH - (compactChoices ? 48 : 60)) / 3);
       const positions = [[cx, startY], [cx, startY + gapY], [cx, startY + gapY * 2], [cx, startY + gapY * 3]];
 
       let hit = -1;
       positions.forEach(([px, py], i) => {
         const dist = Math.sqrt((mx - px) ** 2 + (my - py) ** 2);
-        if (dist < 24) hit = i;
+        if (dist < 22) hit = i;
       });
 
       if (hit >= 0) {
@@ -2407,12 +2411,13 @@
         const panelY = 52;
         const panelH = CH - 62;
         const cx = panelX + CW * .14;
-        const startY = panelY + 45;
-        const gapY = Math.min(52, (panelH - 60) / 3);
+        const compactChoices = CW <= 420;
+        const startY = panelY + (compactChoices ? 38 : 45);
+        const gapY = Math.min(compactChoices ? 42 : 52, (panelH - (compactChoices ? 48 : 60)) / 3);
         const positions = [[cx, startY], [cx, startY + gapY], [cx, startY + gapY * 2], [cx, startY + gapY * 3]];
         let found = -1;
         positions.forEach(([px, py], i) => {
-          if (Math.sqrt((mx - px) ** 2 + (my - py) ** 2) < 24) found = i;
+          if (Math.sqrt((mx - px) ** 2 + (my - py) ** 2) < 22) found = i;
         });
         s1ChoiceHover = found;
       }
