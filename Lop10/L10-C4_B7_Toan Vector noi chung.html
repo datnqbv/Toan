@@ -1224,18 +1224,13 @@ font-size: 15px;
     .collapsible-panel.collapsed .cp-body { max-height: 0; opacity: 0; margin-top: 0; }
     .collapsible-panel.collapsed .cp-chevron { transform: rotate(180deg); }
 
-    /* 3 Breakpoints Tuning: 375px (Mobile Portrait), 768px (Tablet), 1280px (Desktop) */
-    @media (max-width: 1023px) {
-      .main { padding: 1.25rem 1rem; }
-      .sim-wrap { min-height: 480px; }
-    }
-
+    /* 3 Breakpoints Tuning: 375px (Mobile Portrait), 768px - 1024px (iPad/Tablet), 1280px+ (Desktop) */
     @media (max-width: 480px) {
       .main { padding: 0.75rem 0.5rem; }
       .sb-top { padding: 0.75rem 0.75rem 0.5rem; }
       .sb-logo-sub { display: none; }
       .sb-group { padding: 0.4rem 0.5rem; gap: 4px; }
-      .mod-item { padding: 0.45rem 0.65rem; gap: 6px; }
+      .mod-item { padding: 0.45rem 0.65rem; gap: 6px; flex: 0 0 auto; white-space: nowrap; }
       .mod-name-en { display: none; }
       .mod-name { font-size: 12px; font-weight: 700; white-space: nowrap; }
       .mod-icon { width: 26px; height: 26px; font-size: 13px; }
@@ -1245,11 +1240,28 @@ font-size: 15px;
       .rt-panel { grid-template-columns: 1fr; }
       .sim-toolbar { flex-wrap: wrap; gap: 6px; }
       .stage-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+      .situ-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; }
+      .situ-tab { flex: 1 0 auto; min-width: 90px; white-space: nowrap; }
       .stab { padding: 4px 8px; font-size: 10px; flex: 0 0 auto; white-space: nowrap; }
       .p5-info-panel { flex-direction: column; }
       .p5-col-observe { border-radius: var(--radius-lg) var(--radius-lg) 0 0; border-right: 1px solid #FFABC7; border-bottom: none; }
       .p5-col-guide { border-radius: 0 0 var(--radius-lg) var(--radius-lg); border-left: 1px solid #7BB9E5; }
       #s4-summary-modal .modal-box div[style*="repeat(3, 1fr)"] { grid-template-columns: 1fr !important; }
+    }
+
+    /* iPad & iPad Pro (768px - 1279px): mở rộng tràn viền đẹp mắt, không thừa lề */
+    @media (min-width: 768px) and (max-width: 1279px) {
+      .main { max-width: 100%; width: 100%; padding: 1.5rem 2rem; }
+      .sb-group, .sb-dict { max-width: 100%; width: 100%; padding: 0.6rem 2rem; }
+      .mod-item { flex: 1; }
+      .sim-wrap { min-height: 520px; }
+      .sim-canvas-wrap { height: 420px !important; }
+    }
+
+    /* Desktop (≥ 1280px) */
+    @media (min-width: 1280px) {
+      .main, .sb-group, .sb-dict { max-width: 860px; margin: 0 auto; }
+      .mod-item { flex: 1; }
     }
 </style>
 </head>
@@ -1375,7 +1387,7 @@ font-size: 15px;
             <span style="color:rgba(255,255,255,.4);font-size:12px;margin-left:8px" id="s1-level-label">Level 1/5</span>
           </div>
 
-          <div class="sim-canvas-wrap" style="height:320px">
+          <div class="sim-canvas-wrap" style="height:360px">
             <canvas class="sim-canvas" id="canvas1"></canvas>
             <div class="tooltip-box" id="tip1"></div>
           </div>
@@ -1579,7 +1591,7 @@ font-size: 15px;
             <span class="mission-score" id="s3-mscore">0/0</span>
           </div>
 
-          <div class="sim-canvas-wrap" style="height:340px">
+          <div class="sim-canvas-wrap" style="height:360px">
             <canvas class="sim-canvas" id="canvas3"></canvas>
             <div class="tooltip-box" id="tip3"></div>
           </div>
@@ -1674,7 +1686,7 @@ font-size: 15px;
             <div class="situ-tab" id="st-3" onclick="setSitu(3)">🔬 Tự do</div>
           </div>
 
-          <div class="sim-canvas-wrap" style="height:340px">
+          <div class="sim-canvas-wrap" style="height:360px">
             <canvas class="sim-canvas" id="canvas4"></canvas>
             <div class="tooltip-box" id="tip4"></div>
           </div>
@@ -1976,7 +1988,8 @@ font-size: 15px;
     function setupCanvas(canvas) {
       const wrap = canvas.parentElement;
       const dpr = window.devicePixelRatio || 1;
-      const CW = wrap.clientWidth, CH = wrap.clientHeight;
+      const CW = wrap.clientWidth || 0, CH = wrap.clientHeight || 0;
+      if (CW < 2 || CH < 2) return { ctx: canvas.getContext('2d'), CW: 0, CH: 0, dpr };
       canvas.width = Math.round(CW * dpr);
       canvas.height = Math.round(CH * dpr);
       canvas.style.width = CW + 'px';
@@ -2021,7 +2034,7 @@ font-size: 15px;
     ctx.shadowColor = 'transparent';
 
     // Đo chiều rộng chữ
-    ctx.font = 'bold italic ' + fontSize + 'px Courier New';
+    ctx.font = 'bold italic ' + fontSize + 'px "JetBrains Mono", monospace';
     const letterW = ctx.measureText(letter).width;
 
     // Vẽ trục mũi tên (đường ngang, mỏng)
@@ -2044,7 +2057,7 @@ font-size: 15px;
     ctx.fill();
 
     // Vẽ chữ cái
-    ctx.font         = 'bold italic ' + fontSize + 'px Courier New';
+    ctx.font         = 'bold italic ' + fontSize + 'px "JetBrains Mono", monospace';
     ctx.fillStyle    = color;
     ctx.textAlign    = 'left';
     ctx.textBaseline = 'alphabetic';
@@ -2103,9 +2116,11 @@ font-size: 15px;
 
       updateS1Score();
 
-      canvas.onmousedown = s1MouseDown;
-      canvas.onmousemove = s1MouseMove;
-      canvas.onmouseup = s1MouseUp;
+      canvas.style.touchAction = 'none';
+      canvas.onpointerdown = s1MouseDown;
+      canvas.onpointermove = s1MouseMove;
+      canvas.onpointerup = s1MouseUp;
+      canvas.onpointercancel = () => { s1.isDragging = false; s1.draggedIdx = -1; s1ChoiceHover = -1; };
       canvas.onmouseleave = () => { s1.isDragging = false; s1.draggedIdx = -1; s1ChoiceHover = -1; };
 
       document.getElementById('s1-level-label').textContent = `Level 1/5`;
@@ -2254,18 +2269,22 @@ font-size: 15px;
       ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
       ctx.fillText(lv.desc, CW / 2, 27);
 
-      // 6. Choice Panel
+      // 6. Choice Panel (Đẩy Y xuống 52px để không đè vào thẻ tình huống phía trên)
       const panelX = CW * .68;
+      const panelY = 52;
+      const panelH = CH - 62;
       ctx.fillStyle = 'rgba(255,255,255,0.85)';
-      rrect(ctx, panelX - 10, CH * .12, CW * .34, CH * .76, 12); ctx.fill();
+      rrect(ctx, panelX - 10, panelY, CW * .34, panelH, 12); ctx.fill();
       ctx.strokeStyle = 'rgba(45, 139, 111,0.15)'; ctx.lineWidth = 1;
-      rrect(ctx, panelX - 10, CH * .12, CW * .34, CH * .76, 12); ctx.stroke();
+      rrect(ctx, panelX - 10, panelY, CW * .34, panelH, 12); ctx.stroke();
 
       ctx.fillStyle = 'rgba(45, 139, 111,0.6)'; ctx.font = 'bold 10px Be Vietnam Pro';
-      ctx.textAlign = 'center'; ctx.fillText('CHỌN VECTƠ', panelX + CW * .14, CH * .16);
+      ctx.textAlign = 'center'; ctx.fillText('CHỌN VECTƠ', panelX + CW * .14, panelY + 16);
 
       const cx = panelX + CW * .14;
-      const positions = [[cx, CH * .28], [cx, CH * .44], [cx, CH * .6], [cx, CH * .76]];
+      const startY = panelY + 45;
+      const gapY = Math.min(52, (panelH - 60) / 3);
+      const positions = [[cx, startY], [cx, startY + gapY], [cx, startY + gapY * 2], [cx, startY + gapY * 3]];
       const arrowLen = 36;
       const CHOICE_COLORS = ['#4E7F92', '#C58A2E', '#2E7D32', '#6A1B9A'];
 
@@ -2332,8 +2351,12 @@ font-size: 15px;
       const mx = e.clientX - rect.left, my = e.clientY - rect.top;
       const CW = s1CW, CH = s1CH;
       const panelX = CW * .68;
+      const panelY = 52;
+      const panelH = CH - 62;
       const cx = panelX + CW * .14;
-      const positions = [[cx, CH * .28], [cx, CH * .44], [cx, CH * .6], [cx, CH * .76]];
+      const startY = panelY + 45;
+      const gapY = Math.min(52, (panelH - 60) / 3);
+      const positions = [[cx, startY], [cx, startY + gapY], [cx, startY + gapY * 2], [cx, startY + gapY * 3]];
 
       let hit = -1;
       positions.forEach(([px, py], i) => {
@@ -2361,8 +2384,12 @@ font-size: 15px;
       } else {
         const CW = s1CW, CH = s1CH;
         const panelX = CW * .68;
+        const panelY = 52;
+        const panelH = CH - 62;
         const cx = panelX + CW * .14;
-        const positions = [[cx, CH * .28], [cx, CH * .44], [cx, CH * .6], [cx, CH * .76]];
+        const startY = panelY + 45;
+        const gapY = Math.min(52, (panelH - 60) / 3);
+        const positions = [[cx, startY], [cx, startY + gapY], [cx, startY + gapY * 2], [cx, startY + gapY * 3]];
         let found = -1;
         positions.forEach(([px, py], i) => {
           if (Math.sqrt((mx - px) ** 2 + (my - py) ** 2) < 24) found = i;
@@ -2631,9 +2658,11 @@ font-size: 15px;
       s2BonusAnimTime = -1;
       updateS2Score();
       s2LoadLevel();
-      canvas.onmousedown = s2MouseDown;
-      canvas.onmousemove = s2MouseMove;
-      canvas.onmouseup = s2MouseUp;
+      canvas.style.touchAction = 'none';
+      canvas.onpointerdown = s2MouseDown;
+      canvas.onpointermove = s2MouseMove;
+      canvas.onpointerup = s2MouseUp;
+      canvas.onpointercancel = s2MouseUp;
     }
 
     function resizeStage2() {
@@ -3081,7 +3110,8 @@ font-size: 15px;
       s3.zeroHitIndex = -1;
       document.getElementById('s3-bonus-box').style.display = 'none';
       s3Generate();
-      canvas.onclick = s3Click;
+      canvas.style.touchAction = 'none';
+      canvas.onpointerdown = s3Click;
     }
 
     function resizeStage3() {
@@ -3437,7 +3467,8 @@ font-size: 15px;
       s4BalloonCy = s4CH * 0.5;
       s4UpdateFreeButtons();
       s4LoadSitu();
-      canvas.onmousedown = s4MouseDown;
+      canvas.style.touchAction = 'none';
+      canvas.onpointerdown = s4MouseDown;
     }
 
     function resizeStage4() {
@@ -3822,7 +3853,7 @@ font-size: 15px;
     });
 
     // Global window-level drag events for Stage 4
-    window.addEventListener('mousemove', (e) => {
+    window.addEventListener('pointermove', (e) => {
       if (currentStage === 4 && s4DragVec) {
         const canvas = document.getElementById('canvas4');
         if (canvas) {
@@ -3832,10 +3863,19 @@ font-size: 15px;
       }
     });
 
-    window.addEventListener('mouseup', (e) => {
+    window.addEventListener('pointerup', (e) => {
       if (currentStage === 4 && s4DragVec) {
         s4MouseUp(e);
       }
+    });
+
+    window.addEventListener('orientationchange', () => {
+      requestAnimationFrame(() => requestAnimationFrame(() => {
+        if (currentStage === 1) resizeStage1();
+        if (currentStage === 2) resizeStage2();
+        if (currentStage === 3) resizeStage3();
+        if (currentStage === 4) resizeStage4();
+      }));
     });
   
     // ===== Báo chiều cao thật cho LMS (PHẦN 7.7) — tự thêm =====

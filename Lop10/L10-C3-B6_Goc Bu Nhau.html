@@ -290,6 +290,19 @@
       .quiz-label { width: auto; }
     }
 
+    /* iPad & iPad Pro (768px - 1279px): mở rộng tràn viền đẹp mắt */
+    @media (min-width: 768px) and (max-width: 1279px) {
+      .container { max-width: 100%; width: 100%; padding: 0 2rem; }
+      .data-monitor { grid-template-columns: repeat(3, 1fr); }
+      .sim-canvas-wrap { height: 440px !important; }
+    }
+
+    /* Desktop (≥ 1280px) */
+    @media (min-width: 1280px) {
+      .container { max-width: 860px; margin: 0 auto; }
+      .data-monitor { grid-template-columns: repeat(3, 1fr); }
+    }
+
     /* Pass 2 (mục C) — thu gọn nội dung dài phía trên canvas, mặc định đóng trên mobile. */
     .collapsible-panel { width: 100%; }
     .cp-toggle {
