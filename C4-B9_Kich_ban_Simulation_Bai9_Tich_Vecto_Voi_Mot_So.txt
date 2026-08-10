@@ -1,0 +1,439 @@
+====================================================================
+KỊCH BẢN SIMULATION — BÀI 9: TÍCH CỦA MỘT VECTƠ VỚI MỘT SỐ
+Sách: Kết nối tri thức với cuộc sống — Toán THPT
+====================================================================
+
+TỔNG QUAN
+---------
+Bài: Tích của một vectơ với một số (Bài 9)
+Layout: Sidebar + Main (3 module, học tuần tự, có thể vào thẳng từng module)
+Mô hình sư phạm: Observe → Explain → Generalize
+Mỗi tương tác đều có giải thích ngay sau hành động của học sinh.
+Mỗi module kết thúc bằng hộp "Hiểu bản chất".
+
+MỤC TIÊU TỔNG THỂ
+------------------
+• Hiểu k > 0: vector cùng hướng với a, độ dài bằng k|a|
+• Hiểu k < 0: vector ngược hướng với a, độ dài bằng |k||a|
+• Biểu thị một vector theo hai vector không cùng phương
+• Tự dựng hình bình hành để phân tích vector
+
+SAI LẦM CẦN GIẢI QUYẾT
+------------------------
+1. Viết độ dài ka là k|a| thay vì |k||a| (quên trị tuyệt đối của k)
+2. Không để ý k < 0 → biểu diễn sai hướng vector
+3. Lúng túng kẻ đường song song dựng hình bình hành
+4. Xác định sai dấu x, y khi vector thành phần ngược hướng gốc
+
+
+====================================================================
+MODULE 1 — VECTOR STRETCH
+====================================================================
+
+Mục tiêu:
+  Học sinh tự khám phá 3 quy luật của phép nhân vector với số k
+  thông qua kéo slider — không cần đọc định nghĩa trước.
+
+Sai lầm cần giải quyết:
+  → Viết độ dài ka là k|a| thay vì |k||a|
+  → Nhầm hướng khi k < 0
+
+Loại simulation: Khám phá tự do
+Thời gian dự kiến: ~5 phút
+
+--------------------------------------------------------------------
+MÀN HÌNH CHÍNH HIỂN THỊ
+--------------------------------------------------------------------
+- Canvas 2D: vector gốc a màu xám cố định, vector ka màu cam
+  cập nhật realtime theo slider
+- Slider k từ -3 đến +3, bước 0.5, hiện giá trị k to rõ
+- Panel số liệu realtime:
+    k = [giá trị]  |  |k| = [giá trị]  |  |ka| = [giá trị]  |  |a| = [giá trị]
+- Hộp so sánh nhỏ góc phải:
+    k|a| = ?   vs   |k||a| = ?
+  → Highlight đỏ khi k âm để học sinh thấy hai giá trị khác nhau
+
+--------------------------------------------------------------------
+HỌC SINH TƯƠNG TÁC BẰNG CÁCH
+--------------------------------------------------------------------
+1. Kéo slider từ k=1 tăng dần → thấy vector cam dài ra, cùng hướng a
+2. Kéo slider về k=0.5 → thấy vector cam ngắn lại, vẫn cùng hướng
+3. Kéo slider qua k=0 → vector cam biến mất đúng lúc k=0
+4. Kéo slider sang vùng k âm → vector cam lật ngược hướng,
+   hộp so sánh highlight đỏ: k|a| ≠ |k||a|
+5. Thử k=-2 → thấy vector dài gấp đôi nhưng ngược hướng
+
+--------------------------------------------------------------------
+KỊCH BẢN DẪN DẮT HỌC SINH GẶP SAI LẦM VÀ TỰ SỬA
+--------------------------------------------------------------------
+Tình huống:
+  Khi k=-2, panel hiển thị k|a| = -2 và |k||a| = 2 cạnh nhau.
+  Học sinh tự thấy nếu dùng k|a| thì độ dài ra số âm — vô lý.
+
+Hệ thống phản hồi:
+  Hộp so sánh bật màu đỏ + caption:
+  "Độ dài không thể âm — bạn đang dùng công thức nào?"
+
+Học sinh điều chỉnh:
+  Nhìn vào panel, tự nhận ra phải lấy |k|.
+
+Kết quả rút ra:
+  |ka| = |k|·|a| — trị tuyệt đối của k mới quyết định độ dài.
+
+--------------------------------------------------------------------
+CAPTION HIỂN THỊ THEO TRẠNG THÁI
+--------------------------------------------------------------------
+Ban đầu (k=1):
+  "Hãy kéo thanh trượt k và quan sát vector thay đổi như thế nào."
+
+k tăng > 1:
+  [💡] Khi k > 1, vector cùng hướng với a và dài hơn.
+       Số k đang đóng vai trò như hệ số phóng to.
+
+0 < k < 1:
+  [💡] Khi 0 < k < 1, vector vẫn cùng hướng nhưng ngắn lại.
+       Nhân với số nhỏ hơn 1 làm vector co lại.
+
+k = 0:
+  [💡] k = 0 thì ka = vectơ không —
+       mọi "co giãn" về 0 đều xóa sạch vector.
+
+k vừa qua 0 sang âm:
+  [⚠️] Chú ý! Vector vừa lật hướng.
+       Dấu âm làm đổi hướng, còn |k| quyết định độ dài.
+
+k = -1:
+  [💡] k = -1: vector giữ nguyên độ dài nhưng quay ngược 180°.
+       Đây chính là vector đối -a.
+
+k = -2:
+  [💡] k = -2: vector dài gấp đôi VÀ ngược hướng.
+       Độ dài = |-2|·|a| = 2|a|, không phải (-2)|a|.
+
+Học sinh kéo qua lại nhiều lần:
+  [📌] Bạn đã khám phá đủ 3 vùng.
+       Kéo thêm để chắc chắn, hoặc nhấn Tổng kết.
+
+--------------------------------------------------------------------
+NÚT VÀ ĐIỀU KHIỂN
+--------------------------------------------------------------------
+- Slider k [-3, +3]: điều khiển chính — vector cập nhật realtime
+- Nút Reset: đưa k về 1, vector về vị trí ban đầu
+- Nút Tổng kết: hiện hộp Hiểu bản chất
+  (chỉ mở khóa sau khi học sinh đã kéo qua cả vùng k âm)
+
+--------------------------------------------------------------------
+🧠 HIỂU BẢN CHẤT (hiện khi bấm Tổng kết)
+--------------------------------------------------------------------
+  Hãy tưởng tượng vector là một mũi tên. Nhân với số dương giống
+  như kéo dài hoặc thu ngắn chiếc mũi tên nhưng vẫn giữ nguyên
+  hướng. Nhân với số âm giống như quay chiếc mũi tên lại 180° —
+  rồi mới kéo dài hoặc thu ngắn theo giá trị tuyệt đối.
+  Vì vậy độ dài của ka luôn là |k|·|a|, không bao giờ là k·|a|.
+
+
+====================================================================
+MODULE 2 — CLONE THE VECTOR
+====================================================================
+
+Mục tiêu:
+  Học sinh tự tay tạo ra vector ka với k cho trước —
+  luyện trực giác về hướng và độ dài đồng thời.
+
+Sai lầm cần giải quyết:
+  → Xác định sai dấu khi k âm
+  → Thiếu 1 trong 2 điều kiện (chỉ đổi hướng hoặc chỉ đúng độ dài)
+
+Loại simulation: Kiểm tra nghiệm — kéo đầu mũi tên để tạo vector
+Thời gian dự kiến: ~5 phút
+
+--------------------------------------------------------------------
+MÀN HÌNH CHÍNH HIỂN THỊ
+--------------------------------------------------------------------
+- Canvas 2D: vector gốc a màu xám cố định (gốc tại O)
+- Vector mục tiêu ka màu cam đứt nét — cố định làm đích
+- Vector xanh — học sinh kéo đầu mũi tên để ghép vào đích
+- Vòng tròn snap màu xanh lá xuất hiện khi kéo đến đúng vị trí
+  (sai số ±8%)
+- Panel góc trên: nhiệm vụ hiện tại "Hãy tạo vector [2a]"
+- Progress bar: Level 1/4 → 2/4 → 3/4 → 4/4
+
+--------------------------------------------------------------------
+HỌC SINH TƯƠNG TÁC BẰNG CÁCH (4 LEVEL)
+--------------------------------------------------------------------
+Level 1 — Tạo 2a:
+  Kéo đầu mũi tên xanh đến vị trí đúng gấp đôi a, cùng hướng.
+
+Level 2 — Tạo ½a:
+  Kéo đến vị trí đúng nửa độ dài, cùng hướng.
+
+Level 3 — Tạo -a:
+  Kéo ngược hướng, đúng độ dài |a|.
+
+Level 4 — Tạo -3/2 a:
+  Kéo ngược hướng, độ dài 1.5 lần |a| — level khó nhất.
+
+--------------------------------------------------------------------
+KỊCH BẢN DẪN DẮT HỌC SINH GẶP SAI LẦM VÀ TỰ SỬA
+--------------------------------------------------------------------
+Level 3 — Tạo -a:
+  Tình huống:
+    Học sinh hay kéo cùng hướng a (không đổi hướng) vì quen
+    với Level 1, 2.
+  Hệ thống phản hồi:
+    Nếu học sinh thả tay mà vector vẫn cùng hướng → animation
+    so sánh 2 vector chồng lên nhau + caption:
+    "Hướng chưa đúng rồi. Khi k âm, vector phải quay ngược 180°."
+  Học sinh điều chỉnh:
+    Kéo lại sang phía ngược hướng.
+  Kết quả rút ra:
+    k âm = đổi hướng BẮT BUỘC, không phải tùy chọn.
+
+Level 4 — Tạo -3/2 a:
+  Tình huống:
+    Học sinh đổi hướng đúng nhưng để độ dài bằng a
+    (quên nhân 3/2).
+  Hệ thống phản hồi:
+    Animation hiện vector học sinh tạo vs vector đích cạnh nhau
+    + caption: "Hướng đúng rồi! Nhưng độ dài chưa đúng.
+    |-3/2| = 3/2 — vector cần dài hơn a một chút."
+  Học sinh điều chỉnh:
+    Kéo thêm ra ngoài.
+  Kết quả rút ra:
+    Phải kiểm tra CẢ HAI: hướng và độ dài.
+
+--------------------------------------------------------------------
+CAPTION HIỂN THỊ THEO TRẠNG THÁI
+--------------------------------------------------------------------
+Bắt đầu mỗi level:
+  "Hãy kéo đầu mũi tên xanh để tạo vector [tên].
+   Thả tay khi bạn nghĩ đã đúng."
+
+Sai hướng (k âm mà kéo cùng hướng):
+  [⚠️] Hướng chưa đúng.
+       Khi k < 0, vector phải quay ngược 180° so với a.
+
+Sai độ dài (hướng đúng nhưng ngắn/dài hơn):
+  [💡] Hướng đúng rồi! Độ dài của ka = |k|·|a|.
+       Với k = -3/2 thì độ dài = 3/2 lần |a|.
+
+Snap thành công:
+  [✅] Vector khớp! [Xem giải thích theo từng level bên dưới]
+
+--------------------------------------------------------------------
+GIẢI THÍCH SAU KHI LÀM ĐÚNG — THEO TỪNG LEVEL
+--------------------------------------------------------------------
+Level 1 (2a):
+  "Bạn không tạo ra vector mới. Bạn chỉ kéo dài vector cũ lên gấp
+   đôi. Đây chính là ý nghĩa của phép nhân vector với số 2."
+
+Level 2 (½a):
+  "Nhân với ½ làm vector co lại còn một nửa — cùng hướng, ngắn
+   hơn. Số k nằm giữa 0 và 1 luôn làm vector co."
+
+Level 3 (-a):
+  "Bạn vừa thực hiện hai thao tác cùng lúc: đổi hướng 180° và giữ
+   nguyên độ dài. Đây chính là vector đối của a. (-1)a = -a."
+
+Level 4 (-3/2 a):
+  "Lần này bạn phải thực hiện hai thay đổi: đổi hướng VÀ kéo dài
+   gấp 3/2. Chỉ khi đủ cả hai điều kiện mới đúng."
+
+--------------------------------------------------------------------
+NÚT VÀ ĐIỀU KHIỂN
+--------------------------------------------------------------------
+- Kéo đầu mũi tên: tương tác chính — vector cập nhật realtime
+- Nút Thử lại: reset vector về gốc O, không mất progress
+- Nút Gợi ý: hiện đường kẻ mờ chỉ vị trí đúng (trừ điểm snap)
+- Nút Tổng kết: mở khóa sau khi hoàn thành Level 4
+
+--------------------------------------------------------------------
+🧠 HIỂU BẢN CHẤT (hiện sau Level 4)
+--------------------------------------------------------------------
+  Khi nhìn thấy ka, hãy tự hỏi hai câu:
+  ① Vector có cùng hay ngược hướng a? → nhìn vào dấu của k.
+  ② Độ dài gấp bao nhiêu lần? → nhìn vào |k|.
+  Nếu trả lời được hai câu này thì bạn đã hiểu phép nhân vector
+  với số thực sự là gì.
+
+
+====================================================================
+MODULE 3 — BUILD THE VECTOR
+====================================================================
+
+Mục tiêu:
+  Học sinh tự lắp ghép vector u = xa + yb từ hai vector cơ sở
+  a và b — hiểu phân tích vector theo hình học, không theo công thức.
+
+Sai lầm cần giải quyết:
+  → Lúng túng kẻ đường song song dựng hình bình hành
+  → Xác định sai dấu x, y khi vector thành phần ngược hướng gốc
+
+Loại simulation: Step-by-step có hướng dẫn
+Thời gian dự kiến: ~7 phút
+
+--------------------------------------------------------------------
+MÀN HÌNH CHÍNH HIỂN THỊ
+--------------------------------------------------------------------
+- Canvas 2D:
+    vector a màu cam (gốc tại O)
+    vector b màu xanh dương (gốc tại O)
+    vector mục tiêu u màu tím đứt nét — cố định, học sinh cần
+    "xây" đến đây
+- Slider bên trái:
+    [×a] từ -3 đến 3 — điều chỉnh hệ số x
+    [×b] từ -3 đến 3 — điều chỉnh hệ số y
+- Panel bước hiện tại: "Bước 1 / 3"
+- Kết quả ghép realtime dưới canvas:
+    u = [?]a + [?]b (cập nhật theo slider)
+
+--------------------------------------------------------------------
+HỌC SINH TƯƠNG TÁC BẰNG CÁCH (3 BƯỚC)
+--------------------------------------------------------------------
+Bước 1 — Chọn hệ số cho a:
+  Kéo slider ×a → vector xa xuất hiện từ O, cập nhật realtime.
+
+Bước 2 — Ghép b vào đầu xa:
+  Kéo slider ×b → vector yb nối tiếp từ đầu xa, tạo thành chuỗi.
+
+Bước 3 — Kiểm tra:
+  Đầu mũi tên của chuỗi ghép có khớp với đầu u không?
+  → Snap nếu đúng (sai số ±8%), gợi ý nếu sai.
+
+Reveal (sau khi snap):
+  Animation vẽ hình bình hành — đường kẻ song song với a và b
+  qua đầu u — minh họa cách dựng hình.
+
+--------------------------------------------------------------------
+KỊCH BẢN DẪN DẮT HỌC SINH GẶP SAI LẦM VÀ TỰ SỬA
+--------------------------------------------------------------------
+Tình huống 1 — Chọn sai dấu x:
+  Học sinh kéo xa cùng hướng a nhưng u cần thành phần ngược
+  hướng (x âm).
+  Hệ thống phản hồi:
+    Vector ghép lệch hẳn khỏi u → caption:
+    "Thành phần theo a chưa đúng hướng. Thử kéo slider sang vùng
+    âm — khi x < 0, vector xa sẽ ngược chiều a."
+  Học sinh điều chỉnh:
+    Kéo slider sang trái qua 0.
+  Kết quả rút ra:
+    x âm = thành phần ngược hướng a — không phải "trừ đi a"
+    mà là "dùng a ngược chiều".
+
+Tình huống 2 — Lúng túng không biết bắt đầu từ đâu:
+  Hệ thống phản hồi:
+    Nút Gợi ý hiện 2 đường kẻ song song mờ qua đầu u —
+    một song song a, một song song b — giúp học sinh thấy
+    hình bình hành tiềm ẩn.
+  Học sinh điều chỉnh:
+    Nhìn vào gợi ý, kéo slider đến khi xa đến đúng đường song song.
+  Kết quả rút ra:
+    Đường song song chính là công cụ dựng hình — không cần đoán mò.
+
+--------------------------------------------------------------------
+CAPTION HIỂN THỊ THEO TRẠNG THÁI
+--------------------------------------------------------------------
+Bắt đầu:
+  "Hãy dùng slider để chọn bao nhiêu lần a cần dùng.
+   Kéo thử và quan sát."
+
+Bước 1 — kéo xa đúng:
+  [💡] Vector xa vừa đặt xong. Đây là "mảnh ghép thứ nhất".
+       Tiếp theo hãy ghép yb vào đầu mũi tên này.
+
+Bước 2 — kéo yb:
+  [💡] Vector yb đang nối tiếp xa. Bạn đang xây u từng mảnh một
+       — giống như ghép Lego.
+
+Sai dấu x hoặc y:
+  [⚠️] Vector ghép đang lệch hướng. Thử kéo slider sang vùng âm
+       — số âm = dùng vector ngược chiều.
+
+Gần đúng (sai < 10%):
+  [💡] Rất gần rồi! Chỉnh nhẹ slider một trong hai hệ số.
+
+Snap thành công:
+  [✅] Khớp! [Animation chạy — xem bên dưới]
+
+--------------------------------------------------------------------
+GIẢI THÍCH SAU KHI SNAP ĐÚNG (ANIMATION 4 BƯỚC)
+--------------------------------------------------------------------
+Bước ①: Hiện xa riêng lẻ
+  Caption: "Đây là xa — mảnh ghép theo hướng a."
+
+Bước ②: Nối tiếp yb vào đầu xa
+  Caption: "Đây là yb — mảnh ghép theo hướng b.
+            Bạn ghép nó vào đầu xa."
+
+Bước ③: Vẽ vector u từ O đến điểm cuối
+  Caption: "Kết quả: u = xa + yb.
+            Bạn không tạo ra vector mới —
+             bạn ghép các mảnh có sẵn để đến đúng điểm đích."
+
+Bước ④: Vẽ hình bình hành
+  Caption: "Đây chính là hình bình hành mà SGK đề cập.
+            Hai đường kẻ song song với a và b gặp nhau đúng tại
+            đầu u. Khi gặp bài phân tích vector, kẻ hai đường
+            song song này là bước đầu tiên cần làm."
+
+Bước ⑤: Hiện công thức
+  u = xa + yb  (với x, y hiển thị đúng dấu)
+
+--------------------------------------------------------------------
+NÚT VÀ ĐIỀU KHIỂN
+--------------------------------------------------------------------
+- Slider ×a [-3, 3]: điều chỉnh hệ số x của vector a
+- Slider ×b [-3, 3]: điều chỉnh hệ số y của vector b
+- Nút Gợi ý: hiện 2 đường kẻ song song mờ qua đầu u
+  (dùng tối đa 2 lần/level)
+- Nút Reset: xóa vector đang ghép, giữ nguyên a, b, u
+- Nút Tổng kết: mở khóa sau khi hoàn thành
+
+--------------------------------------------------------------------
+🧠 HIỂU BẢN CHẤT (hiện sau khi hoàn thành Module 3)
+--------------------------------------------------------------------
+  Một vector có thể được tạo ra từ nhiều vector khác.
+  Khi viết u = xa + yb, đó không phải là "biến đổi công thức" —
+  đó là quá trình ghép hai mảnh chuyển động: đi xa theo hướng a,
+  rồi đi yb theo hướng b, và ta đến đúng điểm đích.
+  Dấu của x và y cho biết mảnh đó đi xuôi hay ngược hướng
+  vector gốc.
+  Hình bình hành chính là hình ảnh hình học của phép ghép này.
+
+
+====================================================================
+CRITICAL REVIEW — TỰ PHẢN BIỆN
+====================================================================
+
+⚠️ Rủi ro 1:
+  Module 3 có thể quá phức tạp nếu học sinh chưa vững Module 1
+  và 2. Cần đảm bảo sidebar khóa Module 3 cho đến khi hoàn thành
+  Module 2.
+
+⚠️ Rủi ro 2:
+  Snap zone ±8% trên màn hình nhỏ (mobile) vẫn có thể cần điều
+  chỉnh — nên thêm nút "Kiểm tra" dự phòng thay vì snap tự động.
+
+💡 Gợi ý thêm:
+  Có thể thêm mini-challenge cuối Module 3 — cho sẵn u = 2a - b
+  và hỏi học sinh xác định dấu âm của b nghĩa là gì — để kiểm
+  tra sai lầm số 4 một lần nữa trước khi kết thúc.
+
+❓ Cần làm rõ trước khi thiết kế:
+  • Module 2 đang có 4 level (2a, ½a, -a, -3/2 a) — cần thêm/bớt?
+  • Module 3 có cần nhiều bài toán phân tích khác nhau (u thay đổi
+    mỗi lần) hay chỉ cần 1-2 ví dụ điển hình?
+
+
+====================================================================
+GIAI ĐOẠN TIẾP THEO
+====================================================================
+Kịch bản này đã sẵn sàng chuyển sang Giai đoạn 2: Thiết kế giao diện.
+Giai đoạn 2 sẽ bao gồm:
+  - Chọn concept màu sắc (Preset Aiducation)
+  - Chốt typography & cỡ chữ
+  - Chốt tương tác & hành vi cụ thể
+  - Chốt layout & cấu trúc HTML
+  - Build file HTML simulation hoàn chỉnh
+
+====================================================================
