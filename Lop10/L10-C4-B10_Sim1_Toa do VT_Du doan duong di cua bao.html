@@ -1,0 +1,1698 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Simulation 1: Storm Tracker - Dự Báo Đường Đi Của Tâm Bão</title>
+    <script type="application/json" id="athena-context">
+{
+  "title": "Simulation 1: Storm Tracker – Dự Báo Đường Đi Của Tâm Bão",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Hiểu quy ước tọa độ Oxy: hoành độ x viết trước (nằm ngang), tung độ y viết sau (thẳng đứng), không được đảo thứ tự",
+    "Xác định vectơ tịnh tiến AB từ hai vị trí quan sát của tâm bão theo thời gian",
+    "Dự đoán vị trí tương lai C bằng công thức tịnh tiến vectơ: C = B + vectơ AB",
+    "Vận dụng phép cộng tọa độ vectơ vào bài toán thực tế dự báo khí tượng"
+  ],
+  "structure": [
+    { "id": "step-1", "title": "Bước 1 — xem lại/kéo thả tâm bão, quan sát hành trình di chuyển từ 08:00 (điểm A) đến 10:00 (điểm B)" },
+    { "id": "step-2", "title": "Bước 2 — chuyển từ mô tả ngôn từ tự nhiên sang công cụ số hóa tọa độ chuẩn mực" },
+    { "id": "step-3", "title": "Bước 3 — trắc nghiệm 2 câu: kéo tâm bão sang PHẢI → chỉ số nào đổi mạnh nhất (đáp án X/hoành độ); kéo tâm bão LÊN TRÊN → chỉ số nào đổi mạnh nhất (đáp án Y/tung độ)" },
+    { "id": "step-4", "title": "Bước 4 — Bẫy nhận thức: công tắc đảo thứ tự viết tọa độ (Tung độ trước, Hoành độ sau) khiến vị trí bão nhảy sai lệch hoàn toàn, minh họa quy ước x-trước-y-sau là bắt buộc" },
+    { "id": "step-5", "title": "Bước 5 — Dự đoán vectơ tịnh tiến: biết A(108.5;13.8) lúc 10:00 và vectơ AB=(-4.0;0.8), kéo thả điểm đỏ đến vị trí dự đoán lúc 12:00 = B + AB" },
+    { "id": "step-6", "title": "Bước 6 — trượt độ mờ bản đồ về 0% để chỉ còn hệ Oxy thuần túy với các phép toán vectơ hình học" }
+  ],
+  "athenaGuidance": "Bước 3 có 2 câu hỏi trắc nghiệm 2 lựa chọn (nút bấm X/Y, hàm handleStep3Answer): Nhiệm vụ 1 hỏi 'Kéo tâm bão sang PHẢI, chỉ số nào thay đổi mạnh nhất?' — đáp án đúng là X (hoành độ, nằm ngang); Nhiệm vụ 2 hỏi 'Kéo tâm bão LÊN TRÊN, chỉ số nào thay đổi mạnh nhất?' — đáp án đúng là Y (tung độ, thẳng đứng). KHÔNG được nói thẳng đáp án trước khi học sinh tự kéo thử và quan sát, chỉ gợi ý học sinh chú ý nhãn số biến đổi cạnh điểm đỏ. Bước 4 là một công tắc minh họa (không phải câu hỏi trắc nghiệm) cho thấy hậu quả khi đảo lộn thứ tự viết tọa độ — không cần Athena chấm điểm, chỉ giải thích khi được hỏi rằng tọa độ luôn viết (hoành độ x ; tung độ y). Bước 5 là bài toán có đáp số xác định: điểm mốc A=(108.5;13.8) lúc 10:00 (t10), vectơ tịnh tiến AB=(-4.0;0.8), học sinh phải kéo tâm bão đến vị trí C = A + AB = (108.5-4.0 ; 13.8+0.8) = (104.5;14.6) lúc 12:00 (t12), hệ chấp nhận sai số trong bán kính 0.4 độ kinh vĩ (hàm btnCheckPrediction). Athena tuyệt đối KHÔNG được đọc thẳng tọa độ đích (104.5;14.6) cho học sinh trước khi các em tự kéo và bấm kiểm tra — chỉ được hướng dẫn công thức C = B + vectơ AB và gợi ý cách cộng từng tọa độ (cộng hoành độ với hoành độ, tung độ với tung độ)."
+}
+    </script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+        /* --- DESIGN SYSTEM (PRESET 5 — CÁ CHÉP HOÁ RỒNG) --- */
+:root {
+  --font-main:'Be Vietnam Pro', system-ui, sans-serif;
+  /* Neutrals · giấy & mực */
+  --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC;
+  --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
+  --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+
+  /* Jade · hành động chính */
+  --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F;
+  --jade-text:#1B5E48; --jade-soft:#A9D0BE; --jade-pale:#DCEAE1;
+
+  /* Sage · phụ trợ */
+  --sage:#A8C9B8; --sage-deep:#7CA792; --sage-text:#46685A; --sage-pale:#E1ECE4;
+
+  /* Accent · điểm nhấn ấm */
+  --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+
+  /* Semantic · đúng/sai/cảnh báo/info */
+  --correct:#2D8B6F; --correct-bg:#DCEAE1;
+  --wrong:#C15F3C;   --wrong-bg:#F3E2D6;
+  --warning:#C58A2E; --warning-bg:#F5E7CB;
+  --info:#4E7F92;    --info-bg:#DCE7EB;
+
+  --white:#FFFFFF;
+  --radius:10px; --radius-lg:14px; --radius-sm:6px;
+  --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+  --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+  --shadow-lg: 0 14px 38px rgba(20, 67, 47, 0.12);
+
+  /* Illustration only · fill phẳng cho minh hoạ (KHÔNG dùng cho UI/text) */
+  --il-terracotta:#C1704B; --il-brick:#9E4A2E; --il-ochre:#C99A3C; --il-olive:#8A9A5B;
+  --il-forest:#2E6B52; --il-dusty-blue:#6E93A6; --il-slate:#4E6E7E; --il-mauve:#8A6A7E; --il-sand:#D8C4A0;
+
+  /* Vector màu canvas Vật lý/Toán (cộng lực, cộng vận tốc...) — PHẦN 1.1 file design Toán */
+  --color-v1: var(--jade); --color-v2: var(--info);
+  --color-resultant: var(--accent); --color-force-red: var(--wrong); --color-gravity: var(--ink-3);
+
+  /* --- alias cho code cũ (giữ để var(--ten-cu) phía dưới vẫn chạy đúng màu mới) --- */
+  --p5-teal: var(--jade-dark);
+  --p5-teal-light: var(--jade-text);
+  --p5-gold: var(--accent);
+  --p5-gold-dark: var(--accent-deep);
+  --p5-cream: var(--cream);
+  --p5-cream-dark: var(--cream-2);
+  --text-1: var(--ink);
+  --text-2: var(--ink-2);
+  --text-3: var(--ink-3);
+  --border-color: var(--paper-line);
+  --danger: var(--wrong);
+  --success: var(--correct);
+  --font-math: 'JetBrains Mono', 'Courier New', monospace;
+}
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: var(--font-main);
+            background-color: var(--p5-cream);
+            color: var(--text-1);
+            padding: 16px;
+            min-width: 0;
+}
+
+        .sim-container {
+            width: min(100%, 1200px);
+            margin: 0 auto;
+            background: #ffffff;
+            border: 2px solid var(--p5-teal);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(45, 139, 111, 0.08);
+            overflow: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        /* Top Module Header */
+        .sim-header {
+            background-color: var(--p5-teal);
+            color: #ffffff;
+            padding: 16px 24px;
+            display: none !important;
+            flex-direction: column;
+            gap: 6px;
+            border-bottom: 3px solid var(--p5-gold);
+        }
+
+        .sim-header h1 {
+            font-size: 20px;
+            font-weight: 700;
+            color: var(--p5-gold);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .sim-header .objective {
+            font-size: 13px;
+            color: var(--p5-cream-dark);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+
+        /* Dashboard Core Layout */
+        .sim-workspace {
+            display: flex;
+            min-height: 620px;
+            background-color: #ffffff;
+        }
+
+        /* Left Sidebar Controls */
+        .sim-sidebar {
+            width: 290px;
+            border-right: 1px solid var(--border-color);
+            background-color: var(--p5-cream-dark);
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+            overflow-y: auto;
+        }
+
+        .section-title {
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--p5-teal);
+            text-transform: uppercase;
+            letter-spacing: 1px;
+            margin-bottom: 10px;
+            border-left: 3px solid var(--p5-gold);
+            padding-left: 8px;
+        }
+
+        .control-group {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 14px;
+        }
+
+        /* Time Radio Buttons Striped style */
+        .time-radio-list {
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+        }
+
+        .time-radio-item {
+            display: flex;
+            align-items: center;
+            padding: 10px 12px;
+            background-color: var(--p5-cream);
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            border: 1px solid transparent;
+            font-weight: 600;
+            font-size: 13px;
+        }
+
+        .time-radio-item:hover {
+            background-color: #ffffff;
+            border-color: var(--p5-gold);
+        }
+
+        .time-radio-item.active {
+            background-color: var(--p5-teal);
+            color: #ffffff;
+            border-color: var(--p5-teal);
+        }
+
+        .time-radio-item input {
+            margin-right: 12px;
+            accent-color: var(--p5-gold);
+            cursor: pointer;
+        }
+
+        /* Data Display Grid */
+        .data-row {
+            display: flex;
+            justify-content: space-between;
+            padding: 8px 0;
+            border-bottom: 1px dashed var(--border-color);
+            font-size: 13px;
+        }
+
+        .data-row:last-child {
+            border-bottom: none;
+        }
+
+        .data-label {
+            color: var(--text-2);
+            font-weight: 500;
+        }
+
+        .data-value {
+            font-weight: 700;
+            color: var(--p5-teal);
+        }
+
+        .data-value.math {
+            font-family: var(--font-math);
+        }
+
+        /* Legends */
+        .legend-item {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+            font-size: 12px;
+            margin-bottom: 6px;
+            color: var(--text-2);
+        }
+
+        .legend-color {
+            width: 14px;
+            height: 14px;
+            border-radius: 50%;
+            border: 1px solid rgba(0,0,0,0.1);
+        }
+
+        /* Main Workspace Content Canvas Area */
+        .sim-main-content {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            background-color: #ffffff;
+        }
+
+        .canvas-container {
+            flex: 1;
+            position: relative;
+            overflow: hidden;
+            background-color: #e0f2fe; /* Đại dương mờ nếu map chưa load */
+        }
+
+        canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            position: absolute;
+            top: 0;
+            left: 0;
+            touch-action: none;
+        }
+
+        .intro-text {
+            padding: 14px 18px;
+            background: var(--jade-pale);
+            border-left: 4px solid var(--jade-deep);
+            color: var(--ink-2);
+            font-size: 0.92rem;
+            line-height: 1.65;
+        }
+
+        /* Step Interactive UI Widget controls over canvas overlay */
+        .step-widget-overlay {
+            position: absolute;
+            top: 16px;
+            right: 16px;
+            background: rgba(255, 255, 255, 0.95);
+            border: 2px solid var(--p5-teal);
+            border-radius: 8px;
+            padding: 14px;
+            width: 260px;
+            box-shadow: 0 4px 15px rgba(0,0,0,0.1);
+            z-index: 10;
+            display: none;
+        }
+
+        /* Toggle Button styling Component Preset 5 */
+        .toggle-btn {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            background: var(--p5-cream);
+            border: 1px solid var(--p5-teal);
+            padding: 10px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 700;
+            font-size: 13px;
+            color: var(--p5-teal);
+            transition: all 0.2s;
+            width: 100%;
+        }
+
+        .toggle-btn.active {
+            background: var(--danger);
+            color: white;
+            border-color: var(--danger);
+        }
+
+        .toggle-switch {
+            width: 36px;
+            height: 20px;
+            background-color: #cbd5e1;
+            border-radius: 10px;
+            position: relative;
+            transition: background-color 0.2s;
+        }
+
+        .toggle-btn.active .toggle-switch {
+            background-color: white;
+        }
+
+        .toggle-handle {
+            width: 14px;
+            height: 14px;
+            background-color: white;
+            border-radius: 50%;
+            position: absolute;
+            top: 3px;
+            left: 3px;
+            transition: transform 0.2s;
+            box-shadow: 0 1px 3px rgba(0,0,0,0.2);
+        }
+
+        .toggle-btn.active .toggle-handle {
+            transform: translateX(16px);
+            background-color: var(--danger);
+        }
+
+        /* Text area response input step 1 */
+        .text-input-area {
+            display: flex;
+            flex-direction: column;
+            gap: 8px;
+            width: 100%;
+        }
+
+        .text-input-area input[type="text"] {
+            padding: 10px;
+            border: 1px solid var(--border-color);
+            border-radius: 6px;
+            font-family: var(--font-main);
+            font-size: 13px;
+        }
+
+        .text-input-area input[type="text"]:focus {
+            outline: none;
+            border-color: var(--p5-teal);
+        }
+
+        /* Button Preset 5 Primary */
+        .p5-btn {
+            background-color: var(--p5-gold);
+            color: var(--p5-teal);
+            border: 1px solid var(--p5-gold-dark);
+            padding: 10px 16px;
+            font-size: 13px;
+            font-weight: 700;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 6px;
+        }
+
+        .p5-btn:hover {
+            background-color: var(--p5-gold-dark);
+            transform: translateY(-1px);
+        }
+
+        .p5-btn:active {
+            transform: translateY(0);
+        }
+
+        .p5-btn-teal {
+            background-color: var(--p5-teal);
+            color: white;
+            border-color: var(--p5-teal-light);
+        }
+
+        .p5-btn-teal:hover {
+            background-color: var(--p5-teal-light);
+        }
+
+        /* Slider component custom styles Step 6 */
+        .slider-wrap {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+        .slider-wrap label {
+            font-size: 11px;
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--text-3);
+        }
+        .p5-slider {
+            width: 100%;
+            accent-color: var(--p5-teal);
+            cursor: pointer;
+        }
+
+        /* Explanation Box & AI Coach Footer */
+        .ai-coach-panel {
+            background-color: var(--p5-cream);
+            border-top: 1px solid var(--border-color);
+            padding: 16px 24px;
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            height: 90px;
+        }
+
+        .ai-avatar {
+            width: 48px;
+            height: 48px;
+            background-color: var(--p5-teal);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border: 2px solid var(--p5-gold);
+            flex-shrink: 0;
+            font-size: 24px;
+        }
+
+        .explanation-box {
+            background: #ffffff;
+            border: 1px solid var(--border-color);
+            border-radius: 8px;
+            padding: 12px 16px;
+            flex: 1;
+            font-size: 13.5px;
+            color: var(--text-1);
+            line-height: 1.5;
+            position: relative;
+            box-shadow: inset 0 1px 3px rgba(0,0,0,0.02);
+            height: 100%;
+            display: flex;
+            align-items: center;
+        }
+
+        .explanation-box::before {
+            content: '';
+            position: absolute;
+            left: -8px;
+            top: 50%;
+            transform: translateY(-50%) rotate(45deg);
+            width: 14px;
+            height: 14px;
+            background: #ffffff;
+            border-left: 1px solid var(--border-color);
+            border-bottom: 1px solid var(--border-color);
+        }
+
+        /* Horizontal Timeline Steps Tab Navigation */
+        .timeline-container {
+            background-color: var(--p5-teal-light);
+            display: flex;
+            border-top: 2px solid var(--p5-gold);
+        }
+
+        .timeline-tab {
+            flex: 1;
+            padding: 14px 10px;
+            text-align: center;
+            color: rgba(255, 255, 255, 0.65);
+            font-size: 12px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.2s;
+            border-right: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            flex-direction: column;
+            gap: 4px;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .timeline-tab:last-child {
+            border-right: none;
+        }
+
+        .timeline-tab .step-num {
+            font-size: 10px;
+            text-transform: uppercase;
+            font-weight: 700;
+            color: var(--p5-gold);
+            opacity: 0.8;
+        }
+
+        .timeline-tab:hover {
+            background-color: rgba(255, 255, 255, 0.05);
+            color: #ffffff;
+        }
+
+        .timeline-tab.active {
+            background-color: #ffffff;
+            color: var(--p5-teal);
+        }
+
+        .timeline-tab.active .step-num {
+            color: var(--p5-teal-light);
+            opacity: 1;
+        }
+
+        /* Utility animations */
+        .shake {
+            animation: shakeAnim 0.4s ease-in-out;
+        }
+
+        @keyframes shakeAnim {
+            0%, 100% { transform: translateX(0); }
+            20%, 60% { transform: translateX(-6px); }
+            40%, 80% { transform: translateX(6px); }
+        }
+
+        .glow-success {
+            box-shadow: 0 0 0 3px var(--jade);
+            border-color: var(--success) !important;
+        }
+
+        .mobile-hint { display:none; }
+
+        @media (max-width: 1024px) {
+            body { padding: 10px; }
+            .sim-workspace { flex-direction:column; min-height:0; }
+            .sim-main-content { order:-1; min-height:560px; }
+            .canvas-container { min-height:430px; }
+            .sim-sidebar {
+                width:100%; border-right:0; border-top:1px solid var(--paper-line);
+                display:grid; grid-template-columns:repeat(3, minmax(0, 1fr));
+                overflow:visible;
+            }
+            .timeline-container { overflow-x:auto; scrollbar-width:none; }
+            .timeline-container::-webkit-scrollbar { display:none; }
+            .timeline-tab { flex:0 0 150px; min-height:58px; }
+        }
+
+        @media (max-width: 640px) {
+            body { padding:0; }
+            .sim-container { border-width:0; border-radius:0; box-shadow:none; }
+            .intro-text { padding:12px 14px; font-size:.86rem; }
+            .sim-main-content { min-height:520px; }
+            .canvas-container { min-height:350px; }
+            .step-widget-overlay {
+                top:8px; right:8px; left:8px; width:auto; max-height:48%;
+                overflow-y:auto; padding:10px;
+            }
+            .ai-coach-panel { height:auto; min-height:104px; padding:12px; align-items:flex-start; gap:10px; }
+            .ai-avatar { width:44px; height:44px; font-size:20px; }
+            .explanation-box { min-height:76px; padding:10px 12px; font-size:.82rem; }
+            .mobile-hint { display:block; padding:9px 14px 0; color:var(--ink-3); font-size:.78rem; font-weight:600; }
+            .sim-sidebar {
+                display:flex; flex-direction:row; gap:10px; padding:12px 14px 16px;
+                overflow-x:auto; scroll-snap-type:x mandatory; overscroll-behavior-inline:contain;
+            }
+            .sim-sidebar > div { flex:0 0 86vw; scroll-snap-align:center; }
+            .time-radio-item, .toggle-btn, input[type="number"], input[type="range"] { min-height:44px; }
+            .timeline-tab { flex-basis:132px; }
+        }
+    
+    /* Pass 2 (mục E) — vùng chạm tối thiểu 44px cho nút bấm thật trên mobile.
+       Không đụng desktop, không thu nhỏ phần tử nào — chỉ nới ra nếu đang < 44px. */
+    @media (max-width: 767px) {
+      button, .btn, a.btn, input[type="button"], input[type="submit"] {
+        min-height: 44px;
+      }
+    }
+</style>
+</head>
+<body>
+
+<div class="sim-container" id="simContainer">
+    <div class="sim-header">
+        <h1>Simulation 1: Storm Tracker – Dự Báo Đường Đi Của Tâm Bão</h1>
+        <div class="objective">
+            <span>🎯</span> 
+            <strong>Mục tiêu:</strong> Hiểu rõ vì sao cần hệ tọa độ Oxy để xác định chính xác vị trí tâm bão, phân biệt tọa độ vị trí (điểm) và vectơ dịch chuyển.
+        </div>
+    </div>
+
+    <p class="intro-text"><strong>Nhiệm vụ:</strong> Theo dõi tâm bão trên hệ tọa độ Oxy, xác định vectơ dịch chuyển rồi dùng phép cộng tọa độ để dự đoán vị trí tiếp theo.</p>
+
+    <div class="sim-workspace">
+        
+        <p class="mobile-hint">Vuốt ngang để xem các nhóm dữ liệu và điều khiển.</p>
+        <div class="sim-sidebar">
+            <div>
+                <div class="section-title">Theo dõi thời gian</div>
+                <div class="control-group">
+                    <div class="time-radio-list" id="timeRadioContainer">
+                        <label class="time-radio-item active" data-time="08:00">
+                            <input type="radio" name="stormTime" value="08:00" checked> 08:00 (Mốc xuất phát A)
+                        </label>
+                        <label class="time-radio-item" data-time="10:00">
+                            <input type="radio" name="stormTime" value="10:00"> 10:00 (Vị trí hiện tại B)
+                        </label>
+                        <label class="time-radio-item" data-time="12:00">
+                            <input type="radio" name="stormTime" value="12:00"> 12:00 (Dự báo toán học)
+                        </label>
+                        <label class="time-radio-item" data-time="14:00">
+                            <input type="radio" name="stormTime" value="14:00"> 14:00 (Mở rộng quỹ đạo)
+                        </label>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">Thông tin trạm khí tượng</div>
+                <div class="control-group">
+                    <div class="data-row" style="align-items: center; padding: 6px 0;">
+                        <span class="data-label">Kinh độ / Hoành độ:</span>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <input type="number" id="inputDataX" step="0.1" min="100.0" max="120.0" 
+                                   style="width: 75px; padding: 3px 6px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-math); font-weight: 700; text-align: right; color: var(--p5-teal); background-color: var(--p5-cream);" 
+                                   value="112.5">
+                            <span class="data-value math" style="color: var(--p5-teal); font-weight: 700;">°E</span>
+                        </div>
+                    </div>
+                    <div class="data-row" style="align-items: center; padding: 6px 0;">
+                        <span class="data-label">Vĩ độ / Tung độ:</span>
+                        <div style="display: flex; align-items: center; gap: 4px;">
+                            <input type="number" id="inputDataY" step="0.1" min="6.0" max="22.0" 
+                                   style="width: 75px; padding: 3px 6px; border: 1px solid var(--border-color); border-radius: 4px; font-family: var(--font-math); font-weight: 700; text-align: right; color: var(--p5-teal); background-color: var(--p5-cream);" 
+                                   value="13.0">
+                            <span class="data-value math" style="color: var(--p5-teal); font-weight: 700;">°N</span>
+                        </div>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Cấp bão đo đạc:</span>
+                        <span class="data-value" id="lblDataCap">Cấp 10</span>
+                    </div>
+                    <div class="data-row">
+                        <span class="data-label">Tốc độ di chuyển:</span>
+                        <span class="data-value" id="lblDataSpeed">20 km/h</span>
+                    </div>
+                </div>
+            </div>
+
+            <div>
+                <div class="section-title">Chú giải bản đồ</div>
+                <div class="control-group" style="padding: 10px 14px;">
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(197, 48, 48, 0.45);"></div>
+                        <span>Vùng nguy hiểm nguy cấp (> Cấp 10)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(212, 167, 78, 0.45);"></div>
+                        <span>Vùng gió bão mạnh (Cấp 8 - 10)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: rgba(22, 83, 67, 0.25);"></div>
+                        <span>Vùng ảnh hưởng mây bão (Cấp 6 - 8)</span>
+                    </div>
+                    <div class="legend-item">
+                        <div class="legend-color" style="background-color: #ff0000; width: 10px; height: 10px;"></div>
+                        <span>Tâm bão (Điểm hoặc Cặp số Oxy)</span>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="sim-main-content">
+            <div class="canvas-container" id="canvasContainer">
+                <canvas id="stormCanvas"></canvas>
+
+                <div class="step-widget-overlay" id="widgetStep1" style="display: block;">
+                    <div class="text-input-area">
+                        <label style="font-size: 12px; font-weight:700; color: var(--p5-teal);">Mô tả vị trí tâm bão bằng lời của em:</label>
+                        <input type="text" id="txtDescInput" placeholder="Ví dụ: nằm ở ngoài khơi Trung Bộ...">
+                        <button class="p5-btn p5-btn-teal" id="btnSubmitStep1" style="width:100%">Gửi báo cáo khí tượng</button>
+                        <button class="p5-btn" id="btnReplayStep1" style="width:100%; margin-top: 6px; background-color: var(--p5-gold); color: var(--p5-teal); border: 1px solid var(--p5-gold-dark);">🔄 Xem lại hành trình bão</button>
+                    </div>
+                </div>
+
+                <div class="step-widget-overlay" id="widgetStep3">
+                    <div style="display:flex; flex-direction:column; gap:8px;">
+                        <p style="font-size:12px; font-weight:700; color:var(--p5-teal);" id="quizQuestion">Khi kéo tâm bão sang PHẢI, chỉ số nào thay đổi mạnh nhất?</p>
+                        <button class="p5-btn" style="width:100%; text-align:left; background:#fff; color:var(--text-1);" id="btnAnsX">Hoành độ (Kinh độ X)</button>
+                        <button class="p5-btn" style="width:100%; text-align:left; background:#fff; color:var(--text-1);" id="btnAnsY">Tung độ (Vĩ độ Y)</button>
+                    </div>
+                </div>
+
+                <div class="step-widget-overlay" id="widgetStep4">
+                    <div style="display:flex; flex-direction:column; gap:10px;">
+                        <p style="font-size:11px; color:var(--text-2); font-weight:600;">Thử hoán đổi quy ước toán học viết Tung độ trước Hoành độ:</p>
+                        <button class="toggle-btn" id="btnToggleOrder">
+                            <span>Đổi thứ tự tọa độ (y ; x)</span>
+                            <div class="toggle-switch"><div class="toggle-handle"></div></div>
+                        </button>
+                    </div>
+                </div>
+
+                <div class="step-widget-overlay" id="widgetStep5">
+                    <div style="display:flex; flex-direction:column; gap:8px; font-size:12px;">
+                        <div style="background:var(--p5-cream); padding:8px; border-radius:4px; border-left:3px solid var(--p5-teal);">
+                            Vectơ dịch chuyển từ 08h đến 10h:<br>
+                            <strong style="font-family:var(--font-math); font-size:13px;">AB⃗ = (-4.0 ; 0.8)</strong>
+                        </div>
+                        <p style="color:var(--text-2); font-weight:600;">Hãy kéo thả chấm đỏ tâm bão đến vị trí dự báo lúc 12h dựa trên vectơ dịch chuyển này.</p>
+                        <button class="p5-btn p5-btn-teal" id="btnCheckPrediction" style="width:100%;">Kiểm tra vị trí dự báo</button>
+                    </div>
+                </div>
+
+                <div class="step-widget-overlay" id="widgetStep6">
+                    <div class="slider-wrap">
+                        <label>Độ mờ bản đồ địa lý</label>
+                        <input type="range" min="0" max="100" value="100" class="p5-slider" id="sldMapOpacity">
+                        <div style="margin-top:8px;">
+                            <button class="p5-btn" style="width:100%; background:var(--p5-teal); color:white;" onclick="alert('Chuyển hướng đến học phần Bài học: Tọa độ của vectơ thông qua Manim Video!')">🎥 Xem video: Tọa độ vectơ</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="ai-coach-panel">
+                <div class="ai-avatar">🤖</div>
+                <div class="explanation-box" id="aiCoachSpeech">
+                    Chào em! Hãy quan sát chuyển động tự nhiên của cơn bão từ mốc 08:00 đến 10:00 trên bản đồ địa lý và thực hiện theo hướng dẫn phía trên.
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="timeline-container" id="timelineContainer">
+        <div class="timeline-tab active" data-step="1">
+            <span class="step-num">Bước 1</span>
+            <span>Quan sát bão</span>
+        </div>
+        <div class="timeline-tab" data-step="2">
+            <span class="step-num">Bước 2</span>
+            <span>Phủ lưới Oxy</span>
+        </div>
+        <div class="timeline-tab" data-step="3">
+            <span class="step-num">Bước 3</span>
+            <span>Kéo & Đọc số</span>
+        </div>
+        <div class="timeline-tab" data-step="4">
+            <span class="step-num">Bước 4</span>
+            <span>Bẫy thứ tự</span>
+        </div>
+        <div class="timeline-tab" data-step="5">
+            <span class="step-num">Bước 5</span>
+            <span>Dự báo vectơ</span>
+        </div>
+        <div class="timeline-tab" data-step="6">
+            <span class="step-num">Bước 6</span>
+            <span>Số hóa giải tích</span>
+        </div>
+    </div>
+</div>
+
+<script>
+    // ===== LMS safe accessor (PHẦN 7.2 design Toán) — tự thêm, không đụng logic khác =====
+    function LMS(){return window.AiducationLMS||{ready:function(){},progress:function(){},event:function(){},state:function(){},complete:function(){},resize:function(){}};}
+
+    /**
+     * SIMULATION CONTROLLER ENGINE
+     * Môn Toán 10 - Hệ tọa độ giải tích Oxy phẳng
+     */
+    const config = {
+        // Miền địa lý thực tế tương thích lưới tọa độ Bản đồ Việt Nam gốc
+        geo: {
+            minLon: 100.0, maxLon: 120.0,
+            minLat: 6.0,   maxLat: 22.0
+        },
+        // Tọa độ mốc chính xác của kịch bản bão chéo thực tế đi vào đất liền
+        points: {
+            t08: { lon: 112.5, lat: 13.0, cap: 10, speed: 20 },
+            tm: { lon: 110.5, lat: 13.0 }, // Điểm trung gian lúc 09:00 (đi thẳng nằm ngang)
+            t10: { lon: 108.5, lat: 13.8, cap: 11, speed: 22 }, // Điểm lúc 10:00 (đi chéo lên). Vectơ tịnh tiến tổng AB = (-4.0; 0.8)
+            t12_target: { lon: 104.5, lat: 14.6 }, // Vị trí chuẩn t12 dự đoán tịnh tiến theo vec(AB)
+            t14_target: { lon: 101.5, lat: 14.6 }  // Điểm lúc 14:00 (quay lại đi thẳng nằm ngang khi vào sâu đất liền)
+        }
+    };
+
+    // Quản lý trạng thái State Machine của mô phỏng
+    let state = {
+        currentStep: 1,
+        selectedTime: "08:00",
+        // Tọa độ của tâm bão đang hiển thị thời gian thực
+        storm: { lon: 112.5, lat: 13.0 },
+        isDragging: false,
+        isSwappedOrder: false,
+        mapOpacity: 1.0,
+        gridOpacity: 0.0,
+        quizSubStep: 'right', // 'right' hoặc 'up'
+        predictionCorrect: false,
+        completionSent: false,
+        animationFrameId: null,
+        animProgress: 0.0, // Chạy hành trình tự động bước 1
+        isAutomatedRunning: true
+    };
+
+    // Hàm nội suy vị trí bão theo đường cong gấp khúc (Thẳng từ 08h->09h, Chéo từ 09h->10h)
+    function getStormPositionAt(t) {
+        const p8 = config.points.t08;
+        const pM = config.points.tm;
+        const p10 = config.points.t10;
+        
+        if (t < 0.5) {
+            // Tỷ lệ đi từ A đến M (đi thẳng ngang)
+            const localT = t * 2;
+            return {
+                lon: p8.lon + localT * (pM.lon - p8.lon),
+                lat: p8.lat + localT * (pM.lat - p8.lat)
+            };
+        } else {
+            // Tỷ lệ đi từ M đến B (đi chéo dốc lên)
+            const localT = (t - 0.5) * 2;
+            return {
+                lon: pM.lon + localT * (p10.lon - pM.lon),
+                lat: pM.lat + localT * (p10.lat - pM.lat)
+            };
+        }
+    }
+
+    // Khởi tạo các Element Giao diện điều khiển
+    const canvas = document.getElementById('stormCanvas');
+    const ctx = canvas.getContext('2d');
+    const container = document.getElementById('canvasContainer');
+
+    // Tải trước tài nguyên ảnh bản đồ chất lượng cao nền
+    const mapImage = new Image();
+    mapImage.src = 'Ban do Viet Nam.png';
+    mapImage.onload = () => { triggerRedraw(); };
+
+    // Cài đặt xử lý kích thước hiển thị vật lý Canvas (Chống mờ màn hình Retina)
+    function resizeCanvas() {
+        const rect = container.getBoundingClientRect();
+        if (rect.width < 2 || rect.height < 2) return;
+        const dpr = Math.min(window.devicePixelRatio || 1, 2);
+        canvas.width = Math.round(rect.width * dpr);
+        canvas.height = Math.round(rect.height * dpr);
+        ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        canvas.style.width = rect.width + 'px';
+        canvas.style.height = rect.height + 'px';
+        triggerRedraw();
+    }
+    window.addEventListener('resize', resizeCanvas);
+    // Khởi động chạy lần đầu ngay lập tức để lấy khung bao
+    setTimeout(resizeCanvas, 100);
+
+    /* --- TOÁN HỌC MA TRẬN CHUYỂN ĐỔI HỆ TỌA ĐỘ --- */
+    // Đổi từ Kinh/Vĩ thực tế sang tọa độ Pixel trên màn hình vẽ Canvas
+    function geoToPixel(lon, lat) {
+        const rect = container.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+
+        // Nội suy tuyến tính phẳng tỉ lệ thuận
+        const x = ((lon - config.geo.minLon) / (config.geo.maxLon - config.geo.minLon)) * w;
+        // Trục tung màn hình hướng xuống, trục vĩ độ hướng lên phía Bắc nên đảo ngược chiều
+        const y = h - ((lat - config.geo.minLat) / (config.geo.maxLat - config.geo.minLat)) * h;
+        return { x, y };
+    }
+
+    // Đổi ngược từ tọa độ nhấp chuột/Pixel màn hình thành giá trị Kinh/Vĩ độ giải tích toán học
+    function pixelToGeo(x, y) {
+        const rect = container.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+
+        const lon = config.geo.minLon + (x / w) * (config.geo.maxLon - config.geo.minLon);
+        const lat = config.geo.minLat + ((h - y) / h) * (config.geo.maxLat - config.geo.minLat);
+        return {
+            lon: parseFloat(lon.toFixed(1)),
+            lat: parseFloat(lat.toFixed(1))
+        };
+    }
+
+    /* --- ENGINE ĐỒ THỊ VÀ HÌNH VẼ LỚP PHỦ DỮ LIỆU --- */
+    function triggerRedraw() {
+        const rect = container.getBoundingClientRect();
+        const w = rect.width;
+        const h = rect.height;
+        if (w === 0 || h === 0) return;
+
+        ctx.clearRect(0, 0, w, h);
+
+        // 1. Vẽ Layer Bản Đồ Nền Việt Nam Địa Lý kèm độ mờ chuyển cảnh giải tích
+        ctx.save();
+        ctx.globalAlpha = state.mapOpacity;
+        if (mapImage.complete && mapImage.naturalWidth !== 0) {
+            ctx.drawImage(mapImage, 0, 0, w, h);
+        } else {
+            // Nền dự phòng giả lập đại dương màu xanh nhạt
+            ctx.fillStyle = '#e0f2fe';
+            ctx.fillRect(0, 0, w, h);
+        }
+        ctx.restore();
+
+        // 2. Vẽ Hệ lưới toán học Oxy và hệ tọa độ Kinh vĩ độ
+        if (state.gridOpacity > 0) {
+            ctx.save();
+            ctx.globalAlpha = state.gridOpacity;
+            ctx.strokeStyle = 'rgba(45, 139, 111, 0.15)';
+            ctx.lineWidth = 1;
+            ctx.fillStyle = '#2D8B6F';
+            ctx.font = '700 12px "JetBrains Mono", monospace';
+
+            // Vẽ các đường dọc Kinh Tuyến giải tích cách nhau mỗi 2 độ một dòng
+            for (let lon = config.geo.minLon; lon <= config.geo.maxLon; lon += 2) {
+                let pTop = geoToPixel(lon, config.geo.maxLat);
+                let pBot = geoToPixel(lon, config.geo.minLat);
+                ctx.beginPath();
+                ctx.moveTo(pTop.x, pTop.y);
+                ctx.lineTo(pBot.x, pBot.y);
+                ctx.stroke();
+                ctx.fillText(lon + '°E', pBot.x + 2, h - 6);
+            }
+
+            // Vẽ các đường ngang Vĩ Tuyến giải tích cách nhau mỗi 2 độ một dòng
+            for (let lat = config.geo.minLat; lat <= config.geo.maxLat; lat += 2) {
+                let pLeft = geoToPixel(config.geo.minLon, lat);
+                let pRight = geoToPixel(config.geo.maxLon, lat);
+                ctx.beginPath();
+                ctx.moveTo(pLeft.x, pLeft.y);
+                ctx.lineTo(pRight.x, pRight.y);
+                ctx.stroke();
+                ctx.fillText(lat + '°N', 6, pLeft.y - 4);
+            }
+            ctx.restore();
+        }
+
+        // 3. Vẽ Vùng Mây bão Khí tượng xoáy tròn động bao phủ tâm bão
+        const stormCenter = geoToPixel(state.storm.lon, state.storm.lat);
+        drawStormVortex(ctx, stormCenter.x, stormCenter.y);
+
+        // 4. Vẽ Quỹ đạo cố định từ 08h -> 10h kèm hoạt ảnh dòng chảy hướng đi và nhãn mốc
+        if (state.currentStep >= 1) {
+            const p8 = geoToPixel(config.points.t08.lon, config.points.t08.lat);
+            const pM = geoToPixel(config.points.tm.lon, config.points.tm.lat);
+            const p10 = geoToPixel(config.points.t10.lon, config.points.t10.lat);
+            
+            // Vẽ đường đi hoạt ảnh chuyển động chỉ hướng rõ nét qua điểm trung gian M (đi thẳng ngang rồi đi chéo)
+            drawFlowingPath(ctx, p8.x, p8.y, pM.x, pM.y, '#C53030');
+            drawFlowingPath(ctx, pM.x, pM.y, p10.x, p10.y, '#C53030');
+
+            // Hiệu ứng sóng lan tỏa ở điểm xuất phát A thu hút thị giác
+            drawRipple(ctx, p8.x, p8.y, 'rgba(200, 50, 50, 0.5)');
+
+            // Chấm mốc xuất phát phụ cố định nhỏ dạng vòng tròn rỗng thanh lịch
+            ctx.beginPath();
+            ctx.arc(p8.x, p8.y, 5, 0, 2*Math.PI);
+            ctx.fillStyle = '#ffffff';
+            ctx.fill();
+            ctx.strokeStyle = 'var(--p5-teal)';
+            ctx.lineWidth = 2;
+            ctx.stroke();
+
+            // Nhãn chữ cho điểm mốc xuất phát A (08:00)
+            drawTextLabel(ctx, "A (08:00)", p8.x, p8.y - 18, 'center', false);
+            
+            // Nhãn chữ cho điểm hiện tại B (10:00) ở các bước phù hợp
+            if (state.currentStep === 1 || state.currentStep === 2 || state.currentStep === 3 || state.currentStep === 4) {
+                drawTextLabel(ctx, "B (10:00)", p10.x, p10.y - 28, 'center', true);
+            }
+        }
+
+        // 5. Tính năng Vẽ Vectơ dịch chuyển toán học tại Bước 5
+        if (state.currentStep === 5) {
+            const p8 = geoToPixel(config.points.t08.lon, config.points.t08.lat);
+            const p10 = geoToPixel(config.points.t10.lon, config.points.t10.lat);
+            
+            // Vẽ vectơ AB quá khứ đậm nét màu tím
+            drawVectorArrow(ctx, p8.x, p8.y, p10.x, p10.y, '#6B46C1');
+            
+            // Vẽ tiếp đường dẫn hướng di chuyển dự báo động (B -> C)
+            const p12_tgt = geoToPixel(config.points.t12_target.lon, config.points.t12_target.lat);
+            drawFlowingPath(ctx, p10.x, p10.y, p12_tgt.x, p12_tgt.y, '#6B46C1');
+            
+            // Sóng lan tỏa tại vị trí đích dự báo C để báo hiệu điểm cần kéo đến
+            drawRipple(ctx, p12_tgt.x, p12_tgt.y, 'rgba(107, 70, 193, 0.5)');
+
+            // Nhãn định vị các điểm
+            drawTextLabel(ctx, "B (10:00)", p10.x, p10.y - 18, 'center', false);
+            drawTextLabel(ctx, "C (12:00 dự báo)", p12_tgt.x, p12_tgt.y - 18, 'center', true);
+        }
+
+        // 6. Vẽ Điểm Đỏ Tâm Bão chính (Hỗ trợ kéo thả động)
+        ctx.beginPath();
+        ctx.arc(stormCenter.x, stormCenter.y, 7, 0, 2 * Math.PI);
+        ctx.fillStyle = varColor('--danger');
+        ctx.fill();
+        ctx.strokeStyle = '#ffffff';
+        ctx.lineWidth = 2;
+        ctx.stroke();
+
+        // 7. Nhãn hiển thị tọa độ thời gian thực dạng văn bản Toán học bay lơ lửng cạnh tâm bão
+        if (state.currentStep >= 2) {
+            ctx.fillStyle = '#2D8B6F';
+            ctx.font = '700 13px "JetBrains Mono", monospace';
+            let displayString = `(${state.storm.lon.toFixed(1)} ; ${state.storm.lat.toFixed(1)})`;
+            if (state.isSwappedOrder) {
+                // Đảo quy ước lỗi sai hiển thị hoán vị cặp số ở Bước 4 bẫy nhận thức
+                displayString = `(${state.storm.lat.toFixed(1)} ; ${state.storm.lon.toFixed(1)})`;
+            }
+            ctx.fillText(displayString, stormCenter.x + 12, stormCenter.y + 4);
+        }
+
+        // 8. Vẽ đường dóng tọa độ (Projection lines) lên hai trục khi lưới hiển thị (từ Bước 2 trở đi)
+        if (state.gridOpacity > 0) {
+            ctx.save();
+            ctx.strokeStyle = '#C53030';
+            ctx.globalAlpha = state.gridOpacity * 0.7;
+            ctx.lineWidth = 1.5;
+            ctx.setLineDash([3, 3]);
+
+            // Đường dọc xuống cạnh đáy (trục hoành)
+            ctx.beginPath();
+            ctx.moveTo(stormCenter.x, stormCenter.y);
+            ctx.lineTo(stormCenter.x, h);
+            ctx.stroke();
+
+            // Đường ngang sang cạnh trái (trục tung)
+            ctx.beginPath();
+            ctx.moveTo(stormCenter.x, stormCenter.y);
+            ctx.lineTo(0, stormCenter.y);
+            ctx.stroke();
+
+            // Vẽ các nhãn tọa độ trên cạnh biên
+            ctx.setLineDash([]);
+            ctx.globalAlpha = 1.0;
+            
+            // Nhãn Kinh độ ở đáy
+            let lonStr = state.storm.lon.toFixed(1) + '°E';
+            if (state.isSwappedOrder) lonStr = state.storm.lat.toFixed(1) + '°N'; // Bẫy hoán đổi
+            ctx.font = '700 13px "JetBrains Mono", monospace';
+            const lonWidth = ctx.measureText(lonStr).width;
+            
+            ctx.fillStyle = '#C53030';
+            ctx.fillRect(stormCenter.x - lonWidth/2 - 4, h - 22, lonWidth + 8, 16);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(lonStr, stormCenter.x - lonWidth/2, h - 10);
+
+            // Nhãn Vĩ độ ở cạnh trái
+            let latStr = state.storm.lat.toFixed(1) + '°N';
+            if (state.isSwappedOrder) latStr = state.storm.lon.toFixed(1) + '°E'; // Bẫy hoán đổi
+            const latWidth = ctx.measureText(latStr).width;
+            
+            ctx.fillStyle = '#C53030';
+            ctx.fillRect(2, stormCenter.y - 8, latWidth + 8, 16);
+            ctx.fillStyle = '#ffffff';
+            ctx.fillText(latStr, 6, stormCenter.y + 4);
+            
+            ctx.restore();
+        }
+    }
+
+    // Hàm phụ vẽ quầng mây bão xoáy tròn bằng các lớp mờ chồng khéo léo sắc nét
+    function drawStormVortex(ctx, cx, cy) {
+        ctx.save();
+        // Vùng mây ngoài rìa ảnh hưởng cấp 6-8
+        ctx.fillStyle = 'rgba(22, 83, 67, 0.12)';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 75, 0, 2*Math.PI);
+        ctx.fill();
+
+        // Vùng gió trung tâm cấp 8-10
+        ctx.fillStyle = 'rgba(212, 167, 78, 0.22)';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 45, 0, 2*Math.PI);
+        ctx.fill();
+
+        // Lõi bão cực kỳ nguy hiểm
+        ctx.fillStyle = 'rgba(197, 48, 48, 0.25)';
+        ctx.beginPath();
+        ctx.arc(cx, cy, 20, 0, 2*Math.PI);
+        ctx.fill();
+        
+        // Hiệu ứng xoáy động của các dải mây bão (Ngược chiều kim đồng hồ ở Bắc Bán Cầu)
+        const rotation = (performance.now() * 0.0015) % (Math.PI * 2);
+        ctx.translate(cx, cy);
+        ctx.rotate(-rotation);
+        ctx.strokeStyle = 'rgba(22, 83, 67, 0.18)';
+        ctx.lineWidth = 3;
+        for (let i = 0; i < 3; i++) {
+            ctx.beginPath();
+            ctx.arc(0, 0, 25 + i * 15, 0, Math.PI / 2);
+            ctx.stroke();
+            ctx.beginPath();
+            ctx.arc(0, 0, 25 + i * 15, Math.PI, 3 * Math.PI / 2);
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    // Hiệu ứng sóng lan tỏa (Ripple Effect) tại các điểm mốc chính
+    function drawRipple(ctx, x, y, color) {
+        const t = (performance.now() * 0.001) % 1.5;
+        const radius = t * 25;
+        const opacity = 1 - (t / 1.5);
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.globalAlpha = opacity;
+        ctx.beginPath();
+        ctx.arc(x, y, radius, 0, 2 * Math.PI);
+        ctx.stroke();
+        ctx.restore();
+    }
+
+    // Hàm vẽ nhãn chữ có khung nền thanh lịch nổi bật trên bản đồ
+    function drawTextLabel(ctx, text, x, y, align = 'center', isPrimary = false) {
+        ctx.save();
+        ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif';
+        const textWidth = ctx.measureText(text).width;
+        const paddingX = 6;
+        const paddingY = 3;
+        const height = 15;
+        
+        let rx = x - textWidth / 2 - paddingX;
+        if (align === 'left') rx = x - paddingX;
+        if (align === 'right') rx = x - textWidth - paddingX;
+        const ry = y - height / 2 - paddingY;
+        
+        // Sử dụng mã màu hex cụ thể vì Canvas 2D không tự giải quyết được CSS Variables
+        ctx.fillStyle = isPrimary ? '#2D8B6F' : '#ffffff';
+        ctx.strokeStyle = '#2D8B6F';
+        ctx.lineWidth = 1;
+        
+        if (ctx.roundRect) {
+            ctx.beginPath();
+            ctx.roundRect(rx, ry, textWidth + paddingX * 2, height + paddingY * 2, 4);
+            ctx.fill();
+            ctx.stroke();
+        } else {
+            ctx.fillRect(rx, ry, textWidth + paddingX * 2, height + paddingY * 2);
+            ctx.strokeRect(rx, ry, textWidth + paddingX * 2, height + paddingY * 2);
+        }
+        
+        ctx.fillStyle = isPrimary ? '#ffffff' : '#2D8B6F';
+        ctx.textAlign = align;
+        ctx.textBaseline = 'middle';
+        ctx.fillText(text, x, y + 1);
+        ctx.restore();
+    }
+
+    // Vẽ đường đi động có các mũi tên chuyển động chỉ hướng rõ nét
+    function drawFlowingPath(ctx, fromX, fromY, toX, toY, color) {
+        const dx = toX - fromX;
+        const dy = toY - fromY;
+        const dist = Math.hypot(dx, dy);
+        if (dist === 0) return;
+
+        const angle = Math.atan2(dy, dx);
+        
+        // Vẽ đường nền mờ
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 3;
+        ctx.globalAlpha = 0.25;
+        ctx.beginPath();
+        ctx.moveTo(fromX, fromY);
+        ctx.lineTo(toX, toY);
+        ctx.stroke();
+        ctx.restore();
+
+        // Vẽ các mũi tên di chuyển dọc đường đi
+        ctx.save();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 2;
+        ctx.globalAlpha = 0.8;
+        
+        const speed = 0.04; // Tốc độ di chuyển của mũi tên
+        const spacing = 35; // Khoảng cách giữa các mũi tên
+        const offset = (performance.now() * speed) % spacing;
+        
+        for (let d = offset; d < dist; d += spacing) {
+            const px = fromX + (dx / dist) * d;
+            const py = fromY + (dy / dist) * d;
+            
+            ctx.beginPath();
+            const arrowSize = 5;
+            ctx.moveTo(px - arrowSize * Math.cos(angle - Math.PI / 6), py - arrowSize * Math.sin(angle - Math.PI / 6));
+            ctx.lineTo(px, py);
+            ctx.lineTo(px - arrowSize * Math.cos(angle + Math.PI / 6), py - arrowSize * Math.sin(angle + Math.PI / 6));
+            ctx.stroke();
+        }
+        ctx.restore();
+    }
+
+    // Hàm vẽ hình mũi tên biểu diễn vectơ chuyên nghiệp toán học học đường
+    function drawVectorArrow(ctx, fromx, fromy, tox, toy, color) {
+        const headlen = 10; // Chiều dài của ngạnh mũi tên pixel
+        const dx = tox - fromx;
+        const dy = toy - fromy;
+        const angle = Math.atan2(dy, dx);
+        
+        ctx.strokeStyle = color;
+        ctx.fillStyle = color;
+        ctx.lineWidth = 3;
+        
+        // Vẽ thân vectơ phẳng mảnh dẻ sắc sảo
+        ctx.beginPath();
+        ctx.moveTo(fromx, fromy);
+        ctx.lineTo(tox, toy);
+        ctx.stroke();
+        
+        // Vẽ phần ngạnh tam giác nhọn ở ngọn mũi tên vectơ hướng dịch chuyển bão
+        ctx.beginPath();
+        ctx.moveTo(tox, toy);
+        ctx.lineTo(tox - headlen * Math.cos(angle - Math.PI / 6), toy - headlen * Math.sin(angle - Math.PI / 6));
+        ctx.lineTo(tox - headlen * Math.cos(angle + Math.PI / 6), toy - headlen * Math.sin(angle + Math.PI / 6));
+        ctx.closePath();
+        ctx.fill();
+    }
+
+    function varColor(varName) {
+        return getComputedStyle(document.documentElement).getPropertyValue(varName).trim();
+    }
+
+    /* --- ĐIỀU HƯỚNG TIẾN TRÌNH STATE MACHINE 6 BƯỚC --- */
+    const tabs = document.querySelectorAll('.timeline-tab');
+    const overlays = document.querySelectorAll('.step-widget-overlay');
+    const coachSpeech = document.getElementById('aiCoachSpeech');
+
+    tabs.forEach(tab => {
+        tab.addEventListener('click', () => {
+            const targetStep = parseInt(tab.getAttribute('data-step'));
+            switchStep(targetStep);
+        });
+    });
+
+    function updateSidebarDisplay() {
+        const inputX = document.getElementById('inputDataX');
+        const inputY = document.getElementById('inputDataY');
+        if (inputX && document.activeElement !== inputX) {
+            inputX.value = state.storm.lon.toFixed(1);
+        }
+        if (inputY && document.activeElement !== inputY) {
+            inputY.value = state.storm.lat.toFixed(1);
+        }
+    }
+
+    function switchStep(stepNum) {
+        state.currentStep = stepNum;
+        LMS().progress({ id: `step-${stepNum}`, value: stepNum / 6 });
+        LMS().state({ currentStep: stepNum, storm: { ...state.storm } });
+        
+        // Ngắt các luồng chạy tự động ngầm nếu có để tránh xung đột kéo thả tự do
+        state.isAutomatedRunning = false;
+
+        // Cập nhật trạng thái hiển thị sáng/tối của Thanh Tiến Trình Tab hàng ngang dưới đáy
+        tabs.forEach(t => t.classList.remove('active'));
+        document.querySelector(`.timeline-tab[data-step="${stepNum}"]`).classList.add('active');
+
+        // Ẩn toàn bộ các widget lớp phủ canvas nổi
+        overlays.forEach(o => o.style.display = 'none');
+
+        // Thiết lập lại các trạng thái mặc định của các biến bổ trợ
+        state.isSwappedOrder = false;
+        document.getElementById('btnToggleOrder').classList.remove('active');
+
+        // BỘ ĐIỀU PHỐI ĐẶC THÙ CHO TỪNG BƯỚC SƯ PHẠM SÂU SẮC
+        if (stepNum === 1) {
+            document.getElementById('widgetStep1').style.display = 'block';
+            state.mapOpacity = 1.0;
+            state.gridOpacity = 0.0;
+            
+            // Chạy hiệu ứng tự động mô phỏng tâm bão di chuyển t08 -> t10
+            state.isAutomatedRunning = true;
+            runStep1Animation();
+            coachSpeech.innerText = "Em hãy nhìn hành trình tâm bão dịch chuyển từ 08:00 đến 10:00. Hãy thử mô tả bằng ngôn ngữ tự nhiên xem vị trí tâm bão hiện tại đang ở đâu nhé?";
+        } 
+        else if (stepNum === 2) {
+            state.mapOpacity = 0.85;
+            state.gridOpacity = 1.0;
+            // Khóa cứng bão tại điểm 10h đo đạc chuẩn
+            state.storm = { ...config.points.t10 };
+            coachSpeech.innerText = "Lưới kinh vĩ độ địa lý xuất hiện bản chất chính là hệ trục tọa độ Oxy trong Toán học! Lúc này, vị trí tâm bão được chỉ định duy nhất bằng một cặp số rõ ràng (108.5 ; 13.8). Hãy ấn Bước tiếp theo.";
+            // Tự động nhảy sang bước tiếp theo sau vài giây hoặc để học sinh tự do khám phá bấm nút
+        } 
+        else if (stepNum === 3) {
+            document.getElementById('widgetStep3').style.display = 'block';
+            state.mapOpacity = 0.7;
+            state.gridOpacity = 1.0;
+            state.quizSubStep = 'right';
+            setupStep3Quiz();
+            coachSpeech.innerText = "Bây giờ em có toàn quyền làm chủ! Hãy dùng chuột bấm giữ chấm đỏ tâm bão và KÉO SANG PHẢI xem số nào trên nhãn nhảy số thay đổi nhé.";
+        } 
+        else if (stepNum === 4) {
+            document.getElementById('widgetStep4').style.display = 'block';
+            state.mapOpacity = 0.7;
+            state.gridOpacity = 1.0;
+            state.storm = { ...config.points.t10 };
+            coachSpeech.innerText = "Một số bạn thường nghĩ: 'Viết số nào trước cũng được, chỉ là cặp số thôi mà!'. Hãy bật thử nút Gạt đổi thứ tự tọa độ phía trên để nhận diện hậu quả nghiêm trọng khi sai quy ước toán học.";
+        } 
+        else if (stepNum === 5) {
+            document.getElementById('widgetStep5').style.display = 'block';
+            state.mapOpacity = 0.6;
+            state.gridOpacity = 1.0;
+            state.storm = { ...config.points.t10 }; // Đặt tại điểm B 10h để học sinh kéo dịch tiếp sang mốc C 12h
+            coachSpeech.innerText = "Dự báo khí tượng tương lai: Trong 2 tiếng tiếp theo, bão sẽ dịch chuyển theo đúng Vectơ tịnh tiến AB = (-4.0 ; 0.8) đã đo được quá khứ. Hãy cầm điểm đỏ kéo thả đến vị trí dự đoán tương ứng lúc 12:00!";
+        } 
+        else if (stepNum === 6) {
+            document.getElementById('widgetStep6').style.display = 'block';
+            state.mapOpacity = 0.3;
+            state.gridOpacity = 1.0;
+            state.storm = { ...config.points.t12_target };
+            document.getElementById('sldMapOpacity').value = 30;
+            coachSpeech.innerText = "Tuyệt vời! Hãy kéo thanh trượt Slider phía trên để biến mất hoàn toàn bản đồ địa lý thực tế. Khi đó, bài toán thực tế đã biến đổi hoàn toàn thành bài toán giải tích đại số thuần túy trên hệ trục phẳng Oxy.";
+        }
+
+        updateSidebarDisplay();
+        triggerRedraw();
+    }
+
+    // Logic hiệu ứng chạy tự động tại Bước 1 hành trình bão
+    function runStep1Animation() {
+        if (state.animationFrameId) cancelAnimationFrame(state.animationFrameId);
+        state.animStartTime = null;
+        state.isAutomatedRunning = true;
+        state.animationFrameId = requestAnimationFrame(renderLoop);
+    }
+
+    // Tương tác xử lý nộp bài viết tự luận tại Bước 1
+    document.getElementById('btnSubmitStep1').addEventListener('click', () => {
+        const text = document.getElementById('txtDescInput').value.trim();
+        if(!text) {
+            coachSpeech.innerText = "Em hãy nhập vài từ mô tả vị trí tâm bão vào ô trống phía trên trước khi gửi nhé!";
+            return;
+        }
+        coachSpeech.innerHTML = `⚠️ Phản hồi: Các mô tả ngôn từ tự nhiên như của em chưa đủ định lượng chính xác để lệnh sơ tán dân cư an toàn! <strong>Chúng ta bắt buộc phải có một công cụ số hóa chuẩn mực.</strong> Hãy click chọn <span style='color:var(--p5-gold-dark)'>Bước 2</span> dưới timeline.`;
+    });
+
+    // Xem lại hành trình bão tại Bước 1
+    document.getElementById('btnReplayStep1').addEventListener('click', () => {
+        runStep1Animation();
+        coachSpeech.innerText = "Đang phát lại hành trình bão di chuyển từ 08:00 (A) đến 10:00 (B). Hãy quan sát hướng di chuyển của bão!";
+    });
+
+    // Trắc nghiệm tương tác bước 3
+    function setupStep3Quiz() {
+        const qText = document.getElementById('quizQuestion');
+        if (state.quizSubStep === 'right') {
+            qText.innerText = "Nhiệm vụ 1: Kéo tâm bão sang PHẢI, chỉ số nào thay đổi mạnh nhất?";
+        } else {
+            qText.innerText = "Nhiệm vụ 2: Kéo tâm bão LÊN TRÊN, chỉ số nào thay đổi mạnh nhất?";
+        }
+    }
+
+    document.getElementById('btnAnsX').addEventListener('click', () => {
+        handleStep3Answer('X');
+    });
+    document.getElementById('btnAnsY').addEventListener('click', () => {
+        handleStep3Answer('Y');
+    });
+
+    function handleStep3Answer(ans) {
+        if (state.currentStep !== 3) return;
+        const containerWidget = document.getElementById('widgetStep3');
+        
+        if (state.quizSubStep === 'right') {
+            if (ans === 'X') {
+                state.quizSubStep = 'up';
+                setupStep3Quiz();
+                coachSpeech.innerText = "Chính xác! Kinh độ X nằm ngang gọi là Hoành độ trong toán học. Bây giờ hãy thử kéo bão thẳng ĐI LÊN và bấm chọn phương án xem sao.";
+                containerWidget.classList.add('glow-success');
+                setTimeout(() => containerWidget.classList.remove('glow-success'), 800);
+            } else {
+                triggerWidgetShake(containerWidget);
+                coachSpeech.innerText = "Chưa đúng rồi! Kéo sang ngang trục hoành cơ mà, thử nhìn kỹ lại nhãn con số biến đổi cạnh điểm đỏ nhé.";
+            }
+        } else {
+            if (ans === 'Y') {
+                coachSpeech.innerHTML = "🎯 Tuyệt vời, hoàn thành bộ quy tắc! <strong>Hoành độ nằm ngang (X), Tung độ thẳng đứng (Y)</strong>. Hãy bấm chuyển sang <span style='color:var(--p5-gold-dark)'>Bước 4</span> để đối mặt thử thách mới.";
+                containerWidget.classList.add('glow-success');
+                setTimeout(() => containerWidget.classList.remove('glow-success'), 800);
+            } else {
+                triggerWidgetShake(containerWidget);
+                coachSpeech.innerText = "Không phải rồi, kéo lên cao theo trục đứng thẳng thì vĩ độ Y (Tung độ) mới phải thay đổi chứ!";
+            }
+        }
+    }
+
+    function triggerWidgetShake(el) {
+        el.classList.add('shake');
+        setTimeout(() => el.classList.remove('shake'), 400);
+    }
+
+    // Xử lý Bẫy nhận thức đổi thứ tự quy ước ở Bước 4
+    document.getElementById('btnToggleOrder').addEventListener('click', function() {
+        state.isSwappedOrder = !state.isSwappedOrder;
+        this.classList.toggle('active', state.isSwappedOrder);
+        
+        if (state.isSwappedOrder) {
+            // Khi gạt bật lỗi sai: Hoán đổi ngược vị trí (x;y) ban đầu (108.5 ; 13.8) -> (13.8 ; 108.5)
+            // Đưa bão nhảy vọt vị trí lên tít sâu trong nội địa lục địa Trung Quốc sai lệch hoàn toàn thực tế
+            state.storm = { lon: 13.8, lat: 108.5 }; // Toạ độ bị đảo lộn nghịch vị trí hình học
+            coachSpeech.innerHTML = "<strong style='color:var(--danger)'>💥 NGUY HIỂM:</strong> Tâm bão đã lập tức nhảy sai vị trí lên tận sâu trong đất liền Trung Quốc! Việc đảo lộn thứ tự viết (Tung độ viết trước Hoành độ) khiến sai lệch hoàn toàn dữ liệu cứu hộ toàn quốc.";
+            triggerWidgetShake(document.getElementById('widgetStep4'));
+        } else {
+            // Khôi phục trạng thái chuẩn xác hình học giải tích hộ đê
+            state.storm = { ...config.points.t10 };
+            coachSpeech.innerText = "Chính xác! Cặp số vị trí bắt buộc tuân theo quy tắc đóng đinh: Hoành độ x viết trước, Tung độ y viết sau độc tôn. Hãy tắt nút gạt và chuyển sang Bước 5.";
+        }
+        updateSidebarDisplay();
+        triggerRedraw();
+    });
+
+    // Kiểm tra tính năng dự đoán vectơ tịnh tiến tại Bước 5
+    document.getElementById('btnCheckPrediction').addEventListener('click', () => {
+        // Khoảng cách sai số chấp nhận được trong vòng bán kính 0.4 độ kinh vĩ
+        const dist = Math.hypot(state.storm.lon - config.points.t12_target.lon, state.storm.lat - config.points.t12_target.lat);
+        const widget5 = document.getElementById('widgetStep5');
+
+        if (dist <= 0.4) {
+            // Hút điểm dính khớp tuyệt đối hình học giải tích chuẩn xác
+            state.storm = { ...config.points.t12_target };
+            state.predictionCorrect = true;
+            widget5.classList.add('glow-success');
+            coachSpeech.innerHTML = "✅ <strong>HOÀN TOÀN CHÍNH XÁC!</strong> Vị trí dự báo toán học lúc 12h của bão nằm tại tọa độ giải tích $C = B + \\vec{AB} = (108.5 + (-4.0) ; 13.8 + 0.8) = (104.5 ; 14.6)$. Vectơ chính là công cụ tối thượng để dự báo chuyển dịch vật lý!";
+            updateSidebarDisplay();
+            triggerRedraw();
+            LMS().event({ type:'answer', id:'step-5', correct:true });
+            if (!state.completionSent) {
+                state.completionSent = true;
+                LMS().complete({ score:1, maxScore:1 });
+            }
+        } else {
+            triggerWidgetShake(widget5);
+            coachSpeech.innerText = "Vị trí em chọn chưa chính xác với quy luật vectơ tịnh tiến rồi. Hãy chú ý: lấy tọa độ mốc 10h là (108.5 ; 13.8) cộng thêm hoành độ vectơ là -4.0 và tung độ là +0.8 nhé!";
+        }
+    });
+
+    // Thay đổi độ mờ màn hình giải tích thuần túy Bước 6
+    document.getElementById('sldMapOpacity').addEventListener('input', (e) => {
+        const val = parseInt(e.target.value);
+        state.mapOpacity = val / 100.0;
+        triggerRedraw();
+        if (val === 0) {
+            coachSpeech.innerText = "Giờ đây bản đồ thực địa đã biến mất hoàn toàn. Chúng ta chỉ còn lại hệ Oxy thuần túy, các cặp số giải tích và các phép toán vectơ hình học lý thú.";
+        }
+    });
+
+    /* --- CƠ CHẾ KÉO THẢ CHUỘT / ĐIỂM CHẠM TRÊN CANVAS ĐỘNG --- */
+    function getMousePos(evt) {
+        const rect = canvas.getBoundingClientRect();
+        // Tính toán tọa độ chuột chuẩn hóa theo CSS pixel
+        return {
+            x: evt.clientX - rect.left,
+            y: evt.clientY - rect.top
+        };
+    }
+
+    function checkHitStorm(pos) {
+        const stormPos = geoToPixel(state.storm.lon, state.storm.lat);
+        const distance = Math.hypot(pos.x - stormPos.x, pos.y - stormPos.y);
+        return distance <= 18; // Bán kính vùng chạm nhạy 18 pixel tăng trải nghiệm người dùng
+    }
+
+    function handleStart(pos) {
+        // Cho phép tương tác kéo thả tự do tâm bão ở tất cả các bước (trừ khi đang chạy tự động ở Bước 1)
+        if (state.currentStep === 1 && state.isAutomatedRunning) {
+            state.isAutomatedRunning = false;
+            if (state.animationFrameId) cancelAnimationFrame(state.animationFrameId);
+        }
+        
+        if (checkHitStorm(pos)) {
+            state.isDragging = true;
+            canvas.style.cursor = 'grabbing';
+        } else {
+            // Click outside storm: teleport storm to the clicked position and start dragging it
+            const geoCoord = pixelToGeo(pos.x, pos.y);
+            if (geoCoord.lon >= config.geo.minLon && geoCoord.lon <= config.geo.maxLon &&
+                geoCoord.lat >= config.geo.minLat && geoCoord.lat <= config.geo.maxLat) {
+                
+                state.storm.lon = geoCoord.lon;
+                state.storm.lat = geoCoord.lat;
+                state.isDragging = true;
+                canvas.style.cursor = 'grabbing';
+                updateSidebarDisplay();
+                triggerRedraw();
+            }
+        }
+    }
+
+    function handleMove(pos) {
+        if (!state.isDragging) {
+            if (checkHitStorm(pos) && !(state.currentStep === 1 && state.isAutomatedRunning)) {
+                canvas.style.cursor = 'grab';
+            } else {
+                canvas.style.cursor = 'default';
+            }
+            return;
+        }
+
+        // Chuyển đổi vị trí di chuột thành giá trị toạ độ giải tích toán học
+        const geoCoord = pixelToGeo(pos.x, pos.y);
+        
+        // Trói buộc giới hạn vị trí không cho học sinh vô tình kéo tâm bão bay ra ngoài phạm vi bản đồ hiển thị
+        if (geoCoord.lon >= config.geo.minLon && geoCoord.lon <= config.geo.maxLon &&
+            geoCoord.lat >= config.geo.minLat && geoCoord.lat <= config.geo.maxLat) {
+            
+            state.storm.lon = geoCoord.lon;
+            state.storm.lat = geoCoord.lat;
+            
+            updateSidebarDisplay();
+            triggerRedraw();
+        }
+    }
+
+    function handleEnd() {
+        if (state.isDragging) {
+            state.isDragging = false;
+            canvas.style.cursor = 'grab';
+        }
+    }
+
+    // Pointer Events dùng chung cho chuột, bút và cảm ứng; capture giữ kéo ổn định ngoài mép canvas.
+    canvas.addEventListener('pointerdown', (e) => {
+        if (!e.isPrimary) return;
+        canvas.setPointerCapture(e.pointerId);
+        handleStart(getMousePos(e));
+    });
+    canvas.addEventListener('pointermove', (e) => {
+        if (!e.isPrimary) return;
+        handleMove(getMousePos(e));
+    });
+    canvas.addEventListener('pointerup', (e) => {
+        if (canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+        handleEnd();
+    });
+    canvas.addEventListener('pointercancel', handleEnd);
+
+    // Xử lý khi người dùng nhập tọa độ trực tiếp từ bàn phím
+    document.getElementById('inputDataX').addEventListener('input', (e) => {
+        let val = parseFloat(e.target.value);
+        if (!isNaN(val)) {
+            val = Math.max(config.geo.minLon, Math.min(config.geo.maxLon, val));
+            state.storm.lon = val;
+            
+            // Dừng tự động bước 1 nếu người dùng can thiệp
+            if (state.currentStep === 1 && state.isAutomatedRunning) {
+                state.isAutomatedRunning = false;
+                if (state.animationFrameId) cancelAnimationFrame(state.animationFrameId);
+            }
+            triggerRedraw();
+        }
+    });
+
+    document.getElementById('inputDataX').addEventListener('change', (e) => {
+        let val = parseFloat(e.target.value);
+        if (isNaN(val) || val < config.geo.minLon || val > config.geo.maxLon) {
+            state.storm.lon = Math.max(config.geo.minLon, Math.min(config.geo.maxLon, isNaN(val) ? 108.3 : val));
+        }
+        updateSidebarDisplay();
+        triggerRedraw();
+    });
+
+    document.getElementById('inputDataY').addEventListener('input', (e) => {
+        let val = parseFloat(e.target.value);
+        if (!isNaN(val)) {
+            val = Math.max(config.geo.minLat, Math.min(config.geo.maxLat, val));
+            state.storm.lat = val;
+            
+            // Dừng tự động bước 1 nếu người dùng can thiệp
+            if (state.currentStep === 1 && state.isAutomatedRunning) {
+                state.isAutomatedRunning = false;
+                if (state.animationFrameId) cancelAnimationFrame(state.animationFrameId);
+            }
+            triggerRedraw();
+        }
+    });
+
+    document.getElementById('inputDataY').addEventListener('change', (e) => {
+        let val = parseFloat(e.target.value);
+        if (isNaN(val) || val < config.geo.minLat || val > config.geo.maxLat) {
+            state.storm.lat = Math.max(config.geo.minLat, Math.min(config.geo.maxLat, isNaN(val) ? 13.6 : val));
+        }
+        updateSidebarDisplay();
+        triggerRedraw();
+    });
+
+    // Xử lý thay đổi Radio button thủ công bên sườn trái
+    const radios = document.querySelectorAll('input[name="stormTime"]');
+    radios.forEach(radio => {
+        radio.addEventListener('change', (e) => {
+            state.selectedTime = e.target.value;
+            radios.forEach(r => r.parentElement.classList.toggle('active', r.checked));
+            
+            // Đưa tâm bão nhảy tương ứng dữ liệu mốc thời gian nếu không ở chế độ giải tích tự do
+            if (state.currentStep !== 3 && state.currentStep !== 5) {
+                if (state.selectedTime === "08:00") state.storm = { lon: config.points.t08.lon, lat: config.points.t08.lat };
+                if (state.selectedTime === "10:00") state.storm = { lon: config.points.t10.lon, lat: config.points.t10.lat };
+                if (state.selectedTime === "12:00") state.storm = { lon: config.points.t12_target.lon, lat: config.points.t12_target.lat };
+                if (state.selectedTime === "14:00") state.storm = { lon: config.points.t14_target.lon, lat: config.points.t14_target.lat };
+                updateSidebarDisplay();
+                triggerRedraw();
+            }
+        });
+    });
+
+    // RAF chỉ chạy trong lúc có hoạt ảnh; các tương tác tĩnh gọi triggerRedraw trực tiếp.
+    function renderLoop(time) {
+        if (state.isAutomatedRunning && state.currentStep === 1) {
+            if (!state.animStartTime) state.animStartTime = time;
+            let elapsed = time - state.animStartTime;
+            let t = Math.min(elapsed / 3500, 1.0); // 3.5 giây chạy chuyển dịch
+
+            // Nội suy tọa độ bão qua điểm trung gian M (đường đi gấp khúc thẳng -> chéo)
+            const pos = getStormPositionAt(t);
+            state.storm.lon = pos.lon;
+            state.storm.lat = pos.lat;
+
+            // Cập nhật mốc hiển thị sidebar tương ứng
+            if (t < 0.5) {
+                state.selectedTime = "08:00";
+                document.getElementById('lblDataCap').innerText = "Cấp " + config.points.t08.cap;
+                document.getElementById('lblDataSpeed').innerText = config.points.t08.speed + " km/h";
+            } else {
+                state.selectedTime = "10:00";
+                document.getElementById('lblDataCap').innerText = "Cấp " + config.points.t10.cap;
+                document.getElementById('lblDataSpeed').innerText = config.points.t10.speed + " km/h";
+            }
+            
+            // Đồng bộ trạng thái giao diện nút chọn radio bên sườn trái
+            const radios = document.querySelectorAll('input[name="stormTime"]');
+            radios.forEach(r => {
+                r.checked = (r.value === state.selectedTime);
+                r.parentElement.classList.toggle('active', r.value === state.selectedTime);
+            });
+
+            updateSidebarDisplay();
+            
+            if (t >= 1.0) {
+                state.isAutomatedRunning = false;
+            }
+        }
+
+        triggerRedraw();
+        state.animationFrameId = state.isAutomatedRunning
+            ? requestAnimationFrame(renderLoop)
+            : null;
+    }
+
+    // Khởi tạo chạy mô phỏng lần đầu tiên một cách hoàn chỉnh
+    switchStep(1);
+
+
+    // ===== Báo chiều cao thật cho LMS (PHẦN 7.7) — tự thêm =====
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      const _athenaResizeObserver = new ResizeObserver(() => {
+        clearTimeout(window._rz); window._rz = setTimeout(() => {
+          resizeCanvas(); reportHeight();
+        }, 100);
+      });
+      _athenaResizeObserver.observe(document.body);
+    } else {
+      window.setInterval(reportHeight, 1000);
+    }
+</script>
+</body>
+</html>
