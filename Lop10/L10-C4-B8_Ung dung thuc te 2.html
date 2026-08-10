@@ -105,7 +105,8 @@
       background-color: var(--bg-color);
       color: var(--text-main);
       font-family: var(--font-main);
-      line-height: 1.5;
+      font-size: 18px;
+      line-height: 1.7;
       overflow-x: hidden;
       padding-bottom: 2rem;
     }
@@ -118,8 +119,7 @@
 
     /* --- Header --- */
     header {
-      background: linear-gradient(135deg, rgba(45, 139, 111, 0.88) 0%, rgba(26, 122, 94, 0.88) 100%), url('https://www.aiducation.edu.vn/images/fifingfig_Modern_editorial_illustration_of_a_stylized_Vietnames_f0b08847-9f6d-48cf-90ac-b8ed2eb77baf.png') no-repeat center center;
-      background-size: cover;
+      display: none !important;
       border-radius: 12px;
       padding: 0.9rem 1.4rem;
       margin-bottom: 0.85rem;
@@ -260,10 +260,14 @@
       .workspace {
         grid-template-columns: 1fr;
       }
+      .canvas-container { order: -1; }
+    }
 
-      .skin-selector {
-        grid-template-columns: 1fr 1fr;
-      }
+    .intro-text {
+      width: 100%; margin-bottom: 0.85rem; padding: 0.9rem 1.1rem;
+      background: var(--jade-pale); border: 1px solid var(--jade-soft);
+      border-left: 4px solid var(--jade-deep); border-radius: var(--radius-lg);
+      color: var(--ink-2); font-size: 0.85rem; line-height: 1.65;
     }
 
     /* --- Left Sidebar (Controls) --- */
@@ -1186,6 +1190,24 @@
       gap: .4rem;
     }
 
+    .collapsible-panel { width: 100%; }
+    .cp-toggle {
+      width: 100%; min-height: 44px; padding: 0.65rem 0;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      border: 0; border-bottom: 1px solid var(--border); background: transparent;
+      color: var(--primary); font: inherit; font-size: 1rem; font-weight: 700;
+      text-align: left; cursor: pointer;
+    }
+    .cp-toggle > span { display: inline-flex; align-items: center; gap: 0.45rem; }
+    .cp-toggle > span i { color: var(--primary-mid); font-size: 1.15rem; }
+    .cp-chevron { color: var(--text-muted); transition: transform 0.25s ease; }
+    .cp-body {
+      max-height: 1000px; padding-top: 0.75rem; overflow: hidden; opacity: 1;
+      transition: max-height 0.3s ease, opacity 0.2s ease, padding-top 0.3s ease;
+    }
+    .collapsible-panel.collapsed .cp-body { max-height: 0; padding-top: 0; opacity: 0; }
+    .collapsible-panel.collapsed .cp-chevron { transform: rotate(180deg); }
+
     .formula-display {
       align-self: center;
       background: var(--primary-light);
@@ -1337,10 +1359,31 @@
   
     /* Pass 2 (mục E) — vùng chạm tối thiểu 44px cho nút bấm thật trên mobile.
        Không đụng desktop, không thu nhỏ phần tử nào — chỉ nới ra nếu đang < 44px. */
-    @media (max-width: 767px) {
+    @media (max-width: 1024px) {
       button, .btn, a.btn, input[type="button"], input[type="submit"] {
         min-height: 44px;
       }
+      .checkbox-item, .level-item, .skin-tab { min-height: 44px; }
+      input[type="range"]::-webkit-slider-thumb { width: 26px; height: 26px; }
+      input[type="range"]::-moz-range-thumb { width: 26px; height: 26px; }
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 0.5rem 0.375rem 1rem; }
+      .intro-text { margin-bottom: 0.5rem; padding: 0.7rem 0.8rem; }
+      .skin-selector {
+        display: flex; overflow-x: auto; gap: 0.45rem;
+        scrollbar-width: none; -webkit-overflow-scrolling: touch;
+      }
+      .skin-selector::-webkit-scrollbar { display: none; }
+      .skin-tab { flex: 0 0 auto; white-space: nowrap; padding: 0.55rem 0.75rem; }
+      .workspace, .canvas-container, .sidebar { gap: 0.5rem; }
+      .canvas-wrapper { border-radius: 10px; }
+      .info-bar { grid-template-columns: 1fr; }
+      .canvas-overlay { padding: 1rem; }
+      .overlay-icon { width: 52px; height: 52px; }
+      .overlay-title { font-size: 1.15rem; }
+      .remembrance-card { padding-top: 0.6rem; padding-bottom: 0.6rem; }
     }
 </style>
 </head>
@@ -1368,6 +1411,10 @@
         </div>
       </div>
     </header>
+
+    <div class="intro-text">
+      Khám phá cách cộng hai vectơ vận tốc hoặc lực trong bốn tình huống thực tế, điều chỉnh các đại lượng và quan sát vectơ tổng theo quy tắc hình bình hành.
+    </div>
 
     <!-- Tabs Chọn Skin -->
     <div class="skin-selector">
@@ -1780,53 +1827,56 @@
 
       <!-- Bảng Ghi nhớ cốt lõi -->
       <div class="card remembrance-card">
-        <div class="card-title">
-          <i class="ti ti-book-2"></i>
-          <span>Ghi nhớ cốt lõi</span>
-        </div>
+        <div class="collapsible-panel" id="theoryPanel">
+          <button class="cp-toggle" type="button" onclick="toggleCollapsible('theoryPanel')"
+                  aria-expanded="true" aria-controls="theoryPanel-body">
+            <span><i class="ti ti-book-2"></i> Ghi nhớ cốt lõi</span>
+            <i class="ti ti-chevron-up cp-chevron"></i>
+          </button>
+          <div class="cp-body" id="theoryPanel-body">
+            <div class="theory-box">
+              <p>
+                Tổng hợp vectơ (lực, vận tốc) là tìm một vectơ tổng hợp có tác dụng tương đương hai vectơ thành phần, tuân
+                theo <strong>Quy tắc hình bình hành</strong>.
+              </p>
 
-        <div class="theory-box">
-          <p>
-            Tổng hợp vectơ (lực, vận tốc) là tìm một vectơ tổng hợp có tác dụng tương đương hai vectơ thành phần, tuân
-            theo <strong>Quy tắc hình bình hành</strong>.
-          </p>
+              <div id="math-analysis-box" style="display: block;">
+                <p style="margin-bottom:0.25rem;">Độ lớn của vectơ tổng hợp được tính theo <strong>Định lí Cosin tổng
+                    quát</strong>:</p>
+                <div class="formula-display">
+                  R = <span class="sqrt-container"><span class="sqrt-symbol">&radic;</span><span class="sqrt-content">A² +
+                      B² + 2 &middot; A &middot; B &middot; cos(&alpha;)</span></span>
+                </div>
+                <p style="font-size:0.74rem; color:var(--text-muted); text-align:center;">Trong đó &alpha; là góc giữa hai
+                  vectơ thành phần <span class="vec">A</span> và <span class="vec">B</span>.</p>
+              </div>
 
-          <div id="math-analysis-box" style="display: block;">
-            <p style="margin-bottom:0.25rem;">Độ lớn của vectơ tổng hợp được tính theo <strong>Định lí Cosin tổng
-                quát</strong>:</p>
-            <div class="formula-display">
-              R = <span class="sqrt-container"><span class="sqrt-symbol">&radic;</span><span class="sqrt-content">A² +
-                  B² + 2 &middot; A &middot; B &middot; cos(&alpha;)</span></span>
+              <div class="theory-special-cases">
+                <div class="special-case-item">
+                  <span>Cùng hướng (&alpha; = 0°):</span>
+                  <span>R = A + B (Max)</span>
+                </div>
+                <div class="special-case-item">
+                  <span>Vuông góc (&alpha; = 90°):</span>
+                  <span>R = <span class="sqrt-container"><span class="sqrt-symbol">&radic;</span><span
+                        class="sqrt-content">A² + B²</span></span> (Pythagore)</span>
+                </div>
+                <div class="special-case-item">
+                  <span>Ngược hướng (&alpha; = 180°):</span>
+                  <span>R = |A - B| (Min)</span>
+                </div>
+              </div>
             </div>
-            <p style="font-size:0.74rem; color:var(--text-muted); text-align:center;">Trong đó &alpha; là góc giữa hai
-              vectơ thành phần <span class="vec">A</span> và <span class="vec">B</span>.</p>
+
+            <div class="theory-tip">
+              <i class="ti ti-bulb"></i>
+              <div id="theory-tip-text">
+                Mẹo: Để khử bớt tác động lệch dòng chảy của dòng nước (hoặc gió), hãy điều khiển phương chuyển động của vật
+                chếch ngược chiều tác dụng ngoại lực một góc phù hợp.
+              </div>
+            </div>
           </div>
-
-          <div class="theory-special-cases">
-            <div class="special-case-item">
-              <span>Cùng hướng (&alpha; = 0°):</span>
-              <span>R = A + B (Max)</span>
-            </div>
-            <div class="special-case-item">
-              <span>Vuông góc (&alpha; = 90°):</span>
-              <span>R = <span class="sqrt-container"><span class="sqrt-symbol">&radic;</span><span
-                    class="sqrt-content">A² + B²</span></span> (Pythagore)</span>
-            </div>
-            <div class="special-case-item">
-              <span>Ngược hướng (&alpha; = 180°):</span>
-              <span>R = |A - B| (Min)</span>
-            </div>
-          </div>
         </div>
-
-        <div class="theory-tip">
-          <i class="ti ti-bulb"></i>
-          <div id="theory-tip-text">
-            Mẹo: Để khử bớt tác động lệch dòng chảy của dòng nước (hoặc gió), hãy điều khiển phương chuyển động của vật
-            chếch ngược chiều tác dụng ngoại lực một góc phù hợp.
-          </div>
-        </div>
-
       </div>
 
     </div>
@@ -1853,6 +1903,24 @@
   <script>
     // ===== LMS safe accessor (PHẦN 7.2 design Toán) — tự thêm, không đụng logic khác =====
     function LMS(){return window.AiducationLMS||{ready:function(){},progress:function(){},event:function(){},state:function(){},complete:function(){},resize:function(){}};}
+
+    function toggleCollapsible(id) {
+      const panel = document.getElementById(id);
+      if (!panel) return;
+      const collapsed = panel.classList.toggle('collapsed');
+      const button = panel.querySelector('.cp-toggle');
+      if (button) button.setAttribute('aria-expanded', String(!collapsed));
+      requestAnimationFrame(reportHeight);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const panel = document.getElementById('theoryPanel');
+      if (!panel) return;
+      const collapsed = window.matchMedia('(max-width: 768px)').matches;
+      panel.classList.toggle('collapsed', collapsed);
+      const button = panel.querySelector('.cp-toggle');
+      if (button) button.setAttribute('aria-expanded', String(!collapsed));
+    });
 
     // --- Vector 2D helper functions ---
     const Vec2 = {
@@ -2444,7 +2512,7 @@
         // Step 1: Draw vectors separated
         drawArrow(mCtx, 60, 110, 60 + v1.x, 110 + v1.y, '#3CA57A', 2.5);
         mCtx.fillStyle = '#3CA57A';
-        mCtx.font = 'bold 12px Courier New';
+        mCtx.font = 'bold 12px "JetBrains Mono", monospace';
         mCtx.fillText("v1", 60 + v1.x / 2 - 10, 110 + v1.y / 2 - 10);
 
         drawArrow(mCtx, 280, 50, 280 + v2.x, 50 + v2.y, '#4E7F92', 2.5);
@@ -2456,7 +2524,7 @@
         mCtx.arc(ox, oy, 4, 0, Math.PI * 2);
         mCtx.fillStyle = '#1A1A1A';
         mCtx.fill();
-        mCtx.font = '11px Courier New';
+        mCtx.font = '11px "JetBrains Mono", monospace';
         mCtx.fillText("O", ox - 15, oy + 5);
 
         drawArrow(mCtx, ox, oy, ox + v1.x, oy + v1.y, '#3CA57A', 2.5);
@@ -2506,7 +2574,7 @@
         const res = Vec2.add(v1, v2);
         drawArrow(mCtx, ox, oy, ox + res.x, oy + res.y, '#E8A24A', 4);
         mCtx.fillStyle = '#CE8A33';
-        mCtx.font = 'bold 12px Courier New';
+        mCtx.font = 'bold 12px "JetBrains Mono", monospace';
         mCtx.fillText("R", ox + res.x + 8, oy + res.y);
       }
       mCtx.restore();
@@ -4385,8 +4453,8 @@
 
     function getCanvasMousePos(e) {
       const rect = canvas.getBoundingClientRect();
-      const clientX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
-      const clientY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+      const clientX = e.clientX - rect.left;
+      const clientY = e.clientY - rect.top;
       // Map to CW/CH coordinates due to canvas scaling bounding
       return {
         x: clientX * (CW / rect.width),
@@ -4419,6 +4487,7 @@
           dragMode = 'f2_end';
           canvas.style.cursor = 'grabbing';
         }
+        if (dragMode) canvas.setPointerCapture(e.pointerId);
       };
 
       const moveDrag = (e) => {
@@ -4488,21 +4557,21 @@
         draw();
       };
 
-      const endDrag = () => {
+      const endDrag = (e) => {
         if (dragMode) {
           dragMode = null;
           canvas.style.cursor = 'default';
         }
+        if (e && canvas.hasPointerCapture && canvas.hasPointerCapture(e.pointerId)) {
+          canvas.releasePointerCapture(e.pointerId);
+        }
       };
 
-      canvas.addEventListener('mousedown', startDrag);
-      canvas.addEventListener('mousemove', moveDrag);
-      canvas.addEventListener('mouseup', endDrag);
-      canvas.addEventListener('mouseleave', endDrag);
-
-      canvas.addEventListener('touchstart', startDrag, { passive: true });
-      canvas.addEventListener('touchmove', moveDrag, { passive: true });
-      canvas.addEventListener('touchend', endDrag);
+      canvas.style.touchAction = 'none';
+      canvas.addEventListener('pointerdown', startDrag);
+      canvas.addEventListener('pointermove', moveDrag);
+      canvas.addEventListener('pointerup', endDrag);
+      canvas.addEventListener('pointercancel', endDrag);
     }
 
     // --- Action triggering simulation ---
@@ -4858,10 +4927,14 @@
       LMS().resize({ height: h });
     }
     window.addEventListener('load', reportHeight);
-    const _athenaResizeObserver = new ResizeObserver(() => {
-      clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
-    });
-    _athenaResizeObserver.observe(document.body);
+    if (typeof ResizeObserver !== 'undefined') {
+      const _athenaResizeObserver = new ResizeObserver(() => {
+        clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+      });
+      _athenaResizeObserver.observe(document.body);
+    } else {
+      setInterval(reportHeight, 800);
+    }
 </script>
 </body>
 
