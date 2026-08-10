@@ -1,0 +1,1168 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mối Quan Hệ Giữa Các GTLG Của Hai Góc Bù Nhau</title>
+  <script type="application/json" id="athena-context">
+{
+  "title": "Mối Quan Hệ Giữa Các Giá Trị Lượng Giác Của Hai Góc Bù Nhau",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Hiểu bản chất hình học: điểm M' (ứng với góc bù 180°−α) là điểm đối xứng của M (ứng với góc α) qua trục Oy trên đường tròn lượng giác.",
+    "Tự khám phá và ghi nhớ công thức sin(180°−α) = sin α (tung độ giữ nguyên) và cos(180°−α) = −cos α (hoành độ đổi dấu).",
+    "Vận dụng thành thạo bảng giá trị lượng giác của các góc đặc biệt qua quiz điền giá trị."
+  ],
+  "structure": [
+    { "id": "canvasWrap1", "title": "Module 1 — Tìm góc có sin bằng sin α" },
+    { "id": "canvasWrap2", "title": "Module 2 — Tìm góc có cos liên quan cos α" },
+    { "id": "quizSection", "title": "Quiz — Giá trị lượng giác góc đặc biệt" }
+  ],
+  "athenaGuidance": "Bài học về mối quan hệ giữa GTLG của hai góc bù nhau (α và 180°−α), qua đường tròn lượng giác đơn vị. Module 1: học sinh kéo điểm M' (tím) dọc theo cung tròn đến vị trí mà họ đoán có sin bằng sin α (so với điểm M cố định ứng với góc α), bấm 'Kiểm tra' để xem đúng/sai, có thể đổi góc α ngẫu nhiên bằng nút 'Thử góc khác'. Kết luận cần dẫn dắt học sinh tự rút ra: M' là điểm đối xứng của M qua trục Oy, tung độ y₀ hai điểm luôn bằng nhau → sin(180°−α) = sin α. Module 2 tương tự nhưng với cos: học sinh kéo M' đến vị trí có cos bằng cos α, kết luận cần dẫn dắt: hoành độ x₀ của M và M' ngược dấu nhau khi đối xứng qua Oy → cos(180°−α) = −cos α. Module 3 là Quiz: mỗi lần bấm 'Góc mới' app chọn một góc đặc biệt ngẫu nhiên, hiển thị vị trí M trên đường tròn, học sinh chọn chip (giá trị số) tương ứng để điền đủ 4 ô sin/cos/tan/cot của góc đó rồi bấm 'Kiểm tra'; có nút 'Xem đáp án' xuất hiện nếu học sinh làm sai — vì góc và đáp án được sinh ngẫu nhiên mỗi lần, KHÔNG có một bộ câu hỏi/đáp án cố định để liệt kê, Athena chỉ cần hướng dẫn học sinh nhớ lại bảng giá trị lượng giác góc đặc biệt (0°, 30°, 45°, 60°, 90°, 120°, 135°, 150°, 180°) và quy tắc góc bù ở trên để tự tính, không tự tính hộ và đọc thẳng đáp số."
+}
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    /* DESIGN TOKENS - Preset 5: Cá Chép Hoá Rồng */
+    :root {
+  /* Neutrals · giấy & mực */
+  --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC;
+  --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
+  --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+
+  /* Jade · hành động chính */
+  --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F;
+  --jade-text:#1B5E48; --jade-soft:#A9D0BE; --jade-pale:#DCEAE1;
+
+  /* Sage · phụ trợ */
+  --sage:#A8C9B8; --sage-deep:#7CA792; --sage-text:#46685A; --sage-pale:#E1ECE4;
+
+  /* Accent · điểm nhấn ấm */
+  --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+
+  /* Semantic · đúng/sai/cảnh báo/info */
+  --correct:#2D8B6F; --correct-bg:#DCEAE1;
+  --wrong:#C15F3C;   --wrong-bg:#F3E2D6;
+  --warning:#C58A2E; --warning-bg:#F5E7CB;
+  --info:#4E7F92;    --info-bg:#DCE7EB;
+
+  --white:#FFFFFF;
+  --radius:10px; --radius-lg:14px; --radius-sm:6px;
+  --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+  --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+  --shadow-lg: 0 14px 38px rgba(20, 67, 47, 0.12);
+
+  /* Illustration only · fill phẳng cho minh hoạ (KHÔNG dùng cho UI/text) */
+  --il-terracotta:#C1704B; --il-brick:#9E4A2E; --il-ochre:#C99A3C; --il-olive:#8A9A5B;
+  --il-forest:#2E6B52; --il-dusty-blue:#6E93A6; --il-slate:#4E6E7E; --il-mauve:#8A6A7E; --il-sand:#D8C4A0;
+
+  /* Vector màu canvas Vật lý/Toán (cộng lực, cộng vận tốc...) — PHẦN 1.1 file design Toán */
+  --color-v1: var(--jade); --color-v2: var(--info);
+  --color-resultant: var(--accent); --color-force-red: var(--wrong); --color-gravity: var(--ink-3);
+
+  /* --- alias cho code cũ (giữ để var(--ten-cu) phía dưới vẫn chạy đúng màu mới) --- */
+  --primary: var(--jade-deep);
+  --primary-mid: var(--jade);
+  --primary-light: var(--jade-pale);
+  --accent-dark: var(--accent-deep);
+  --accent-light: var(--accent-pale);
+  --teal-mid: var(--jade-text);
+  --teal-light: var(--jade-pale);
+  --green: var(--correct);
+  --green-light: var(--correct-bg);
+  --red: var(--wrong);
+  --red-light: var(--wrong-bg);
+  --amber: var(--warning);
+  --amber-dark: var(--warning);
+  --blue: var(--info);
+  --orange: var(--warning);
+  --bg: var(--cream);
+  --surface: var(--white);
+  --border: var(--paper-line);
+  --text: var(--ink);
+  --text-2: var(--ink-2);
+  --text-3: var(--ink-3);
+}
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      font-size: 15px; line-height: 1.6;
+      color: var(--text); background: var(--bg);
+      padding: 2rem 1rem;
+    }
+    .container { max-width: 860px; margin: 0 auto; display: flex; flex-direction: column; gap: 1.5rem; }
+
+    /* HEADER */
+    /* Pass 2 (mục A, Loại B) — header hero trang trí, không có id JS-bound bên trong -> ẩn. */
+    .p5-header { display: none !important; }
+    .p5-header {
+      width: 100%; background-image: var(--header-img);
+      background-position: center 30%; background-size: cover; background-repeat: no-repeat;
+      border-radius: var(--radius-lg); padding: 1.5rem 2rem;
+      position: relative; overflow: hidden;
+      box-shadow: 0 4px 20px rgba(45, 139, 111,0.2);
+    }
+    .p5-header::before {
+      content: ''; position: absolute; inset: 0;
+      background: linear-gradient(90deg, rgba(45, 139, 111,0.88) 0%, rgba(45, 139, 111,0.45) 100%);
+      z-index: 1;
+    }
+    .p5-header > * { position: relative; z-index: 2; }
+    .p5-badge { color: var(--accent); font-size: 0.85rem; font-weight: 700; text-transform: uppercase; margin-bottom: 6px; display: flex; align-items: center; gap: 8px; letter-spacing: 0.05em; }
+    .p5-header h1 { color: #fff; font-size: 1.55rem; font-weight: 700; margin-bottom: 4px; text-shadow: 0 2px 8px rgba(0,0,0,0.35); }
+    .p5-desc { color: rgba(255,255,255,0.85); font-size: 0.9rem; text-shadow: 0 1px 3px rgba(0,0,0,0.2); }
+
+    /* INFO PANEL */
+    .p5-info-panel { display: flex; border-radius: var(--radius-lg); overflow: hidden; box-shadow: 0 2px 10px rgba(0,0,0,0.05); }
+    .p5-col { flex: 1; padding: 1.1rem 1.25rem; }
+    .p5-col-observe { background: #FCF9FB; border: 1px solid #FFABC7; border-radius: 14px 0 0 14px; border-right: none; }
+    .p5-col-guide { background: #EAF6FC; border: 1px solid #7BB9E5; border-radius: 0 14px 14px 0; }
+    .p5-col-label { display: flex; align-items: center; gap: 5px; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--primary); margin-bottom: 8px; }
+    .p5-col ul { list-style: none; }
+    .p5-col ul li { font-size: 0.85rem; color: var(--text-2); margin-bottom: 4px; display: flex; gap: 6px; }
+    .p5-col ul li i { color: var(--primary); font-size: 14px; margin-top: 3px; }
+
+    /* SIM WRAP */
+    .sim-wrap {
+      background: var(--surface); border-radius: var(--radius-lg); padding: 1.5rem;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.04);
+      min-height: 520px;
+      display: flex; flex-direction: column;
+    }
+    @media (max-width: 1023px) {
+      .sim-wrap { min-height: 480px; }
+    }
+    .sim-title { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom: 1rem; display: flex; align-items: center; gap: 8px; }
+    .sim-canvas-wrap { position: relative; width: 100%; height: 420px; border: 1px solid var(--border); border-radius: var(--radius); overflow: hidden; background: #FAFAFA; margin-bottom: 1rem; cursor: crosshair; touch-action: none; }
+    .sim-canvas-wrap.small { height: 300px; }
+    canvas { display: block; width: 100%; height: 100%; }
+
+    /* Floating Canvas Zoom Controls (Unified Vertical Widget) */
+    .canvas-zoom-controls {
+      position: absolute; top: 12px; right: 12px; z-index: 15;
+      display: flex; flex-direction: column;
+      background: rgba(250, 247, 240, 0.55);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(229, 222, 207, 0.6); border-radius: var(--radius);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); overflow: hidden;
+      opacity: 0.8; transition: opacity 0.2s ease, background 0.2s ease;
+    }
+    .canvas-zoom-controls:hover { opacity: 1; background: rgba(255, 255, 255, 0.92); }
+    .btn-canvas-zoom {
+      width: 36px; height: 36px; padding: 0; background: transparent; border: none;
+      font-size: 16px; font-weight: 600; cursor: pointer; transition: background .2s, color .2s;
+      color: var(--ink-2); display: flex; align-items: center; justify-content: center;
+    }
+    .btn-canvas-zoom:not(:last-child) { border-bottom: 1px solid rgba(229, 222, 207, 0.6); }
+    .btn-canvas-zoom:hover { background: var(--jade-pale); color: var(--jade-deep); }
+    .btn-canvas-zoom:active { background: var(--sage-pale); }
+
+    .coord-bar {
+      position: absolute; bottom: 4px; right: 4px; z-index: 12;
+      font-size: 11px; font-weight: 500; color: var(--ink-3);
+      font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums;
+      background: rgba(250, 247, 240, 0.5); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(229, 222, 207, 0.5);
+      opacity: 0.8; pointer-events: none;
+    }
+
+    .hint-text:empty { display: none; }
+
+    .tooltip { position: absolute; background: rgba(45, 139, 111,0.95); color: #fff; padding: 6px 10px; border-radius: 6px; font-size: 12px; font-family: 'JetBrains Mono', 'Courier New', monospace; pointer-events: none; opacity: 0; transition: opacity 0.2s; transform: translate(-50%,-100%); margin-top: -10px; white-space: nowrap; z-index: 10; font-weight: 700; }
+
+    /* DATA MONITOR */
+    .data-monitor { display: grid; grid-template-columns: repeat(3,1fr); gap: 10px; margin-bottom: 1rem; }
+    .data-card { background: #F8FAFC; border: 1px solid var(--border); border-radius: 8px; padding: 10px 14px; text-align: center; transition: all 0.3s; }
+    .data-card .label { font-size: 11px; color: var(--text-3); font-weight: 600; text-transform: uppercase; margin-bottom: 4px; }
+    .data-card .value { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 1.1rem; font-weight: 700; color: var(--primary); }
+    .data-card.sin-card { border-color: #A7D7B8; background: #F0FDF4; }
+    .data-card.sin-card .value { color: var(--green); }
+    .data-card.cos-card { border-color: #FFCBA4; background: #FFF3EC; }
+    .data-card.cos-card .value { color: var(--orange); }
+    .data-card.prime-card { border-color: #D8B4FE; background: #FAF5FF; }
+    .data-card.prime-card .value { color: var(--purple); }
+
+    /* CONTROLS */
+    .p5-controls { border: 1px solid #B0D4C4; border-radius: var(--radius-lg); overflow: hidden; margin-bottom: 1rem; }
+    .p5-ctrl-header { padding: 0.6rem 1.2rem; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.6px; color: var(--primary); display: flex; align-items: center; gap: 5px; background: #F4FBF7; border-bottom: 1px solid #B0D4C4; }
+    .p5-ctrl-row { display: flex; align-items: center; padding: 0.7rem 1.2rem; gap: 12px; border-bottom: 1px solid #E2E8F0; flex-wrap: wrap; }
+    .p5-ctrl-row:last-child { border-bottom: none; }
+    .p5-row-1 { background: #FFF5F8; }
+    .p5-row-2 { background: #EAF6FC; }
+    .p5-row-3 { background: #F5F0FF; }
+    .p5-ctrl-label { min-width: 120px; font-size: 0.85rem; font-weight: 600; display: flex; align-items: center; gap: 6px; }
+    .p5-ctrl-label i { color: var(--primary); font-size: 16px; }
+    .btn-group { display: flex; gap: 8px; flex-wrap: wrap; flex: 1; }
+
+    /* BUTTONS */
+    .p5-btn { padding: 6px 14px; border-radius: 20px; font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .2s; border: 1.5px solid var(--border); background: #F8FAFC; color: var(--text-2); display: inline-flex; align-items: center; gap: 5px; }
+    .p5-btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+    .p5-btn.active { background: var(--primary); color: #fff; border-color: var(--primary); box-shadow: 0 4px 12px rgba(45, 139, 111,0.25); }
+    .p5-btn.btn-check { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .p5-btn.btn-check:hover { background: var(--teal-mid); border-color: var(--teal-mid); color: #fff; }
+    .p5-btn.btn-next { background: var(--accent); color: var(--primary); border-color: var(--accent-dark); font-weight: 700; display: none; }
+    .p5-btn.btn-next:hover { background: #e8b84a; }
+    .p5-btn-reset { border: 1.5px dashed var(--border); background: transparent; }
+    .p5-btn-reset:hover { border-style: solid; border-color: var(--primary-mid); color: var(--primary-mid); background: #F0FDF8; }
+
+    /* EXPLAIN BOX */
+    .p5-explain { background: #F0FDF8; border: 1px solid #6EE7B7; border-left: 4px solid var(--primary-mid); border-radius: var(--radius-lg); padding: 1rem 1.2rem; transition: all 0.3s; margin-bottom: 1rem; }
+    .p5-explain.alert { background: #FFF8E1; border-color: #FFE082; border-left-color: var(--amber); }
+    .p5-explain.success { background: #F0FDF4; border-color: #6EE7B7; border-left-color: var(--green); }
+    .p5-explain.error { background: #FFF1F1; border-color: #FECACA; border-left-color: var(--red); }
+    .p5-explain-title { display: flex; align-items: center; gap: 7px; font-size: 0.9rem; font-weight: 700; color: var(--primary); margin-bottom: 6px; }
+    .p5-explain.alert .p5-explain-title { color: var(--amber-dark); }
+    .p5-explain.success .p5-explain-title { color: var(--green); }
+    .p5-explain.error .p5-explain-title { color: var(--red); }
+    .p5-explain-body { font-size: 0.85rem; color: var(--text-2); line-height: 1.7; }
+    .p5-explain-body b { color: var(--text); }
+    .highlight-val { font-family: 'JetBrains Mono', 'Courier New', monospace; font-weight: 700; padding: 2px 6px; border-radius: 4px; background: rgba(0,0,0,0.06); }
+
+    /* THEORY BOX */
+    .theory-box { display: none; background: linear-gradient(135deg, #DCEAE1, #FDF6E3); border: 2px solid var(--accent); border-radius: var(--radius-lg); padding: 1.2rem 1.5rem; margin-top: 1rem; }
+    .theory-box.show { display: block; animation: fadeIn 0.5s ease; }
+    .theory-title { font-size: 0.95rem; font-weight: 700; color: var(--primary); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+    .theory-formula { font-family: 'JetBrains Mono', 'Courier New', monospace; font-size: 1rem; font-weight: 700; background: white; border-radius: 8px; padding: 10px 16px; margin: 6px 0; display: inline-block; color: var(--primary); border-left: 4px solid var(--primary-mid); }
+
+    /* SECTION DIVIDER */
+    .sdiv { display: flex; align-items: center; text-align: center; margin: 0.5rem 0; }
+    .sdiv::before, .sdiv::after { content: ''; flex: 1; border-bottom: 1px solid var(--border); }
+    .sdiv span { padding: 0 15px; font-size: 11px; font-weight: 700; color: var(--text-3); letter-spacing: 1px; text-transform: uppercase; }
+
+    /* QUIZ */
+    .quiz-wrap { background: var(--surface); border-radius: var(--radius-lg); padding: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+    .quiz-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 1rem; flex-wrap: wrap; gap: 8px; }
+    .quiz-title { font-weight: 700; font-size: 1rem; color: var(--primary); display: flex; align-items: center; gap: 8px; }
+    .quiz-row { padding: 12px 0; border-bottom: 1px dashed var(--border); }
+    .quiz-row:last-of-type { border-bottom: none; }
+    .quiz-row-label { font-family: 'JetBrains Mono', 'Courier New', monospace; font-weight: 700; font-size: 1rem; color: var(--text); margin-bottom: 8px; }
+    .chip-grid { display: flex; flex-wrap: wrap; gap: 6px; margin-bottom: 6px; }
+    .chip {
+      padding: 5px 12px; border-radius: 20px; border: 1.5px solid var(--border);
+      background: #F8FAFC; cursor: pointer; font-size: 0.85rem; font-weight: 600;
+      font-family: 'JetBrains Mono', 'Courier New', monospace; transition: all .15s; color: var(--text-2);
+    }
+    .chip:hover { border-color: var(--primary); color: var(--primary); background: var(--primary-light); }
+    .chip.selected { background: var(--primary); color: #fff; border-color: var(--primary); }
+    .chip.correct { background: var(--green); color: #fff; border-color: var(--green); }
+    .chip.wrong { background: var(--red); color: #fff; border-color: var(--red); }
+    .quiz-feedback-row { font-size: 0.82rem; min-height: 20px; margin-top: 4px; padding: 6px 10px; border-radius: 6px; display: none; }
+    .quiz-feedback-row.show { display: block; }
+    .quiz-feedback-row.fb-ok { background: var(--green-light); color: var(--green); }
+    .quiz-feedback-row.fb-err { background: var(--red-light); color: var(--red); }
+    .quiz-actions { display: flex; gap: 10px; margin-top: 1.5rem; flex-wrap: wrap; }
+
+    /* CONFETTI */
+    .confetti-wrap { position: fixed; inset: 0; pointer-events: none; z-index: 999; overflow: hidden; display: none; }
+    .confetti-wrap.show { display: block; }
+    .confetti-piece { position: absolute; width: 10px; height: 10px; opacity: 0; animation: confettiFall 1.8s ease-in forwards; }
+    @keyframes confettiFall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(110vh) rotate(720deg); opacity: 0; }
+    }
+    @keyframes fadeIn { from { opacity: 0; transform: translateY(8px); } to { opacity: 1; transform: none; } }
+    @keyframes pulse { 0%,100% { opacity:1; } 50% { opacity:0.5; } }
+    .pulsing { animation: pulse 0.8s ease infinite; }
+  
+    /* Pass 2 (mục E) — vùng chạm tối thiểu 44px cho nút bấm thật trên mobile. */
+    @media (max-width: 767px) {
+      button, .btn, a.btn, input[type="button"], input[type="submit"] {
+        min-height: 44px;
+      }
+    }
+
+    /* 3 Breakpoints Tuning: 375px (Mobile Portrait), 768px (Tablet), 1280px (Desktop) */
+    @media (max-width: 480px) {
+      .container { padding: 0 4px; }
+      .sim-wrap, .quiz-wrap { padding: 1rem 0.75rem; }
+      .sim-canvas-wrap { height: 340px; }
+      .p5-ctrl-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .p5-ctrl-label { min-width: auto; }
+      .data-monitor { grid-template-columns: repeat(2, 1fr); }
+      .quiz-options { flex-wrap: wrap; }
+      .quiz-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .quiz-label { width: auto; }
+    }
+
+    /* Pass 2 (mục C) — thu gọn nội dung dài phía trên canvas, mặc định đóng trên mobile. */
+    .collapsible-panel { width: 100%; }
+    .cp-toggle {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      min-height: 44px; padding: 0.65rem 1rem; background: var(--white);
+      border: 1px solid var(--paper-line); border-radius: var(--radius-lg);
+      cursor: pointer; font-weight: 600; font-size: 0.85rem; color: var(--ink);
+    }
+    .cp-toggle span { display: flex; align-items: center; gap: 6px; }
+    .cp-chevron { transition: transform 0.25s ease; color: var(--ink-3); }
+    .cp-body {
+      overflow: hidden; max-height: 1200px; margin-top: 0.5rem;
+      transition: max-height 0.3s ease, opacity 0.2s ease, margin-top 0.3s ease;
+    }
+    .collapsible-panel.collapsed .cp-body { max-height: 0; opacity: 0; margin-top: 0; }
+    .collapsible-panel.collapsed .cp-chevron { transform: rotate(180deg); }
+</style>
+</head>
+<body>
+<div class="confetti-wrap" id="confettiWrap"></div>
+<div class="container">
+
+  <!-- HEADER -->
+  <header class="p5-header">
+    <div class="p5-badge"><i class="ti ti-geometry"></i> Lượng Giác Lớp 10</div>
+    <h1>MỐI QUAN HỆ GTLG CỦA HAI GÓC BÙ NHAU</h1>
+    <div class="p5-desc">Khám phá bản chất hình học của sin(180°−α) = sinα và cos(180°−α) = −cosα qua đường tròn đơn vị.</div>
+  </header>
+
+  <!-- INFO PANEL — Pass 2 (mục C): bọc collapsible-panel, mặc định thu gọn trên mobile -->
+  <div class="collapsible-panel" id="guidePanel1">
+    <button class="cp-toggle" onclick="toggleCollapsible('guidePanel1')"
+            aria-expanded="true" aria-controls="guidePanel1-body">
+      <span><i class="ti ti-info-circle"></i> Mục đích & hướng dẫn</span>
+      <i class="ti ti-chevron-up cp-chevron"></i>
+    </button>
+    <div class="cp-body" id="guidePanel1-body">
+      <div class="p5-info-panel">
+        <div class="p5-col p5-col-observe">
+          <div class="p5-col-label"><i class="ti ti-target"></i> Mục đích</div>
+          <ul>
+            <li><i class="ti ti-point"></i><span>Hiểu bản chất hình học: M' là điểm đối xứng M qua trục Oy.</span></li>
+            <li><i class="ti ti-point"></i><span>Tự khám phá vì sao sin giữ nguyên, cos đổi dấu.</span></li>
+            <li><i class="ti ti-point"></i><span>Nắm vững bảng giá trị GTLG các góc đặc biệt.</span></li>
+          </ul>
+        </div>
+        <div class="p5-col p5-col-guide">
+          <div class="p5-col-label"><i class="ti ti-hand-click"></i> Hướng dẫn</div>
+          <ul>
+            <li><i class="ti ti-circle-number-1"></i><span>Module 1: Kéo điểm M' tím tìm góc có sin bằng sinα.</span></li>
+            <li><i class="ti ti-circle-number-2"></i><span>Module 2: Kéo điểm M' tìm góc có cos liên quan cosα.</span></li>
+            <li><i class="ti ti-circle-number-3"></i><span>Quiz: Chọn chip để điền GTLG các góc đặc biệt.</span></li>
+          </ul>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 1 -->
+  <div class="sdiv"><span>Module 1 — Tìm góc có sin bằng sinα</span></div>
+  <div class="sim-wrap">
+    <div class="sim-title"><i class="ti ti-wave-sine" style="color:var(--green)"></i> Kéo điểm M' để tìm góc có cùng giá trị sin</div>
+    <div class="sim-canvas-wrap" id="canvasWrap1">
+      <canvas id="canvas1"></canvas>
+      <div class="tooltip" id="tooltip1"></div>
+      <div class="canvas-zoom-controls">
+        <button class="btn-canvas-zoom" onclick="applyZoom1(0.7)" title="Phóng to"><i class="ti ti-plus"></i></button>
+        <button class="btn-canvas-zoom" onclick="applyZoom1(1.4)" title="Thu nhỏ"><i class="ti ti-minus"></i></button>
+        <button class="btn-canvas-zoom" onclick="resetView1()" title="Mặc định"><i class="ti ti-refresh"></i></button>
+      </div>
+      <div class="coord-bar" id="coordBar1">x: 0.00 · y: 0.00</div>
+    </div>
+    <div class="data-monitor">
+      <div class="data-card">
+        <div class="label">Góc α (cố định)</div>
+        <div class="value" id="m1-alpha">—</div>
+      </div>
+      <div class="data-card sin-card">
+        <div class="label">sin α (giữ nguyên)</div>
+        <div class="value" id="m1-sinAlpha">—</div>
+      </div>
+      <div class="data-card prime-card">
+        <div class="label">sin của M'</div>
+        <div class="value" id="m1-sinPrime">—</div>
+      </div>
+    </div>
+    <div class="p5-explain" id="m1-caption">
+      <div class="p5-explain-title" id="m1-cap-title"><i class="ti ti-info-circle"></i> Bắt đầu</div>
+      <div class="p5-explain-body" id="m1-cap-body">Kéo điểm <b style="color:var(--purple)">M' (tím)</b> dọc cung đến vị trí mà bạn nghĩ có <b style="color:var(--green)">sin bằng sinα</b>. Quan sát 2 đường chiếu xanh.</div>
+    </div>
+    <div class="collapsible-panel theory-panel" id="m1TheoryPanel">
+      <div class="theory-box" id="m1-theory">
+        <div class="theory-title"><i class="ti ti-bulb" style="color:var(--accent-dark)"></i> Kết luận rút ra</div>
+        <div style="font-size:0.9rem; color:var(--text-2); margin-bottom:10px;">M' là điểm <b>đối xứng của M qua trục Oy</b> — tung độ y₀ của 2 điểm luôn bằng nhau!</div>
+        <div class="theory-formula">sin(180° − α) = sin α</div>
+      </div>
+    </div>
+    <div class="p5-controls">
+      <div class="p5-ctrl-header"><i class="ti ti-adjustments-horizontal"></i> Điều khiển</div>
+      <div class="p5-ctrl-row p5-row-1">
+        <div class="p5-ctrl-label"><i class="ti ti-hand-move"></i> Hành động:</div>
+        <div class="btn-group">
+          <button class="p5-btn btn-check" onclick="m1Check()"><i class="ti ti-check"></i> Kiểm tra</button>
+          <button class="p5-btn p5-btn-reset" onclick="m1NewAngle()"><i class="ti ti-dice-5"></i> Thử góc khác</button>
+          <button class="p5-btn btn-next" id="m1-next-btn" onclick="scrollToM2()"><i class="ti ti-arrow-down"></i> Tiếp tục → cos</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 2 -->
+  <div class="sdiv"><span>Module 2 — Tìm góc có cos liên quan cosα</span></div>
+  <div class="sim-wrap">
+    <div class="sim-title"><i class="ti ti-wave-square" style="color:var(--orange)"></i> Kéo điểm M' để khám phá cos của góc bù</div>
+    <div class="sim-canvas-wrap" id="canvasWrap2">
+      <canvas id="canvas2"></canvas>
+      <div class="tooltip" id="tooltip2"></div>
+      <div class="canvas-zoom-controls">
+        <button class="btn-canvas-zoom" onclick="applyZoom2(0.7)" title="Phóng to"><i class="ti ti-plus"></i></button>
+        <button class="btn-canvas-zoom" onclick="applyZoom2(1.4)" title="Thu nhỏ"><i class="ti ti-minus"></i></button>
+        <button class="btn-canvas-zoom" onclick="resetView2()" title="Mặc định"><i class="ti ti-refresh"></i></button>
+      </div>
+      <div class="coord-bar" id="coordBar2">x: 0.00 · y: 0.00</div>
+    </div>
+    <div class="data-monitor">
+      <div class="data-card">
+        <div class="label">Góc α (cố định)</div>
+        <div class="value" id="m2-alpha">—</div>
+      </div>
+      <div class="data-card cos-card">
+        <div class="label">cos α (cố định)</div>
+        <div class="value" id="m2-cosAlpha">—</div>
+      </div>
+      <div class="data-card prime-card">
+        <div class="label">cos của M'</div>
+        <div class="value" id="m2-cosPrime">—</div>
+      </div>
+    </div>
+    <div class="p5-explain" id="m2-caption">
+      <div class="p5-explain-title" id="m2-cap-title"><i class="ti ti-info-circle"></i> Vòng 1</div>
+      <div class="p5-explain-body" id="m2-cap-body">Kéo điểm <b style="color:var(--purple)">M' (tím)</b> đến vị trí có <b style="color:var(--orange)">cos bằng cosα</b>. Nhớ: cos là hoành độ x₀ trên trục Ox.</div>
+    </div>
+    <div class="collapsible-panel theory-panel" id="m2TheoryPanel">
+      <div class="theory-box" id="m2-theory">
+        <div class="theory-title"><i class="ti ti-bulb" style="color:var(--accent-dark)"></i> Kết luận rút ra</div>
+        <div style="font-size:0.9rem; color:var(--text-2); margin-bottom:10px;">Hoành độ x₀ của M và M' <b>ngược dấu nhau</b> khi đối xứng qua Oy:</div>
+        <div class="theory-formula">sin(180° − α) = sin α &nbsp;&nbsp;(giữ nguyên)</div><br>
+        <div class="theory-formula">cos(180° − α) = −cos α &nbsp;&nbsp;(đổi dấu)</div>
+      </div>
+    </div>
+    <div class="p5-controls">
+      <div class="p5-ctrl-header"><i class="ti ti-adjustments-horizontal"></i> Điều khiển</div>
+      <div class="p5-ctrl-row p5-row-1">
+        <div class="p5-ctrl-label"><i class="ti ti-hand-move"></i> Hành động:</div>
+        <div class="btn-group">
+          <button class="p5-btn btn-check" onclick="m2Check()"><i class="ti ti-check"></i> Kiểm tra</button>
+          <button class="p5-btn p5-btn-reset" onclick="m2NewAngle()"><i class="ti ti-dice-5"></i> Thử góc khác</button>
+          <button class="p5-btn btn-next" id="m2-next-btn" onclick="scrollToQuiz()"><i class="ti ti-arrow-down"></i> Tiếp tục → Quiz</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODULE 3: QUIZ -->
+  <div class="sdiv"><span>Quiz — Giá Trị Lượng Giác Góc Đặc Biệt</span></div>
+  <div class="quiz-wrap" id="quizSection">
+    <div class="quiz-header">
+      <div class="quiz-title"><i class="ti ti-device-gamepad-2"></i> Điền đủ 4 giá trị GTLG của góc đặc biệt</div>
+      <button class="p5-btn p5-btn-reset" onclick="quizNewAngle()"><i class="ti ti-dice-5"></i> Góc mới</button>
+    </div>
+    <div class="sim-canvas-wrap small" id="canvasWrap3">
+      <canvas id="canvas3"></canvas>
+      <div class="canvas-zoom-controls">
+        <button class="btn-canvas-zoom" onclick="applyZoom3(0.7)" title="Phóng to"><i class="ti ti-plus"></i></button>
+        <button class="btn-canvas-zoom" onclick="applyZoom3(1.4)" title="Thu nhỏ"><i class="ti ti-minus"></i></button>
+        <button class="btn-canvas-zoom" onclick="resetView3()" title="Mặc định"><i class="ti ti-refresh"></i></button>
+      </div>
+    </div>
+    <p style="font-size:0.85rem; color:var(--text-2); margin-bottom:1rem;" id="quizInstr">
+      Quan sát vị trí M trên đường tròn. Chọn chip để điền giá trị sin, cos, tan, cot của góc α.
+    </p>
+    <div id="quizRows"></div>
+    <div class="quiz-actions">
+      <button class="p5-btn btn-check" onclick="quizCheck()"><i class="ti ti-check"></i> Kiểm tra</button>
+      <button class="p5-btn p5-btn-reset" onclick="quizNewAngle()"><i class="ti ti-dice-5"></i> Góc mới</button>
+      <button class="p5-btn p5-btn-reset" id="btnShowAnswer" onclick="quizShowAnswer()" style="display:none"><i class="ti ti-eye"></i> Xem đáp án</button>
+    </div>
+  </div>
+
+</div><!-- /container -->
+
+<script>
+    // ===== LMS safe accessor (PHẦN 7.2 design Toán) — tự thêm, không đụng logic khác =====
+    function LMS(){return window.AiducationLMS||{ready:function(){},progress:function(){},event:function(){},state:function(){},complete:function(){},resize:function(){}};}
+
+    // Pass 2 (mục C) — toggle thu gọn/mở rộng panel nội dung dài, mặc định thu gọn trên
+    // mobile khi tải trang.
+    function toggleCollapsible(id) { document.getElementById(id).classList.toggle('collapsed'); }
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.collapsible-panel').forEach(p => {
+        if (window.matchMedia('(max-width: 768px)').matches) p.classList.add('collapsed');
+      });
+    });
+
+// ═══════════════════════════════════════════════════
+// SHARED CANVAS UTILS
+// ═══════════════════════════════════════════════════
+function makeCanvasCtx(canvasId, wrapId, coordBarId) {
+  const wrap = document.getElementById(wrapId);
+  const canvas = document.getElementById(canvasId);
+  const ctx = canvas.getContext('2d');
+  let CW=0,CH=0,PW=0,PH=0,scale=150,centerX=0,centerY=0;
+  let userZoom = 1;
+
+  function resize() {
+    const rect = wrap.getBoundingClientRect();
+    if (rect.width < 2 || rect.height < 2) return;
+    CW = rect.width; CH = rect.height;
+    const dpr = window.devicePixelRatio || 1;
+    PW = Math.round(CW*dpr); PH = Math.round(CH*dpr);
+    canvas.width = PW; canvas.height = PH;
+    centerX = CW/2;
+    centerY = CH*0.78;
+    const sx = (CW/2)/1.45, sy = (CH*0.78)/1.4;
+    scale = Math.min(sx,sy) * userZoom;
+  }
+
+  function applyZoom(factor) {
+    userZoom = Math.max(0.5, Math.min(3, userZoom * factor));
+    resize();
+  }
+
+  function resetView() {
+    userZoom = 1;
+    resize();
+  }
+
+  function m2c(mx,my) { return { px: centerX+mx*scale, py: centerY-my*scale }; }
+  function c2m(px,py)  { return { x:(px-centerX)/scale, y:(centerY-py)/scale }; }
+
+  function getAngleFromMouse(evt, cnv) {
+    const rect = cnv.getBoundingClientRect();
+    const t = (evt.touches && evt.touches[0]) || (evt.changedTouches && evt.changedTouches[0]) || evt;
+    const cx = t.clientX, cy = t.clientY;
+    const px = cx - rect.left, py = cy - rect.top;
+    const {x,y} = c2m(px,py);
+    if (coordBarId) {
+      const el = document.getElementById(coordBarId);
+      if (el) el.textContent = `x: ${x.toFixed(2)} · y: ${y.toFixed(2)}`;
+    }
+    let deg = Math.atan2(y,x)*180/Math.PI;
+    if(deg<0) deg+=360;
+    if(deg>180&&deg<270) deg=180;
+    if(deg>=270) deg=0;
+    return Math.round(deg);
+  }
+
+  canvas.addEventListener('mousemove', e => {
+    if (!coordBarId) return;
+    const rect = canvas.getBoundingClientRect();
+    const px = e.clientX - rect.left, py = e.clientY - rect.top;
+    const {x,y} = c2m(px,py);
+    const el = document.getElementById(coordBarId);
+    if (el) el.textContent = `x: ${x.toFixed(2)} · y: ${y.toFixed(2)}`;
+  });
+
+  canvas.addEventListener('wheel', e => {
+    e.preventDefault();
+    const factor = e.deltaY > 0 ? 0.9 : 1.1;
+    applyZoom(factor);
+    if (canvasId === 'canvas1') m1Draw();
+    else if (canvasId === 'canvas2') m2Draw();
+    else if (canvasId === 'canvas3') quizDraw3();
+  }, { passive: false });
+
+  function drawBase(ctx, m2c, CW, CH, scale, centerX, centerY, alphaFixed, alphaPrime, opts) {
+    const dpr = window.devicePixelRatio||1;
+    ctx.setTransform(1,0,0,1,0,0);
+    ctx.clearRect(0,0,PW,PH);
+    ctx.setTransform(dpr,0,0,dpr,0,0);
+
+    // Grid
+    ctx.strokeStyle='rgba(0,0,0,0.08)'; ctx.lineWidth=1;
+    for(let x=-1;x<=1;x+=0.5){if(x!==0){let p1=m2c(x,-0.5),p2=m2c(x,1.6);ctx.beginPath();ctx.moveTo(p1.px,p1.py);ctx.lineTo(p2.px,p2.py);ctx.stroke();}}
+    for(let y=0;y<=1.5;y+=0.5){if(y!==0){let p1=m2c(-1.4,y),p2=m2c(1.4,y);ctx.beginPath();ctx.moveTo(p1.px,p1.py);ctx.lineTo(p2.px,p2.py);ctx.stroke();}}
+
+    // Axes
+    ctx.strokeStyle='#4A5568'; ctx.lineWidth=1.5;
+    let aL=m2c(-1.35,0),aR=m2c(1.35,0),aB=m2c(0,-0.3),aT=m2c(0,1.5);
+    ctx.beginPath();ctx.moveTo(aL.px,aL.py);ctx.lineTo(aR.px,aR.py);ctx.stroke();
+    ctx.beginPath();ctx.moveTo(aB.px,aB.py);ctx.lineTo(aT.px,aT.py);ctx.stroke();
+    // Arrow x
+    ctx.fillStyle='#4A5568';
+    ctx.beginPath();ctx.moveTo(aR.px,aR.py);ctx.lineTo(aR.px-8,aR.py-4);ctx.lineTo(aR.px-8,aR.py+4);ctx.fill();
+    // Arrow y
+    ctx.beginPath();ctx.moveTo(aT.px,aT.py);ctx.lineTo(aT.px-4,aT.py+8);ctx.lineTo(aT.px+4,aT.py+8);ctx.fill();
+    ctx.font='bold 13px "JetBrains Mono", monospace'; ctx.fillStyle='#4A5568'; ctx.textAlign='center';
+    ctx.fillText('x',aR.px-12,aR.py+18);
+    ctx.fillText('y',aT.px,aT.py+16);
+    let pO=m2c(0,0); ctx.fillText('O',pO.px-14,pO.py+16);
+
+    // Ticks
+    [[1,0],[-1,0]].forEach(pt=>{
+      let p=m2c(pt[0],0);
+      ctx.beginPath();ctx.moveTo(p.px,p.py-3);ctx.lineTo(p.px,p.py+3);ctx.stroke();
+      ctx.font='bold 12px "JetBrains Mono", monospace'; ctx.fillStyle='#4A5568'; ctx.textAlign='center';
+      ctx.fillText(pt[0],p.px,p.py+16);
+    });
+    let p1y=m2c(0,1);
+    ctx.beginPath();ctx.moveTo(p1y.px-3,p1y.py);ctx.lineTo(p1y.px+3,p1y.py);ctx.stroke();
+    ctx.fillText('1',p1y.px-12,p1y.py+4);
+
+    // Unit circle: lower half dashed
+    let pOrg=m2c(0,0);
+    ctx.strokeStyle='rgba(15,27,53,0.2)'; ctx.lineWidth=1.2; ctx.setLineDash([4,4]);
+    ctx.beginPath();ctx.arc(pOrg.px,pOrg.py,scale,0,Math.PI);ctx.stroke();
+    // Upper half solid
+    ctx.setLineDash([]); ctx.strokeStyle='#1A1A1A'; ctx.lineWidth=2.5;
+    ctx.beginPath();ctx.arc(pOrg.px,pOrg.py,scale,Math.PI,0);ctx.stroke();
+
+    // Reveal: symmetry axis highlight
+    if(opts&&opts.showSymmetry) {
+      ctx.strokeStyle='rgba(106,27,154,0.35)'; ctx.lineWidth=2; ctx.setLineDash([6,4]);
+      ctx.beginPath();ctx.moveTo(pOrg.px,pOrg.py-scale*1.3);ctx.lineTo(pOrg.px,pOrg.py+scale*0.3);ctx.stroke();
+      ctx.setLineDash([]);
+    }
+  }
+
+  return { resize, applyZoom, resetView, m2c, c2m, getAngleFromMouse, drawBase, get CW(){return CW;}, get CH(){return CH;}, get scale(){return scale;}, get centerX(){return centerX;}, get centerY(){return centerY;}, get PW(){return PW;}, get PH(){return PH;}, canvas, ctx, wrap };
+}
+
+// Global Zoom Helpers
+function applyZoom1(factor) { M1.applyZoom(factor); m1Draw(); }
+function resetView1() { M1.resetView(); m1Draw(); }
+function applyZoom2(factor) { M2.applyZoom(factor); m2Draw(); }
+function resetView2() { M2.resetView(); m2Draw(); }
+function applyZoom3(factor) { M3.applyZoom(factor); quizDraw3(); }
+function resetView3() { M3.resetView(); quizDraw3(); }
+
+// ═══════════════════════════════════════════════════
+// MODULE 1 — SIN
+// ═══════════════════════════════════════════════════
+const M1 = makeCanvasCtx('canvas1','canvasWrap1','coordBar1');
+let m1Alpha=50, m1Prime=130, m1IsDragging=false, m1Solved=false, m1ShowSymmetry=false;
+
+function m1RandomAngle() {
+  const pool=[25,35,40,45,50,55,60,65,70,75,80,100,110,115,120,125,130,140,150,155];
+  m1Alpha = pool[Math.floor(Math.random()*pool.length)];
+  m1Prime = 90; m1Solved=false; m1ShowSymmetry=false;
+  document.getElementById('m1-theory').classList.remove('show');
+  document.getElementById('m1-next-btn').style.display='none';
+  m1SetCaption('info','Bắt đầu','Kéo điểm <b style="color:var(--purple)">M\' (tím)</b> dọc cung đến vị trí mà bạn nghĩ có <b style="color:var(--green)">sin bằng sinα</b>. Quan sát 2 đường chiếu xanh.');
+  m1Draw();
+}
+function m1NewAngle() { m1RandomAngle(); }
+
+function m1SetCaption(type,title,body) {
+  const box=document.getElementById('m1-caption');
+  const icons={'info':'ti-info-circle','success':'ti-circle-check','error':'ti-alert-circle','alert':'ti-bulb'};
+  box.className='p5-explain'+(type==='success'?' success':type==='error'?' error':type==='alert'?' alert':'');
+  document.getElementById('m1-cap-title').innerHTML=`<i class="ti ${icons[type]||'ti-info-circle'}"></i> ${title}`;
+  document.getElementById('m1-cap-body').innerHTML=body;
+}
+
+function m1Draw() {
+  const {resize,m2c,ctx,CW,CH,scale,canvas} = M1;
+  M1.drawBase(ctx,m2c,CW,CH,scale,M1.centerX,M1.centerY,m1Alpha,m1Prime,{showSymmetry:m1ShowSymmetry});
+
+  const dpr=window.devicePixelRatio||1;
+  const radA=m1Alpha*Math.PI/180, radP=m1Prime*Math.PI/180;
+  const pO=m2c(0,0);
+  const pM={px:pO.px+scale*Math.cos(radA), py:pO.py-scale*Math.sin(radA)};
+  const pMP={px:pO.px+scale*Math.cos(radP), py:pO.py-scale*Math.sin(radP)};
+
+  // Sin projection of M (solid green)
+  ctx.strokeStyle='#2D8B6F'; ctx.lineWidth=3.5; ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.lineTo(pO.px,pM.py);ctx.stroke();
+  // Dashed guide from M to Oy
+  ctx.strokeStyle='#8A92A3'; ctx.lineWidth=1.2; ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(pM.px,pM.py);ctx.lineTo(pO.px,pM.py);ctx.stroke();
+
+  // Sin projection of M' (dashed green)
+  const sinDiff=Math.abs(Math.sin(radA)-Math.sin(radP));
+  const primeGreen=sinDiff<0.08?'#2D8B6F':'#43A047';
+  ctx.strokeStyle=primeGreen; ctx.lineWidth=2.5; ctx.setLineDash([7,5]);
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.lineTo(pO.px,pMP.py);ctx.stroke();
+  ctx.setLineDash([3,3]);ctx.strokeStyle='#8A92A3';ctx.lineWidth=1;
+  ctx.beginPath();ctx.moveTo(pMP.px,pMP.py);ctx.lineTo(pO.px,pMP.py);ctx.stroke();
+
+  // Symmetry line M-M'
+  if(m1ShowSymmetry) {
+    ctx.strokeStyle='rgba(106,27,154,0.5)'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(pM.px,pM.py);ctx.lineTo(pMP.px,pMP.py);ctx.stroke();
+  }
+
+  ctx.setLineDash([]);
+
+  // Angle arc M
+  ctx.strokeStyle='#C58A2E'; ctx.lineWidth=1.5;
+  ctx.fillStyle='rgba(239,159,39,0.12)';
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.arc(pO.px,pO.py,32,0,-radA,true);ctx.lineTo(pO.px,pO.py);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#C58A2E'; ctx.font='italic bold 13px "JetBrains Mono", monospace';
+  ctx.fillText('α',pO.px+46*Math.cos(-radA/2)-4,pO.py+46*Math.sin(-radA/2)+4);
+
+  // Angle arc M'
+  ctx.strokeStyle='rgba(106,27,154,0.5)'; ctx.lineWidth=1.2;
+  ctx.fillStyle='rgba(106,27,154,0.08)';
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.arc(pO.px,pO.py,22,0,-radP,true);ctx.lineTo(pO.px,pO.py);ctx.fill();ctx.stroke();
+
+  // OM radius
+  ctx.strokeStyle='#1A7A5E'; ctx.lineWidth=2; ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.lineTo(pM.px,pM.py);ctx.stroke();
+  // OM' radius
+  ctx.strokeStyle='rgba(106,27,154,0.6)'; ctx.lineWidth=1.8; ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.lineTo(pMP.px,pMP.py);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Point M
+  ctx.fillStyle='#C15F3C';
+  ctx.beginPath();ctx.arc(pM.px,pM.py,7.5,0,2*Math.PI);ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#1A1A1A';ctx.font='bold 13px "JetBrains Mono", monospace';ctx.textAlign='left';
+  ctx.fillText('M',pM.px+10,pM.py-10);
+
+  // Point M'
+  ctx.fillStyle=m1Solved?'#2D8B6F':'#6A1B9A';
+  ctx.beginPath();ctx.arc(pMP.px,pMP.py,8,0,2*Math.PI);ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#1A1A1A';ctx.font='bold 13px "JetBrains Mono", monospace';
+  ctx.fillText("M'",pMP.px+10,pMP.py-10);
+
+  // Update monitor
+  const sinA=Math.sin(radA), sinP=Math.sin(radP);
+  document.getElementById('m1-alpha').textContent=m1Alpha+'°';
+  document.getElementById('m1-sinAlpha').textContent=sinA.toFixed(3);
+  document.getElementById('m1-sinPrime').textContent=sinP.toFixed(3);
+}
+
+function m1Check() {
+  const complement=180-m1Alpha;
+  const diff=Math.min(Math.abs(m1Prime-complement),Math.abs(m1Prime-m1Alpha));
+  const nearSelf=Math.abs(m1Prime-m1Alpha)<10;
+  if(nearSelf&&!m1Solved) {
+    m1SetCaption('alert','Đúng, nhưng...','Đây là chính điểm M rồi! Còn <b>một vị trí khác</b> trên cung có cùng sinα — thử tìm xem!');
+    return;
+  }
+  const diffToComp=Math.abs(m1Prime-complement);
+  if(diffToComp<=5) {
+    m1Solved=true; m1ShowSymmetry=true;
+    m1SetCaption('success','Xuất sắc! 🎉',`M' đối xứng M qua trục Oy — tung độ y₀ của 2 điểm bằng nhau! Góc bù của ${m1Alpha}° là <b>${complement}°</b>.`);
+    document.getElementById('m1-theory').classList.add('show');
+    document.getElementById('m1-next-btn').style.display='inline-flex';
+    m1Draw();
+  } else {
+    m1SetCaption('error','Chưa đúng',`Đường chiếu xanh của M' chưa bằng M. Gợi ý: điểm cần tìm <b>đối xứng với M qua trục Oy</b>.`);
+  }
+}
+
+// Drag M1
+M1.canvas.style.touchAction = 'none';
+M1.canvas.addEventListener('pointerdown', e => {
+  const rect = M1.canvas.getBoundingClientRect();
+  const px = e.clientX - rect.left, py = e.clientY - rect.top;
+  const radP = m1Prime * Math.PI / 180;
+  const pO = M1.m2c(0, 0);
+  const pMP = { px: pO.px + M1.scale * Math.cos(radP), py: pO.py - M1.scale * Math.sin(radP) };
+  if (Math.hypot(px - pMP.px, py - pMP.py) < 30) {
+    m1IsDragging = true;
+    M1.canvas.setPointerCapture(e.pointerId);
+  }
+});
+M1.canvas.addEventListener('pointermove', e => {
+  if (!m1IsDragging) return;
+  m1Prime = M1.getAngleFromMouse(e, M1.canvas);
+  const sinDiff = Math.abs(Math.sin(m1Alpha * Math.PI / 180) - Math.sin(m1Prime * Math.PI / 180));
+  if (sinDiff < 0.05 && Math.abs(m1Prime - m1Alpha) > 10) m1SetCaption('alert', 'Gần rồi!', 'Tinh chỉnh thêm một chút... 2 đường chiếu xanh sắp bằng nhau!');
+  else if (!m1Solved) m1SetCaption('info', 'Đang kéo...', 'Quan sát 2 đường chiếu xanh — chúng có bằng nhau chưa?');
+  m1Draw();
+});
+M1.canvas.addEventListener('pointerup', () => { m1IsDragging = false; });
+M1.canvas.addEventListener('pointercancel', () => { m1IsDragging = false; });
+
+function scrollToM2(){document.getElementById('canvasWrap2').scrollIntoView({behavior:'smooth',block:'center'});}
+
+// ═══════════════════════════════════════════════════
+// MODULE 2 — COS
+// ═══════════════════════════════════════════════════
+const M2 = makeCanvasCtx('canvas2','canvasWrap2','coordBar2');
+let m2Alpha=40, m2Prime=90, m2IsDragging=false, m2Solved=false, m2Round=1, m2ShowSymmetry=false;
+
+function m2RandomAngle() {
+  const pool=[20,25,30,35,40,45,50,55,60,65,70,75,80];
+  m2Alpha=pool[Math.floor(Math.random()*pool.length)];
+  m2Prime=90; m2Solved=false; m2Round=1; m2ShowSymmetry=false;
+  document.getElementById('m2-theory').classList.remove('show');
+  document.getElementById('m2-next-btn').style.display='none';
+  m2SetCaption('info','Vòng 1','Kéo điểm <b style="color:var(--purple)">M\' (tím)</b> đến vị trí có <b style="color:var(--orange)">cos bằng cosα</b>. Nhớ: cos là hoành độ x₀.');
+  m2Draw();
+}
+function m2NewAngle() { m2RandomAngle(); }
+
+function m2SetCaption(type,title,body) {
+  const box=document.getElementById('m2-caption');
+  const icons={'info':'ti-info-circle','success':'ti-circle-check','error':'ti-alert-circle','alert':'ti-bulb'};
+  box.className='p5-explain'+(type==='success'?' success':type==='error'?' error':type==='alert'?' alert':'');
+  document.getElementById('m2-cap-title').innerHTML=`<i class="ti ${icons[type]||'ti-info-circle'}"></i> ${title}`;
+  document.getElementById('m2-cap-body').innerHTML=body;
+}
+
+function m2Draw() {
+  const {m2c,ctx,CW,CH,scale,canvas} = M2;
+  M2.drawBase(ctx,m2c,CW,CH,scale,M2.centerX,M2.centerY,m2Alpha,m2Prime,{showSymmetry:m2ShowSymmetry});
+
+  const dpr=window.devicePixelRatio||1;
+  const radA=m2Alpha*Math.PI/180, radP=m2Prime*Math.PI/180;
+  const pO=m2c(0,0);
+  const pM={px:pO.px+scale*Math.cos(radA), py:pO.py-scale*Math.sin(radA)};
+  const pMP={px:pO.px+scale*Math.cos(radP), py:pO.py-scale*Math.sin(radP)};
+  const cosA=Math.cos(radA), cosP=Math.cos(radP);
+
+  // Cos projection of M (solid orange, horizontal)
+  ctx.strokeStyle='#C58A2E'; ctx.lineWidth=3.5; ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.lineTo(pM.px,pO.py);ctx.stroke();
+  ctx.strokeStyle='#8A92A3'; ctx.lineWidth=1.2; ctx.setLineDash([4,4]);
+  ctx.beginPath();ctx.moveTo(pM.px,pM.py);ctx.lineTo(pM.px,pO.py);ctx.stroke();
+  // Label cos α
+  ctx.fillStyle='#C58A2E'; ctx.font='bold 11px "JetBrains Mono", monospace'; ctx.textAlign='center'; ctx.setLineDash([]);
+  ctx.fillText('cos α',pM.px/2+pO.px/2,pO.py-10);
+
+  // Cos projection of M' (dashed orange)
+  const cosDiff=Math.abs(cosA-cosP);
+  ctx.strokeStyle=cosDiff<0.08?'#C58A2E':'rgba(230,81,0,0.6)'; ctx.lineWidth=2.5; ctx.setLineDash([7,5]);
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.lineTo(pMP.px,pO.py);ctx.stroke();
+  ctx.strokeStyle='#8A92A3'; ctx.lineWidth=1; ctx.setLineDash([3,3]);
+  ctx.beginPath();ctx.moveTo(pMP.px,pMP.py);ctx.lineTo(pMP.px,pO.py);ctx.stroke();
+
+  // Symmetry line
+  if(m2ShowSymmetry) {
+    ctx.strokeStyle='rgba(106,27,154,0.5)'; ctx.lineWidth=1.5; ctx.setLineDash([5,4]);
+    ctx.beginPath();ctx.moveTo(pM.px,pM.py);ctx.lineTo(pMP.px,pMP.py);ctx.stroke();
+    // Direction arrows on x-axis
+    ctx.setLineDash([]);
+    const mx=pO.px+scale*cosA, mpx=pO.px+scale*cosP;
+    ctx.fillStyle='#C58A2E';
+    // Arrow for M cosine (pointing right)
+    ctx.beginPath();ctx.moveTo(pO.px+4,pO.py+22);ctx.lineTo(mx-4,pO.py+22);
+    ctx.lineTo(mx-10,pO.py+17);ctx.moveTo(mx-4,pO.py+22);ctx.lineTo(mx-10,pO.py+27);ctx.stroke();
+    // Arrow for M' cosine (pointing left, negative)
+    ctx.strokeStyle='rgba(230,81,0,0.8)'; ctx.setLineDash([4,3]);
+    ctx.beginPath();ctx.moveTo(pO.px-4,pO.py+22);ctx.lineTo(mpx+4,pO.py+22);ctx.stroke();
+    ctx.setLineDash([]);
+  }
+
+  ctx.setLineDash([]);
+
+  // Angle arcs
+  ctx.strokeStyle='#C58A2E'; ctx.lineWidth=1.5;
+  ctx.fillStyle='rgba(239,159,39,0.12)';
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.arc(pO.px,pO.py,32,0,-radA,true);ctx.lineTo(pO.px,pO.py);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#C58A2E'; ctx.font='italic bold 13px "JetBrains Mono", monospace'; ctx.textAlign='left';
+  ctx.fillText('α',pO.px+46*Math.cos(-radA/2)-4,pO.py+46*Math.sin(-radA/2)+4);
+
+  // Radii
+  ctx.strokeStyle='#1A7A5E'; ctx.lineWidth=2; ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.lineTo(pM.px,pM.py);ctx.stroke();
+  ctx.strokeStyle='rgba(106,27,154,0.6)'; ctx.lineWidth=1.8; ctx.setLineDash([4,3]);
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.lineTo(pMP.px,pMP.py);ctx.stroke();
+  ctx.setLineDash([]);
+
+  // Points
+  ctx.fillStyle='#C15F3C';
+  ctx.beginPath();ctx.arc(pM.px,pM.py,7.5,0,2*Math.PI);ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#1A1A1A';ctx.font='bold 13px "JetBrains Mono", monospace';ctx.textAlign='left';
+  ctx.fillText('M',pM.px+10,pM.py-10);
+
+  ctx.fillStyle=m2Solved?'#2D8B6F':'#6A1B9A';
+  ctx.beginPath();ctx.arc(pMP.px,pMP.py,8,0,2*Math.PI);ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=1.5;ctx.stroke();
+  ctx.fillStyle='#1A1A1A';ctx.font='bold 13px "JetBrains Mono", monospace';
+  ctx.fillText("M'",pMP.px+10,pMP.py-10);
+
+  // Monitor
+  document.getElementById('m2-alpha').textContent=m2Alpha+'°';
+  document.getElementById('m2-cosAlpha').textContent=cosA.toFixed(3);
+  document.getElementById('m2-cosPrime').textContent=cosP.toFixed(3);
+}
+
+function m2Check() {
+  const complement=180-m2Alpha;
+  const cosA=Math.cos(m2Alpha*Math.PI/180);
+  const cosP=Math.cos(m2Prime*Math.PI/180);
+  if(m2Round===1) {
+    // Find same cos → same angle
+    if(Math.abs(m2Prime-m2Alpha)<=5) {
+      m2SetCaption('success','Đúng! Nhưng...','M\' đang trùng M — cosα = cosα tất nhiên rồi! Giờ thử thách mới: <b>Tìm góc có cos = −cosα</b>. Gợi ý: giá trị cam sẽ âm!');
+      m2Round=2;
+      document.getElementById('m2-cosAlpha').textContent='−'+Math.abs(cosA).toFixed(3);
+      document.getElementById('m2-cosAlpha').parentElement.querySelector('.label').textContent='−cos α (mục tiêu)';
+      m2Draw();
+      return;
+    }
+    // Check for complement (has -cosA)
+    if(Math.abs(m2Prime-complement)<=5) {
+      m2SetCaption('alert','Thú vị!',`Bạn đã tìm thấy góc bù ${complement}° — cos của nó là <b>${cosP.toFixed(3)}</b>, bằng <b>−cosα</b>! Đúng luôn vòng 2. Đây chính là điều chúng ta cần khám phá.`);
+      m2Solved=true; m2ShowSymmetry=true;
+      document.getElementById('m2-theory').classList.add('show');
+      document.getElementById('m2-next-btn').style.display='inline-flex';
+      m2Draw(); return;
+    }
+    m2SetCaption('error','Chưa đúng','Cos là hoành độ x₀ trên trục Ox. Kéo M\' để đường chiếu cam nằm đúng vị trí cosα.');
+  } else {
+    // Round 2: find -cosA
+    if(Math.abs(m2Prime-complement)<=5) {
+      m2Solved=true; m2ShowSymmetry=true;
+      m2SetCaption('success','Xuất sắc! 🎉',`cos(${complement}°) = ${cosP.toFixed(3)} = −cos(${m2Alpha}°). Hoành độ x₀ <b>ngược dấu</b> khi đối xứng qua Oy!`);
+      document.getElementById('m2-theory').classList.add('show');
+      document.getElementById('m2-next-btn').style.display='inline-flex';
+      m2Draw();
+    } else {
+      m2SetCaption('error','Chưa đúng','Cần tìm góc có cos âm (đường cam sang trái). Kéo M\' sang phía <b>bên trái trục Oy</b>.');
+    }
+  }
+}
+
+// Drag M2
+M2.canvas.style.touchAction = 'none';
+M2.canvas.addEventListener('pointerdown', e => {
+  const rect = M2.canvas.getBoundingClientRect();
+  const px = e.clientX - rect.left, py = e.clientY - rect.top;
+  const radP = m2Prime * Math.PI / 180;
+  const pO = M2.m2c(0, 0);
+  const pMP = { px: pO.px + M2.scale * Math.cos(radP), py: pO.py - M2.scale * Math.sin(radP) };
+  if (Math.hypot(px - pMP.px, py - pMP.py) < 30) {
+    m2IsDragging = true;
+    M2.canvas.setPointerCapture(e.pointerId);
+  }
+});
+M2.canvas.addEventListener('pointermove', e => {
+  if (!m2IsDragging) return;
+  m2Prime = M2.getAngleFromMouse(e, M2.canvas);
+  if (!m2Solved) m2SetCaption('info', 'Đang kéo...', 'Quan sát đường chiếu cam — hoành độ x₀ đang thay đổi.');
+  m2Draw();
+});
+M2.canvas.addEventListener('pointerup', () => { m2IsDragging = false; });
+M2.canvas.addEventListener('pointercancel', () => { m2IsDragging = false; });
+
+function scrollToQuiz(){document.getElementById('quizSection').scrollIntoView({behavior:'smooth',block:'start'});}
+
+// ═══════════════════════════════════════════════════
+// MODULE 3 — QUIZ CANVAS (display only)
+// ═══════════════════════════════════════════════════
+const M3 = makeCanvasCtx('canvas3','canvasWrap3');
+const SPECIAL_ANGLES=[30,45,60,90,120,135,150,180];
+let quizAngle=120, quizChecked=false;
+const ANSWERS={
+  30:  {sin:'1/2',    cos:'√3/2',  tan:'√3/3', cot:'√3'},
+  45:  {sin:'√2/2',  cos:'√2/2',  tan:'1',    cot:'1'},
+  60:  {sin:'√3/2',  cos:'1/2',   tan:'√3',   cot:'√3/3'},
+  90:  {sin:'1',     cos:'0',     tan:'KXĐ',  cot:'0'},
+  120: {sin:'√3/2',  cos:'-1/2',  tan:'-√3',  cot:'-√3/3'},
+  135: {sin:'√2/2',  cos:'-√2/2', tan:'-1',   cot:'-1'},
+  150: {sin:'1/2',   cos:'-√3/2', tan:'-√3/3',cot:'-√3'},
+  180: {sin:'0',     cos:'-1',    tan:'0',    cot:'KXĐ'}
+};
+const CHIPS=['0','1','-1','1/2','-1/2','√2/2','-√2/2','√3/2','-√3/2','√3','-√3','√3/3','-√3/3','KXĐ'];
+const GTLG_LABELS=['sin','cos','tan','cot'];
+let quizSelected={sin:null,cos:null,tan:null,cot:null};
+
+const WRONG_HINTS={
+  sin:{
+    sign:'sin α > 0 với mọi góc từ 0° đến 180° (trừ 0° và 180° bằng 0).',
+    default:'Gợi ý: dùng tính chất góc bù sin(180°−α) = sin α.'
+  },
+  cos:{
+    sign:'Góc tù → cos < 0. Hoành độ x₀ nằm bên trái trục Oy.',
+    default:'Gợi ý: dùng tính chất góc bù cos(180°−α) = −cos α.'
+  },
+  tan:{
+    kxd:'tan 90° KXĐ vì cos 90° = 0 (mẫu = 0).',
+    sign:'Góc tù: sin > 0, cos < 0 → tan = sin/cos < 0.',
+    default:'Gợi ý: tan α = sin α / cos α.'
+  },
+  cot:{
+    kxd:'cot 0° và cot 180° KXĐ vì sin = 0 (mẫu = 0).',
+    sign:'Góc tù: cos < 0, sin > 0 → cot = cos/sin < 0.',
+    default:'Gợi ý: cot α = cos α / sin α.'
+  }
+};
+
+function getHint(key, userVal, correctVal, angle) {
+  const h=WRONG_HINTS[key];
+  if(!h) return 'Hãy xem lại bảng giá trị GTLG.';
+  const userNeg=userVal&&userVal.startsWith('-');
+  const corrNeg=correctVal&&correctVal.startsWith('-');
+  if(correctVal==='KXĐ'||userVal==='KXĐ') return h.kxd||h.default;
+  if(userNeg!==corrNeg) return h.sign||h.default;
+  return h.default;
+}
+
+function quizDraw3() {
+  const {m2c,ctx,CW,CH,scale,canvas} = M3;
+  M3.drawBase(ctx,m2c,CW,CH,scale,M3.centerX,M3.centerY,quizAngle,null,{});
+  const dpr=window.devicePixelRatio||1;
+  const rad=quizAngle*Math.PI/180;
+  const pO=m2c(0,0);
+  const pM={px:pO.px+scale*Math.cos(rad),py:pO.py-scale*Math.sin(rad)};
+
+  // OM radius
+  ctx.strokeStyle='#1A7A5E'; ctx.lineWidth=2.5; ctx.setLineDash([]);
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.lineTo(pM.px,pM.py);ctx.stroke();
+
+  // Angle arc
+  ctx.strokeStyle='#C58A2E'; ctx.lineWidth=1.5;
+  ctx.fillStyle='rgba(239,159,39,0.15)';
+  ctx.beginPath();ctx.moveTo(pO.px,pO.py);ctx.arc(pO.px,pO.py,34,0,-rad,true);ctx.lineTo(pO.px,pO.py);ctx.fill();ctx.stroke();
+  ctx.fillStyle='#C58A2E'; ctx.font='italic bold 14px "JetBrains Mono", monospace'; ctx.textAlign='left';
+  ctx.fillText('α='+quizAngle+'°',pO.px+50*Math.cos(-rad/2)-4,pO.py+50*Math.sin(-rad/2)+4);
+
+  // Point M
+  ctx.fillStyle='#C15F3C';
+  ctx.beginPath();ctx.arc(pM.px,pM.py,8,0,2*Math.PI);ctx.fill();
+  ctx.strokeStyle='#fff';ctx.lineWidth=2;ctx.stroke();
+  ctx.fillStyle='#1A1A1A';ctx.font='bold 14px "JetBrains Mono", monospace';ctx.textAlign='left';
+  ctx.fillText('M',pM.px+11,pM.py-11);
+}
+
+function buildQuizRows() {
+  quizSelected={sin:null,cos:null,tan:null,cot:null};
+  const container=document.getElementById('quizRows');
+  container.innerHTML='';
+  GTLG_LABELS.forEach(key=>{
+    const row=document.createElement('div');
+    row.className='quiz-row';
+    row.innerHTML=`
+      <div class="quiz-row-label">${key} α = ?</div>
+      <div class="chip-grid" id="chips-${key}"></div>
+      <div class="quiz-feedback-row" id="fb-${key}"></div>`;
+    container.appendChild(row);
+    const grid=row.querySelector('.chip-grid');
+    CHIPS.forEach(val=>{
+      const chip=document.createElement('button');
+      chip.className='chip'; chip.textContent=val;
+      chip.onclick=()=>{
+        grid.querySelectorAll('.chip').forEach(c=>c.classList.remove('selected'));
+        chip.classList.add('selected');
+        quizSelected[key]=val;
+        document.getElementById(`fb-${key}`).className='quiz-feedback-row';
+        document.getElementById(`fb-${key}`).classList.remove('show');
+      };
+      grid.appendChild(chip);
+    });
+  });
+  document.getElementById('btnShowAnswer').style.display='none';
+  quizChecked=false;
+}
+
+function quizCheck() {
+  const ans=ANSWERS[quizAngle];
+  let allCorrect=true;
+  GTLG_LABELS.forEach(key=>{
+    const user=quizSelected[key];
+    const correct=ans[key];
+    const fb=document.getElementById(`fb-${key}`);
+    const chips=document.getElementById(`chips-${key}`).querySelectorAll('.chip');
+    chips.forEach(c=>{c.classList.remove('correct','wrong');});
+    if(!user){
+      fb.className='quiz-feedback-row fb-err show';
+      fb.innerHTML='⚠️ Hãy chọn một giá trị trước khi kiểm tra.';
+      allCorrect=false; return;
+    }
+    const selectedChip=[...chips].find(c=>c.textContent===user);
+    if(user===correct){
+      if(selectedChip) selectedChip.classList.add('correct');
+      fb.className='quiz-feedback-row fb-ok show';
+      fb.innerHTML='✅ Chính xác!';
+    } else {
+      if(selectedChip) selectedChip.classList.add('wrong');
+      const hint=getHint(key,user,correct,quizAngle);
+      fb.className='quiz-feedback-row fb-err show';
+      fb.innerHTML=`❌ Chưa đúng. ${hint}`;
+      allCorrect=false;
+    }
+  });
+  quizChecked=true;
+  document.getElementById('btnShowAnswer').style.display='inline-flex';
+  if(allCorrect) {
+    document.getElementById('quizInstr').innerHTML='<span style="color:var(--green);font-weight:700">🎉 Hoàn hảo! Bạn đã nắm vững bảng giá trị GTLG của góc đặc biệt!</span>';
+    launchConfetti();
+  }
+}
+
+function quizShowAnswer() {
+  const ans=ANSWERS[quizAngle];
+  GTLG_LABELS.forEach(key=>{
+    const fb=document.getElementById(`fb-${key}`);
+    const chips=document.getElementById(`chips-${key}`).querySelectorAll('.chip');
+    chips.forEach(c=>{
+      c.classList.remove('correct','wrong','selected');
+      if(c.textContent===ans[key]) c.classList.add('correct');
+    });
+    fb.className='quiz-feedback-row fb-ok show';
+    fb.innerHTML=`✅ Đáp án: <b>${ans[key]}</b>`;
+  });
+}
+
+function quizNewAngle() {
+  // Weighted: 60% góc tù
+  const pool=[120,135,150,120,135,150,30,45,60,90,180];
+  let newA;
+  do { newA=pool[Math.floor(Math.random()*pool.length)]; } while(newA===quizAngle);
+  quizAngle=newA;
+  document.getElementById('quizInstr').textContent='Quan sát vị trí M trên đường tròn. Chọn chip để điền giá trị sin, cos, tan, cot của góc α.';
+  buildQuizRows();
+  quizDraw3();
+}
+
+// CONFETTI
+function launchConfetti() {
+  const wrap=document.getElementById('confettiWrap');
+  wrap.innerHTML=''; wrap.classList.add('show');
+  const colors=['#E8A24A','#2D8B6F','#C58A2E','#6A1B9A','#C15F3C','#3CA57A'];
+  for(let i=0;i<60;i++){
+    const p=document.createElement('div');
+    p.className='confetti-piece';
+    p.style.left=Math.random()*100+'vw';
+    p.style.background=colors[Math.floor(Math.random()*colors.length)];
+    p.style.borderRadius=Math.random()>0.5?'50%':'2px';
+    p.style.width=(8+Math.random()*8)+'px';
+    p.style.height=(8+Math.random()*8)+'px';
+    p.style.animationDelay=(Math.random()*0.8)+'s';
+    p.style.animationDuration=(1.4+Math.random()*0.8)+'s';
+    wrap.appendChild(p);
+  }
+  setTimeout(()=>{wrap.classList.remove('show');wrap.innerHTML='';},3000);
+}
+
+// ═══════════════════════════════════════════════════
+// RESIZE OBSERVERS & ORIENTATION
+// ═══════════════════════════════════════════════════
+let roT1=null,roT2=null,roT3=null;
+new ResizeObserver(()=>{clearTimeout(roT1);roT1=setTimeout(()=>{M1.resize();m1Draw();},30);}).observe(M1.wrap);
+new ResizeObserver(()=>{clearTimeout(roT2);roT2=setTimeout(()=>{M2.resize();m2Draw();},30);}).observe(M2.wrap);
+new ResizeObserver(()=>{clearTimeout(roT3);roT3=setTimeout(()=>{M3.resize();quizDraw3();},30);}).observe(M3.wrap);
+
+window.addEventListener('orientationchange', () => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    M1.resize(); m1Draw();
+    M2.resize(); m2Draw();
+    M3.resize(); quizDraw3();
+  }));
+});
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded',()=>{
+  M1.resize(); m1RandomAngle();
+  M2.resize(); m2RandomAngle();
+  M3.resize(); buildQuizRows(); quizDraw3();
+  setTimeout(()=>{M1.resize();m1Draw();M2.resize();m2Draw();M3.resize();quizDraw3();},200);
+});
+
+    // ===== Báo chiều cao thật cho LMS (PHẦN 7.7) — tự thêm =====
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    const _athenaResizeObserver = new ResizeObserver(() => {
+      clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+    });
+    _athenaResizeObserver.observe(document.body);
+</script>
+</body>
+</html>

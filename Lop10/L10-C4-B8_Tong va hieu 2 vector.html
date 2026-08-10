@@ -1,0 +1,1728 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Tổng và Hiệu của Hai Vectơ - Mô phỏng Toán học</title>
+  <!-- Google Fonts: Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+
+  <style>
+    /* ── DESIGN SYSTEM v2.2: Aiducation Cream · Jade · Sage · Accent ── */
+    :root {
+      /* Neutrals · giấy & mực */
+      --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC;
+      --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
+      --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+
+      /* Jade · hành động chính */
+      --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F;
+      --jade-text:#1B5E48; --jade-soft:#A9D0BE; --jade-pale:#DCEAE1;
+
+      /* Sage · phụ trợ */
+      --sage:#A8C9B8; --sage-deep:#7CA792; --sage-text:#46685A; --sage-pale:#E1ECE4;
+
+      /* Accent · điểm nhấn ấm */
+      --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+
+      /* Semantic · phản hồi đúng/sai/cảnh báo/info */
+      --correct:#2D8B6F; --correct-bg:#DCEAE1;
+      --wrong:#C15F3C;   --wrong-bg:#F3E2D6;
+      --warning:#C58A2E; --warning-bg:#F5E7CB;
+      --info:#4E7F92;    --info-bg:#DCE7EB;
+
+      --white:#FFFFFF;
+      --radius:10px; --radius-lg:14px; --radius-sm:6px;
+
+      /* Aliases cho code cũ */
+      --primary: var(--jade-deep);
+      --primary-mid: var(--jade);
+      --primary-light: var(--jade-pale);
+      --accent-dark: var(--accent-deep);
+      --accent-light: var(--accent-pale);
+      --teal-mid: var(--jade-text);
+      --teal-light: var(--jade-pale);
+      --surface: var(--white);
+      --border: var(--paper-line);
+      --border-teal: var(--jade-deep);
+
+      --green: var(--correct);
+      --green-light: var(--correct-bg);
+      --red: var(--wrong);
+      --red-light: var(--wrong-bg);
+      --amber: var(--warning);
+      --amber-light: var(--warning-bg);
+      --blue: var(--info);
+      --blue-light: var(--info-bg);
+
+      --text: var(--ink);
+      --text-2: var(--ink-2);
+      --text-3: var(--ink-3);
+
+      /* Vector colors */
+      --color-a: #C1704B;
+      --color-b: #4E7F92;
+      --color-opp: #C15F3C;
+      --color-r: #7C5295;
+      --color-pred: #7C756A;
+    }
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--cream);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ── HEADER (Ẩn theo quy chuẩn Section 3.6 v2.2) ── */
+    .app-header {
+      display: none !important;
+    }
+
+    /* ── MAIN LAYOUT ── */
+    .app-body {
+      max-width: 1140px;
+      width: 100%;
+      margin: 16px auto;
+      padding: 0 16px 40px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      flex: 1;
+    }
+
+    .sim-card {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      border: 1.5px solid var(--paper-line);
+      overflow: hidden;
+      box-shadow: var(--shadow);
+      display: flex;
+      flex-direction: column;
+      min-height: 600px;
+    }
+
+    .sim-body {
+      display: flex;
+      flex: 1;
+      min-height: 0;
+      overflow: hidden;
+    }
+
+    /* ── LEFT CANVAS PANEL ── */
+    .sim-left {
+      flex: 1;
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      background: var(--surface);
+      position: relative;
+    }
+
+    .canvas-wrap {
+      flex: 1;
+      position: relative;
+      border: 1.5px solid var(--border);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+      background: #FDFBF7;
+      touch-action: none;
+      /* Nền giấy vẽ hình học */
+    }
+
+    canvas {
+      display: block;
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+    }
+
+    .tooltip-box {
+      position: absolute;
+      background: rgba(13, 59, 70, 0.95);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 8px;
+      border-radius: 4px;
+      pointer-events: none;
+      display: none;
+      white-space: nowrap;
+      z-index: 10;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      border: 1px solid var(--accent);
+    }
+
+    /* Floating Canvas Zoom Controls (Unified Vertical Widget) */
+    .canvas-zoom-controls {
+      position: absolute; top: 12px; right: 12px; z-index: 15;
+      display: flex; flex-direction: column;
+      background: rgba(250, 247, 240, 0.65);
+      backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
+      border: 1px solid rgba(229, 222, 207, 0.7); border-radius: var(--radius);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); overflow: hidden;
+      opacity: 0.85; transition: opacity 0.2s ease, background 0.2s ease;
+    }
+    .canvas-zoom-controls:hover { opacity: 1; background: rgba(255, 255, 255, 0.95); }
+    .btn-canvas-zoom {
+      width: 36px; height: 36px; padding: 0; background: transparent; border: none;
+      font-size: 16px; font-weight: 600; cursor: pointer; transition: background .2s, color .2s;
+      color: var(--ink-2); display: flex; align-items: center; justify-content: center;
+    }
+    .btn-canvas-zoom:not(:last-child) { border-bottom: 1px solid rgba(229, 222, 207, 0.6); }
+    .btn-canvas-zoom:hover { background: var(--jade-pale); color: var(--jade-deep); }
+    .btn-canvas-zoom:active { background: var(--sage-pale); }
+
+    .coord-bar {
+      position: absolute; bottom: 6px; right: 6px; z-index: 12;
+      font-size: 11px; font-weight: 500; color: var(--ink-3);
+      font-family: 'JetBrains Mono', monospace; font-variant-numeric: tabular-nums;
+      background: rgba(250, 247, 240, 0.6); backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
+      padding: 2px 8px; border-radius: 4px; border: 1px solid rgba(229, 222, 207, 0.6);
+      opacity: 0.85; pointer-events: none;
+    }
+
+    /* ── RIGHT CONTROL SIDEBAR ── */
+    .sim-right {
+      width: 350px;
+      flex-shrink: 0;
+      border-left: 1.5px solid var(--border-teal);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      background: var(--accent-light);
+      overflow-y: auto;
+    }
+
+    .panel-section-label {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .07em;
+      color: var(--teal-mid);
+      margin-bottom: 2px;
+    }
+
+    /* 3-Step Progress Bar */
+    .progress-wrap {
+      padding: 8px 10px;
+      background: var(--surface);
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--border-teal);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .prog-step-light {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 3px;
+      font-size: 9.5px;
+      font-weight: 700;
+      color: var(--text-3);
+      transition: color .3s;
+      flex-shrink: 0;
+    }
+
+    .prog-step-light.active {
+      color: var(--primary-mid);
+    }
+
+    .prog-step-light.done {
+      color: var(--green);
+    }
+
+    .prog-dot-light {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      border: 2px solid var(--gray-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10px;
+      font-weight: 800;
+      transition: all .3s;
+      background: var(--surface);
+      color: var(--text-3);
+    }
+
+    .prog-step-light.active .prog-dot-light {
+      background: var(--primary);
+      border-color: var(--primary);
+      color: var(--accent);
+    }
+
+    .prog-step-light.done .prog-dot-light {
+      background: var(--green-light);
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .prog-line-light {
+      flex: 1;
+      height: 2px;
+      background: var(--border);
+      margin-bottom: 12px;
+    }
+
+    /* Vector Component Tables */
+    .vector-card {
+      background: var(--surface);
+      border: 1.5px solid var(--border-teal);
+      border-radius: var(--radius);
+      padding: 12px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+    }
+
+    .vector-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 6px;
+    }
+
+    .vector-table th {
+      text-align: left;
+      font-weight: 700;
+      color: var(--text-3);
+      padding-bottom: 6px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .vector-table td {
+      padding: 6px 0;
+      border-bottom: 1px dashed rgba(26, 122, 94, 0.15);
+      font-weight: 500;
+    }
+
+    .vector-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .vec-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 4px;
+      font-size: 11px;
+    }
+
+    .vec-badge.a {
+      background: #FFE0B2;
+      color: #E65100;
+    }
+
+    .vec-badge.b {
+      background: #E3F2FD;
+      color: #1565C0;
+    }
+
+    .vec-badge.r {
+      background: #F3E5F5;
+      color: #6A1B9A;
+    }
+
+    .vec-badge.pred {
+      background: #ECEFF1;
+      color: #37474F;
+    }
+
+    .math-font {
+      font-family: 'Courier New', monospace;
+      font-weight: 700;
+      font-size: 13px;
+    }
+
+    /* Controls Group */
+    .controls-group {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .btn-action {
+      width: 100%;
+      padding: 10px 16px;
+      border: 1.5px solid var(--primary);
+      border-radius: var(--radius-sm);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+    }
+
+    .btn-action.primary {
+      background: var(--primary);
+      color: var(--accent);
+    }
+
+    .btn-action.primary:hover:not(:disabled) {
+      background: var(--teal-mid);
+      border-color: var(--teal-mid);
+    }
+
+    .btn-action.secondary {
+      background: var(--surface);
+      color: var(--primary);
+    }
+
+    .btn-action.secondary:hover:not(:disabled) {
+      background: var(--primary-light);
+      border-color: var(--primary-mid);
+    }
+
+    .btn-action:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+
+    /* Toggle Operators */
+    .op-toggle-group {
+      display: flex;
+      background: var(--surface);
+      border: 1.5px solid var(--border-teal);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .btn-toggle-op {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      background: none;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      color: var(--text-2);
+      transition: all .2s;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .btn-toggle-op:first-child {
+      border-right: 1.5px solid var(--border-teal);
+    }
+
+    .btn-toggle-op.active {
+      background: var(--primary);
+      color: var(--accent);
+    }
+
+    /* Explanation Caption Box */
+    .sim-caption {
+      background: var(--surface);
+      border-left: 4px solid var(--border-teal);
+      border-radius: var(--radius-sm);
+      padding: 12px 14px;
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.5;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: auto;
+      box-shadow: 0 2px 6px rgba(13, 59, 46, 0.04);
+    }
+
+    .sim-caption.green {
+      border-left-color: var(--green);
+      background: var(--green-light);
+      color: #0b4528;
+    }
+
+    .sim-caption.red {
+      border-left-color: var(--red);
+      background: var(--red-light);
+      color: #5c0f0f;
+    }
+
+    .sim-caption i {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+      color: inherit;
+    }
+
+    .feedback-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 1px 6px;
+      border-radius: 12px;
+      margin-top: 4px;
+    }
+
+    .feedback-badge.ok {
+      background: var(--green-light);
+      color: var(--green);
+      border: 1px solid var(--green);
+    }
+
+    .feedback-badge.err {
+      background: var(--red-light);
+      color: var(--red);
+      border: 1px solid var(--red);
+    }
+
+    .hidden {
+      display: none !important;
+    }
+
+    /* 3 Breakpoints Tuning: 375px (Mobile Portrait), 768px (Tablet), 1280px (Desktop) */
+    @media (max-width: 1023px) {
+      .app-body { padding: 0 12px 30px; }
+      .sim-body { flex-direction: column; }
+      .sim-left { order: 1; padding: 12px; }
+      .canvas-wrap { min-height: 380px; }
+      .sim-right { order: 2; width: 100%; border-left: none; border-top: 1.5px solid var(--paper-line); padding: 14px; }
+      .sim-card { min-height: 480px; }
+    }
+
+    @media (max-width: 480px) {
+      .app-body { padding: 0 6px 20px; }
+      .sim-left { padding: 8px; }
+      .canvas-wrap { min-height: 320px; }
+      .sim-right { padding: 10px; gap: 12px; }
+      .btn-action, .btn-toggle-op { min-height: 44px; }
+      .progress-wrap { padding: 6px 8px; }
+      .prog-step-light { font-size: 8.5px; }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- APP BODY -->
+  <div class="app-body">
+    <div class="sim-card">
+
+      <!-- HEADER -->
+      <header class="app-header">
+        <div>
+          <h1>Bài 8: <span>Tổng và Hiệu của Hai Vectơ</span></h1>
+          <div class="subtitle">Khám phá trực quan quy tắc cộng đầu-đuôi, quy tắc hiệu cùng gốc và kiểm tra dự đoán kết
+            quả</div>
+        </div>
+      </header>
+
+      <div class="sim-body">
+
+        <!-- LEFT PANEL (CANVAS & PLOT CONTROLS) -->
+        <div class="sim-left">
+          <div class="canvas-wrap" id="canvasWrap">
+            <canvas id="simCanvas"></canvas>
+            <div class="tooltip-box" id="simTooltip"></div>
+            <div class="canvas-zoom-controls">
+              <button class="btn-canvas-zoom" onclick="applyZoom(0.7)" title="Phóng to"><i class="ti ti-plus"></i></button>
+              <button class="btn-canvas-zoom" onclick="applyZoom(1.4)" title="Thu nhỏ"><i class="ti ti-minus"></i></button>
+              <button class="btn-canvas-zoom" onclick="resetView()" title="Mặc định"><i class="ti ti-refresh"></i></button>
+            </div>
+            <div class="coord-bar" id="coordBar">x: 0.00 · y: 0.00</div>
+          </div>
+        </div>
+
+        <!-- RIGHT PANEL (CONTROLS & DATA SIDEBAR) -->
+        <div class="sim-right">
+
+          <!-- Stepper progress bar -->
+          <div class="progress-wrap" id="progressWrap">
+            <div class="prog-step-light active" id="ps1">
+              <div class="prog-dot-light">1</div>
+              <span>Vẽ a</span>
+            </div>
+            <div class="prog-line-light"></div>
+            <div class="prog-step-light" id="ps2">
+              <div class="prog-dot-light">2</div>
+              <span>Vẽ b</span>
+            </div>
+            <div class="prog-line-light"></div>
+            <div class="prog-step-light" id="ps3">
+              <div class="prog-dot-light">3</div>
+              <span>Cộng/Trừ</span>
+            </div>
+          </div>
+
+          <!-- Dynamic Sidebar Sections -->
+          <div class="controls-group" id="ctrlGroup">
+            <!-- Rendered by JavaScript -->
+          </div>
+
+          <!-- Vector Data summary table -->
+          <div class="vector-card hidden" id="vecCard">
+            <div class="panel-section-label">Thông số Vectơ</div>
+            <table class="vector-table">
+              <thead>
+                <tr>
+                  <th>Vectơ</th>
+                  <th>Điểm Đầu</th>
+                  <th>Điểm Cuối</th>
+                  <th>Thành phần</th>
+                </tr>
+              </thead>
+              <tbody id="vecTableBody">
+                <!-- Rendered dynamically -->
+              </tbody>
+            </table>
+          </div>
+
+          <!-- Description Caption Box -->
+          <div class="sim-caption" id="capBox">
+            <i class="ti ti-info-circle" id="capIcon"></i>
+            <div style="display:flex; flex-direction:column;">
+              <span id="capText">Hãy vẽ vectơ a — click một điểm bất kỳ, kéo và thả</span>
+              <div id="fbStep"></div>
+            </div>
+          </div>
+
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ──────────────────────────────────────
+    // 0. COLOR CONSTANTS
+    // ──────────────────────────────────────
+    const COLORS = {
+      a: '#E65100',       // Cam
+      b: '#1565C0',       // Xanh dương
+      opp: '#C62828',     // Đỏ đối (-b)
+      r: '#6A1B9A',       // Tím (Kết quả)
+      pred: '#78909C',    // Xám xanh (Dự đoán)
+      primary: '#0D3B2E', // Teal đậm
+      accent: '#F2C97B'   // Vàng Gold
+    };
+
+    // ──────────────────────────────────────
+    // 1. STATE MANAGER
+    // ──────────────────────────────────────
+    let state = {
+      phase: 1, // 1: vẽ a, 2: vẽ b, 3: cộng/trừ & dự đoán
+
+      // Vector states (snapped integers)
+      vectorA: null, // { start: {x,y}, end: {x,y} }
+      vectorB: null,
+      tempVector: null, // vector currently drawing
+
+      isDrawing: false,
+      isGhostBVisible: true, // b vector origin outline
+
+      // Phase 3 states
+      operator: '+', // '+' or '-'
+      isAnimating: false,
+      animationProgress: 0, // 0 to 1
+
+      predictionPoint: null, // user predicted end coordinate ◆
+      isDraggingPred: false,
+      isPredicted: false, // prediction checked
+
+      // Viewport math coordinates limits
+      vXMin: -10, vXMax: 10, vYMin: -7, vYMax: 7
+    };
+
+    let animId = null;
+
+    // ──────────────────────────────────────
+    // 2. CANVAS & GEOMETRY SETTINGS
+    // ──────────────────────────────────────
+    const canvas = document.getElementById('simCanvas');
+    const ctx = canvas.getContext('2d');
+    const canvasWrap = document.getElementById('canvasWrap');
+
+    let CW = 0, CH = 0;   // CSS pixels
+    let PW = 0, PH = 0;   // Physical pixels
+
+    function resizeCanvas() {
+      const rect = canvasWrap.getBoundingClientRect();
+      CW = rect.width;
+      CH = rect.height;
+      if (CW === 0 || CH === 0) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      PW = Math.round(CW * dpr);
+      PH = Math.round(CH * dpr);
+
+      canvas.width = PW;
+      canvas.height = PH;
+      canvas.style.width = CW + 'px';
+      canvas.style.height = CH + 'px';
+
+      fullDraw();
+    }
+
+    let roTimer = null;
+    const ro = new ResizeObserver(() => {
+      clearTimeout(roTimer);
+      roTimer = setTimeout(resizeCanvas, 30);
+    });
+    ro.observe(canvasWrap);
+
+    // Math <=> Canvas coordinate transformations
+    function m2c(mx, my) {
+      return {
+        px: (mx - state.vXMin) / (state.vXMax - state.vXMin) * CW,
+        py: (1 - (my - state.vYMin) / (state.vYMax - state.vYMin)) * CH
+      };
+    }
+
+    function c2m(px, py) {
+      return {
+        x: state.vXMin + (px / CW) * (state.vXMax - state.vXMin),
+        y: state.vYMin + (1 - py / CH) * (state.vYMax - state.vYMin)
+      };
+    }
+
+    function applyZoom(factor) {
+      const xc = (state.vXMin + state.vXMax) / 2;
+      const yc = (state.vYMin + state.vYMax) / 2;
+      const xr = (state.vXMax - state.vXMin) * factor / 2;
+      const yr = (state.vYMax - state.vYMin) * factor / 2;
+
+      if (xr < 1.5 || xr > 100) return;
+
+      state.vXMin = xc - xr; state.vXMax = xc + xr;
+      state.vYMin = yc - yr; state.vYMax = yc + yr;
+      fullDraw();
+    }
+
+    function zoomAt(cx, cy, factor) {
+      const { x: mx, y: my } = c2m(cx, cy);
+      const newXRange = (state.vXMax - state.vXMin) * factor;
+      const newYRange = (state.vYMax - state.vYMin) * factor;
+
+      if (newXRange < 3 || newXRange > 200) return;
+
+      const pctX = (cx / CW);
+      const pctY = 1 - (cy / CH);
+
+      state.vXMin = mx - pctX * newXRange;
+      state.vXMax = state.vXMin + newXRange;
+      state.vYMin = my - pctY * newYRange;
+      state.vYMax = state.vYMin + newYRange;
+
+      fullDraw();
+    }
+
+    function resetView() {
+      state.vXMin = -10;
+      state.vXMax = 10;
+      state.vYMin = -7;
+      state.vYMax = 7;
+      fullDraw();
+    }
+
+    // Math vector logic
+    function getVecComponents(vec) {
+      if (!vec) return { dx: 0, dy: 0 };
+      return {
+        dx: vec.end.x - vec.start.x,
+        dy: vec.end.y - vec.start.y
+      };
+    }
+
+    // ──────────────────────────────────────
+    // 3. DRAWING ENGINE
+    // ──────────────────────────────────────
+    function drawGrid(ctx, CW, CH) {
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      const xRange = state.vXMax - state.vXMin;
+      let step = 1;
+      if (xRange > 15) step = 2;
+      if (xRange > 40) step = 5;
+      if (xRange > 100) step = 10;
+      if (xRange < 4) step = 0.5;
+
+      // Draw grid lines
+      ctx.strokeStyle = 'rgba(26, 122, 94, 0.06)';
+      ctx.lineWidth = 1;
+      for (let x = Math.ceil(state.vXMin / step) * step; x <= state.vXMax; x += step) {
+        const { px } = m2c(x, 0);
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, CH); ctx.stroke();
+      }
+      for (let y = Math.ceil(state.vYMin / step) * step; y <= state.vYMax; y += step) {
+        const { py } = m2c(0, y);
+        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(CW, py); ctx.stroke();
+      }
+
+      // Draw axes
+      ctx.strokeStyle = 'rgba(13, 59, 46, 0.35)';
+      ctx.lineWidth = 1.5;
+      const { px: x0, py: y0 } = m2c(0, 0);
+      if (x0 >= 0 && x0 <= CW) {
+        ctx.beginPath(); ctx.moveTo(x0, 0); ctx.lineTo(x0, CH); ctx.stroke();
+      }
+      if (y0 >= 0 && y0 <= CH) {
+        ctx.beginPath(); ctx.moveTo(0, y0); ctx.lineTo(CW, y0); ctx.stroke();
+      }
+
+      // Axis ticks and numbers
+      ctx.font = 'bold 11px Courier New';
+      ctx.fillStyle = 'rgba(13, 59, 46, 0.6)';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      for (let x = Math.ceil(state.vXMin / step) * step; x <= state.vXMax; x += step) {
+        if (Math.abs(x) < 0.001) continue;
+        const { px } = m2c(x, 0);
+        let ly = y0 + 5;
+        if (ly > CH - 14) ly = CH - 14;
+        if (ly < 2) ly = 2;
+        ctx.fillText(x % 1 === 0 ? x : x.toFixed(1), px, ly);
+      }
+      ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+      for (let y = Math.ceil(state.vYMin / step) * step; y <= state.vYMax; y += step) {
+        if (Math.abs(y) < 0.001) continue;
+        const { py } = m2c(0, y);
+        let lx = x0 - 5;
+        if (lx < 16) lx = 16;
+        if (lx > CW - 5) lx = CW - 5;
+        ctx.fillText(y % 1 === 0 ? y : y.toFixed(1), lx, py);
+      }
+
+      // Origin label
+      if (x0 >= 0 && x0 <= CW && y0 >= 0 && y0 <= CH) {
+        ctx.textAlign = 'right'; ctx.textBaseline = 'top';
+        ctx.fillText('O', x0 - 3, y0 + 3);
+      }
+
+      // Axis labels
+      ctx.font = 'bold 12px Courier New';
+      if (y0 >= 0 && y0 <= CH) {
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillText('x', CW - 10, y0 + 8);
+      }
+      if (x0 >= 0 && x0 <= CW) {
+        ctx.textAlign = 'right'; ctx.textBaseline = 'middle';
+        ctx.fillText('y', x0 - 8, 10);
+      }
+    }
+
+    // Helper to draw an arrowhead vector
+    function drawVectorArrow(ctx, startX, startY, endX, endY, color, width = 2.5, isDashed = false) {
+      const s = m2c(startX, startY);
+      const e = m2c(endX, endY);
+
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.fillStyle = color;
+      ctx.lineWidth = width;
+
+      if (isDashed) {
+        ctx.setLineDash([7, 5]);
+      } else {
+        ctx.setLineDash([]);
+      }
+
+      // Line
+      ctx.beginPath();
+      ctx.moveTo(s.px, s.py);
+      ctx.lineTo(e.px, e.py);
+      ctx.stroke();
+
+      // Arrowhead
+      const angle = Math.atan2(e.py - s.py, e.px - s.px);
+      const headLength = 12; // in CSS px
+
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(e.px, e.py);
+      ctx.lineTo(e.px - headLength * Math.cos(angle - Math.PI / 6), e.py - headLength * Math.sin(angle - Math.PI / 6));
+      ctx.lineTo(e.px - headLength * Math.cos(angle + Math.PI / 6), e.py - headLength * Math.sin(angle + Math.PI / 6));
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    // Draw manual styled labels for math vectors
+    function drawVectorLabelText(ctx, labelText, midX, midY, color, offsetX = 0, offsetY = 0) {
+      const pt = m2c(midX, midY);
+      const px = pt.px + offsetX;
+      const py = pt.py + offsetY;
+
+      ctx.save();
+      ctx.fillStyle = color;
+      ctx.font = "bold 13px Courier New";
+      ctx.textAlign = "center";
+      ctx.textBaseline = "middle";
+
+      // Background outline box
+      const tw = ctx.measureText(labelText).width;
+      ctx.fillStyle = 'rgba(253, 251, 247, 0.85)';
+      ctx.fillRect(px - tw / 2 - 4, py - 11, tw + 8, 20);
+
+      ctx.fillStyle = color;
+      ctx.fillText(labelText, px, py);
+
+      // Draw a tiny arrow above the letter (e.g. "a" -> "a⃗")
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(px - 5, py - 8);
+      ctx.lineTo(px + 4, py - 8);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(px + 4, py - 8);
+      ctx.lineTo(px + 1, py - 10);
+      ctx.lineTo(px + 1, py - 6);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    // Main Canvas Render loop
+    function fullDraw() {
+      if (CW === 0) return;
+
+      const dpr = window.devicePixelRatio || 1;
+      ctx.setTransform(1, 0, 0, 1, 0, 0);
+      ctx.clearRect(0, 0, PW, PH);
+
+      // 1. Grid
+      drawGrid(ctx, CW, CH);
+
+      // Re-enable DPR transform
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // 2. Draw vector a (màu cam)
+      if (state.vectorA) {
+        drawVectorArrow(ctx, state.vectorA.start.x, state.vectorA.start.y, state.vectorA.end.x, state.vectorA.end.y, COLORS.a);
+        const midX = (state.vectorA.start.x + state.vectorA.end.x) / 2;
+        const midY = (state.vectorA.start.y + state.vectorA.end.y) / 2;
+        const comp = getVecComponents(state.vectorA);
+
+        // Perpendicular offset label
+        let ox = -12, oy = -12;
+        if (Math.abs(comp.dx) < 1.5) { ox = 18; oy = 0; }
+        drawVectorLabelText(ctx, 'a', midX, midY, COLORS.a, ox, oy);
+      }
+
+      // 3. Draw vector b (màu xanh dương)
+      if (state.vectorB && !state.isAnimating) {
+        const drawActiveB = (state.phase !== 3) || (state.phase === 3 && state.isGhostBVisible);
+        if (drawActiveB) {
+          drawVectorArrow(ctx, state.vectorB.start.x, state.vectorB.start.y, state.vectorB.end.x, state.vectorB.end.y, COLORS.b);
+          const midX = (state.vectorB.start.x + state.vectorB.end.x) / 2;
+          const midY = (state.vectorB.start.y + state.vectorB.end.y) / 2;
+          const comp = getVecComponents(state.vectorB);
+          let ox = -12, oy = -12;
+          if (Math.abs(comp.dx) < 1.5) { ox = 18; oy = 0; }
+          drawVectorLabelText(ctx, 'b', midX, midY, COLORS.b, ox, oy);
+        }
+      }
+
+      // Ghost B representation (origin position translucent in Phase 3 during animation)
+      if (state.phase === 3 && state.vectorB && state.isGhostBVisible && state.isAnimating) {
+        ctx.save();
+        ctx.globalAlpha = 0.28;
+        drawVectorArrow(ctx, state.vectorB.start.x, state.vectorB.start.y, state.vectorB.end.x, state.vectorB.end.y, COLORS.b, 1.5, true);
+        const midX = (state.vectorB.start.x + state.vectorB.end.x) / 2;
+        const midY = (state.vectorB.start.y + state.vectorB.end.y) / 2;
+        const comp = getVecComponents(state.vectorB);
+        let ox = -12, oy = -12;
+        if (Math.abs(comp.dx) < 1.5) { ox = 18; oy = 0; }
+        drawVectorLabelText(ctx, 'b', midX, midY, COLORS.b, ox, oy);
+        ctx.restore();
+      }
+
+      // 4. Temporary drawing vector
+      if (state.isDrawing && state.tempVector) {
+        const color = state.isDrawingVector === 'a' ? COLORS.a : COLORS.b;
+        drawVectorArrow(ctx, state.tempVector.start.x, state.tempVector.start.y, state.tempVector.end.x, state.tempVector.end.y, color, 2, true);
+      }
+
+      // 5. Animation drawing for Phase 3 (ghép vector)
+      if (state.isAnimating && state.vectorA && state.vectorB) {
+        const t = state.animationProgress;
+        const compA = getVecComponents(state.vectorA);
+        const compB = getVecComponents(state.vectorB);
+
+        if (state.operator === '+') {
+          // Cộng: b tịnh tiến trượt đến đầu a
+          const startX = state.vectorB.start.x + (state.vectorA.end.x - state.vectorB.start.x) * t;
+          const startY = state.vectorB.start.y + (state.vectorA.end.y - state.vectorB.start.y) * t;
+          const endX = startX + compB.dx;
+          const endY = startY + compB.dy;
+
+          drawVectorArrow(ctx, startX, startY, endX, endY, COLORS.b, 2.5);
+          drawVectorLabelText(ctx, 'b', (startX + endX) / 2, (startY + endY) / 2, COLORS.b, -12, -12);
+        } else {
+          // Trừ: 3 stages
+          if (t <= 0.4) {
+            // Stage 1: b trượt về cùng gốc với a
+            const u = t / 0.4;
+            const startX = state.vectorB.start.x + (state.vectorA.start.x - state.vectorB.start.x) * u;
+            const startY = state.vectorB.start.y + (state.vectorA.start.y - state.vectorB.start.y) * u;
+            const endX = startX + compB.dx;
+            const endY = startY + compB.dy;
+
+            drawVectorArrow(ctx, startX, startY, endX, endY, COLORS.b, 2.5);
+            drawVectorLabelText(ctx, 'b', (startX + endX) / 2, (startY + endY) / 2, COLORS.b, -12, -12);
+          }
+          else if (t > 0.4 && t <= 0.7) {
+            // Stage 2: Vẽ vectơ đối -b mọc ngược lại từ cùng gốc
+            const u = (t - 0.4) / 0.3;
+            // Draw original b with fading alpha
+            ctx.save();
+            ctx.globalAlpha = (1 - u) * 0.5;
+            drawVectorArrow(ctx, state.vectorA.start.x, state.vectorA.start.y, state.vectorA.start.x + compB.dx, state.vectorA.start.y + compB.dy, COLORS.b, 2.5);
+            ctx.restore();
+
+            // Draw -b growing opposite direction
+            const startX = state.vectorA.start.x;
+            const startY = state.vectorA.start.y;
+            const endX = startX - compB.dx * u;
+            const endY = startY - compB.dy * u;
+
+            drawVectorArrow(ctx, startX, startY, endX, endY, COLORS.opp, 2.5);
+            if (u > 0.3) {
+              drawVectorLabelText(ctx, '-b', (startX + endX) / 2, (startY + endY) / 2, COLORS.opp, -15, -12);
+            }
+          }
+          else {
+            // Stage 3: -b trượt từ gốc a về đuôi a (tịnh tiến head-to-tail với -b)
+            const u = (t - 0.7) / 0.3;
+            const startX = state.vectorA.start.x + (state.vectorA.end.x - state.vectorA.start.x) * u;
+            const startY = state.vectorA.start.y + (state.vectorA.end.y - state.vectorA.start.y) * u;
+            const endX = startX - compB.dx;
+            const endY = startY - compB.dy;
+
+            drawVectorArrow(ctx, startX, startY, endX, endY, COLORS.opp, 2.5);
+            drawVectorLabelText(ctx, '-b', (startX + endX) / 2, (startY + endY) / 2, COLORS.opp, -15, -12);
+          }
+        }
+      }
+
+      // 6. Draw Prediction components in Phase 3
+      if (state.phase === 3 && !state.isAnimating && state.predictionPoint && state.vectorA && state.vectorB) {
+        const compA = getVecComponents(state.vectorA);
+        const compB = getVecComponents(state.vectorB);
+
+        // Show translated vector for visual reference after animate finishes
+        // (If cộng: b ở đầu a. If trừ: -b ở đầu a)
+        if (state.operator === '+') {
+          const bx = state.vectorA.end.x;
+          const by = state.vectorA.end.y;
+          drawVectorArrow(ctx, bx, by, bx + compB.dx, by + compB.dy, COLORS.b, 1.8, true);
+          drawVectorLabelText(ctx, 'b', bx + compB.dx / 2, by + compB.dy / 2, COLORS.b, -12, -12);
+        } else {
+          const bx = state.vectorA.end.x;
+          const by = state.vectorA.end.y;
+          drawVectorArrow(ctx, bx, by, bx - compB.dx, by - compB.dy, COLORS.opp, 1.8, true);
+          drawVectorLabelText(ctx, '-b', bx - compB.dx / 2, by - compB.dy / 2, COLORS.opp, -15, -12);
+        }
+
+        // Draw predicted result vector (xám xanh)
+        const isZeroPred = (state.predictionPoint.x === state.vectorA.start.x && state.predictionPoint.y === state.vectorA.start.y);
+
+        if (isZeroPred) {
+          // Zero vector prediction marker
+          const p = m2c(state.predictionPoint.x, state.predictionPoint.y);
+          ctx.beginPath(); ctx.arc(p.px, p.py, 7, 0, Math.PI * 2);
+          ctx.fillStyle = COLORS.pred; ctx.fill();
+        } else {
+          drawVectorArrow(ctx, state.vectorA.start.x, state.vectorA.start.y, state.predictionPoint.x, state.predictionPoint.y, COLORS.pred, 2.5, true);
+        }
+
+        // 7. Draw actual result vector (if checked / predicted)
+        if (state.isPredicted) {
+          const dxAct = state.operator === '+' ? (compA.dx + compB.dx) : (compA.dx - compB.dx);
+          const dyAct = state.operator === '+' ? (compA.dy + compB.dy) : (compA.dy - compB.dy);
+
+          const startX = state.vectorA.start.x;
+          const startY = state.vectorA.start.y;
+          const endX = startX + dxAct;
+          const endY = startY + dyAct;
+
+          const isZeroResult = (dxAct === 0 && dyAct === 0);
+
+          if (isZeroResult) {
+            // Draw zero result as a thick purple ring dot
+            const p = m2c(startX, startY);
+            ctx.beginPath(); ctx.arc(p.px, p.py, 8, 0, Math.PI * 2);
+            ctx.strokeStyle = COLORS.r; ctx.lineWidth = 3; ctx.stroke();
+            ctx.fillStyle = COLORS.accent; ctx.fill();
+          } else {
+            drawVectorArrow(ctx, startX, startY, endX, endY, COLORS.r, 3.2);
+
+            const textSymbol = state.operator === '+' ? 'a+b' : 'a-b';
+            drawVectorLabelText(ctx, textSymbol, (startX + endX) / 2, (startY + endY) / 2, COLORS.r, 15, 15);
+          }
+
+          // Sai lầm 1 check: If user predicted opposite vector b - a (ends at start_a + b - a)
+          if (state.operator === '-') {
+            const oppositeEndX = startX + compB.dx - compA.dx;
+            const oppositeEndY = startY + compB.dy - compA.dy;
+            const isNearOpposite = (Math.abs(state.predictionPoint.x - oppositeEndX) < 0.1 && Math.abs(state.predictionPoint.y - oppositeEndY) < 0.1);
+
+            if (isNearOpposite) {
+              // Draw opposite vector as dashed pink to show comparison
+              drawVectorArrow(ctx, startX, startY, oppositeEndX, oppositeEndY, COLORS.opp, 2, true);
+              drawVectorLabelText(ctx, 'b-a', (startX + oppositeEndX) / 2, (startY + oppositeEndY) / 2, COLORS.opp, -15, 15);
+            }
+          }
+        }
+
+        // Draw Interactive Prediction handle ◆
+        const p = m2c(state.predictionPoint.x, state.predictionPoint.y);
+        ctx.save();
+        ctx.fillStyle = state.isDraggingPred ? COLORS.accent : '#fff';
+        ctx.strokeStyle = COLORS.primary;
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        // Diamond point shape
+        ctx.moveTo(p.px, p.py - 8);
+        ctx.lineTo(p.px + 8, p.py);
+        ctx.lineTo(p.px, p.py + 8);
+        ctx.lineTo(p.px - 8, p.py);
+        ctx.closePath();
+        ctx.fill(); ctx.stroke();
+        ctx.restore();
+      }
+    }
+
+    function fullRedraw() {
+      fullDraw();
+    }
+
+    // ──────────────────────────────────────
+    // 4. INTERACTION LOGIC (GIAI ĐOẠN 1-3)
+    // ──────────────────────────────────────
+    function loadPhase(pNum) {
+      state.phase = pNum;
+      state.tempVector = null;
+      state.isDrawing = false;
+      state.isGhostBVisible = true;
+      state.isPredicted = false;
+      state.isAnimating = false;
+      state.animationProgress = 0;
+
+      cancelAnimationFrame(animId);
+      updateProgress(pNum);
+      renderUI();
+      fullRedraw();
+    }
+
+    function updateProgress(doneStep) {
+      for (let i = 1; i <= 3; i++) {
+        const el = document.getElementById('ps' + i);
+        if (el) {
+          el.className = 'prog-step-light' + (i === doneStep ? ' active' : (i < doneStep ? ' done' : ''));
+        }
+      }
+    }
+
+    function toggleOperator(op) {
+      if (state.isAnimating) return;
+      state.operator = op;
+      state.isPredicted = false;
+      state.predictionPoint = null;
+
+      renderUI();
+      animateVectorTranslation();
+    }
+
+    function animateVectorTranslation() {
+      if (state.isAnimating) return;
+
+      state.isAnimating = true;
+      state.animationProgress = 0;
+      state.isGhostBVisible = true;
+      state.isPredicted = false;
+      state.predictionPoint = null;
+
+      const duration = state.operator === '+' ? 1500 : 3000;
+      const startTime = performance.now();
+
+      function loop(now) {
+        if (!state.isAnimating) return;
+        const elapsed = now - startTime;
+        state.animationProgress = Math.min(1, elapsed / duration);
+
+        fullRedraw();
+
+        if (state.animationProgress < 1) {
+          animId = requestAnimationFrame(loop);
+        } else {
+          state.isAnimating = false;
+          // Spawn prediction point handle at the origin of A
+          state.predictionPoint = { x: state.vectorA.start.x, y: state.vectorA.start.y };
+
+          setCaptionText('Vectơ kết quả kết thúc ở đâu? Kéo điểm ◆ đến vị trí bạn nghĩ');
+          document.getElementById('capBox').className = 'sim-caption';
+
+          renderUI();
+          fullRedraw();
+        }
+      }
+
+      cancelAnimationFrame(animId);
+      animId = requestAnimationFrame(loop);
+    }
+
+    function replayAnimation() {
+      animateVectorTranslation();
+    }
+
+    function checkPrediction() {
+      if (!state.predictionPoint) return;
+
+      const compA = getVecComponents(state.vectorA);
+      const compB = getVecComponents(state.vectorB);
+
+      const dxAct = state.operator === '+' ? (compA.dx + compB.dx) : (compA.dx - compB.dx);
+      const dyAct = state.operator === '+' ? (compA.dy + compB.dy) : (compA.dy - compB.dy);
+
+      const actualEndX = state.vectorA.start.x + dxAct;
+      const actualEndY = state.vectorA.start.y + dyAct;
+
+      // Math tolerance check
+      const diffX = state.predictionPoint.x - actualEndX;
+      const diffY = state.predictionPoint.y - actualEndY;
+      const dist = Math.sqrt(diffX * diffX + diffY * diffY);
+
+      state.isPredicted = true;
+
+      const feedbackEl = document.getElementById('fbStep');
+      const capBox = document.getElementById('capBox');
+      const isZeroVector = (dxAct === 0 && dyAct === 0);
+
+      if (dist <= 0.5) {
+        // Correct prediction
+        if (isZeroVector) {
+          feedbackEl.innerHTML = `<span class="feedback-badge ok">✓ Chính xác!</span>`;
+          setCaptionText(`Tổng bằng vectơ-không 0⃗ — không phải số 0, hãy viết đúng ký hiệu!`);
+          capBox.className = 'sim-caption green';
+        } else {
+          feedbackEl.innerHTML = `<span class="feedback-badge ok">✓ Chính xác!</span>`;
+          const opText = state.operator === '+' ? 'a⃗ + b⃗' : 'a⃗ - b⃗';
+          setCaptionText(`Chính xác! ${opText} = (${dxAct}, ${dyAct}) — điểm cuối của mũi tên tím.`);
+          capBox.className = 'sim-caption green';
+        }
+      } else {
+        // Incorrect prediction
+        feedbackEl.innerHTML = `<span class="feedback-badge err">✗ Chưa đúng!</span>`;
+        capBox.className = 'sim-caption red';
+
+        // Sai lầm 1 check: user selected opposite subtraction order
+        if (state.operator === '-') {
+          const oppositeEndX = state.vectorA.start.x + compB.dx - compA.dx;
+          const oppositeEndY = state.vectorA.start.y + compB.dy - compA.dy;
+          const isNearOpposite = (Math.abs(state.predictionPoint.x - oppositeEndX) < 0.1 && Math.abs(state.predictionPoint.y - oppositeEndY) < 0.1);
+
+          if (isNearOpposite) {
+            setCaptionText(`Chưa đúng — Bạn có vẻ đã nhầm lẫn thứ tự hiệu: a⃗ - b⃗ và b⃗ - a⃗ là hai vectơ ngược chiều nhau!`);
+            renderUI();
+            fullRedraw();
+            return;
+          }
+        }
+
+        // Sai lầm 2 check: user forgot zero vector
+        if (isZeroVector) {
+          setCaptionText(`Chưa đúng — Tổng hai vectơ này triệt tiêu nhau thành vectơ-không 0⃗. Hãy thử lại!`);
+        } else {
+          setCaptionText(`Chưa đúng — quan sát mũi tên tím và so sánh với dự đoán của bạn.`);
+        }
+      }
+
+      renderUI();
+      fullRedraw();
+    }
+
+    function restartSimulation() {
+      state.vectorA = null;
+      state.vectorB = null;
+      state.tempVector = null;
+      state.predictionPoint = null;
+      state.isPredicted = false;
+
+      loadPhase(1);
+    }
+
+    function setCaptionText(text) {
+      document.getElementById('capText').innerHTML = text;
+    }
+
+    // ──────────────────────────────────────
+    // 5. SIDEBAR COMPONENT RENDER ENGINE
+    // ──────────────────────────────────────
+    function renderUI() {
+      const ctrlGroup = document.getElementById('ctrlGroup');
+      const vecCard = document.getElementById('vecCard');
+      const tableBody = document.getElementById('vecTableBody');
+      const capIcon = document.getElementById('capIcon');
+
+      // Update vector summary card
+      if (state.vectorA || state.vectorB) {
+        vecCard.classList.remove('hidden');
+        let rowsHtml = '';
+
+        if (state.vectorA) {
+          const comp = getVecComponents(state.vectorA);
+          rowsHtml += `
+            <tr>
+              <td><span class="vec-badge a">a⃗</span></td>
+              <td class="math-font">(${state.vectorA.start.x}, ${state.vectorA.start.y})</td>
+              <td class="math-font">(${state.vectorA.end.x}, ${state.vectorA.end.y})</td>
+              <td class="math-font">(${comp.dx}, ${comp.dy})</td>
+            </tr>
+          `;
+        }
+
+        if (state.vectorB) {
+          const comp = getVecComponents(state.vectorB);
+          rowsHtml += `
+            <tr>
+              <td><span class="vec-badge b">b⃗</span></td>
+              <td class="math-font">(${state.vectorB.start.x}, ${state.vectorB.start.y})</td>
+              <td class="math-font">(${state.vectorB.end.x}, ${state.vectorB.end.y})</td>
+              <td class="math-font">(${comp.dx}, ${comp.dy})</td>
+            </tr>
+          `;
+        }
+
+        if (state.phase === 3 && state.predictionPoint) {
+          const startX = state.vectorA.start.x;
+          const startY = state.vectorA.start.y;
+          const predDX = state.predictionPoint.x - startX;
+          const predDY = state.predictionPoint.y - startY;
+          rowsHtml += `
+            <tr>
+              <td><span class="vec-badge pred">Dự đoán</span></td>
+              <td class="math-font">(${startX}, ${startY})</td>
+              <td class="math-font">(${state.predictionPoint.x}, ${state.predictionPoint.y})</td>
+              <td class="math-font">(${predDX}, ${predDY})</td>
+            </tr>
+          `;
+        }
+
+        if (state.isPredicted) {
+          const compA = getVecComponents(state.vectorA);
+          const compB = getVecComponents(state.vectorB);
+          const dxAct = state.operator === '+' ? (compA.dx + compB.dx) : (compA.dx - compB.dx);
+          const dyAct = state.operator === '+' ? (compA.dy + compB.dy) : (compA.dy - compB.dy);
+
+          rowsHtml += `
+            <tr style="border-top: 1.5px solid var(--primary);">
+              <td><span class="vec-badge r">Kết quả</span></td>
+              <td class="math-font">(${state.vectorA.start.x}, ${state.vectorA.start.y})</td>
+              <td class="math-font">(${state.vectorA.start.x + dxAct}, ${state.vectorA.start.y + dyAct})</td>
+              <td class="math-font">(${dxAct}, ${dyAct})</td>
+            </tr>
+          `;
+        }
+
+        tableBody.innerHTML = rowsHtml;
+      } else {
+        vecCard.classList.add('hidden');
+      }
+
+      // Sidebar action forms based on phase
+      if (state.phase === 1) {
+        ctrlGroup.innerHTML = `
+          <div class="panel-section-label">Giai đoạn 1: Vẽ Vectơ A</div>
+          <p style="font-size:12.5px; color:var(--text-2); line-height:1.45;">Nhấp và kéo thả trên màn hình lưới bên trái để vẽ vectơ thứ nhất.</p>
+          <button class="btn-action secondary" onclick="restartSimulation()" ${state.vectorA ? '' : 'disabled'}>
+            <i class="ti ti-refresh"></i> Vẽ lại a
+          </button>
+          <button class="btn-action primary" onclick="loadPhase(2)" ${state.vectorA ? '' : 'disabled'}>
+            Xong, vẽ b <i class="ti ti-chevron-right"></i>
+          </button>
+        `;
+
+        capIcon.className = 'ti ti-info-circle';
+        if (state.vectorA) {
+          const comp = getVecComponents(state.vectorA);
+          setCaptionText(`Vectơ a⃗ = (${comp.dx}, ${comp.dy}). Tiếp theo vẽ vectơ b!`);
+          document.getElementById('capBox').className = 'sim-caption green';
+        } else {
+          setCaptionText('Hãy vẽ vectơ a — click một điểm bất kỳ, kéo và thả');
+          document.getElementById('capBox').className = 'sim-caption';
+          document.getElementById('fbStep').innerHTML = '';
+        }
+      }
+
+      else if (state.phase === 2) {
+        ctrlGroup.innerHTML = `
+          <div class="panel-section-label">Giai đoạn 2: Vẽ Vectơ B</div>
+          <p style="font-size:12.5px; color:var(--text-2); line-height:1.45;">Nhấp và kéo thả tương tự trên lưới để vẽ vectơ thứ hai ở bất kỳ vị trí nào.</p>
+          <div style="display:flex; gap:8px;">
+            <button class="btn-action secondary" onclick="loadPhase(1)" style="flex:1;">
+              <i class="ti ti-chevron-left"></i> Vẽ lại a
+            </button>
+            <button class="btn-action secondary" onclick="loadPhase(2)" ${state.vectorB ? '' : 'disabled'} style="flex:1;">
+              <i class="ti ti-refresh"></i> Vẽ lại b
+            </button>
+          </div>
+          <button class="btn-action primary" onclick="loadPhase(3); animateVectorTranslation();" ${state.vectorB ? '' : 'disabled'}>
+            Xong, bắt đầu khám phá <i class="ti ti-chevron-right"></i>
+          </button>
+        `;
+
+        capIcon.className = 'ti ti-info-circle';
+        if (state.vectorB) {
+          setCaptionText('Hai vectơ đã sẵn sàng. Chọn phép Cộng hoặc Trừ để bắt đầu');
+          document.getElementById('capBox').className = 'sim-caption green';
+        } else {
+          setCaptionText('Tốt! Giờ vẽ vectơ b — ở bất kỳ vị trí nào trên mặt phẳng');
+          document.getElementById('capBox').className = 'sim-caption';
+          document.getElementById('fbStep').innerHTML = '';
+        }
+      }
+
+      else if (state.phase === 3) {
+        const isOperatorAdd = state.operator === '+';
+        const doneAnimate = !state.isAnimating && state.predictionPoint;
+
+        ctrlGroup.innerHTML = `
+          <div class="panel-section-label">Giai đoạn 3: Phép toán Vectơ</div>
+          
+          <div class="op-toggle-group">
+            <button class="btn-toggle-op ${isOperatorAdd ? 'active' : ''}" onclick="toggleOperator('+')" ${state.isAnimating ? 'disabled' : ''}>
+              <i class="ti ti-plus"></i> Cộng
+            </button>
+            <button class="btn-toggle-op ${!isOperatorAdd ? 'active' : ''}" onclick="toggleOperator('-')" ${state.isAnimating ? 'disabled' : ''}>
+              <i class="ti ti-minus"></i> Trừ
+            </button>
+          </div>
+          
+          <div style="display:flex; gap:8px;">
+            <button class="btn-action secondary" onclick="replayAnimation()" ${state.isAnimating ? 'disabled' : ''} style="flex:1;">
+              <i class="ti ti-player-play"></i> ${state.predictionPoint ? 'Xem lại' : 'Ghép vectơ'}
+            </button>
+            <button class="btn-action secondary" onclick="state.isGhostBVisible = !state.isGhostBVisible; renderUI(); fullRedraw();" ${state.isAnimating ? 'disabled' : ''} style="flex:1; font-size:12px; padding:8px 10px;">
+              <i class="ti ${state.isGhostBVisible ? 'ti-eye-off' : 'ti-eye'}"></i> Gốc b
+            </button>
+          </div>
+          
+          <button class="btn-action primary" onclick="checkPrediction()" ${doneAnimate ? '' : 'disabled'}>
+            Kiểm tra dự đoán
+          </button>
+          
+          <button class="btn-action secondary" onclick="restartSimulation()" style="margin-top:8px;">
+            <i class="ti ti-arrow-back-up"></i> Làm bài khác
+          </button>
+        `;
+
+        capIcon.className = 'ti ti-info-circle';
+        if (state.isAnimating) {
+          if (isOperatorAdd) {
+            setCaptionText('Phép cộng: ta tịnh tiến b sao cho gốc b trùng đuôi a — quy tắc đầu-đuôi');
+          } else {
+            setCaptionText('Phép trừ: a - b = a + (-b). Ta đặt -b cùng gốc với a');
+          }
+          document.getElementById('capBox').className = 'sim-caption';
+          document.getElementById('fbStep').innerHTML = '';
+        } else if (!state.isPredicted && state.predictionPoint) {
+          setCaptionText('Vectơ kết quả kết thúc ở đâu? Kéo ◆ đến vị trí bạn nghĩ');
+          document.getElementById('capBox').className = 'sim-caption';
+          document.getElementById('fbStep').innerHTML = '';
+        }
+      }
+    }
+
+    // ──────────────────────────────────────
+    // 6. MOUSE & TOUCH POINTER EVENT HANDLERS
+    // ──────────────────────────────────────
+    let isPanning = false;
+    let startPX = 0, startPY = 0;
+    let startXMin = 0, startXMax = 0, startYMin = 0, startYMax = 0;
+
+    function getPointerPos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]) || e;
+      const px = t.clientX - rect.left;
+      const py = t.clientY - rect.top;
+      return { px, py, clientX: t.clientX, clientY: t.clientY };
+    }
+
+    function handlePointerDown(e) {
+      const { px, py, clientX, clientY } = getPointerPos(e);
+      const { x, y } = c2m(px, py);
+      const sx = Math.round(x);
+      const sy = Math.round(y);
+
+      let shouldPan = e.shiftKey || (e.button === 2);
+
+      if (!shouldPan) {
+        if (state.phase === 3) {
+          let clickedPrediction = false;
+          if (!state.isAnimating && state.predictionPoint) {
+            const handleP = m2c(state.predictionPoint.x, state.predictionPoint.y);
+            const dist = Math.hypot(px - handleP.px, py - handleP.py);
+            if (dist <= 24) {
+              clickedPrediction = true;
+            }
+          }
+          if (!clickedPrediction) {
+            shouldPan = true;
+          }
+        } else if (state.phase === 1 && state.vectorA) {
+          shouldPan = true;
+        } else if (state.phase === 2 && state.vectorB) {
+          shouldPan = true;
+        }
+      }
+
+      if (shouldPan) {
+        isPanning = true;
+        startPX = clientX;
+        startPY = clientY;
+        startXMin = state.vXMin;
+        startXMax = state.vXMax;
+        startYMin = state.vYMin;
+        startYMax = state.vYMax;
+        canvas.style.cursor = 'grabbing';
+        return;
+      }
+
+      if (state.phase === 3 && !state.isAnimating && state.predictionPoint) {
+        const handleP = m2c(state.predictionPoint.x, state.predictionPoint.y);
+        const dist = Math.hypot(px - handleP.px, py - handleP.py);
+
+        if (dist <= 24) {
+          state.isDraggingPred = true;
+          canvas.style.cursor = 'grabbing';
+          return;
+        }
+      }
+
+      if (state.phase === 1 && !state.vectorA) {
+        state.isDrawing = true;
+        state.isDrawingVector = 'a';
+        state.tempVector = { start: { x: sx, y: sy }, end: { x: sx, y: sy } };
+        setCaptionText('Kéo tiếp đến điểm cuối... thả để hoàn thành a');
+        fullRedraw();
+      } else if (state.phase === 2 && !state.vectorB) {
+        state.isDrawing = true;
+        state.isDrawingVector = 'b';
+        state.tempVector = { start: { x: sx, y: sy }, end: { x: sx, y: sy } };
+        setCaptionText('Kéo tiếp đến điểm cuối... thả để hoàn thành b');
+        fullRedraw();
+      }
+    }
+
+    function handlePointerMove(e) {
+      const { px, py, clientX, clientY } = getPointerPos(e);
+      if (isPanning) {
+        const dx = clientX - startPX;
+        const dy = clientY - startPY;
+
+        const xRange = startXMax - startXMin;
+        const yRange = startYMax - startYMin;
+
+        const mxDiff = (dx / CW) * xRange;
+        const myDiff = (dy / CH) * yRange;
+
+        state.vXMin = startXMin - mxDiff;
+        state.vXMax = startXMax - mxDiff;
+        state.vYMin = startYMin + myDiff;
+        state.vYMax = startYMax + myDiff;
+
+        fullRedraw();
+        return;
+      }
+
+      const { x, y } = c2m(px, py);
+      const sx = Math.round(x);
+      const sy = Math.round(y);
+
+      const coordEl = document.getElementById('coordBar');
+      if (coordEl) coordEl.innerText = `x: ${x.toFixed(2)} · y: ${y.toFixed(2)}`;
+
+      const tooltip = document.getElementById('simTooltip');
+      if (state.isDrawing && state.tempVector) {
+        state.tempVector.end = { x: sx, y: sy };
+        tooltip.style.display = 'block';
+        tooltip.style.left = (px + 14) + 'px';
+        tooltip.style.top = (py - 8) + 'px';
+
+        const compDX = sx - state.tempVector.start.x;
+        const compDY = sy - state.tempVector.start.y;
+        const label = state.isDrawingVector === 'a' ? 'a⃗' : 'b⃗';
+        tooltip.innerText = `${label} = (${compDX}, ${compDY})  Tọa độ mút: (${sx}, ${sy})`;
+        fullRedraw();
+      } else if (state.isDraggingPred && state.predictionPoint) {
+        state.predictionPoint = { x: sx, y: sy };
+        tooltip.style.display = 'block';
+        tooltip.style.left = (px + 14) + 'px';
+        tooltip.style.top = (py - 8) + 'px';
+
+        const startX = state.vectorA.start.x;
+        const startY = state.vectorA.start.y;
+        const predDX = sx - startX;
+        const predDY = sy - startY;
+
+        tooltip.innerText = `Dự đoán = (${predDX}, ${predDY})  Tọa độ mút: (${sx}, ${sy})`;
+        fullRedraw();
+      } else {
+        tooltip.style.display = 'none';
+      }
+
+      if (isPanning) {
+        canvas.style.cursor = 'grabbing';
+      } else if (state.isDraggingPred) {
+        canvas.style.cursor = 'grabbing';
+      } else {
+        let hoverPrediction = false;
+        if (state.phase === 3 && !state.isAnimating && state.predictionPoint) {
+          const handleP = m2c(state.predictionPoint.x, state.predictionPoint.y);
+          const dist = Math.hypot(px - handleP.px, py - handleP.py);
+          if (dist <= 24) hoverPrediction = true;
+        }
+
+        if (hoverPrediction) {
+          canvas.style.cursor = 'pointer';
+        } else if (state.phase === 3) {
+          canvas.style.cursor = 'grab';
+        } else if (state.phase === 1) {
+          canvas.style.cursor = state.vectorA ? 'grab' : 'crosshair';
+        } else if (state.phase === 2) {
+          canvas.style.cursor = state.vectorB ? 'grab' : 'crosshair';
+        } else {
+          canvas.style.cursor = 'default';
+        }
+      }
+    }
+
+    function handlePointerUp(e) {
+      if (isPanning) {
+        isPanning = false;
+        canvas.style.cursor = 'default';
+        return;
+      }
+
+      if (state.isDraggingPred) {
+        state.isDraggingPred = false;
+        canvas.style.cursor = 'default';
+        renderUI();
+        fullRedraw();
+        return;
+      }
+
+      if (state.isDrawing && state.tempVector) {
+        const { px, py } = getPointerPos(e);
+        const { x, y } = c2m(px, py);
+        const sx = Math.round(x);
+        const sy = Math.round(y);
+
+        state.tempVector.end = { x: sx, y: sy };
+
+        const isNonZero = (state.tempVector.start.x !== sx || state.tempVector.start.y !== sy);
+
+        if (isNonZero) {
+          if (state.isDrawingVector === 'a') {
+            state.vectorA = { start: state.tempVector.start, end: state.tempVector.end };
+          } else {
+            state.vectorB = { start: state.tempVector.start, end: state.tempVector.end };
+          }
+        }
+
+        state.isDrawing = false;
+        state.tempVector = null;
+        state.isDrawingVector = null;
+
+        renderUI();
+        fullRedraw();
+      }
+    }
+
+    // Mouse Listeners
+    canvas.addEventListener('mousedown', handlePointerDown);
+    window.addEventListener('mousemove', handlePointerMove);
+    window.addEventListener('mouseup', handlePointerUp);
+    canvas.addEventListener('mouseleave', () => {
+      document.getElementById('simTooltip').style.display = 'none';
+    });
+    canvas.addEventListener('contextmenu', e => e.preventDefault());
+
+    // Touch Listeners (Mobile & Tablet Support)
+    canvas.addEventListener('touchstart', e => {
+      if (e.touches.length > 1) return;
+      e.preventDefault();
+      handlePointerDown(e);
+    }, { passive: false });
+
+    window.addEventListener('touchmove', e => {
+      if (state.isDrawing || state.isDraggingPred || isPanning) {
+        e.preventDefault();
+      }
+      handlePointerMove(e);
+    }, { passive: false });
+
+    window.addEventListener('touchend', e => {
+      handlePointerUp(e);
+    }, { passive: false });
+
+    canvas.addEventListener('wheel', e => {
+      e.preventDefault();
+      const rect = canvas.getBoundingClientRect();
+      const cx = e.clientX - rect.left;
+      const cy = e.clientY - rect.top;
+      const factor = e.deltaY > 0 ? 1.15 : 0.85;
+      zoomAt(cx, cy, factor);
+    }, { passive: false });
+
+    // ──────────────────────────────────────
+    // 7. INITIALIZATION
+    // ──────────────────────────────────────
+    window.addEventListener('load', () => {
+      loadPhase(1);
+
+      const rect = canvasWrap.getBoundingClientRect();
+      CW = rect.width;
+      CH = rect.height;
+
+      resizeCanvas();
+
+      setTimeout(() => {
+        resizeCanvas();
+      }, 100);
+    });
+
+    window.addEventListener('resize', () => {
+      clearTimeout(roTimer);
+      roTimer = setTimeout(resizeCanvas, 30);
+    });
+  </script>
+</body>
+
+</html>

@@ -281,6 +281,62 @@ function formulaText(xCoef, yCoef) {
 // Kiểm tra khớp: dùng lại checkSnap (1.4) trên buildChain(...).tip so với vector đích.
 ```
 
+### 1.6 Chọn-rồi-Đặt — thay thế HTML5 Drag-and-Drop API (BẮT BUỘC)
+
+> **Vấn đề:** `draggable="true"` + `dragstart/dragover/drop` (HTML5 Drag-and-Drop API) **không
+> chạy qua cảm ứng** trên phần lớn trình duyệt di động — API này về bản chất chỉ hỗ trợ chuột.
+> Khác với hover (có thể mirror bằng touchstart/touchend), kéo-thả kiểu này cần **đổi hẳn cơ
+> chế**, không phải chỉ thêm sự kiện song song.
+
+**Cách phát hiện:** `grep -n "draggable=\"true\"\|dragstart\|ondrop" file.html` — nếu thấy mà
+không có `touchstart`/`pointerdown` nào đi kèm, cần đổi cơ chế theo mẫu dưới đây.
+
+**Nguyên tắc:** thay "kéo-thả" bằng "chọn-rồi-đặt" (tap để chọn, tap để đặt) — dùng **1 handler
+chung cho cả click lẫn touchstart**, không viết 2 nhánh riêng cho chuột/chạm:
+
+```javascript
+let selectedCard = null;
+
+function handleCardPick(e) {
+  e.stopPropagation(); // tránh vừa chọn thẻ vừa kích hoạt luôn việc đặt-thẻ của ô cha
+  const card = e.currentTarget;
+  if (selectedCard === card) {
+    card.classList.remove('picked');
+    selectedCard = null;
+    return;
+  }
+  if (selectedCard) selectedCard.classList.remove('picked');
+  selectedCard = card;
+  card.classList.add('picked');
+}
+
+function handleZonePlace(e) {
+  if (!selectedCard) return;
+  placeSelectedInto(e.currentTarget, selectedCard); // giữ nguyên logic hoán đổi cũ (đẩy thẻ cũ
+                                                       // về pool nếu ô đã có sẵn thẻ khác)
+  selectedCard.classList.remove('picked');
+  selectedCard = null;
+}
+
+// QUAN TRỌNG: gắn handleCardPick cho thẻ ở CẢ 2 nơi — đang nằm trong pool VÀ đang nằm trong 1 ô
+// đã đặt — để chạm lại vào thẻ đã đặt vẫn chọn lại được nó (đổi ô khác), không cần thao tác phụ
+// nào riêng (đã thử "chạm vào pool để trả thẻ về" — rối, người dùng phải nhớ quy tắc phụ,
+// bỏ hướng đó). appendChild di chuyển node giữ nguyên listener, nên chỉ cần gắn 1 lần lúc khởi
+// tạo, không cần gắn lại mỗi khi thẻ đổi chỗ:
+allCards.forEach(card => {
+  card.addEventListener('click', handleCardPick);
+  card.addEventListener('touchstart', handleCardPick, { passive: false });
+});
+allDropzones.forEach(zone => {
+  zone.addEventListener('click', handleZonePlace);
+  zone.addEventListener('touchstart', handleZonePlace, { passive: false });
+});
+```
+
+**Đã kiểm chứng thật** (không phải lý thuyết) trên `L11-C3-B9_Toan_Module2_Xuong_dong_phuc.html`
+— test đủ 4 bước: chọn thẻ trong pool → đặt vào ô 1 → chọn lại đúng thẻ đó khi đang nằm trong ô
+1 → chuyển sang ô 2, ô 1 tự trống lại.
+
 ---
 
 ## PHẦN 2 — FEEDBACK & ANIMATION

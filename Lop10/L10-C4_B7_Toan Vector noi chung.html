@@ -1,0 +1,3854 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Toán 10 — Chương IV · Bài 7: Các khái niệm về Vectơ</title>
+  <script type="application/json" id="athena-context">
+{
+  "title": "Chương IV, Bài 7: Các khái niệm về Vectơ",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Hiểu vectơ được xác định bởi 3 yếu tố: điểm đặt (gốc), hướng, và độ lớn (độ dài)",
+    "Nhận biết hai vectơ cùng phương, cùng hướng, ngược hướng",
+    "Hiểu điều kiện hai vectơ bằng nhau: cùng hướng và cùng độ dài (vị trí đặt không ảnh hưởng)",
+    "Hiểu quy ước: vectơ-không cùng phương và cùng hướng với mọi vectơ",
+    "Vận dụng vectơ để biểu diễn lực trong các tình huống vật lý thực tế (điểm đặt, hướng, tỉ lệ xích)"
+  ],
+  "structure": [
+    { "id": "stage-1", "title": "Stage 1 — Gắn Vectơ (Vector Match): 5 level kéo thả đặt đúng vectơ (vận tốc, lực cản...) vào đúng điểm đặt và hướng trên đối tượng chuyển động" },
+    { "id": "stage-2", "title": "Stage 2 — Khớp Vectơ (Clone the Vector): 5 level kéo và xoay Vectơ B để biến thành bản sao của Vectơ A (khớp cùng độ dài, cùng góc); có câu hỏi phụ về việc di chuyển vị trí có ảnh hưởng đến tính bằng nhau của 2 vectơ không" },
+    { "id": "stage-3", "title": "Stage 3 — Nhận Diện Vectơ (Vector Detective): 4 mission tuần tự, click chọn vectơ trên canvas thỏa điều kiện (cùng phương / cùng hướng / ngược hướng / bằng nhau); có câu hỏi phụ về việc vectơ-không có cùng phương với vectơ A không" },
+    { "id": "stage-4", "title": "Stage 4 — Lực Tác Dụng (Applied Forces): 3 tình huống vật lý (Cân bằng, Bay lên, Tự do) — kéo vectơ trọng lực P (đỏ) và lực F (xanh) vào đúng điểm đặt, đúng hướng, đúng tỉ lệ trên khinh khí cầu và quan sát phản ứng" }
+  ],
+  "athenaGuidance": "Đây là 4 game tương tác kéo-thả/click-chọn, phần lớn không có trắc nghiệm truyền thống mà chấm điểm qua vị trí/hướng/độ dài vectơ học sinh đặt (dung sai nhỏ). Athena chỉ cần hướng dẫn khái niệm, không tính hộ vị trí chính xác. Có 2 câu hỏi phụ dạng Có/Không cố định, TUYỆT ĐỐI không nói thẳng đáp án trước khi học sinh chọn: Stage 2 — 'Nếu di chuyển B sang vị trí khác thì B còn bằng A không?' — ĐÁP ÁN ĐÚNG là 'Có' (hai vectơ bằng nhau khi cùng hướng và cùng độ dài; vị trí đặt không ảnh hưởng đến việc 2 vectơ có bằng nhau hay không). Stage 3 — 'Vectơ-không (0) có cùng phương với vectơ A không?' — ĐÁP ÁN ĐÚNG là 'Có' (theo quy ước toán học, vectơ-không cùng phương VÀ cùng hướng với MỌI vectơ). Stage 3 còn có 4 mission phân loại vectơ trên canvas theo 4 quan hệ cơ bản: cùng phương, cùng hướng, ngược hướng, bằng nhau — Athena hướng dẫn định nghĩa từng quan hệ khi học sinh hỏi (cùng phương: hai vectơ nằm trên hai đường thẳng song song hoặc trùng nhau; cùng hướng/ngược hướng: cùng phương và mũi tên chỉ cùng chiều/ngược chiều; bằng nhau: cùng hướng và cùng độ dài) nhưng không click chọn hộ. Stage 4 không có đáp án đúng/sai tuyệt đối để tiết lộ — là mô phỏng vật lý trực quan (khinh khí cầu phản ứng theo lực P và F được đặt), Athena chỉ giải thích khái niệm điểm đặt/hướng/tỉ lệ xích của vectơ lực khi được hỏi."
+}
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    :root {
+  /* Neutrals · giấy & mực */
+  --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC;
+  --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
+  --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+
+  /* Jade · hành động chính */
+  --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F;
+  --jade-text:#1B5E48; --jade-soft:#A9D0BE; --jade-pale:#DCEAE1;
+
+  /* Sage · phụ trợ */
+  --sage:#A8C9B8; --sage-deep:#7CA792; --sage-text:#46685A; --sage-pale:#E1ECE4;
+
+  /* Accent · điểm nhấn ấm */
+  --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+
+  /* Semantic · đúng/sai/cảnh báo/info */
+  --correct:#2D8B6F; --correct-bg:#DCEAE1;
+  --wrong:#C15F3C;   --wrong-bg:#F3E2D6;
+  --warning:#C58A2E; --warning-bg:#F5E7CB;
+  --info:#4E7F92;    --info-bg:#DCE7EB;
+
+  --white:#FFFFFF;
+  --radius:10px; --radius-lg:14px; --radius-sm:6px;
+  --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+  --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+  --shadow-lg: 0 14px 38px rgba(20, 67, 47, 0.12);
+
+  /* Illustration only · fill phẳng cho minh hoạ (KHÔNG dùng cho UI/text) */
+  --il-terracotta:#C1704B; --il-brick:#9E4A2E; --il-ochre:#C99A3C; --il-olive:#8A9A5B;
+  --il-forest:#2E6B52; --il-dusty-blue:#6E93A6; --il-slate:#4E6E7E; --il-mauve:#8A6A7E; --il-sand:#D8C4A0;
+
+  /* Vector màu canvas Vật lý/Toán (cộng lực, cộng vận tốc...) — PHẦN 1.1 file design Toán */
+  --color-v1: var(--jade); --color-v2: var(--info);
+  --color-resultant: var(--accent); --color-force-red: var(--wrong); --color-gravity: var(--ink-3);
+
+  /* --- alias cho code cũ (giữ để var(--ten-cu) phía dưới vẫn chạy đúng màu mới) --- */
+  --primary: var(--jade-deep);
+  --primary-mid: var(--jade);
+  --primary-light: var(--jade-pale);
+  --accent-dark: var(--accent-deep);
+  --accent-light: var(--accent-pale);
+  --teal-mid: var(--jade-text);
+  --teal-light: var(--jade-pale);
+  --green: var(--correct);
+  --green-light: var(--correct-bg);
+  --green-mid: var(--jade);
+  --red: var(--wrong);
+  --red-light: var(--wrong-bg);
+  --amber: var(--warning);
+  --amber-light: var(--warning-bg);
+  --amber-dark: var(--warning);
+  --blue: var(--info);
+  --blue-light: var(--info-bg);
+  --bg: var(--cream);
+  --surface: var(--white);
+  --border: var(--paper-line);
+  --gray-light: var(--cream-2);
+  --gray-mid: var(--paper-line-2);
+  --text: var(--ink);
+  --text-2: var(--ink-2);
+  --text-3: var(--ink-3);
+}
+
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      background: var(--bg);
+      color: var(--text);
+font-size: 15px;
+      line-height: 1.6
+    }
+
+    .app {
+      display: flex;
+      flex-direction: column
+    }
+
+    /* ─── SIDEBAR (Pass 2, mục A) — đổi từ cột dọc cố định sang thanh ngang ở đầu trang.
+       Giữ nguyên toàn bộ id/class/onclick bên trong để không đụng JS. ─── */
+    .sidebar {
+      width: 100%;
+      background: var(--surface);
+      border-right: none;
+      border-bottom: 2px solid var(--border);
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      position: sticky;
+      top: 0;
+      height: auto;
+      overflow-y: visible;
+      z-index: 30
+    }
+
+    .sb-top {
+      display: none !important;
+    }
+
+    .sb-logo {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 1rem
+    }
+
+    .sb-logo-icon {
+      width: 38px;
+      height: 38px;
+      border-radius: 10px;
+      background: var(--primary);
+      display: flex;
+      align-items: center;
+      justify-content: center
+    }
+
+    .sb-logo-icon i {
+      font-size: 20px;
+      color: var(--accent)
+    }
+
+    .sb-logo-text {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--primary)
+    }
+
+    .sb-logo-sub {
+      font-size: 11px;
+      color: var(--text-3)
+    }
+
+    .prog-wrap {
+      background: var(--accent-light);
+      border: 1px solid rgba(160, 120, 32, .15);
+      border-radius: var(--radius);
+      padding: .75rem
+    }
+
+    .prog-label {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-bottom: 6px;
+      display: flex;
+      justify-content: space-between
+    }
+
+    .prog-bar {
+      height: 6px;
+      background: var(--gray-mid);
+      border-radius: 99px;
+      overflow: hidden
+    }
+
+    .prog-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--primary), var(--primary-mid));
+      border-radius: 99px;
+      transition: width .6s ease;
+      width: 0%
+    }
+
+    /* Pass 2 (mục A) — .sb-group đổi từ danh sách khối dọc sang thanh tab ngang cuộn được */
+    .sb-group {
+      padding: .5rem 1rem;
+      display: flex;
+      align-items: stretch;
+      gap: 6px;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+      max-width: 860px;
+      margin: 0 auto;
+      width: 100%;
+    }
+    .sb-group::-webkit-scrollbar { display: none }
+
+    /* Nhãn "Các Stage" dạng khối dọc không còn hợp trong thanh tab ngang — ẩn đi,
+       không xoá node (an toàn, không có JS nào đụng tới). */
+    .sb-group-label { display: none }
+
+    .mod-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: .6rem .9rem;
+      min-height: 44px;
+      cursor: pointer;
+      flex: 0 0 auto;
+      white-space: nowrap;
+      border-left: none;
+      border-bottom: 3px solid transparent;
+      border-radius: var(--radius) var(--radius) 0 0;
+      transition: all .15s
+    }
+
+    .mod-item:hover:not(.locked) {
+      background: var(--accent-light)
+    }
+
+    .mod-item.active {
+      background: var(--accent-light);
+      border-bottom-color: var(--primary)
+    }
+
+    .mod-item.locked {
+      opacity: .45;
+      cursor: not-allowed
+    }
+
+    .mod-icon {
+      width: 30px;
+      height: 30px;
+      border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      flex-shrink: 0;
+      background: var(--gray-light);
+      color: var(--text-3);
+      border: 1px solid var(--border)
+    }
+
+    .mod-item.active .mod-icon {
+      background: var(--primary);
+      color: var(--accent);
+      border: none
+    }
+
+    .mod-item.done .mod-icon {
+      background: var(--green-light);
+      color: var(--green);
+      border: 1px solid var(--green-mid)
+    }
+
+    .mod-text {
+      flex: 1;
+      min-width: 0
+    }
+
+    .mod-name {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--text);
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis
+    }
+
+    .mod-name-en {
+      font-size: 10px;
+      color: var(--text-3);
+      font-weight: 500
+    }
+
+    .mod-item.active .mod-name {
+      color: var(--primary)
+    }
+
+    .mod-badge {
+      font-size: 10px;
+      padding: 2px 7px;
+      border-radius: 99px;
+      flex-shrink: 0;
+      font-weight: 700
+    }
+
+    .mb-lock {
+      background: var(--gray-light);
+      color: var(--text-3);
+      border: 1px solid var(--border)
+    }
+
+    .mb-done {
+      background: var(--green-light);
+      color: var(--green);
+      border: 1px solid var(--green-mid)
+    }
+
+    .mb-active {
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      border: 1px solid rgba(160, 120, 32, .3)
+    }
+
+    /* Pass 2 (mục A) — .sb-dict đổi từ khối dọc sang dải chip nằm ngang, tự xuống dòng */
+    .sb-dict {
+      padding: .5rem 1rem;
+      border-top: 1px solid var(--border);
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 4px 18px;
+      max-width: 860px;
+      margin: 0 auto;
+      width: 100%;
+    }
+
+    .sb-dict-title {
+      font-size: 10px;
+      font-weight: 700;
+      letter-spacing: .1em;
+      text-transform: uppercase;
+      color: var(--text-3);
+      flex: 0 0 100%;
+      margin-bottom: .15rem
+    }
+
+    .dict-item {
+      display: flex;
+      align-items: center;
+      gap: 7px;
+      padding: 4px 0;
+      cursor: pointer;
+      font-size: 12px;
+      color: var(--text-2);
+      transition: color .15s
+    }
+
+    .dict-item:hover {
+      color: var(--primary)
+    }
+
+    .dict-item i {
+      font-size: 13px;
+      color: var(--primary-mid)
+    }
+
+    /* ─── MAIN ─── */
+    /* Pass 2 (mục A/E) — bỏ overflow-y:auto để cả trang cuộn tự nhiên theo 1 luồng
+       (thay vì 2 cột tự cuộn riêng) — cần thiết để reportHeight()/LMS resize (Pass 1d)
+       đo đúng chiều cao thật của trang. */
+    .main {
+      flex: 1;
+      padding: 2rem 1rem;
+      max-width: 860px;
+      width: 100%;
+      margin: 0 auto;
+    }
+
+    /* ─── HEADER Preset 5 ─── */
+    /* Pass 2 (mục A, Loại B) — header hero trang trí, không có id nào bị JS cập nhật
+       động (đã grep getElementById, không thấy) -> ẩn theo yêu cầu công ty. Ẩn bằng
+       display:none (không xoá node) để an toàn/dễ phục hồi. */
+    .p5-header { display: none !important; }
+    .p5-header {
+      width: 100%;
+      border-radius: 16px;
+      padding: 1.75rem 2rem;
+      position: relative;
+      overflow: hidden;
+      box-shadow: 0 4px 20px rgba(45, 139, 111, .2);
+      margin-bottom: 1.5rem;
+      background-image: var(--header-img);
+      background-position: center 35%;
+      background-size: cover;
+      min-height: 130px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end
+    }
+
+    .p5-header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: linear-gradient(135deg, rgba(45, 139, 111, .82) 0%, rgba(45, 139, 111, .45) 100%)
+    }
+
+    .p5-header>* {
+      position: relative;
+      z-index: 1
+    }
+
+    .p5-badge {
+      color: var(--accent);
+      font-size: .8rem;
+      font-weight: 700;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .p5-header h1 {
+      color: #fff;
+      font-size: 1.55rem;
+      font-weight: 800;
+      margin-bottom: 4px;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+      letter-spacing: -.01em
+    }
+
+    .p5-desc {
+      color: rgba(255, 255, 255, .75);
+      font-size: .875rem;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, .2)
+    }
+
+    /* ─── INFO PANEL 2 cột ─── */
+    .p5-info-panel {
+      width: 100%;
+      display: flex;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 1.25rem
+    }
+
+    .p5-col {
+      flex: 1;
+      padding: 1rem 1.2rem
+    }
+
+    .p5-col-observe {
+      background: #FCF9FB;
+      border: 1px solid #FFABC7;
+      border-radius: var(--radius-lg) 0 0 var(--radius-lg)
+    }
+
+    .p5-col-guide {
+      background: #EAF6FC;
+      border: 1px solid #7BB9E5;
+      border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
+      border-left: none
+    }
+
+    .p5-col-label {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--primary);
+      margin-bottom: 8px
+    }
+
+    .p5-col p {
+      font-size: .83rem;
+      color: var(--text-2);
+      line-height: 1.6
+    }
+
+    .p5-col ul {
+      list-style: none
+    }
+
+    .p5-col ul li {
+      font-size: .83rem;
+      color: var(--text-2);
+      line-height: 1.55;
+      display: flex;
+      align-items: flex-start;
+      gap: 6px;
+      margin-bottom: 5px
+    }
+
+    .p5-col ul li i {
+      color: var(--primary);
+      font-size: 13px;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    /* ─── SECTION DIVIDER ─── */
+    .sdiv {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin: 1.5rem 0 .75rem
+    }
+
+    .sdiv span {
+      font-size: 11px;
+      font-weight: 700;
+      color: var(--text-3);
+      white-space: nowrap;
+      letter-spacing: .06em;
+      text-transform: uppercase
+    }
+
+    .sdiv::before,
+    .sdiv::after {
+      content: '';
+      flex: 1;
+      height: 1px;
+      background: var(--border)
+    }
+
+    /* ─── SIM WRAP ─── */
+    .sim-wrap {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      margin-bottom: 1.25rem;
+      min-height: 520px;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .sim-toolbar {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 10px 14px;
+      background: var(--primary)
+    }
+
+    .sim-toolbar-label {
+      font-size: 11px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, .4);
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      margin-right: auto
+    }
+
+    .sim-score {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      color: var(--accent);
+      font-size: 12px;
+      font-weight: 700
+    }
+
+    .sim-score i {
+      font-size: 14px
+    }
+
+    .stage-tabs {
+      display: flex;
+      gap: 6px
+    }
+
+    .stab {
+      padding: 5px 11px;
+      border-radius: 99px;
+      border: 1.5px solid rgba(255, 255, 255, .2);
+      background: transparent;
+      color: rgba(255, 255, 255, .5);
+      font-size: 11px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .15s;
+      font-family: inherit
+    }
+
+    .stab.active {
+      background: var(--accent);
+      border-color: var(--accent);
+      color: var(--primary)
+    }
+
+    .stab:hover:not(.active):not(.locked) {
+      border-color: rgba(232, 162, 74, .5);
+      color: var(--accent)
+    }
+
+    .stab.locked {
+      opacity: .35;
+      cursor: not-allowed
+    }
+
+    /* ─── CANVAS ─── */
+    .sim-canvas-wrap {
+      position: relative;
+      background: #e8f4fd;
+      overflow: hidden
+    }
+
+    canvas.sim-canvas {
+      display: block;
+      width: 100%;
+      cursor: crosshair
+    }
+
+    /* ─── CAPTION (Explain box) ─── */
+    .p5-explain {
+      padding: 1rem 1.3rem;
+      background: #F0FDF8;
+      border-left: 4px solid var(--primary-mid);
+      transition: border-color .4s, background .4s
+    }
+
+    .p5-explain.correct {
+      border-left-color: var(--green);
+      background: #DCEAE1
+    }
+
+    .p5-explain.wrong {
+      border-left-color: var(--red);
+      background: #F3E2D6
+    }
+
+    .p5-explain-inner {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px
+    }
+
+    .p5-explain i {
+      font-size: 17px;
+      color: var(--primary-mid);
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    .p5-explain.correct i {
+      color: var(--green)
+    }
+
+    .p5-explain.wrong i {
+      color: var(--red)
+    }
+
+    .p5-explain span {
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.55
+    }
+
+    /* ─── CONTROLS (Preset 5 striped) ─── */
+    .p5-controls {
+      border-top: 1px solid var(--border)
+    }
+
+    .p5-ctrl-row {
+      display: flex;
+      align-items: center;
+      padding: .65rem 1.2rem;
+      gap: 10px;
+      flex-wrap: wrap
+    }
+
+    .p5-ctrl-row:nth-child(odd) {
+      background: #FFF5F8
+    }
+
+    .p5-ctrl-row:nth-child(even) {
+      background: #EAF6FC
+    }
+
+    .p5-ctrl-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text);
+      min-width: 110px;
+      display: flex;
+      align-items: center;
+      gap: 5px
+    }
+
+    .p5-ctrl-label i {
+      color: var(--primary);
+      font-size: 13px
+    }
+
+    .btn-group {
+      display: flex;
+      gap: 6px;
+      flex-wrap: wrap
+    }
+
+    /* ─── BUTTONS ─── */
+    .p5-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: .8rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all .2s;
+      border: 1.5px solid var(--border);
+      background: #F8FAFC;
+      color: var(--text);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      font-family: inherit
+    }
+
+    .p5-btn:hover:not(:disabled):not(.active) {
+      border-color: var(--primary);
+      color: var(--primary)
+    }
+
+    .p5-btn.active {
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(45, 139, 111, .25)
+    }
+
+    .p5-btn:disabled {
+      opacity: .55;
+      cursor: not-allowed
+    }
+
+    .p5-btn-reset {
+      border: 1.5px dashed var(--border);
+      background: #F8FAFC;
+      color: var(--text-2)
+    }
+
+    .p5-btn-reset:hover {
+      border-color: var(--primary-mid);
+      color: var(--primary-mid);
+      background: #F0FDF8
+    }
+
+    .p5-btn-gold {
+      background: var(--accent);
+      border-color: var(--accent-dark);
+      color: var(--primary);
+      font-weight: 700
+    }
+
+    .p5-btn-gold:hover {
+      background: #f0bc5e;
+      border-color: var(--accent-dark)
+    }
+
+    /* ─── MISSION BAR ─── */
+    .mission-bar {
+      padding: .7rem 1.2rem;
+      background: var(--accent-light);
+      border-bottom: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      gap: 10px
+    }
+
+    .mission-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      flex: 1
+    }
+
+    .mission-score {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--accent-dark);
+      background: var(--accent);
+      padding: 3px 10px;
+      border-radius: 99px
+    }
+
+    /* ─── PANEL REALTIME (Stage 2) ─── */
+    .rt-panel {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 1rem 1.2rem;
+      border-top: 1px solid var(--border);
+      background: var(--gray-light)
+    }
+
+    .rt-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .6rem .9rem;
+      text-align: center
+    }
+
+    .rt-label {
+      font-size: 10px;
+      font-weight: 700;
+      color: var(--text-3);
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      margin-bottom: 4px
+    }
+
+    .rt-val {
+      font-size: 18px;
+      font-weight: 800;
+      color: var(--primary);
+      font-family: 'JetBrains Mono', 'Courier New', monospace
+    }
+
+    .rt-status {
+      grid-column: 1/-1;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: .6rem .9rem;
+      text-align: center;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--text-2);
+      transition: all .3s
+    }
+
+    .rt-status.near {
+      color: var(--amber-dark);
+      background: var(--amber-light);
+      border-color: var(--amber)
+    }
+
+    .rt-status.match {
+      color: var(--green);
+      background: var(--green-light);
+      border-color: var(--green-mid)
+    }
+
+    /* ─── STAGE 4 TÌNH HUỐNG TABS ─── */
+    .situ-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: var(--gray-light)
+    }
+
+    .situ-tab {
+      flex: 1;
+      padding: .6rem;
+      text-align: center;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-3);
+      cursor: pointer;
+      border-bottom: 2px solid transparent;
+      transition: all .2s
+    }
+
+    .situ-tab.active {
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+      background: var(--surface)
+    }
+
+    /* ─── TỈ LỆ PANEL ─── */
+    .ratio-panel {
+      padding: .8rem 1.2rem;
+      background: var(--gray-light);
+      border-top: 1px solid var(--border)
+    }
+
+    .ratio-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 6px
+    }
+
+    .ratio-label {
+      font-size: 12px;
+      font-weight: 700;
+      min-width: 30px
+    }
+
+    .ratio-bar-wrap {
+      flex: 1;
+      height: 10px;
+      background: var(--gray-mid);
+      border-radius: 99px;
+      overflow: hidden
+    }
+
+    .ratio-bar-fill {
+      height: 100%;
+      border-radius: 99px;
+      transition: width .4s
+    }
+
+    .ratio-label-p {
+      color: var(--red)
+    }
+
+    .ratio-fill-p {
+      background: linear-gradient(90deg, #C15F3C, #ef5350)
+    }
+
+    .ratio-label-f {
+      color: var(--green)
+    }
+
+    .ratio-fill-f {
+      background: linear-gradient(90deg, #2D8B6F, #4AB88A)
+    }
+
+    .ratio-val {
+      font-size: 11px;
+      font-weight: 700;
+      min-width: 28px;
+      text-align: right
+    }
+
+    /* ─── SCORE STARS ─── */
+    .score-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: .6rem 1.2rem;
+      background: var(--accent-light);
+      border-top: 1px solid var(--border)
+    }
+
+    .score-stars {
+      display: flex;
+      gap: 4px
+    }
+
+    .star {
+      font-size: 16px;
+      transition: transform .3s
+    }
+
+    .star.earned {
+      transform: scale(1.2)
+    }
+
+    .score-pts {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--accent-dark)
+    }
+
+    .score-level {
+      font-size: 11px;
+      color: var(--text-3);
+      margin-left: auto
+    }
+
+    /* ─── UNLOCK BANNER ─── */
+    .unlock-banner {
+      display: none;
+      padding: 1rem 1.2rem;
+      background: var(--green-light);
+      border: 1.5px solid var(--green-mid);
+      border-radius: var(--radius-lg);
+      margin-top: .75rem;
+      align-items: center;
+      gap: 10px
+    }
+
+    .unlock-banner.show {
+      display: flex
+    }
+
+    .unlock-banner i {
+      font-size: 22px;
+      color: var(--green)
+    }
+
+    .unlock-banner-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--green)
+    }
+
+    .unlock-banner-sub {
+      font-size: 12px;
+      color: var(--text-2);
+      font-weight: 400
+    }
+
+    /* ─── TOOLTIP ─── */
+    .tooltip-box {
+      position: absolute;
+      background: rgba(13, 27, 75, .88);
+      color: #fff;
+      font-size: 11px;
+      padding: 4px 8px;
+      border-radius: 6px;
+      pointer-events: none;
+      display: none;
+      z-index: 10;
+      white-space: nowrap
+    }
+
+    /* ─── TỪ ĐIỂN MODAL ─── */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, .45);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center
+    }
+
+    .modal-overlay.show {
+      display: flex
+    }
+
+    .modal-box {
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      max-width: 480px;
+      width: 90%;
+      max-height: 80vh;
+      overflow-y: auto;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, .3)
+    }
+
+    .modal-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 1rem
+    }
+
+    .modal-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--primary)
+    }
+
+    .modal-close {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      border: 1.5px solid var(--border);
+      background: var(--gray-light);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      color: var(--text-3)
+    }
+
+    .modal-close:hover {
+      border-color: var(--red);
+      color: var(--red)
+    }
+
+    .dict-entry {
+      margin-bottom: 1rem;
+      padding: .9rem;
+      background: var(--gray-light);
+      border-radius: var(--radius);
+      border-left: 3px solid var(--primary-mid)
+    }
+
+    .dict-entry-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 4px
+    }
+
+    .dict-entry-body {
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.6
+    }
+
+    .dict-entry-formula {
+      font-family: 'JetBrains Mono', 'Courier New', monospace;
+      font-size: 12px;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 4px 8px;
+      border-radius: 4px;
+      margin-top: 6px;
+      display: inline-block
+    }
+
+    /* ─── INFO BOX ─── */
+    .info-box {
+      display: flex;
+      gap: 12px;
+      padding: 1rem 1.2rem;
+      border-radius: var(--radius-lg);
+      margin-bottom: 1rem;
+      border: 1px solid
+    }
+
+    .ib-green {
+      background: var(--green-light);
+      border-color: var(--green-mid)
+    }
+
+    .ib-gold {
+      background: var(--amber-light);
+      border-color: var(--amber)
+    }
+
+    .ib-blue {
+      background: var(--blue-light);
+      border-color: #90CAF9
+    }
+
+    .ib-icon {
+      font-size: 20px;
+      flex-shrink: 0;
+      margin-top: 1px
+    }
+
+    .ib-title {
+      font-size: 13px;
+      font-weight: 700;
+      margin-bottom: 3px;
+      color: var(--text)
+    }
+
+    .ib-text {
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.55
+    }
+
+    /* ─── SECTION HIDDEN ─── */
+    .stage-section {
+      display: none
+    }
+
+    .stage-section.active {
+      display: block
+    }
+  
+  /* ── [fix_vectors.js] Vector label: mũi tên kéo dài đúng độ rộng chữ ── */
+  .vec {
+    display: inline-block;
+    position: relative;
+    font-style: italic;
+    font-weight: 700;
+    margin-top: 0.45em;
+  }
+  .vec::after {
+    content: '';
+    position: absolute;
+    top: -0.28em;
+    left: 0;
+    width: 100%;
+    border-top: 1.5px solid currentColor;
+  }
+  .vec::before {
+    content: '';
+    position: absolute;
+    top: -0.45em;
+    right: -0.15em;
+    border-width: 0.2em 0 0.2em 0.28em;
+    border-style: solid;
+    border-color: transparent transparent transparent currentColor;
+  }
+
+  /* ── [fix_vectors.js] Giá trị trung bình: gạch ngang trên ── */
+  .mean {
+    display: inline-block;
+    position: relative;
+    font-style: italic;
+    margin-top: 0.3em;
+  }
+  .mean::after {
+    content: '';
+    position: absolute;
+    top: -0.15em;
+    left: -5%;
+    width: 110%;
+    border-top: 1.5px solid currentColor;
+  }
+  
+    /* Pass 2 (mục E) — vùng chạm tối thiểu 44px cho nút bấm thật trên mobile.
+       Không đụng desktop, không thu nhỏ phần tử nào — chỉ nới ra nếu đang < 44px. */
+    @media (max-width: 767px) {
+      button, .btn, a.btn, input[type="button"], input[type="submit"] {
+        min-height: 44px;
+      }
+    }
+
+    /* Pass 2 (mục C) — thu gọn nội dung dài phía trên canvas, mặc định đóng trên mobile. */
+    .collapsible-panel { width: 100%; }
+    .cp-toggle {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      min-height: 44px; padding: 0.65rem 1rem; background: var(--white);
+      border: 1px solid var(--paper-line); border-radius: var(--radius-lg);
+      cursor: pointer; font-weight: 600; font-size: 0.85rem; color: var(--ink);
+    }
+    .cp-toggle span { display: flex; align-items: center; gap: 6px; }
+    .cp-chevron { transition: transform 0.25s ease; color: var(--ink-3); }
+    .cp-body {
+      overflow: hidden; max-height: 1200px; margin-top: 0.5rem;
+      transition: max-height 0.3s ease, opacity 0.2s ease, margin-top 0.3s ease;
+    }
+    .collapsible-panel.collapsed .cp-body { max-height: 0; opacity: 0; margin-top: 0; }
+    .collapsible-panel.collapsed .cp-chevron { transform: rotate(180deg); }
+
+    /* 3 Breakpoints Tuning: 375px (Mobile Portrait), 768px (Tablet), 1280px (Desktop) */
+    @media (max-width: 1023px) {
+      .main { padding: 1.25rem 1rem; }
+      .sim-wrap { min-height: 480px; }
+    }
+
+    @media (max-width: 480px) {
+      .main { padding: 0.75rem 0.5rem; }
+      .sb-top { padding: 0.75rem 0.75rem 0.5rem; }
+      .sb-logo-sub { display: none; }
+      .sb-group { padding: 0.4rem 0.5rem; gap: 4px; }
+      .mod-item { padding: 0.45rem 0.65rem; gap: 6px; }
+      .mod-name-en { display: none; }
+      .mod-name { font-size: 12px; font-weight: 700; white-space: nowrap; }
+      .mod-icon { width: 26px; height: 26px; font-size: 13px; }
+      .sb-dict { padding: 0.4rem 0.75rem; gap: 4px 12px; }
+      .p5-ctrl-row { flex-direction: column; align-items: flex-start; gap: 8px; }
+      .p5-ctrl-label { min-width: auto; }
+      .rt-panel { grid-template-columns: 1fr; }
+      .sim-toolbar { flex-wrap: wrap; gap: 6px; }
+      .stage-tabs { overflow-x: auto; -webkit-overflow-scrolling: touch; max-width: 100%; }
+      .stab { padding: 4px 8px; font-size: 10px; flex: 0 0 auto; white-space: nowrap; }
+      .p5-info-panel { flex-direction: column; }
+      .p5-col-observe { border-radius: var(--radius-lg) var(--radius-lg) 0 0; border-right: 1px solid #FFABC7; border-bottom: none; }
+      .p5-col-guide { border-radius: 0 0 var(--radius-lg) var(--radius-lg); border-left: 1px solid #7BB9E5; }
+      #s4-summary-modal .modal-box div[style*="repeat(3, 1fr)"] { grid-template-columns: 1fr !important; }
+    }
+</style>
+</head>
+
+<body>
+  <div class="app">
+
+    <!-- ═══ SIDEBAR ═══ -->
+    <aside class="sidebar">
+      <div class="sb-top">
+        <div class="sb-logo">
+          <div class="sb-logo-icon"><i class="ti ti-math"></i></div>
+          <div>
+            <div class="sb-logo-text">Aiducation</div>
+            <div class="sb-logo-sub">Toán 10 · Chương IV · Bài 7</div>
+          </div>
+        </div>
+        <div class="prog-wrap">
+          <div class="prog-label">
+            <span>Tiến độ</span>
+            <span id="prog-pct">0%</span>
+          </div>
+          <div class="prog-bar">
+            <div class="prog-fill" id="prog-fill"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="sb-group">
+        <div class="sb-group-label"><i class="ti ti-layout-grid"></i> Các Stage</div>
+
+        <div class="mod-item active" id="sb-s1" onclick="gotoStage(1)">
+          <div class="mod-icon"><i class="ti ti-target-arrow"></i></div>
+          <div class="mod-text">
+            <div class="mod-name">Gắn Vectơ</div>
+            <div class="mod-name-en">Vector Match</div>
+          </div>
+          <span class="mod-badge mb-active" id="badge-s1">Đang học</span>
+        </div>
+
+        <div class="mod-item locked" id="sb-s2" onclick="gotoStage(2)">
+          <div class="mod-icon"><i class="ti ti-copy"></i></div>
+          <div class="mod-text">
+            <div class="mod-name">Khớp Vectơ</div>
+            <div class="mod-name-en">Clone the Vector</div>
+          </div>
+          <span class="mod-badge mb-lock" id="badge-s2"><i class="ti ti-lock" style="font-size:9px"></i></span>
+        </div>
+
+        <div class="mod-item locked" id="sb-s3" onclick="gotoStage(3)">
+          <div class="mod-icon"><i class="ti ti-search"></i></div>
+          <div class="mod-text">
+            <div class="mod-name">Nhận Diện Vectơ</div>
+            <div class="mod-name-en">Vector Detective</div>
+          </div>
+          <span class="mod-badge mb-lock" id="badge-s3"><i class="ti ti-lock" style="font-size:9px"></i></span>
+        </div>
+
+        <div class="mod-item locked" id="sb-s4" onclick="gotoStage(4)">
+          <div class="mod-icon"><i class="ti ti-atom-2"></i></div>
+          <div class="mod-text">
+            <div class="mod-name">Lực Tác Dụng</div>
+            <div class="mod-name-en">Applied Forces</div>
+          </div>
+          <span class="mod-badge mb-lock" id="badge-s4"><i class="ti ti-lock" style="font-size:9px"></i></span>
+        </div>
+      </div>
+
+      <div class="sb-dict">
+        <div class="sb-dict-title">Từ điển Vectơ</div>
+        <div class="dict-item" onclick="openDict('vecdef')"><i class="ti ti-book"></i> Vectơ là gì?</div>
+        <div class="dict-item" onclick="openDict('collinear')"><i class="ti ti-book"></i> Cùng phương</div>
+        <div class="dict-item" onclick="openDict('equal')"><i class="ti ti-book"></i> Hai vectơ bằng nhau</div>
+        <div class="dict-item" onclick="openDict('zero')"><i class="ti ti-book"></i> Vectơ-không</div>
+      </div>
+    </aside>
+
+    <!-- ═══ MAIN ═══ -->
+    <main class="main">
+
+      <!-- HEADER -->
+      <div class="p5-header">
+        <div class="p5-badge"><i class="ti ti-math"></i> Chương IV · Bài 7 · Toán 10</div>
+        <h1>CÁC KHÁI NIỆM VỀ VECTƠ</h1>
+        <div class="p5-desc">4 game tương tác · Kết nối tri thức với cuộc sống</div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+       STAGE 1 — GẮN VECTƠ
+  ══════════════════════════════════════════ -->
+      <div class="stage-section active" id="stage-1">
+
+        <!-- Pass 2 (mục C): bọc collapsible-panel, mặc định thu gọn trên mobile -->
+        <div class="collapsible-panel" id="guidePanel1">
+          <button class="cp-toggle" onclick="toggleCollapsible('guidePanel1')"
+                  aria-expanded="true" aria-controls="guidePanel1-body">
+            <span><i class="ti ti-info-circle"></i> Mục tiêu & hướng dẫn</span>
+            <i class="ti ti-chevron-up cp-chevron"></i>
+          </button>
+          <div class="cp-body" id="guidePanel1-body">
+            <div class="p5-info-panel">
+              <div class="p5-col p5-col-observe">
+                <div class="p5-col-label"><i class="ti ti-target"></i> Mục tiêu</div>
+                <p>Nhận ra vectơ là đoạn thẳng có <strong>hướng</strong>. Kéo đúng vectơ lên vật — hệ quả tự nói lên tất cả.
+                </p>
+              </div>
+              <div class="p5-col p5-col-guide">
+                <div class="p5-col-label"><i class="ti ti-hand-click"></i> Hướng dẫn</div>
+                <ul>
+                  <li><i class="ti ti-circle-number-1"></i><span>Đọc mô tả tình huống</span></li>
+                  <li><i class="ti ti-circle-number-2"></i><span>Click vectơ bên phải để gắn lên vật</span></li>
+                  <li><i class="ti ti-circle-number-3"></i><span>Quan sát phản ứng — không có chữ Đúng/Sai</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-wrap">
+          <div class="sim-toolbar">
+            <span class="sim-toolbar-label">STAGE 1 — GẮN VECTƠ</span>
+            <div class="sim-score"><i class="ti ti-star-filled"></i><span id="s1-score">0</span> điểm</div>
+            <span style="color:rgba(255,255,255,.4);font-size:12px;margin-left:8px" id="s1-level-label">Level 1/5</span>
+          </div>
+
+          <div class="sim-canvas-wrap" style="height:320px">
+            <canvas class="sim-canvas" id="canvas1"></canvas>
+            <div class="tooltip-box" id="tip1"></div>
+          </div>
+
+          <div class="p5-explain" id="cap1">
+            <div class="p5-explain-inner">
+              <i class="ti ti-info-circle"></i>
+              <span id="cap1-text">Chọn vectơ mô tả đúng chuyển động của vật — click để gắn lên.</span>
+            </div>
+          </div>
+
+          <div class="p5-controls">
+            <div class="p5-ctrl-row">
+              <span class="p5-ctrl-label"><i class="ti ti-refresh"></i> Điều khiển</span>
+              <div class="btn-group">
+                <button class="p5-btn p5-btn-reset" onclick="s1Reset()"><i class="ti ti-refresh"></i> Thử lại</button>
+                <button class="p5-btn" onclick="s1Skip()"><i class="ti ti-player-skip-forward"></i> Bỏ qua</button>
+                <button class="p5-btn" onclick="s1Replay()" id="s1-replay" disabled><i class="ti ti-player-play"></i>
+                  Xem lại</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="score-row">
+            <div class="score-stars" id="s1-stars">
+              <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span>
+              <span class="star">☆</span><span class="star">☆</span>
+            </div>
+            <span class="score-pts" id="s1-pts">0 / 50 điểm</span>
+            <span class="score-level" id="s1-lv-info">Hoàn thành 5 level để mở Stage 2</span>
+          </div>
+        </div>
+
+        <div class="unlock-banner" id="unlock-s2">
+          <i class="ti ti-lock-open"></i>
+          <div>
+            <div class="unlock-banner-text">Stage 2 đã mở khoá!</div>
+            <div class="unlock-banner-sub">Khớp Vectơ (Clone the Vector) — khám phá vectơ bằng nhau</div>
+          </div>
+          <button class="p5-btn p5-btn-gold" onclick="gotoStage(2)" style="margin-left:auto">Tiếp theo <i
+              class="ti ti-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+       STAGE 2 — KHỚP VECTƠ
+  ══════════════════════════════════════════ -->
+      <div class="stage-section" id="stage-2">
+
+        <!-- Pass 2 (mục C): bọc collapsible-panel, mặc định thu gọn trên mobile -->
+        <div class="collapsible-panel" id="guidePanel2">
+          <button class="cp-toggle" onclick="toggleCollapsible('guidePanel2')"
+                  aria-expanded="true" aria-controls="guidePanel2-body">
+            <span><i class="ti ti-info-circle"></i> Mục tiêu & hướng dẫn</span>
+            <i class="ti ti-chevron-up cp-chevron"></i>
+          </button>
+          <div class="cp-body" id="guidePanel2-body">
+            <div class="p5-info-panel">
+              <div class="p5-col p5-col-observe">
+                <div class="p5-col-label"><i class="ti ti-target"></i> Mục tiêu</div>
+                <p>Biến Vectơ B thành bản sao của Vectơ A. Khám phá: <strong>vị trí không ảnh hưởng đến sự bằng
+                    nhau</strong>.</p>
+              </div>
+              <div class="p5-col p5-col-guide">
+                <div class="p5-col-label"><i class="ti ti-hand-click"></i> Hướng dẫn</div>
+                <ul>
+                  <li><i class="ti ti-circle-number-1"></i><span>Kéo <strong>điểm cuối</strong> của B để xoay & co
+                      giãn</span></li>
+                  <li><i class="ti ti-circle-number-2"></i><span>Kéo <strong>thân</strong> B để di chuyển vị trí</span></li>
+                  <li><i class="ti ti-circle-number-3"></i><span>Vectơ phát sáng vàng khi gần khớp ✨</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-wrap">
+          <div class="sim-toolbar">
+            <span class="sim-toolbar-label">STAGE 2 — KHỚP VECTƠ</span>
+            <div class="sim-score"><i class="ti ti-star-filled"></i><span id="s2-score">0</span> điểm</div>
+            <span style="color:rgba(255,255,255,.4);font-size:12px;margin-left:8px" id="s2-level-label">Level 1/5</span>
+          </div>
+
+          <div class="sim-canvas-wrap" style="height:340px">
+            <canvas class="sim-canvas" id="canvas2"></canvas>
+            <div class="tooltip-box" id="tip2"></div>
+          </div>
+
+          <div class="rt-panel">
+            <div class="rt-card">
+              <div class="rt-label">Độ dài A</div>
+              <div class="rt-val" id="s2-lenA">—</div>
+            </div>
+            <div class="rt-card">
+              <div class="rt-label">Độ dài B</div>
+              <div class="rt-val" id="s2-lenB">—</div>
+            </div>
+            <div class="rt-card">
+              <div class="rt-label">Góc A</div>
+              <div class="rt-val" id="s2-angA">—</div>
+            </div>
+            <div class="rt-card">
+              <div class="rt-label">Góc B</div>
+              <div class="rt-val" id="s2-angB">—</div>
+            </div>
+            <div class="rt-status" id="s2-status">Chưa khớp — kéo và xoay Vectơ B</div>
+          </div>
+
+          <div class="p5-explain" id="cap2">
+            <div class="p5-explain-inner">
+              <i class="ti ti-info-circle"></i>
+              <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
+                <span id="cap2-text">Biến Vectơ B thành bản sao của Vectơ A — kéo và xoay để khớp.</span>
+                <div id="s2-bonus-box"
+                  style="display:none; gap:10px; align-items:center; margin-top:5px; flex-wrap:wrap;">
+                  <span style="font-weight:700; color:var(--primary); font-size:12px;">Câu hỏi phụ:</span>
+                  <span style="font-size:12.5px;">Nếu di chuyển B sang vị trí khác thì B còn bằng A không?</span>
+                  <div style="display:flex; gap:6px;">
+                    <button class="p5-btn p5-btn-gold" style="padding:2px 10px; font-size:11px;"
+                      onclick="s2BonusAnswer(true)">Có</button>
+                    <button class="p5-btn" style="padding:2px 10px; font-size:11px;"
+                      onclick="s2BonusAnswer(false)">Không</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p5-controls">
+            <div class="p5-ctrl-row">
+              <span class="p5-ctrl-label"><i class="ti ti-refresh"></i> Điều khiển</span>
+              <div class="btn-group">
+                <button class="p5-btn p5-btn-reset" onclick="s2Reset()"><i class="ti ti-refresh"></i> Reset B</button>
+                <button class="p5-btn" onclick="s2Hint()" id="s2-hint-btn"><i class="ti ti-bulb"></i> Gợi ý</button>
+                <button class="p5-btn" onclick="s2ShowAnswer()"><i class="ti ti-eye"></i> Xem đáp án</button>
+                <button class="p5-btn p5-btn-gold" onclick="s2NextLevel()" id="s2-next-btn" style="display:none"><i
+                    class="ti ti-arrow-right"></i> Level tiếp theo</button>
+              </div>
+            </div>
+          </div>
+
+          <div class="score-row">
+            <div class="score-stars" id="s2-stars">
+              <span class="star">☆</span><span class="star">☆</span><span class="star">☆</span>
+              <span class="star">☆</span><span class="star">☆</span>
+            </div>
+            <span class="score-pts" id="s2-pts">0 / 50 điểm</span>
+            <span class="score-level">Hoàn thành 5 level để mở Stage 3</span>
+          </div>
+        </div>
+
+        <div class="unlock-banner" id="unlock-s3">
+          <i class="ti ti-lock-open"></i>
+          <div>
+            <div class="unlock-banner-text">Stage 3 đã mở khoá!</div>
+            <div class="unlock-banner-sub">Nhận Diện Vectơ (Vector Detective) — phân loại và nhận diện</div>
+          </div>
+          <button class="p5-btn p5-btn-gold" onclick="gotoStage(3)" style="margin-left:auto">Tiếp theo <i
+              class="ti ti-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+       STAGE 3 — NHẬN DIỆN VECTƠ
+  ══════════════════════════════════════════ -->
+      <div class="stage-section" id="stage-3">
+
+        <!-- Pass 2 (mục C): bọc collapsible-panel, mặc định thu gọn trên mobile -->
+        <div class="collapsible-panel" id="guidePanel3">
+          <button class="cp-toggle" onclick="toggleCollapsible('guidePanel3')"
+                  aria-expanded="true" aria-controls="guidePanel3-body">
+            <span><i class="ti ti-info-circle"></i> Mục tiêu & hướng dẫn</span>
+            <i class="ti ti-chevron-up cp-chevron"></i>
+          </button>
+          <div class="cp-body" id="guidePanel3-body">
+            <div class="p5-info-panel">
+              <div class="p5-col p5-col-observe">
+                <div class="p5-col-label"><i class="ti ti-target"></i> Mục tiêu</div>
+                <p>Phân biệt <strong>cùng phương / cùng hướng / ngược hướng / bằng nhau</strong>. Nhận diện vectơ-không.</p>
+              </div>
+              <div class="p5-col p5-col-guide">
+                <div class="p5-col-label"><i class="ti ti-hand-click"></i> Hướng dẫn</div>
+                <ul>
+                  <li><i class="ti ti-circle-number-1"></i><span>Đọc mission — tìm vectơ thỏa điều kiện</span></li>
+                  <li><i class="ti ti-circle-number-2"></i><span>Click vectơ để chọn · Vàng = đúng</span></li>
+                  <li><i class="ti ti-circle-number-3"></i><span>4 mission tuần tự, canvas giữ kết quả cũ</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-wrap">
+          <div class="sim-toolbar">
+            <span class="sim-toolbar-label">STAGE 3 — NHẬN DIỆN VECTƠ</span>
+            <div class="sim-score"><i class="ti ti-star-filled"></i><span id="s3-score">0</span> điểm</div>
+          </div>
+
+          <div class="mission-bar">
+            <span class="mission-text" id="s3-mission">Mission 1: Tìm tất cả vectơ CÙNG PHƯƠNG với vectơ A</span>
+            <span class="mission-score" id="s3-mscore">0/0</span>
+          </div>
+
+          <div class="sim-canvas-wrap" style="height:340px">
+            <canvas class="sim-canvas" id="canvas3"></canvas>
+            <div class="tooltip-box" id="tip3"></div>
+          </div>
+
+          <div class="p5-explain" id="cap3">
+            <div class="p5-explain-inner">
+              <i class="ti ti-info-circle"></i>
+              <div style="display:flex; flex-direction:column; gap:8px; width:100%;">
+                <span id="cap3-text">Click vectơ để chọn. Tìm đủ tất cả vectơ thỏa điều kiện để sang mission tiếp
+                  theo.</span>
+                <div id="s3-bonus-box"
+                  style="display:none; gap:10px; align-items:center; margin-top:5px; flex-wrap:wrap;">
+                  <span style="font-weight:700; color:var(--primary); font-size:12px;">Câu hỏi phụ:</span>
+                  <span style="font-size:12.5px;">Vectơ-không (<span class="vec">0</span>) có cùng phương với vectơ A không?</span>
+                  <div style="display:flex; gap:6px;">
+                    <button class="p5-btn p5-btn-gold" style="padding:2px 10px; font-size:11px;"
+                      onclick="s3ZeroAnswer(true)">Có</button>
+                    <button class="p5-btn" style="padding:2px 10px; font-size:11px;"
+                      onclick="s3ZeroAnswer(false)">Không</button>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <div class="p5-controls">
+            <div class="p5-ctrl-row">
+              <span class="p5-ctrl-label"><i class="ti ti-cards"></i> Điều khiển</span>
+              <div class="btn-group">
+                <button class="p5-btn p5-btn-reset" onclick="s3Shuffle()"><i class="ti ti-cards"></i> Xáo bài
+                  mới</button>
+                <button class="p5-btn" onclick="s3Hint()" id="s3-hint-btn"><i class="ti ti-bulb"></i> Gợi ý</button>
+                <button class="p5-btn" onclick="openDict('vecdef')"><i class="ti ti-book"></i> Bảng tra cứu</button>
+                <button class="p5-btn p5-btn-gold" onclick="s3NextMission()" id="s3-next-btn" style="display:none"><i
+                    class="ti ti-arrow-right"></i> Mission tiếp theo</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="unlock-banner" id="unlock-s4">
+          <i class="ti ti-lock-open"></i>
+          <div>
+            <div class="unlock-banner-text">Stage 4 đã mở khoá!</div>
+            <div class="unlock-banner-sub">Lực Tác Dụng (Applied Forces) — dùng vectơ mô tả lực</div>
+          </div>
+          <button class="p5-btn p5-btn-gold" onclick="gotoStage(4)" style="margin-left:auto">Tiếp theo <i
+              class="ti ti-arrow-right"></i></button>
+        </div>
+      </div>
+
+      <!-- ══════════════════════════════════════════
+       STAGE 4 — LỰC TÁC DỤNG
+  ══════════════════════════════════════════ -->
+      <div class="stage-section" id="stage-4">
+
+        <!-- Pass 2 (mục C): bọc collapsible-panel, mặc định thu gọn trên mobile -->
+        <div class="collapsible-panel" id="guidePanel4">
+          <button class="cp-toggle" onclick="toggleCollapsible('guidePanel4')"
+                  aria-expanded="true" aria-controls="guidePanel4-body">
+            <span><i class="ti ti-info-circle"></i> Mục tiêu & hướng dẫn</span>
+            <i class="ti ti-chevron-up cp-chevron"></i>
+          </button>
+          <div class="cp-body" id="guidePanel4-body">
+            <div class="p5-info-panel">
+              <div class="p5-col p5-col-observe">
+                <div class="p5-col-label"><i class="ti ti-target"></i> Mục tiêu</div>
+                <p>Dùng vectơ biểu diễn đúng lực: <strong>điểm đặt · hướng · tỉ lệ xích</strong>. Quan sát hệ quả thực tế.
+                </p>
+              </div>
+              <div class="p5-col p5-col-guide">
+                <div class="p5-col-label"><i class="ti ti-hand-click"></i> Hướng dẫn</div>
+                <ul>
+                  <li><i class="ti ti-circle-number-1"></i><span>Kéo vectơ <strong style="color:var(--red)"><span class="vec">P</span></strong> (đỏ)
+                      và <strong style="color:var(--green)"><span class="vec">F</span></strong> (xanh) vào vật</span></li>
+                  <li><i class="ti ti-circle-number-2"></i><span>Đặt đúng điểm đặt — đúng hướng — đúng tỉ lệ</span></li>
+                  <li><i class="ti ti-circle-number-3"></i><span>Quan sát khinh khí cầu phản ứng theo lực</span></li>
+                </ul>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="sim-wrap">
+          <div class="sim-toolbar">
+            <span class="sim-toolbar-label">STAGE 4 — LỰC TÁC DỤNG</span>
+          </div>
+
+          <div class="situ-tabs">
+            <div class="situ-tab active" id="st-1" onclick="setSitu(1)">⚖️ Cân bằng</div>
+            <div class="situ-tab" id="st-2" onclick="setSitu(2)">🚀 Bay lên</div>
+            <div class="situ-tab" id="st-3" onclick="setSitu(3)">🔬 Tự do</div>
+          </div>
+
+          <div class="sim-canvas-wrap" style="height:340px">
+            <canvas class="sim-canvas" id="canvas4"></canvas>
+            <div class="tooltip-box" id="tip4"></div>
+          </div>
+
+          <div class="ratio-panel">
+            <div class="ratio-row">
+              <span class="ratio-label ratio-label-p"><span class="vec">P</span></span>
+              <div class="ratio-bar-wrap">
+                <div class="ratio-bar-fill ratio-fill-p" id="bar-p" style="width:50%"></div>
+              </div>
+              <span class="ratio-val ratio-label-p" id="val-p">50N</span>
+            </div>
+            <div class="ratio-row">
+              <span class="ratio-label ratio-label-f"><span class="vec">F</span></span>
+              <div class="ratio-bar-wrap">
+                <div class="ratio-bar-fill ratio-fill-f" id="bar-f" style="width:50%"></div>
+              </div>
+              <span class="ratio-val ratio-label-f" id="val-f">50N</span>
+            </div>
+          </div>
+
+          <div class="p5-explain" id="cap4">
+            <div class="p5-explain-inner">
+              <i class="ti ti-info-circle"></i>
+              <span id="cap4-text">Kéo vectơ <span class="vec">P</span> và <span class="vec">F</span> từ kho bên phải vào đúng vị trí trên vật.</span>
+            </div>
+          </div>
+
+          <div class="p5-controls">
+            <div class="p5-ctrl-row">
+              <span class="p5-ctrl-label"><i class="ti ti-refresh"></i> Điều khiển</span>
+              <div class="btn-group">
+                <button class="p5-btn p5-btn-reset" onclick="s4Reset()"><i class="ti ti-refresh"></i> Thử lại</button>
+                <button class="p5-btn" onclick="s4Replay()"><i class="ti ti-player-play"></i> Xem lại</button>
+                <button class="p5-btn" onclick="s4AdjustF(-20)" id="s4-fminus" style="display:none"><i
+                    class="ti ti-minus"></i> <span class="vec">F</span> nhỏ hơn</button>
+                <button class="p5-btn" onclick="s4AdjustF(20)" id="s4-fplus" style="display:none"><i
+                    class="ti ti-plus"></i> <span class="vec">F</span> lớn hơn</button>
+                <button class="p5-btn p5-btn-gold" onclick="s4ShowSummary()" id="s4-summary-btn" style="display:none"><i
+                    class="ti ti-layout-grid"></i> Bảng tổng kết</button>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="info-box ib-green" style="margin-top:.75rem">
+          <div class="ib-icon">✅</div>
+          <div>
+            <div class="ib-title">Bạn đã hoàn thành toàn bộ 4 Stage!</div>
+            <div class="ib-text">Vectơ = hướng + độ lớn + điểm đặt. Đây là công cụ cốt lõi của cả Toán lẫn Vật Lí.</div>
+          </div>
+        </div>
+      </div>
+
+    </main>
+  </div>
+
+  <!-- ═══ BẢNG TỔNG KẾT MODAL ═══ -->
+  <div class="modal-overlay" id="s4-summary-modal" onclick="closeS4Summary(event)">
+    <div class="modal-box" style="max-width: 720px;" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-layout-grid"></i> Bảng tổng kết: Vectơ Lực & Chuyển động</div>
+        <button class="modal-close" onclick="closeS4Summary()"><i class="ti ti-x"></i></button>
+      </div>
+      <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; margin-top: 15px;">
+        <!-- Column 1: Cân bằng -->
+        <div
+          style="background: var(--accent-light); border: 1.5px solid var(--accent); border-radius: var(--radius); padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+          <span style="font-weight: 700; color: var(--accent-dark); font-size: 13px; margin-bottom: 8px;">⚖️ CÂN
+            BẰNG</span>
+          <svg width="60" height="120" style="margin: 10px 0;">
+            <!-- Balloon body -->
+            <circle cx="30" cy="50" r="16" fill="#C58A2E" />
+            <!-- Basket -->
+            <rect x="25" y="70" width="10" height="8" rx="2" fill="#8B6914" />
+            <!-- Ropes -->
+            <line x1="20" y1="58" x2="25" y2="70" stroke="#503214" stroke-width="1" />
+            <line x1="40" y1="58" x2="35" y2="70" stroke="#503214" stroke-width="1" />
+            <!-- F vector -->
+            <line x1="30" y1="50" x2="30" y2="15" stroke="#2D8B6F" stroke-width="2.5" marker-end="url(#arrow-green)" />
+            <!-- P vector -->
+            <line x1="30" y1="50" x2="30" y2="85" stroke="#C15F3C" stroke-width="2.5" marker-end="url(#arrow-red)" />
+          </svg>
+          <div style="font-family: 'JetBrains Mono', 'Courier New', monospace; font-weight: 700; font-size: 12px; margin-bottom: 6px;">
+            |<span class="vec">F</span>| = |<span class="vec">P</span>|</div>
+          <p style="font-size: 11px; color: var(--text-2); line-height: 1.4;">Hai lực cùng phương, ngược chiều, cùng độ
+            lớn. Hợp lực triệt tiêu: <br><strong><span class="vec">F</span> + <span class="vec">P</span> = <span class="vec">0</span></strong>.<br>Khí cầu <strong>đứng yên</strong>.</p>
+        </div>
+
+        <!-- Column 2: Bay lên -->
+        <div
+          style="background: var(--green-light); border: 1.5px solid var(--green-mid); border-radius: var(--radius); padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+          <span style="font-weight: 700; color: var(--green); font-size: 13px; margin-bottom: 8px;">🚀 BAY LÊN</span>
+          <svg width="60" height="120" style="margin: 10px 0;">
+            <circle cx="30" cy="50" r="16" fill="#C58A2E" />
+            <rect x="25" y="70" width="10" height="8" rx="2" fill="#8B6914" />
+            <line x1="20" y1="58" x2="25" y2="70" stroke="#503214" stroke-width="1" />
+            <line x1="40" y1="58" x2="35" y2="70" stroke="#503214" stroke-width="1" />
+            <!-- F vector -->
+            <line x1="30" y1="50" x2="30" y2="5" stroke="#2D8B6F" stroke-width="2.5" marker-end="url(#arrow-green)" />
+            <!-- P vector -->
+            <line x1="30" y1="50" x2="30" y2="70" stroke="#C15F3C" stroke-width="2.5" marker-end="url(#arrow-red)" />
+          </svg>
+          <div style="font-family: 'JetBrains Mono', 'Courier New', monospace; font-weight: 700; font-size: 12px; margin-bottom: 6px;">
+            |<span class="vec">F</span>| > |<span class="vec">P</span>|</div>
+          <p style="font-size: 11px; color: var(--text-2); line-height: 1.4;">Lực hướng lên lớn hơn lực hướng xuống. Hợp
+            lực hướng lên: <br><strong><span class="vec">F</span> + <span class="vec">P</span> ≠ <span class="vec">0</span></strong>.<br>Khí cầu gia tốc <strong>bay lên</strong>.</p>
+        </div>
+
+        <!-- Column 3: Rơi xuống -->
+        <div
+          style="background: var(--red-light); border: 1.5px solid rgba(193, 95, 60,0.3); border-radius: var(--radius); padding: 12px; display: flex; flex-direction: column; align-items: center; text-align: center;">
+          <span style="font-weight: 700; color: var(--red); font-size: 13px; margin-bottom: 8px;">⬇️ RƠI XUỐNG</span>
+          <svg width="60" height="120" style="margin: 10px 0;">
+            <circle cx="30" cy="50" r="16" fill="#C58A2E" />
+            <rect x="25" y="70" width="10" height="8" rx="2" fill="#8B6914" />
+            <line x1="20" y1="58" x2="25" y2="70" stroke="#503214" stroke-width="1" />
+            <line x1="40" y1="58" x2="35" y2="70" stroke="#503214" stroke-width="1" />
+            <!-- F vector -->
+            <line x1="30" y1="50" x2="30" y2="35" stroke="#2D8B6F" stroke-width="2.5" marker-end="url(#arrow-green)" />
+            <!-- P vector -->
+            <line x1="30" y1="50" x2="30" y2="95" stroke="#C15F3C" stroke-width="2.5" marker-end="url(#arrow-red)" />
+          </svg>
+          <div style="font-family: 'JetBrains Mono', 'Courier New', monospace; font-weight: 700; font-size: 12px; margin-bottom: 6px;">
+            |<span class="vec">P</span>| > |<span class="vec">F</span>|</div>
+          <p style="font-size: 11px; color: var(--text-2); line-height: 1.4;">Lực hướng xuống lớn hơn lực hướng lên. Hợp
+            lực hướng xuống: <br><strong><span class="vec">F</span> + <span class="vec">P</span> ≠ <span class="vec">0</span></strong>.<br>Khí cầu gia tốc <strong>rơi xuống</strong>.</p>
+        </div>
+      </div>
+
+      <svg width="0" height="0">
+        <defs>
+          <marker id="arrow-green" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6"
+            orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#2D8B6F" />
+          </marker>
+          <marker id="arrow-red" viewBox="0 0 10 10" refX="6" refY="5" markerWidth="6" markerHeight="6"
+            orient="auto-start-reverse">
+            <path d="M 0 1 L 10 5 L 0 9 z" fill="#C15F3C" />
+          </marker>
+        </defs>
+      </svg>
+
+      <div style="margin-top: 15px; border-top: 1px solid var(--border); padding-top: 12px; text-align: right;">
+        <button class="p5-btn p5-btn-gold" style="padding: 4px 15px;" onclick="closeS4Summary()">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ TỪ ĐIỂN MODAL ═══ -->
+  <div class="modal-overlay" id="dict-modal" onclick="closeDict(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-book"></i> Từ điển Vectơ</div>
+        <button class="modal-close" onclick="closeDict()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="dict-entry" id="dict-vecdef">
+        <div class="dict-entry-title">Vectơ là gì?</div>
+        <div class="dict-entry-body">Vectơ là một đoạn thẳng có hướng — tức là trong hai điểm mút, đã chỉ rõ điểm đầu và
+          điểm cuối. Vectơ có điểm đầu A và điểm cuối B kí hiệu là <span class="vec">AB</span>.</div>
+        <div class="dict-entry-formula">|<span class="vec">AB</span>| = khoảng cách từ A đến B (độ dài vectơ)</div>
+      </div>
+      <div class="dict-entry" id="dict-collinear">
+        <div class="dict-entry-title">Cùng phương / Cùng hướng / Ngược hướng</div>
+        <div class="dict-entry-body">Hai vectơ <strong>cùng phương</strong> nếu giá của chúng song song hoặc trùng
+          nhau.<br><br>Hai vectơ cùng phương thì hoặc <strong>cùng hướng</strong> (mũi tên chỉ cùng chiều) hoặc
+          <strong>ngược hướng</strong> (mũi tên chỉ ngược chiều).
+        </div>
+      </div>
+      <div class="dict-entry" id="dict-equal">
+        <div class="dict-entry-title">Hai vectơ bằng nhau</div>
+        <div class="dict-entry-body">Hai vectơ <span class="vec">a</span> và <span class="vec">b</span> bằng nhau (<span class="vec">a</span> = <span class="vec">b</span>) nếu chúng có <strong>cùng độ dài</strong> và
+          <strong>cùng hướng</strong>.<br><br>⚠️ Vị trí không quan trọng! Hai vectơ ở hai nơi khác nhau vẫn có thể bằng
+          nhau.
+        </div>
+        <div class="dict-entry-formula"><span class="vec">a</span> = <span class="vec">b</span> ⟺ |<span class="vec">a</span>| = |<span class="vec">b</span>| và cùng hướng</div>
+      </div>
+      <div class="dict-entry" id="dict-zero">
+        <div class="dict-entry-title">Vectơ-không</div>
+        <div class="dict-entry-body">Vectơ có điểm đầu và điểm cuối trùng nhau gọi là <strong>vectơ-không</strong>, kí
+          hiệu <span class="vec">0</span>.<br><br>Quy ước: vectơ-không có độ dài bằng 0 và <strong>cùng phương, cùng hướng với mọi
+            vectơ</strong>.</div>
+        <div class="dict-entry-formula">|<span class="vec">0</span>| = 0</div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ===== LMS safe accessor (PHẦN 7.2 design Toán) — tự thêm, không đụng logic khác =====
+    function LMS(){return window.AiducationLMS||{ready:function(){},progress:function(){},event:function(){},state:function(){},complete:function(){},resize:function(){}};}
+
+    // Pass 2 (mục C) — toggle thu gọn/mở rộng panel nội dung dài, mặc định thu gọn trên
+    // mobile khi tải trang.
+    function toggleCollapsible(id) { document.getElementById(id).classList.toggle('collapsed'); }
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.collapsible-panel').forEach(p => {
+        if (window.matchMedia('(max-width: 768px)').matches) p.classList.add('collapsed');
+      });
+    });
+
+    // ══════════════════════════════════════════════════════
+    // HELPERS
+    // ══════════════════════════════════════════════════════
+    function rrect(ctx, x, y, w, h, r) {
+      ctx.beginPath(); ctx.roundRect(x, y, w, h, r);
+    }
+
+    function setCaption(id, text, type = '') {
+      const el = document.getElementById(id);
+      el.className = 'p5-explain' + (type ? ' ' + type : '');
+      el.querySelector('span').textContent = text;
+      const ico = el.querySelector('i');
+      ico.className = type === 'correct' ? 'ti ti-check' : type === 'wrong' ? 'ti ti-x' : 'ti ti-info-circle';
+    }
+
+    // ══════════════════════════════════════════════════════
+    // NAVIGATION
+    // ══════════════════════════════════════════════════════
+    let unlockedStages = [1, 2, 3, 4]; // all unlocked for demo; production: [1]
+    let currentStage = 1;
+
+    function gotoStage(n) {
+      if (!unlockedStages.includes(n)) return;
+      currentStage = n;
+      if (typeof s4 !== 'undefined' && s4.animFrame) cancelAnimationFrame(s4.animFrame);
+      document.querySelectorAll('.stage-section').forEach(s => s.classList.remove('active'));
+      document.getElementById('stage-' + n).classList.add('active');
+      document.querySelectorAll('.mod-item').forEach(m => m.classList.remove('active'));
+      document.getElementById('sb-s' + n).classList.add('active');
+      updateProgress();
+      if (n === 1) initStage1();
+      if (n === 2) initStage2();
+      if (n === 3) initStage3();
+      if (n === 4) initStage4();
+    }
+
+    function unlockStage(n) {
+      if (!unlockedStages.includes(n)) unlockedStages.push(n);
+      const sb = document.getElementById('sb-s' + n);
+      if (sb) { sb.classList.remove('locked'); }
+      const badge = document.getElementById('badge-s' + n);
+      if (badge) { badge.className = 'mod-badge mb-active'; badge.textContent = 'Mới mở'; }
+      updateProgress();
+    }
+
+    function updateProgress() {
+      // Stage 1: 5 levels. level is 0-indexed, done is boolean
+      let s1Completed = s1.done ? 5 : s1.level;
+      
+      // Stage 2: 5 levels. level is 0-indexed, done is boolean
+      let s2Completed = s2.done ? 5 : s2.level;
+      
+      // Stage 3: 4 missions. mission is 0-indexed, done is boolean
+      let s3Completed = s3.done ? 4 : s3.mission;
+      
+      // Stage 4: 3 situations. situ is 1-indexed.
+      let s4Completed = 0;
+      if (s4.situ === 2) s4Completed = 1;
+      else if (s4.situ === 3) {
+        s4Completed = s4.done ? 3 : 2;
+      } else if (s4.situ === 1 && s4.pPlaced && s4.fPlaced && Math.abs(s4.fLen - s4.pLen) < 3) {
+        s4Completed = 0.5; // partial
+      }
+      
+      // Calculate weighted percentages (25% weight per stage)
+      const p1 = (s1Completed / 5) * 25;
+      const p2 = (s2Completed / 5) * 25;
+      const p3 = (s3Completed / 4) * 25;
+      const p4 = (s4Completed / 3) * 25;
+      
+      let pct = Math.round(p1 + p2 + p3 + p4);
+      if (pct > 100) pct = 100;
+      if (pct < 0) pct = 0;
+      
+      document.getElementById('prog-fill').style.width = pct + '%';
+      document.getElementById('prog-pct').textContent = pct + '%';
+    }
+
+    // ══════════════════════════════════════════════════════
+    // TỪ ĐIỂN
+    // ══════════════════════════════════════════════════════
+    function openDict(section) {
+      document.getElementById('dict-modal').classList.add('show');
+      if (section) {
+        setTimeout(() => {
+          const el = document.getElementById('dict-' + section);
+          if (el) el.scrollIntoView({ behavior: 'smooth', block: 'center' });
+        }, 100);
+      }
+    }
+    function closeDict(e) {
+      if (!e || e.target === document.getElementById('dict-modal'))
+        document.getElementById('dict-modal').classList.remove('show');
+    }
+
+    // ══════════════════════════════════════════════════════
+    // CANVAS UTILITY
+    // ══════════════════════════════════════════════════════
+    function setupCanvas(canvas) {
+      const wrap = canvas.parentElement;
+      const dpr = window.devicePixelRatio || 1;
+      const CW = wrap.clientWidth, CH = wrap.clientHeight;
+      canvas.width = Math.round(CW * dpr);
+      canvas.height = Math.round(CH * dpr);
+      canvas.style.width = CW + 'px';
+      canvas.style.height = CH + 'px';
+      const ctx = canvas.getContext('2d');
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      return { ctx, CW, CH, dpr };
+    }
+
+    function drawArrow(ctx, x1, y1, x2, y2, color, lw, dashed) {
+      const dx = x2 - x1, dy = y2 - y1, len = Math.sqrt(dx * dx + dy * dy);
+      if (len < 2) return;
+      const ux = dx / len, uy = dy / len;
+      const hs = Math.min(16, len * 0.35);
+      ctx.save();
+      ctx.strokeStyle = color; ctx.fillStyle = color;
+      ctx.lineWidth = lw || 2.5;
+      if (dashed) ctx.setLineDash([6, 4]); else ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2 - ux * hs * 0.6, y2 - uy * hs * 0.6); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - ux * hs - uy * hs * 0.45, y2 - uy * hs + ux * hs * 0.45);
+      ctx.lineTo(x2 - ux * hs + uy * hs * 0.45, y2 - uy * hs - ux * hs * 0.45);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+    }
+
+    /* ── [fix_vectors.js] Vẽ nhãn vector trong canvas ── */
+  function drawVecLabel(ctx, x, y, letter, color, fontSize) {
+    fontSize = fontSize || 13;
+    ctx.save();
+
+    // Reset TOÀN BỘ state nguy hiểm trước khi vẽ
+    // Tránh bị ảnh hưởng bởi lineWidth, lineDash, lineCap từ code vẽ mũi tên chính
+    ctx.setLineDash([]);
+    ctx.lineDashOffset = 0;
+    ctx.lineCap   = 'butt';
+    ctx.lineJoin  = 'miter';
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur  = 0;
+    ctx.shadowColor = 'transparent';
+
+    // Đo chiều rộng chữ
+    ctx.font = 'bold italic ' + fontSize + 'px Courier New';
+    const letterW = ctx.measureText(letter).width;
+
+    // Vẽ trục mũi tên (đường ngang, mỏng)
+    const arrowY = y - fontSize * 0.72;
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = 1.2;           // luôn mỏng, bất kể lineWidth bên ngoài
+    ctx.beginPath();
+    ctx.moveTo(x, arrowY);
+    ctx.lineTo(x + letterW, arrowY);
+    ctx.stroke();
+
+    // Vẽ đầu mũi tên (tam giác nhỏ — dùng fill, không dùng stroke)
+    const hs = fontSize * 0.22;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x + letterW + hs * 0.8, arrowY);
+    ctx.lineTo(x + letterW - hs * 0.3, arrowY - hs * 0.55);
+    ctx.lineTo(x + letterW - hs * 0.3, arrowY + hs * 0.55);
+    ctx.closePath();
+    ctx.fill();
+
+    // Vẽ chữ cái
+    ctx.font         = 'bold italic ' + fontSize + 'px Courier New';
+    ctx.fillStyle    = color;
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText(letter, x, y);
+
+    ctx.restore();
+  }
+
+    // ══════════════════════════════════════════════════════
+    // STAGE 1 — GẮN VECTƠ
+    // ══════════════════════════════════════════════════════
+    const S1_LEVELS = [
+      { obj: 'plane', dir: { dx: 1, dy: 0 }, label: '→', desc: 'Máy bay đang bay thẳng về hướng đông.', choices: [{ dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0.7, dy: -0.7 }, { dx: 0, dy: -1 }] },
+      { obj: 'ship', dir: { dx: -1, dy: 0 }, label: '←', desc: 'Tàu thuỷ đang quay đầu về cảng phía tây.', choices: [{ dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0.7, dy: 0.7 }, { dx: 0, dy: 1 }] },
+      { obj: 'plane', dir: { dx: 0.7, dy: -0.7 }, label: '↗', desc: 'Máy bay đang cất cánh về hướng đông bắc.', choices: [{ dx: 1, dy: 0 }, { dx: 0.7, dy: -0.7 }, { dx: 0, dy: -1 }, { dx: -0.7, dy: -0.7 }] },
+      { obj: 'box', dir: { dx: 0, dy: 1 }, label: '↓', desc: 'Trọng lực kéo hộp hàng xuống sàn.', choices: [{ dx: 0, dy: -1 }, { dx: 1, dy: 0 }, { dx: 0, dy: 1 }, { dx: -1, dy: 0 }] },
+      { obj: 'ship', dir: { dx: 1, dy: 0 }, label: '→', desc: 'BONUS: Tàu chạy sang phải, gió cản từ bên phải. Gắn 2 vectơ vận tốc và lực cản.', choices: [{ dx: 1, dy: 0 }, { dx: -1, dy: 0 }, { dx: 0, dy: -1 }, { dx: 0, dy: 1 }], bonus: true },
+    ];
+
+    let s1 = {
+      level: 0,
+      score: 0,
+      wrongCount: 0,
+      done: false,
+      state: 'waiting', // 'waiting', 'correct', 'wrong'
+      animTime: 0,
+      chosenIdx: -1,
+      vPlaced: false, // Level 5
+      fcPlaced: false, // Level 5
+      isDragging: false,
+      draggedIdx: -1,
+      dragPos: { x: 0, y: 0 },
+      dragStartPos: { x: 0, y: 0 }
+    };
+    let s1ctx, s1CW, s1CH;
+    let s1ChoiceHover = -1;
+    let s1LoopId = null;
+    let s1Replaying = false;
+
+    function initStage1() {
+      const canvas = document.getElementById('canvas1');
+      const setup = setupCanvas(canvas);
+      s1ctx = setup.ctx; s1CW = setup.CW; s1CH = setup.CH;
+
+      s1.level = 0;
+      s1.score = 0;
+      s1.wrongCount = 0;
+      s1.done = false;
+      s1.state = 'waiting';
+      s1.animTime = 0;
+      s1.vPlaced = false;
+      s1.fcPlaced = false;
+      s1.isDragging = false;
+      s1.draggedIdx = -1;
+      s1Replaying = false;
+
+      updateS1Score();
+
+      canvas.onmousedown = s1MouseDown;
+      canvas.onmousemove = s1MouseMove;
+      canvas.onmouseup = s1MouseUp;
+      canvas.onmouseleave = () => { s1.isDragging = false; s1.draggedIdx = -1; s1ChoiceHover = -1; };
+
+      document.getElementById('s1-level-label').textContent = `Level 1/5`;
+      setCaption('cap1', 'Chọn vectơ mô tả đúng chuyển động của vật — kéo thả hoặc click để gắn.', '');
+
+      cancelAnimationFrame(s1LoopId);
+      s1DrawLoop();
+    }
+
+    function resizeStage1() {
+      const canvas = document.getElementById('canvas1');
+      if (!canvas) return;
+      const setup = setupCanvas(canvas);
+      s1ctx = setup.ctx; s1CW = setup.CW; s1CH = setup.CH;
+    }
+
+    function s1DrawLoop() {
+      if (currentStage !== 1 || s1.done) {
+        cancelAnimationFrame(s1LoopId);
+        return;
+      }
+
+      s1UpdatePhysics();
+      s1Render();
+
+      s1.animTime++;
+      s1LoopId = requestAnimationFrame(s1DrawLoop);
+    }
+
+    function s1UpdatePhysics() {
+      if (s1.state === 'correct') {
+        if (s1.animTime >= 45) {
+          if (s1Replaying) {
+            s1Replaying = false;
+            s1.level++; // restore current level
+            s1.state = 'waiting';
+            s1.animTime = 0;
+          } else {
+            s1NextLevel();
+          }
+        }
+      } else if (s1.state === 'wrong') {
+        if (s1.animTime >= 25) {
+          s1.state = 'waiting';
+          s1.animTime = 0;
+        }
+      }
+    }
+
+    function s1Render() {
+      if (!s1ctx) return;
+      const ctx = s1ctx, CW = s1CW, CH = s1CH;
+      const lv = S1_LEVELS[s1.level];
+      ctx.clearRect(0, 0, CW, CH);
+
+      // 1. Background
+      const sky = ctx.createLinearGradient(0, 0, 0, CH);
+      sky.addColorStop(0, '#87CEEB'); sky.addColorStop(1, '#d4eefc');
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, CW, CH);
+      drawCloud1(ctx, CW * .15, CH * .15, 55);
+      drawCloud1(ctx, CW * .5, CH * .1, 70);
+      drawCloud1(ctx, CW * .8, CH * .18, 45);
+
+      if (lv.obj === 'box' || lv.obj === 'ship') {
+        const g = ctx.createLinearGradient(0, CH * .72, 0, CH);
+        g.addColorStop(0, '#4a8c5c'); g.addColorStop(1, '#2d5c39');
+        ctx.fillStyle = g; ctx.fillRect(0, CH * .72, CW, CH * .28);
+        if (lv.obj === 'ship') {
+          ctx.fillStyle = '#4E7F92'; ctx.globalAlpha = .35;
+          ctx.fillRect(0, CH * .65, CW, CH * .35); ctx.globalAlpha = 1;
+        }
+      }
+
+      // 2. Object position
+      const ox = CW * 0.38;
+      const oy = CH * 0.48;
+      let vx = 0;
+      let vy = 0;
+
+      if (s1.state === 'waiting') {
+        vy = 6 * Math.sin(s1.animTime * 0.05); // Bobbing animation
+      } else if (s1.state === 'correct') {
+        const t = s1.animTime;
+        const c = lv.choices[s1.chosenIdx];
+        vx = c.dx * t * 1.5;
+        vy = c.dy * t * 1.5;
+      } else if (s1.state === 'wrong') {
+        const t = s1.animTime;
+        const c = lv.choices[s1.chosenIdx];
+        vx = c.dx * t * 0.8;
+        vy = c.dy * t * 0.8;
+      }
+
+      const curX = ox + vx;
+      const curY = oy + vy;
+
+      if (lv.obj === 'plane') drawPlane1(ctx, curX, curY);
+      else if (lv.obj === 'ship') drawShip1(ctx, curX, curY);
+      else if (lv.obj === 'box') drawBox1(ctx, curX, curY);
+
+      // 3. Point d'application dot (Center orange dot)
+      ctx.fillStyle = '#C58A2E';
+      ctx.beginPath(); ctx.arc(curX, curY, 5, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = 'rgba(230,81,0,0.2)';
+      ctx.beginPath(); ctx.arc(curX, curY, 11, 0, Math.PI * 2); ctx.fill();
+
+      // 4. Draw placed vectors on the object
+      if (s1.state === 'waiting') {
+        if (s1.level === 4) { // Level 5 (Bonus)
+          if (s1.vPlaced) {
+            drawArrow(ctx, curX, curY, curX + 60, curY, '#4E7F92', 3);
+            drawVecLabel(ctx, curX + 60 + 5, curY - 5, 'v', '#4E7F92');
+          }
+          if (s1.fcPlaced) {
+            drawArrow(ctx, curX, curY, curX - 60, curY, '#C58A2E', 3);
+            drawVecLabel(ctx, curX - 60 - 32, curY - 5, 'F_cản', '#C58A2E');
+          }
+        }
+      } else if (s1.state === 'correct') {
+        const c = lv.choices[s1.chosenIdx];
+        const vlen = 60;
+        if (s1.level === 4) { // Level 5 (Bonus)
+          drawArrow(ctx, curX, curY, curX + 60, curY, '#4E7F92', 3);
+          drawVecLabel(ctx, curX + 60 + 5, curY - 5, 'v', '#4E7F92');
+          drawArrow(ctx, curX, curY, curX - 60, curY, '#C58A2E', 3);
+          drawVecLabel(ctx, curX - 60 - 32, curY - 5, 'F_cản', '#C58A2E');
+        } else {
+          drawArrow(ctx, curX, curY, curX + c.dx * vlen, curY + c.dy * vlen, '#2D8B6F', 3);
+          drawVecLabel(ctx, curX + c.dx * vlen + 5, curY + c.dy * vlen - 5, 'v', '#2D8B6F');
+        }
+
+        // Star feedback
+        if (s1.animTime > 10) {
+          ctx.font = '24px serif'; ctx.textAlign = 'center';
+          ctx.fillText('⭐', CW * 0.7, CH * 0.3);
+        }
+      } else if (s1.state === 'wrong') {
+        const c = lv.choices[s1.chosenIdx];
+        drawArrow(ctx, curX, curY, curX + c.dx * 60, curY + c.dy * 60, '#C15F3C', 3);
+      }
+
+      // 5. Description Box
+      ctx.fillStyle = 'rgba(13,27,75,0.85)';
+      rrect(ctx, 12, 10, CW - 24, 34, 8); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 13px Be Vietnam Pro';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText(lv.desc, CW / 2, 27);
+
+      // 6. Choice Panel
+      const panelX = CW * .68;
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      rrect(ctx, panelX - 10, CH * .12, CW * .34, CH * .76, 12); ctx.fill();
+      ctx.strokeStyle = 'rgba(45, 139, 111,0.15)'; ctx.lineWidth = 1;
+      rrect(ctx, panelX - 10, CH * .12, CW * .34, CH * .76, 12); ctx.stroke();
+
+      ctx.fillStyle = 'rgba(45, 139, 111,0.6)'; ctx.font = 'bold 10px Be Vietnam Pro';
+      ctx.textAlign = 'center'; ctx.fillText('CHỌN VECTƠ', panelX + CW * .14, CH * .16);
+
+      const cx = panelX + CW * .14;
+      const positions = [[cx, CH * .28], [cx, CH * .44], [cx, CH * .6], [cx, CH * .76]];
+      const arrowLen = 36;
+      const CHOICE_COLORS = ['#4E7F92', '#C58A2E', '#2E7D32', '#6A1B9A'];
+
+      lv.choices.forEach((c, i) => {
+        const [px, py] = positions[i];
+        const isHov = s1ChoiceHover === i;
+        const isPlaced = s1.level === 4 && ((i === 0 && s1.vPlaced) || (i === 1 && s1.fcPlaced));
+        const color = CHOICE_COLORS[i];
+
+        ctx.save();
+        if (isPlaced) {
+          ctx.globalAlpha = 0.35;
+        }
+
+        // circle bg
+        ctx.fillStyle = isHov ? 'rgba(45, 139, 111,0.12)' : `${color}1e`;
+        ctx.beginPath(); ctx.arc(px, py, 24, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = isHov ? '#2D8B6F' : color; ctx.lineWidth = isHov ? 2.5 : 1.8;
+        ctx.beginPath(); ctx.arc(px, py, 24, 0, Math.PI * 2); ctx.stroke();
+
+        // arrow
+        const nx = c.dx / Math.sqrt(c.dx * c.dx + c.dy * c.dy);
+        const ny = c.dy / Math.sqrt(c.dx * c.dx + c.dy * c.dy);
+        drawArrow(ctx, px - nx * arrowLen * .45, py - ny * arrowLen * .45, px + nx * arrowLen * .45, py + ny * arrowLen * .45, color, 2.8);
+
+        ctx.restore();
+
+        if (isPlaced) {
+          ctx.fillStyle = '#2D8B6F';
+          ctx.beginPath(); ctx.arc(px + 15, py + 15, 8, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#fff';
+          ctx.font = 'bold 8px sans-serif';
+          ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('✓', px + 15, py + 15);
+        }
+      });
+
+      // 7. Dragging Ghost
+      if (s1.isDragging && s1.draggedIdx >= 0) {
+        const c = lv.choices[s1.draggedIdx];
+        const color = CHOICE_COLORS[s1.draggedIdx];
+        const nx = c.dx / Math.sqrt(c.dx * c.dx + c.dy * c.dy);
+        const ny = c.dy / Math.sqrt(c.dx * c.dx + c.dy * c.dy);
+
+        ctx.save();
+        ctx.globalAlpha = 0.75;
+        drawArrow(ctx, s1.dragPos.x - nx * arrowLen * .45, s1.dragPos.y - ny * arrowLen * .45, s1.dragPos.x + nx * arrowLen * .45, s1.dragPos.y + ny * arrowLen * .45, color, 3);
+        ctx.restore();
+
+        const dist = Math.sqrt((s1.dragPos.x - curX) ** 2 + (s1.dragPos.y - curY) ** 2);
+        if (dist < 60) {
+          ctx.strokeStyle = 'rgba(232, 162, 74,0.85)';
+          ctx.lineWidth = 2.5;
+          ctx.setLineDash([5, 3]);
+          ctx.beginPath(); ctx.arc(curX, curY, 46, 0, Math.PI * 2); ctx.stroke();
+          ctx.setLineDash([]);
+        }
+      }
+    }
+
+    function s1MouseDown(e) {
+      if (s1.done || s1.state !== 'waiting') return;
+      const rect = e.target.getBoundingClientRect();
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      const CW = s1CW, CH = s1CH;
+      const panelX = CW * .68;
+      const cx = panelX + CW * .14;
+      const positions = [[cx, CH * .28], [cx, CH * .44], [cx, CH * .6], [cx, CH * .76]];
+
+      let hit = -1;
+      positions.forEach(([px, py], i) => {
+        const dist = Math.sqrt((mx - px) ** 2 + (my - py) ** 2);
+        if (dist < 24) hit = i;
+      });
+
+      if (hit >= 0) {
+        if (s1.level === 4) {
+          if (hit === 0 && s1.vPlaced) return;
+          if (hit === 1 && s1.fcPlaced) return;
+        }
+        s1.isDragging = true;
+        s1.draggedIdx = hit;
+        s1.dragPos = { x: mx, y: my };
+        s1.dragStartPos = { x: mx, y: my };
+      }
+    }
+
+    function s1MouseMove(e) {
+      const rect = e.target.getBoundingClientRect();
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      if (s1.isDragging) {
+        s1.dragPos = { x: mx, y: my };
+      } else {
+        const CW = s1CW, CH = s1CH;
+        const panelX = CW * .68;
+        const cx = panelX + CW * .14;
+        const positions = [[cx, CH * .28], [cx, CH * .44], [cx, CH * .6], [cx, CH * .76]];
+        let found = -1;
+        positions.forEach(([px, py], i) => {
+          if (Math.sqrt((mx - px) ** 2 + (my - py) ** 2) < 24) found = i;
+        });
+        s1ChoiceHover = found;
+      }
+    }
+
+    function s1MouseUp(e) {
+      if (!s1.isDragging) return;
+      s1.isDragging = false;
+      const rect = e.target.getBoundingClientRect();
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      const lv = S1_LEVELS[s1.level];
+      const CW = s1CW, CH = s1CH;
+      const ox = CW * .38, oy = CH * .48;
+      const bobY = oy + 6 * Math.sin(s1.animTime * 0.05);
+      const dist = Math.sqrt((mx - ox) ** 2 + (my - bobY) ** 2);
+      const clickDist = Math.sqrt((mx - s1.dragStartPos.x) ** 2 + (my - s1.dragStartPos.y) ** 2);
+
+      const isTargetZone = (dist < 55) || (clickDist < 6);
+      const chosen = s1.draggedIdx;
+      const c = lv.choices[chosen];
+
+      if (s1.level === 4) { // Level 5 (Bonus)
+        if (isTargetZone) {
+          if (chosen === 0) { // Velocity
+            s1.vPlaced = true;
+            setCaption('cap1', 'Vectơ vận tốc v đã đặt đúng tại tâm tàu. Tiếp theo kéo lực cản gió F_cản vào.', 'correct');
+          } else if (chosen === 1) { // Resistance
+            s1.fcPlaced = true;
+            setCaption('cap1', 'Vectơ lực cản F_cản đã đặt đúng tại tâm tàu.', 'correct');
+          } else {
+            s1.wrongCount++;
+            setCaption('cap1', 'Hướng lực kéo/vận tốc này không đúng với thực tế!', 'wrong');
+            s1TriggerWrong(chosen);
+          }
+
+          if (s1.vPlaced && s1.fcPlaced) {
+            s1.score += 10;
+            updateS1Score();
+            setCaption('cap1', 'Chính xác! Cả hai lực được đặt đúng tâm tàu. Tàu di chuyển sang phải và cản gió từ phía trước.', 'correct');
+            document.getElementById('s1-replay').disabled = false;
+            s1TriggerCorrect(0);
+          }
+        } else {
+          if (chosen === 1) { // Drag vector dropped outside (air)
+            setCaption('cap1', 'Lực tác dụng lên vật phải đặt tại vật, không phải ở ngoài không khí!', 'wrong');
+          }
+        }
+      } else { // Levels 1-4
+        if (isTargetZone) {
+          const correct = (Math.abs(c.dx - lv.dir.dx) < .05 && Math.abs(c.dy - lv.dir.dy) < .05);
+          if (correct) {
+            s1.score += 10;
+            updateS1Score();
+            setCaption('cap1', `Chính xác! Vectơ AB có hướng từ A đến B — trùng với hướng chuyển động.`, 'correct');
+            document.getElementById('s1-replay').disabled = false;
+            s1TriggerCorrect(chosen);
+          } else {
+            s1.wrongCount++;
+            setCaption('cap1', 'Quan sát điều gì xảy ra với vật...', 'wrong');
+            s1TriggerWrong(chosen);
+            if (s1.wrongCount >= 3) {
+              setTimeout(() => {
+                if (s1.state === 'waiting' && s1.level === lv.level) {
+                  setCaption('cap1', 'Gợi ý: mũi tên phải chỉ đúng hướng vật đang di chuyển.', '');
+                }
+              }, 800);
+            }
+          }
+        }
+      }
+      s1.draggedIdx = -1;
+    }
+
+    function s1TriggerCorrect(chosen) {
+      s1.state = 'correct';
+      s1.animTime = 0;
+      s1.chosenIdx = chosen;
+    }
+
+    function s1TriggerWrong(chosen) {
+      s1.state = 'wrong';
+      s1.animTime = 0;
+      s1.chosenIdx = chosen;
+    }
+
+    function s1NextLevel() {
+      s1.level++;
+      s1.wrongCount = 0;
+      s1.vPlaced = false;
+      s1.fcPlaced = false;
+      s1.state = 'waiting';
+      s1.animTime = 0;
+
+      if (s1.level >= S1_LEVELS.length) {
+        s1.done = true;
+        setCaption('cap1', 'Xuất sắc! Bạn đã hiểu: vectơ = hướng + độ lớn + điểm đặt. Mở khoá Stage 2!', 'correct');
+        updateS1Stars(5);
+        document.getElementById('unlock-s2').classList.add('show');
+        unlockStage(2);
+        updateProgress();
+        return;
+      }
+
+      document.getElementById('s1-level-label').textContent = `Level ${s1.level + 1}/5`;
+      setCaption('cap1', s1.level === 4
+        ? 'Kéo thả cả hai vectơ Vận tốc v và Lực cản F_cản đặt vào đúng tâm tàu.'
+        : 'Chọn vectơ mô tả đúng chuyển động của vật — kéo thả hoặc click để gắn.', '');
+      updateProgress();
+    }
+
+    function updateS1Score() {
+      document.getElementById('s1-score').textContent = s1.score;
+      document.getElementById('s1-pts').textContent = s1.score + ' / 50 điểm';
+      updateS1Stars(Math.floor(s1.score / 10));
+    }
+
+    function updateS1Stars(n) {
+      const stars = document.querySelectorAll('#s1-stars .star');
+      stars.forEach((s, i) => { s.textContent = i < n ? '⭐' : '☆'; s.classList.toggle('earned', i < n); });
+    }
+
+    function s1Reset() {
+      s1.wrongCount = 0;
+      s1.vPlaced = false;
+      s1.fcPlaced = false;
+      s1.state = 'waiting';
+      s1.animTime = 0;
+      s1.isDragging = false;
+      s1.draggedIdx = -1;
+      setCaption('cap1', s1.level === 4
+        ? 'Kéo thả cả hai vectơ Vận tốc v và Lực cản F_cản đặt vào đúng tâm tàu.'
+        : 'Chọn vectơ mô tả đúng chuyển động của vật — kéo thả hoặc click để gắn.', '');
+    }
+
+    function s1Skip() {
+      s1NextLevel();
+    }
+
+    function s1Replay() {
+      if (s1.level > 0 && s1.state === 'waiting') {
+        s1Replaying = true;
+        s1.level--;
+        s1.state = 'correct';
+        s1.animTime = 0;
+        const lv = S1_LEVELS[s1.level];
+        s1.chosenIdx = lv.choices.findIndex(c => Math.abs(c.dx - lv.dir.dx) < .05 && Math.abs(c.dy - lv.dir.dy) < .05);
+        if (s1.chosenIdx < 0) s1.chosenIdx = 0;
+      }
+    }
+
+    // Draw helpers
+    function drawCloud1(ctx, x, y, sz) {
+      ctx.fillStyle = 'rgba(255,255,255,0.85)';
+      [[0, 0, sz * .5], [sz * .35, -sz * .2, sz * .4], [sz * .7, 0, sz * .45]].forEach(([dx, dy, r]) => {
+        ctx.beginPath(); ctx.arc(x + dx, y + dy, r, 0, Math.PI * 2); ctx.fill();
+      });
+    }
+
+    function drawPlane1(ctx, x, y) {
+      ctx.save();
+      // Shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.1)'; ctx.beginPath(); ctx.ellipse(x, y + 18, 38, 5, 0, 0, Math.PI * 2); ctx.fill();
+      // Fuselage
+      const f = ctx.createLinearGradient(x - 40, y - 10, x - 40, y + 10);
+      f.addColorStop(0, '#e8ecf2'); f.addColorStop(1, '#c0c8d8');
+      ctx.fillStyle = f; rrect(ctx, x - 42, y - 9, 84, 18, 9); ctx.fill();
+      // Nose
+      ctx.fillStyle = '#4E7F92'; rrect(ctx, x + 30, y - 7, 18, 14, 7); ctx.fill();
+      // Wings
+      ctx.fillStyle = 'rgba(200,210,225,0.9)';
+      ctx.beginPath(); ctx.moveTo(x - 10, y); ctx.lineTo(x + 15, y); ctx.lineTo(x + 5, y - 22); ctx.lineTo(x - 15, y - 8); ctx.closePath(); ctx.fill();
+      ctx.beginPath(); ctx.moveTo(x - 10, y); ctx.lineTo(x + 15, y); ctx.lineTo(x + 5, y + 22); ctx.lineTo(x - 15, y + 8); ctx.closePath(); ctx.fill();
+      // Tail
+      ctx.fillStyle = 'rgba(180,195,215,0.9)';
+      ctx.beginPath(); ctx.moveTo(x - 38, y - 2); ctx.lineTo(x - 25, y - 2); ctx.lineTo(x - 32, y - 14); ctx.closePath(); ctx.fill();
+      // Windows
+      ctx.fillStyle = 'rgba(140,200,240,0.8)';
+      [-20, -8, 4, 16].forEach(wx => { rrect(ctx, x + wx, y - 5, 9, 7, 3); ctx.fill(); });
+      // Engine
+      const eg = ctx.createLinearGradient(x - 5, y + 10, x - 5, y + 18);
+      eg.addColorStop(0, '#888'); eg.addColorStop(1, '#555');
+      ctx.fillStyle = eg; rrect(ctx, x - 8, y + 10, 22, 8, 4); ctx.fill();
+      ctx.restore();
+    }
+
+    function drawShip1(ctx, x, y) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,50,0.15)'; ctx.beginPath(); ctx.ellipse(x + 5, y + 32, 72, 7, 0, 0, Math.PI * 2); ctx.fill();
+      // Hull
+      const h = ctx.createLinearGradient(x - 70, y, x - 70, y + 30);
+      h.addColorStop(0, '#1a3a6b'); h.addColorStop(1, '#0a1f40');
+      ctx.fillStyle = h;
+      ctx.beginPath(); ctx.moveTo(x - 70, y); ctx.lineTo(x + 80, y); ctx.lineTo(x + 65, y + 32); ctx.lineTo(x - 55, y + 32); ctx.closePath(); ctx.fill();
+      ctx.fillStyle = '#c0392b'; ctx.fillRect(x - 70, y + 24, 150, 6);
+      // Superstructure
+      const s = ctx.createLinearGradient(x - 35, y - 36, x - 35, y);
+      s.addColorStop(0, '#e8ecf2'); s.addColorStop(1, '#c8d0dc');
+      ctx.fillStyle = s; rrect(ctx, x - 35, y - 36, 85, 38, 5); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.25)'; ctx.fillRect(x - 35, y - 36, 85, 4);
+      // Windows
+      ctx.fillStyle = 'rgba(140,200,240,0.8)';
+      [-20, 0, 20, 40].forEach(wx => { rrect(ctx, x + wx, y - 26, 12, 9, 2); ctx.fill(); });
+      // Chimney
+      const ch = ctx.createLinearGradient(x + 32, y - 58, x + 46, y - 36);
+      ch.addColorStop(0, '#333'); ch.addColorStop(1, '#555');
+      ctx.fillStyle = ch; ctx.fillRect(x + 32, y - 58, 14, 24);
+      ctx.fillStyle = 'rgba(180,180,180,0.4)';
+      [0, -8, -14].forEach((dy, i) => { ctx.beginPath(); ctx.arc(x + 39, y - 64 + dy, 5 + i * 2, 0, Math.PI * 2); ctx.fill(); });
+      ctx.restore();
+    }
+
+    function drawBox1(ctx, x, y) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.15)'; ctx.beginPath(); ctx.ellipse(x, y + 40, 36, 5, 0, 0, Math.PI * 2); ctx.fill();
+      const fr = ctx.createLinearGradient(x - 32, y - 38, x - 32, y + 38);
+      fr.addColorStop(0, '#c8a96e'); fr.addColorStop(1, '#a0845a');
+      ctx.fillStyle = fr; rrect(ctx, x - 32, y - 38, 64, 76, 4); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.18)'; ctx.fillRect(x - 32, y - 38, 64, 5);
+      ctx.fillStyle = '#d4b87a';
+      ctx.beginPath(); ctx.moveTo(x - 32, y - 38); ctx.lineTo(x + 32, y - 38); ctx.lineTo(x + 40, y - 50); ctx.lineTo(x - 24, y - 50); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(80,50,20,0.5)'; ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(x - 32, y); ctx.lineTo(x + 32, y); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(x, y - 38); ctx.lineTo(x, y + 38); ctx.stroke();
+      ctx.fillStyle = 'rgba(80,50,20,0.55)'; ctx.font = 'bold 9px Be Vietnam Pro'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('HÀNG', x, y + 14);
+      ctx.restore();
+    }
+
+    // ══════════════════════════════════════════════════════
+    // STAGE 2 — KHỚP VECTƠ
+    // ══════════════════════════════════════════════════════
+    const S2_LEVELS = [
+      { aStart: { x: .25, y: .5 }, aEnd: { x: .55, y: .5 }, bStart: { x: .25, y: .75 }, bEnd: { x: .42, y: .75 }, desc: 'B sai độ dài — chỉ cần kéo dài ra' },
+      { aStart: { x: .3, y: .3 }, aEnd: { x: .6, y: .3 }, bStart: { x: .25, y: .65 }, bEnd: { x: .25, y: .4 }, desc: 'B sai hướng — chỉ cần xoay' },
+      { aStart: { x: .2, y: .4 }, aEnd: { x: .55, y: .25 }, bStart: { x: .55, y: .7 }, bEnd: { x: .72, y: .55 }, desc: 'B sai cả hai — kéo và xoay' },
+      { aStart: { x: .15, y: .35 }, aEnd: { x: .45, y: .35 }, bStart: { x: .7, y: .72 }, bEnd: { x: .85, y: .72 }, desc: 'B ở vị trí rất xa — vị trí không ảnh hưởng!' },
+      { aStart: { x: .2, y: .3 }, aEnd: { x: .5, y: .55 }, bStart: { x: .6, y: .35 }, bEnd: { x: .78, y: .52 }, desc: 'B gần đúng — tinh chỉnh thêm' },
+    ];
+
+    let s2 = { level: 0, score: 0, done: false, dragging: null, matched: false, hintUsed: false, celebrating: false };
+    let s2ctx, s2CW, s2CH;
+    let s2B = { x1: 0, y1: 0, x2: 0, y2: 0 };
+    let s2A = { x1: 0, y1: 0, x2: 0, y2: 0 };
+    let s2GlowAnim = 0;
+    let s2Confetti = [];
+    let s2Candidates = [];
+    let s2BonusAnimTime = -1;
+
+    function s2MakeConfetti() {
+      const cols = ['#E8A24A', '#3CA57A', '#2D8B6F', '#C15F3C', '#4E7F92', '#C58A2E'];
+      return Array.from({ length: 38 }, (_, i) => ({
+        x: s2CW * (0.2 + Math.random() * 0.6), y: s2CH * (0.1 + Math.random() * 0.5),
+        vx: (Math.random() - 0.5) * 3, vy: -3 - Math.random() * 4,
+        r: 4 + Math.random() * 5, color: cols[i % cols.length],
+        rot: Math.random() * Math.PI * 2, rotV: (Math.random() - 0.5) * 0.2, life: 1
+      }));
+    }
+
+    function initStage2() {
+      const canvas = document.getElementById('canvas2');
+      const setup = setupCanvas(canvas);
+      s2ctx = setup.ctx; s2CW = setup.CW; s2CH = setup.CH;
+      s2.level = 0; s2.score = 0; s2.done = false;
+      s2BonusAnimTime = -1;
+      updateS2Score();
+      s2LoadLevel();
+      canvas.onmousedown = s2MouseDown;
+      canvas.onmousemove = s2MouseMove;
+      canvas.onmouseup = s2MouseUp;
+    }
+
+    function resizeStage2() {
+      const canvas = document.getElementById('canvas2');
+      if (!canvas) return;
+      const setup = setupCanvas(canvas);
+      s2ctx = setup.ctx; s2CW = setup.CW; s2CH = setup.CH;
+
+      if (s2.level === 4) {
+        s2SetupLevel5();
+      } else {
+        const lv = S2_LEVELS[s2.level];
+        const CW = s2CW, CH = s2CH;
+        s2A = { x1: lv.aStart.x * CW, y1: lv.aStart.y * CH, x2: lv.aEnd.x * CW, y2: lv.aEnd.y * CH };
+        s2B = { x1: lv.bStart.x * CW, y1: lv.bStart.y * CH, x2: lv.bEnd.x * CW, y2: lv.bEnd.y * CH };
+      }
+      s2Draw();
+    }
+
+    function s2SetupLevel5() {
+      const CW = s2CW, CH = s2CH;
+      // Reference vector A
+      s2A = { x1: 0.15 * CW, y1: 0.45 * CH, x2: 0.4 * CW, y2: 0.35 * CH };
+      const dx = s2A.x2 - s2A.x1;
+      const dy = s2A.y2 - s2A.y1;
+      const angle = Math.atan2(dy, dx);
+      const len = Math.sqrt(dx * dx + dy * dy);
+
+      const cfgs = [
+        { type: 'short_same', lenFactor: 0.65, label: 'B', desc: 'Chưa đúng: Vectơ B cùng hướng nhưng ngắn hơn Vectơ A — chưa đủ bằng nhau.' },
+        { type: 'long_parallel', lenFactor: 1.35, label: 'C', desc: 'Chưa đúng: Vectơ C cùng phương nhưng dài hơn Vectơ A — chưa đủ bằng nhau.' },
+        { type: 'correct', lenFactor: 1.0, label: 'D', desc: 'Chính xác! Vectơ D cùng hướng và cùng độ dài với Vectơ A nên bằng nhau.' }
+      ];
+
+      // Shuffle configurations
+      cfgs.sort(() => Math.random() - 0.5);
+
+      const labels = ['B', 'C', 'D'];
+      const pos = [
+        { x: 0.15 * CW, y: 0.78 * CH },
+        { x: 0.55 * CW, y: 0.78 * CH },
+        { x: 0.55 * CW, y: 0.32 * CH }
+      ];
+
+      s2Candidates = cfgs.map((cfg, i) => {
+        const p = pos[i];
+        const clen = len * cfg.lenFactor;
+        return {
+          type: cfg.type,
+          label: labels[i] ,
+          desc: cfg.desc,
+          x1: p.x,
+          y1: p.y,
+          x2: p.x + clen * Math.cos(angle),
+          y2: p.y + clen * Math.sin(angle),
+          state: 'none',
+          shakeTime: 0
+        };
+      });
+    }
+
+    function s2LoadLevel() {
+      const lv = S2_LEVELS[s2.level];
+      const CW = s2CW, CH = s2CH;
+
+      s2.matched = false;
+      s2.hintUsed = false;
+      s2.dragging = null;
+      s2.celebrating = false;
+      s2Confetti = [];
+      s2BonusAnimTime = -1;
+
+      document.getElementById('s2-hint-btn').disabled = false;
+      document.getElementById('s2-next-btn').style.display = 'none';
+      document.getElementById('s2-bonus-box').style.display = 'none';
+      document.getElementById('s2-level-label').textContent = `Level ${s2.level + 1}/5`;
+
+      // Show/Hide RT panel for Level 5
+      document.querySelector('.rt-panel').style.display = (s2.level === 4) ? 'none' : 'grid';
+
+      if (s2.level === 4) {
+        s2SetupLevel5();
+        setCaption('cap2', 'Level 5: Có 3 vectơ B, C, D trên canvas. Hãy click vào vectơ BẰNG với Vectơ A.', '');
+      } else {
+        s2A = { x1: lv.aStart.x * CW, y1: lv.aStart.y * CH, x2: lv.aEnd.x * CW, y2: lv.aEnd.y * CH };
+        s2B = { x1: lv.bStart.x * CW, y1: lv.bStart.y * CH, x2: lv.bEnd.x * CW, y2: lv.bEnd.y * CH };
+        setCaption('cap2', 'Biến Vectơ B thành bản sao của Vectơ A — kéo và xoay để khớp.', '');
+      }
+
+      s2UpdatePanel();
+      s2Draw();
+    }
+
+    function s2Len(v) { return Math.sqrt((v.x2 - v.x1) ** 2 + (v.y2 - v.y1) ** 2); }
+    function s2Angle(v) { return Math.atan2(v.y2 - v.y1, v.x2 - v.x1) * 180 / Math.PI; }
+
+    function s2CheckMatch() {
+      if (s2.level === 4) return { near: false, match: s2.matched };
+      const la = s2Len(s2A), lb = s2Len(s2B);
+      const aa = s2Angle(s2A), ab = s2Angle(s2B);
+      const lenOk = Math.abs(la - lb) / la < 0.07;
+      let adiff = Math.abs(aa - ab) % 360;
+      if (adiff > 180) adiff = 360 - adiff;
+      const angOk = adiff < 7;
+      return { near: (Math.abs(la - lb) / la < 0.12 && adiff < 12), match: lenOk && angOk };
+    }
+
+    function s2UpdatePanel() {
+      if (s2.level === 4) return;
+      const la = s2Len(s2A).toFixed(0), lb = s2Len(s2B).toFixed(0);
+      const aa = ((s2Angle(s2A) + 360) % 360).toFixed(0), ab = ((s2Angle(s2B) + 360) % 360).toFixed(0);
+      document.getElementById('s2-lenA').textContent = la + 'px';
+      document.getElementById('s2-lenB').textContent = lb + 'px';
+      document.getElementById('s2-angA').textContent = aa + '°';
+      document.getElementById('s2-angB').textContent = ab + '°';
+      const { near, match } = s2CheckMatch();
+      const st = document.getElementById('s2-status');
+      if (match) { st.className = 'rt-status match'; st.textContent = '✅ Khớp! Hai vectơ bằng nhau!'; }
+      else if (near) { st.className = 'rt-status near'; st.textContent = '🔥 Gần rồi! Tinh chỉnh thêm...'; }
+      else { st.className = 'rt-status'; st.textContent = 'Chưa khớp — kéo và xoay Vectơ B'; }
+    }
+
+    function s2Draw() {
+      if (!s2ctx) return;
+      const ctx = s2ctx, CW = s2CW, CH = s2CH;
+      ctx.clearRect(0, 0, CW, CH);
+
+      // BG
+      ctx.fillStyle = '#FAF7F0'; ctx.fillRect(0, 0, CW, CH);
+
+      // Grid
+      ctx.strokeStyle = 'rgba(45, 139, 111,0.05)'; ctx.lineWidth = 1;
+      for (let x = 0; x < CW; x += 40) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CH); ctx.stroke(); }
+      for (let y = 0; y < CH; y += 40) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CW, y); ctx.stroke(); }
+
+      if (s2.level === 4) {
+        // LEVEL 5 DRAWING
+        ctx.save();
+        ctx.shadowColor = 'rgba(45, 139, 111,0.3)'; ctx.shadowBlur = 6;
+        drawArrow(ctx, s2A.x1, s2A.y1, s2A.x2, s2A.y2, '#2D8B6F', 4);
+        ctx.restore();
+        ctx.fillStyle = 'rgba(45, 139, 111,0.12)'; ctx.beginPath(); ctx.arc(s2A.x1, s2A.y1, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#2D8B6F'; ctx.beginPath(); ctx.arc(s2A.x1, s2A.y1, 4, 0, Math.PI * 2); ctx.fill();
+        drawVecLabel(ctx, (s2A.x1 + s2A.x2) / 2, (s2A.y1 + s2A.y2) / 2 - 16, 'A', '#2D8B6F');
+
+        s2Candidates.forEach(c => {
+          let color = '#3CA57A';
+          let lw = 2.5;
+
+          if (c.state === 'correct') {
+            color = '#2D8B6F';
+            lw = 3.5;
+            ctx.save();
+            ctx.strokeStyle = 'rgba(45, 139, 111,0.3)'; ctx.lineWidth = 12; ctx.lineCap = 'round';
+            ctx.beginPath(); ctx.moveTo(c.x1, c.y1); ctx.lineTo(c.x2, c.y2); ctx.stroke();
+            ctx.restore();
+          } else if (c.state === 'wrong') {
+            color = '#C15F3C';
+          }
+
+          let renderX1 = c.x1, renderY1 = c.y1;
+          let renderX2 = c.x2, renderY2 = c.y2;
+
+          if (c.shakeTime > 0) {
+            const shake = Math.sin(c.shakeTime * 1.8) * 5 * (1 - c.shakeTime / 12);
+            renderX1 += shake; renderX2 += shake;
+          }
+
+          drawArrow(ctx, renderX1, renderY1, renderX2, renderY2, color, lw);
+
+          ctx.fillStyle = 'rgba(45, 139, 111,0.12)'; ctx.beginPath(); ctx.arc(renderX1, renderY1, 7, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = color; ctx.beginPath(); ctx.arc(renderX1, renderY1, 4, 0, Math.PI * 2); ctx.fill();
+          drawVecLabel(ctx, (renderX1 + renderX2) / 2, (renderY1 + renderY2) / 2 - 12, c.label, color);
+        });
+
+        if (s2.matched) {
+          if (!s2.celebrating) {
+            s2.celebrating = true;
+            s2Confetti = s2MakeConfetti();
+            document.getElementById('s2-next-btn').style.display = 'inline-flex';
+          }
+        }
+      } else {
+        const { near, match } = s2CheckMatch();
+
+        if (match && !s2.matched) {
+          const adx = s2A.x2 - s2A.x1;
+          const ady = s2A.y2 - s2A.y1;
+          s2B.x2 = s2B.x1 + adx;
+          s2B.y2 = s2B.y1 + ady;
+        }
+
+        if (s2BonusAnimTime >= 0) {
+          const adx = s2A.x2 - s2A.x1;
+          const ady = s2A.y2 - s2A.y1;
+          let bx1 = s2B.x1, by1 = s2B.y1;
+
+          if (s2BonusAnimTime < 30) {
+            bx1 = CW * 0.15; by1 = CH * 0.8;
+          } else if (s2BonusAnimTime < 60) {
+            bx1 = CW * 0.65; by1 = CH * 0.8;
+          } else if (s2BonusAnimTime < 90) {
+            bx1 = CW * 0.55; by1 = CH * 0.25;
+          } else {
+            s2BonusAnimTime = -1;
+            bx1 = s2A.x1; by1 = s2A.y1 + 80;
+          }
+
+          s2B.x1 = bx1;
+          s2B.y1 = by1;
+          s2B.x2 = bx1 + adx;
+          s2B.y2 = by1 + ady;
+          s2UpdatePanel();
+        }
+
+        if (near || match) {
+          s2GlowAnim = (s2GlowAnim + 0.08) % (Math.PI * 2);
+          const glow = 0.3 + 0.2 * Math.sin(s2GlowAnim);
+          ctx.save(); ctx.strokeStyle = match ? `rgba(27,140,90,${glow + 0.4})` : `rgba(239,159,39,${glow + 0.3})`;
+          ctx.lineWidth = 14; ctx.lineCap = 'round';
+          ctx.beginPath(); ctx.moveTo(s2B.x1, s2B.y1); ctx.lineTo(s2B.x2, s2B.y2); ctx.stroke();
+          ctx.restore();
+
+          if (!s2.matched && match) {
+            s2.matched = true;
+            s2.score += s2.hintUsed ? 5 : 10;
+            updateS2Score();
+            const la = s2Len(s2A).toFixed(0);
+            const aa = ((s2Angle(s2A) + 360) % 360).toFixed(0);
+            setCaption('cap2', `✨ Khớp hoàn toàn! Độ dài = ${la}px · Góc = ${aa}° — Hai vectơ cùng phương, cùng hướng, cùng độ dài → Bằng nhau!`, 'correct');
+            s2.celebrating = true;
+            s2Confetti = s2MakeConfetti();
+
+            document.getElementById('s2-bonus-box').style.display = 'flex';
+            document.getElementById('s2-next-btn').style.display = 'none';
+          }
+        }
+
+        drawArrow(ctx, s2A.x1, s2A.y1, s2A.x2, s2A.y2, '#2D8B6F', 3);
+        ctx.fillStyle = 'rgba(45, 139, 111,0.12)'; ctx.beginPath(); ctx.arc(s2A.x1, s2A.y1, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#2D8B6F'; ctx.beginPath(); ctx.arc(s2A.x1, s2A.y1, 4, 0, Math.PI * 2); ctx.fill();
+        drawVecLabel(ctx, (s2A.x1 + s2A.x2) / 2, (s2A.y1 + s2A.y2) / 2 - 12, 'A', '#2D8B6F');
+
+        const bcolor = match ? '#2D8B6F' : near ? '#C58A2E' : '#3CA57A';
+        drawArrow(ctx, s2B.x1, s2B.y1, s2B.x2, s2B.y2, bcolor, 3);
+        ctx.fillStyle = 'rgba(232, 162, 74,0.3)'; ctx.beginPath(); ctx.arc(s2B.x1, s2B.y1, 7, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = bcolor; ctx.beginPath(); ctx.arc(s2B.x1, s2B.y1, 4, 0, Math.PI * 2); ctx.fill();
+
+        ctx.strokeStyle = bcolor; ctx.lineWidth = 1.5;
+        ctx.beginPath(); ctx.arc(s2B.x2, s2B.y2, 7, 0, Math.PI * 2); ctx.stroke();
+        drawVecLabel(ctx, (s2B.x1 + s2B.x2) / 2, (s2B.y1 + s2B.y2) / 2 + 16, 'B', bcolor);
+      }
+
+      const loopNeeded = (s2.celebrating && s2Confetti.length > 0) || (s2BonusAnimTime >= 0) || (s2.level < 4 && s2CheckMatch().near) || (s2.level < 4 && s2CheckMatch().match);
+      if (loopNeeded) {
+        if (s2.celebrating && s2Confetti.length > 0) {
+          s2Confetti.forEach(c => {
+            ctx.save();
+            ctx.globalAlpha = c.life;
+            ctx.translate(c.x, c.y); ctx.rotate(c.rot);
+            ctx.fillStyle = c.color;
+            ctx.fillRect(-c.r / 2, -c.r / 2, c.r, c.r * 1.6);
+            ctx.restore();
+            c.x += c.vx; c.y += c.vy; c.vy += 0.15; c.rot += c.rotV; c.life -= 0.012;
+          });
+          s2Confetti = s2Confetti.filter(c => c.life > 0);
+        }
+        if (s2BonusAnimTime >= 0) s2BonusAnimTime++;
+        requestAnimationFrame(() => s2Draw());
+      }
+    }
+
+    function s2MouseDown(e) {
+      const rect = e.target.getBoundingClientRect();
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+
+      if (s2.level === 4) {
+        if (s2.matched) return;
+        let clickedIdx = -1;
+        s2Candidates.forEach((c, idx) => {
+          const dx = c.x2 - c.x1, dy = c.y2 - c.y1;
+          const lenSq = dx * dx + dy * dy;
+          const t = Math.max(0, Math.min(1, ((mx - c.x1) * dx + (my - c.y1) * dy) / lenSq));
+          const projX = c.x1 + t * dx;
+          const projY = c.y1 + t * dy;
+          const dist = Math.sqrt((mx - projX) ** 2 + (my - projY) ** 2);
+          if (dist < 18) clickedIdx = idx;
+        });
+
+        if (clickedIdx >= 0) {
+          const c = s2Candidates[clickedIdx];
+          if (c.type === 'correct') {
+            c.state = 'correct';
+            setCaption('cap2', c.desc, 'correct');
+            s2.matched = true;
+            s2.score += 10;
+            updateS2Score();
+            s2Draw();
+          } else {
+            c.state = 'wrong';
+            c.shakeTime = 0;
+            setCaption('cap2', c.desc, 'wrong');
+            s2ShakeCandidate(clickedIdx);
+          }
+        }
+        return;
+      }
+
+      if (s2.matched) return;
+
+      const dEnd = Math.sqrt((mx - s2B.x2) ** 2 + (my - s2B.y2) ** 2);
+      if (dEnd < 16) { s2.dragging = 'end'; return; }
+      const midx = (s2B.x1 + s2B.x2) / 2, midy = (s2B.y1 + s2B.y2) / 2;
+      const dMid = Math.sqrt((mx - midx) ** 2 + (my - midy) ** 2);
+      if (dMid < 30) { s2.dragging = 'body'; s2._dragOx = mx - s2B.x1; s2._dragOy = my - s2B.y1; return; }
+      const dSt = Math.sqrt((mx - s2B.x1) ** 2 + (my - s2B.y1) ** 2);
+      if (dSt < 16) { s2.dragging = 'start'; s2._dragOx = mx - s2B.x1; s2._dragOy = my - s2B.y1; return; }
+    }
+
+    function s2MouseMove(e) {
+      if (!s2.dragging) return;
+      const rect = e.target.getBoundingClientRect();
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      if (s2.dragging === 'end') { s2B.x2 = mx; s2B.y2 = my; }
+      else if (s2.dragging === 'body' || s2.dragging === 'start') {
+        const dx = s2B.x2 - s2B.x1, dy = s2B.y2 - s2B.y1;
+        s2B.x1 = mx - s2._dragOx; s2B.y1 = my - s2._dragOy;
+        s2B.x2 = s2B.x1 + dx; s2B.y2 = s2B.y1 + dy;
+      }
+      s2UpdatePanel(); s2Draw();
+    }
+
+    function s2MouseUp() { s2.dragging = null; }
+
+    function s2ShakeCandidate(idx) {
+      let t = 0;
+      function frame() {
+        s2Candidates[idx].shakeTime = t;
+        s2Draw();
+        t++;
+        if (t < 12) {
+          requestAnimationFrame(frame);
+        } else {
+          s2Candidates[idx].shakeTime = 0;
+          s2Candidates[idx].state = 'none';
+          s2Draw();
+        }
+      }
+      frame();
+    }
+
+    function s2BonusAnswer(isYes) {
+      document.getElementById('s2-bonus-box').style.display = 'none';
+      document.getElementById('s2-next-btn').style.display = 'inline-flex';
+
+      if (isYes) {
+        setCaption('cap2', 'Chính xác! Hai vectơ bằng nhau khi cùng hướng và cùng độ dài. Vị trí đặt không ảnh hưởng.', 'correct');
+      } else {
+        setCaption('cap2', 'Chưa đúng! Vị trí đặt không quan trọng. Chỉ cần cùng hướng và cùng độ dài là chúng bằng nhau.', 'wrong');
+      }
+
+      s2BonusAnimTime = 0;
+      s2Draw();
+    }
+
+    function s2NextLevel() {
+      s2.level++;
+      if (s2.level >= S2_LEVELS.length) {
+        s2.done = true;
+        setCaption('cap2', 'Xuất sắc! Vectơ bằng nhau = cùng độ dài + cùng hướng. Vị trí không quan trọng!', 'correct');
+        updateS2Stars(5);
+        document.getElementById('unlock-s3').classList.add('show');
+        unlockStage(3);
+        updateProgress();
+        return;
+      }
+      s2LoadLevel();
+      updateProgress();
+    }
+
+    function updateS2Score() {
+      document.getElementById('s2-score').textContent = s2.score;
+      document.getElementById('s2-pts').textContent = s2.score + ' / 50 điểm';
+      updateS2Stars(Math.floor(s2.score / 10));
+    }
+
+    function updateS2Stars(n) {
+      const stars = document.querySelectorAll('#s2-stars .star');
+      stars.forEach((s, i) => { s.textContent = i < n ? '⭐' : '☆'; s.classList.toggle('earned', i < n); });
+    }
+
+    function s2Reset() { s2LoadLevel(); }
+
+    function s2Hint() {
+      if (s2.hintUsed || s2.level === 4) return;
+      s2.hintUsed = true;
+      document.getElementById('s2-hint-btn').disabled = true;
+      const lv = S2_LEVELS[s2.level], CW = s2CW, CH = s2CH;
+      const ax = lv.aStart.x * CW, ay = lv.aStart.y * CH, ax2 = lv.aEnd.x * CW, ay2 = lv.aEnd.y * CH;
+      const adx = ax2 - ax, ady = ay2 - ay;
+      s2B.x2 = s2B.x1 + adx; s2B.y2 = s2B.y1 + ady;
+      setCaption('cap2', 'Gợi ý: hướng và độ dài đã được điều chỉnh — bạn vẫn có thể di chuyển vị trí.', '');
+      s2UpdatePanel(); s2Draw();
+    }
+
+    function s2ShowAnswer() {
+      if (s2.level === 4) {
+        s2Candidates.forEach(c => {
+          if (c.type === 'correct') c.state = 'correct';
+        });
+        s2.matched = true;
+        s2Draw();
+        return;
+      }
+      const lv = S2_LEVELS[s2.level], CW = s2CW, CH = s2CH;
+      const adx = (lv.aEnd.x - lv.aStart.x) * CW, ady = (lv.aEnd.y - lv.aStart.y) * CH;
+      s2B.x1 = lv.bStart.x * CW; s2B.y1 = lv.bStart.y * CH;
+      s2B.x2 = s2B.x1 + adx; s2B.y2 = s2B.y1 + ady;
+      setCaption('cap2', 'Đây là đáp án — B đã được điều chỉnh về đúng độ dài và hướng.', 'correct');
+      s2UpdatePanel(); s2Draw();
+    }
+
+    // ══════════════════════════════════════════════════════
+    // STAGE 3 — NHẬN DIỆN VECTƠ
+    // ══════════════════════════════════════════════════════
+    const S3_MISSIONS = [
+      { id: 'collinear', label: 'Mission 1: Tìm tất cả vectơ CÙNG PHƯƠNG với vectơ A' },
+      { id: 'same', label: 'Mission 2: Tìm tất cả vectơ CÙNG HƯỚNG với vectơ A' },
+      { id: 'opposite', label: 'Mission 3: Tìm tất cả vectơ NGƯỢC HƯỚNG với vectơ A' },
+      { id: 'equal', label: 'Mission 4: Tìm tất cả vectơ BẰNG NHAU với vectơ A' },
+    ];
+
+    let s3 = { mission: 0, score: 0, done: false, found: [], hintUsed: false, m1Correct: [], m2Correct: [], zeroHitIndex: -1 };
+    let s3ctx, s3CW, s3CH;
+    let s3Vecs = [];
+    let s3A = { x1: 0, y1: 0, x2: 0, y2: 0, angle: 0, len: 0 };
+    let s3Shake = -1, s3ShakeT = 0;
+
+    function initStage3() {
+      const canvas = document.getElementById('canvas3');
+      const setup = setupCanvas(canvas);
+      s3ctx = setup.ctx; s3CW = setup.CW; s3CH = setup.CH;
+      s3.mission = 0; s3.score = 0; s3.done = false;
+      s3.m1Correct = []; s3.m2Correct = [];
+      s3.zeroHitIndex = -1;
+      document.getElementById('s3-bonus-box').style.display = 'none';
+      s3Generate();
+      canvas.onclick = s3Click;
+    }
+
+    function resizeStage3() {
+      const canvas = document.getElementById('canvas3');
+      if (!canvas) return;
+      const setup = setupCanvas(canvas);
+      s3ctx = setup.ctx; s3CW = setup.CW; s3CH = setup.CH;
+
+      const aAngle = 25 * (Math.PI / 180);
+      const aLen = 70;
+      const ax = s3CW * .15, ay = s3CH * .5;
+      s3A = { x1: ax, y1: ay, x2: ax + aLen * Math.cos(aAngle), y2: ay + aLen * Math.sin(aAngle), angle: aAngle, len: aLen };
+
+      const positions = [];
+      s3Vecs.forEach((v, i) => {
+        let px, py, tries = 0;
+        do {
+          px = s3CW * (.3 + Math.random() * .65);
+          py = s3CH * (.1 + Math.random() * .8);
+          tries++;
+        } while (tries < 50 && positions.some(p => Math.sqrt((p[0] - px) ** 2 + (p[1] - py) ** 2) < 80));
+        positions.push([px, py]);
+        v.x = px;
+        v.y = py;
+      });
+      s3Draw();
+    }
+
+    function s3Generate() {
+      const CW = s3CW, CH = s3CH;
+      const aAngle = 25 * (Math.PI / 180); // ~25 degrees
+      const aLen = 70;
+      const ax = CW * .15, ay = CH * .5;
+      s3A = { x1: ax, y1: ay, x2: ax + aLen * Math.cos(aAngle), y2: ay + aLen * Math.sin(aAngle), angle: aAngle, len: aLen };
+
+      s3Vecs = [];
+      s3.found = [];
+
+      const configs = [
+        { angle: aAngle, len: 65, rel: 'same' },
+        { angle: aAngle, len: 80, rel: 'same' },
+        { angle: aAngle + Math.PI, len: 70, rel: 'opposite' },
+        { angle: aAngle + Math.PI, len: 55, rel: 'opposite' },
+        { angle: aAngle, len: aLen, rel: 'equal' },
+        { angle: aAngle + 35 * (Math.PI / 180), len: 60, rel: 'none' },
+        { angle: aAngle - 40 * (Math.PI / 180), len: 50, rel: 'none' },
+        { angle: aAngle + 90 * (Math.PI / 180), len: 65, rel: 'none' },
+        { angle: aAngle - 70 * (Math.PI / 180), len: 55, rel: 'none' },
+        { angle: aAngle + 130 * (Math.PI / 180), len: 60, rel: 'none' },
+        { angle: 0, len: 0, rel: 'zero' },
+      ];
+
+      const positions = [];
+      configs.forEach((cfg, i) => {
+        let px, py, tries = 0;
+        do {
+          px = CW * (.3 + Math.random() * .65);
+          py = CH * (.1 + Math.random() * .8);
+          tries++;
+        } while (tries < 50 && positions.some(p => Math.sqrt((p[0] - px) ** 2 + (p[1] - py) ** 2) < 80));
+        positions.push([px, py]);
+        s3Vecs.push({ ...cfg, x: px, y: py, state: 'none' });
+      });
+
+      s3.hintUsed = false;
+      s3UpdateMission();
+      s3Draw();
+    }
+
+    function s3UpdateMission() {
+      const m = S3_MISSIONS[s3.mission];
+      document.getElementById('s3-mission').textContent = m.label;
+      const targets = s3GetTargets();
+      const foundCount = targets.filter(i => s3Vecs[i] && s3Vecs[i].state === 'correct').length;
+      document.getElementById('s3-mscore').textContent = foundCount + '/' + targets.length;
+      document.getElementById('s3-next-btn').style.display = 'none';
+      document.getElementById('s3-bonus-box').style.display = 'none';
+      setCaption('cap3', 'Click vectơ để chọn. Tìm đủ tất cả vectơ thỏa điều kiện để sang mission tiếp.', '');
+    }
+
+    function s3GetTargets() {
+      const mid = S3_MISSIONS[s3.mission].id;
+      return s3Vecs.map((v, i) => ({ v, i })).filter(({ v }) => s3IsRel(v, mid)).map(({ i }) => i);
+    }
+
+    function s3IsTarget(i) {
+      const mid = S3_MISSIONS[s3.mission].id;
+      return s3IsRel(s3Vecs[i], mid);
+    }
+
+    function s3IsRel(v, mid) {
+      if (v.len === 0) return mid === 'collinear' || mid === 'same';
+      let adiff = Math.abs(v.angle - s3A.angle) % (Math.PI * 2);
+      if (adiff > Math.PI) adiff = Math.PI * 2 - adiff;
+      const collinear = adiff < 0.15 || (Math.PI - adiff) < 0.15;
+      const same = adiff < 0.15;
+      const opp = Math.abs(adiff - Math.PI) < 0.15;
+      const equal = same && Math.abs(v.len - s3A.len) < 5;
+      if (mid === 'collinear') return collinear;
+      if (mid === 'same') return same;
+      if (mid === 'opposite') return opp;
+      if (mid === 'equal') return equal;
+      return false;
+    }
+
+    function s3Click(e) {
+      if (s3.done) return;
+      const rect = e.target.getBoundingClientRect();
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+
+      let hit = -1;
+      s3Vecs.forEach((v, i) => {
+        if (v.len === 0) {
+          const d = Math.sqrt((mx - v.x) ** 2 + (my - v.y) ** 2);
+          if (d < 14) hit = i;
+        } else {
+          const ex = v.x + v.len * Math.cos(v.angle), ey = v.y + v.len * Math.sin(v.angle);
+          const dx = ex - v.x, dy = ey - v.y;
+          const t = Math.max(0, Math.min(1, ((mx - v.x) * dx + (my - v.y) * dy) / (dx * dx + dy * dy)));
+          const cx2 = v.x + t * dx, cy2 = v.y + t * dy;
+          if (Math.sqrt((mx - cx2) ** 2 + (my - cy2) ** 2) < 14) hit = i;
+        }
+      });
+
+      if (hit < 0) return;
+      if (s3.found.includes(hit) && s3Vecs[hit].state === 'correct') return;
+
+      if (s3.mission === 0 && s3Vecs[hit].len === 0) {
+        if (s3.found.includes(hit)) return;
+        document.getElementById('s3-bonus-box').style.display = 'flex';
+        s3.zeroHitIndex = hit;
+        return;
+      }
+
+      const correct = s3IsTarget(hit);
+      if (correct) {
+        if (!s3.found.includes(hit)) s3.found.push(hit);
+        s3Vecs[hit].state = 'correct';
+        s3.score += 5;
+        document.getElementById('s3-score').textContent = s3.score;
+
+        const targets = s3GetTargets();
+        const foundCount = targets.filter(i => s3Vecs[i] && s3Vecs[i].state === 'correct').length;
+        document.getElementById('s3-mscore').textContent = foundCount + '/' + targets.length;
+
+        const mid = S3_MISSIONS[s3.mission].id;
+        const msgs = {
+          collinear: 'Đúng! Vectơ này cùng phương với A — giá song song hoặc trùng nhau.',
+          same: 'Đúng! Cùng phương và cùng chiều mũi tên.',
+          opposite: 'Đúng! Cùng phương nhưng mũi tên ngược chiều.',
+          equal: 'Đúng! Cùng độ dài và cùng hướng — hai vectơ bằng nhau!'
+        };
+        setCaption('cap3', msgs[mid], 'correct');
+
+        const allFound = targets.every(i => s3Vecs[i] && s3Vecs[i].state === 'correct');
+        if (allFound) {
+          const isLast = s3.mission >= S3_MISSIONS.length - 1;
+          setCaption('cap3', isLast
+            ? '🎉 Xuất sắc! Bạn đã phân biệt được 4 quan hệ cơ bản của vectơ!'
+            : `✅ Mission ${s3.mission + 1} hoàn thành! Bấm "Mission tiếp theo" để tiếp tục.`, 'correct');
+          document.getElementById('s3-next-btn').style.display = 'inline-flex';
+        }
+      } else {
+        s3Shake = hit; s3ShakeT = 0;
+        const mid = S3_MISSIONS[s3.mission].id;
+        if (mid === 'same' && s3IsRel(s3Vecs[hit], 'collinear'))
+          setCaption('cap3', 'Cùng giá — nhưng mũi tên ngược chiều. Đây là ngược hướng, không phải cùng hướng.', 'wrong');
+        else if (mid === 'equal' && s3IsRel(s3Vecs[hit], 'same'))
+          setCaption('cap3', 'Cùng hướng — nhưng độ dài khác. Bằng nhau cần cả hai điều kiện.', 'wrong');
+        else
+          setCaption('cap3', 'Chưa đúng — quan sát lại hướng và độ dài vectơ.', 'wrong');
+      }
+      s3Draw();
+      if (s3Shake >= 0) {
+        let st = 0;
+        function shakeFrame() {
+          s3Draw(st); st++;
+          if (st < 12) requestAnimationFrame(shakeFrame);
+          else { s3Shake = -1; s3Draw(); }
+        }
+        requestAnimationFrame(shakeFrame);
+      }
+    }
+
+    function s3ZeroAnswer(isYes) {
+      document.getElementById('s3-bonus-box').style.display = 'none';
+      const hit = s3.zeroHitIndex;
+      if (hit === undefined || hit < 0) return;
+
+      if (isYes) {
+        setCaption('cap3', 'Chính xác! Quy ước: vectơ-không cùng phương và cùng hướng với mọi vectơ.', 'correct');
+      } else {
+        setCaption('cap3', 'Chưa đúng! Quy ước toán học quy định vectơ-không cùng phương và cùng hướng với mọi vectơ.', 'wrong');
+      }
+
+      if (!s3.found.includes(hit)) s3.found.push(hit);
+      s3Vecs[hit].state = 'correct';
+      s3.score += 5;
+      document.getElementById('s3-score').textContent = s3.score;
+
+      const targets = s3GetTargets();
+      const foundCount = targets.filter(i => s3Vecs[i] && s3Vecs[i].state === 'correct').length;
+      document.getElementById('s3-mscore').textContent = foundCount + '/' + targets.length;
+
+      const allFound = targets.every(i => s3Vecs[i] && s3Vecs[i].state === 'correct');
+      if (allFound) {
+        const isLast = s3.mission >= S3_MISSIONS.length - 1;
+        setCaption('cap3', isLast
+          ? '🎉 Xuất sắc! Bạn đã phân biệt được 4 quan hệ cơ bản của vectơ!'
+          : `✅ Mission ${s3.mission + 1} hoàn thành! Bấm "Mission tiếp theo" để tiếp tục.`, 'correct');
+        document.getElementById('s3-next-btn').style.display = 'inline-flex';
+      }
+
+      s3Draw();
+    }
+
+    function s3Draw(shakeT) {
+      if (!s3ctx) return;
+      const ctx = s3ctx, CW = s3CW, CH = s3CH;
+      ctx.clearRect(0, 0, CW, CH);
+      ctx.fillStyle = '#FAF7F0'; ctx.fillRect(0, 0, CW, CH);
+
+      ctx.strokeStyle = 'rgba(45, 139, 111,0.04)'; ctx.lineWidth = 1;
+      for (let x = 0; x < CW; x += 50) { ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CH); ctx.stroke(); }
+      for (let y = 0; y < CH; y += 50) { ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CW, y); ctx.stroke(); }
+
+      s3Vecs.forEach((v, i) => {
+        const isHistCollinear = (s3.mission === 1 || s3.mission === 2) && s3.m1Correct.includes(i);
+        const isHistSameDir = (s3.mission === 3) && s3.m2Correct.includes(i);
+
+        if (isHistCollinear || isHistSameDir) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(232, 162, 74, 0.55)';
+          ctx.lineWidth = 1.5;
+          ctx.setLineDash([4, 3]);
+          if (v.len === 0) {
+            ctx.beginPath(); ctx.arc(v.x, v.y, 14, 0, Math.PI * 2); ctx.stroke();
+          } else {
+            const ex = v.x + v.len * Math.cos(v.angle), ey = v.y + v.len * Math.sin(v.angle);
+            const dx = ex - v.x, dy = ey - v.y;
+            const len = Math.sqrt(dx * dx + dy * dy);
+            const nx = dx / len, ny = dy / len;
+            ctx.beginPath();
+            ctx.moveTo(v.x - ny * 8, v.y + nx * 8);
+            ctx.lineTo(ex - ny * 8, ey + nx * 8);
+            ctx.moveTo(v.x + ny * 8, v.y - nx * 8);
+            ctx.lineTo(ex + ny * 8, ey - nx * 8);
+            ctx.stroke();
+          }
+          ctx.restore();
+        }
+
+        let color = '#8A92A3';
+        if (v.state === 'correct') color = '#E8A24A';
+        if (i === s3Shake) {
+          const shake = Math.sin(shakeT * 1.8) * 5 * (1 - shakeT / 12);
+          ctx.save(); ctx.translate(shake, 0);
+        }
+        if (v.len === 0) {
+          ctx.fillStyle = v.state === 'correct' ? color : '#8A92A3';
+          ctx.beginPath(); ctx.arc(v.x, v.y, 8, 0, Math.PI * 2); ctx.fill();
+          ctx.fillStyle = '#fff'; ctx.font = 'bold 8px sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+          ctx.fillText('0', v.x, v.y);
+        } else {
+          const lw = v.state === 'correct' ? 3 : 2;
+          drawArrow(ctx, v.x, v.y, v.x + v.len * Math.cos(v.angle), v.y + v.len * Math.sin(v.angle), color, lw);
+          if (v.state === 'correct') {
+            ctx.fillStyle = 'rgba(232, 162, 74,0.15)';
+            ctx.beginPath(); ctx.arc(v.x + v.len * .5 * Math.cos(v.angle), v.y + v.len * .5 * Math.sin(v.angle), 18, 0, Math.PI * 2); ctx.fill();
+          }
+        }
+        if (i === s3Shake) ctx.restore();
+      });
+
+      ctx.save();
+      ctx.shadowColor = 'rgba(45, 139, 111,0.4)'; ctx.shadowBlur = 8;
+      drawArrow(ctx, s3A.x1, s3A.y1, s3A.x2, s3A.y2, '#2D8B6F', 4);
+      ctx.restore();
+      drawVecLabel(ctx, (s3A.x1 + s3A.x2) / 2, (s3A.y1 + s3A.y2) / 2 - 16, 'A', '#2D8B6F');
+
+      ctx.fillStyle = 'rgba(45, 139, 111,0.75)'; rrect(ctx, 4, 4, 80, 22, 5); ctx.fill();
+      ctx.fillStyle = '#fff'; ctx.font = 'bold 11px Be Vietnam Pro'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+      ctx.fillText('Vectơ A', 44, 15);
+    }
+
+    function s3NextMission() {
+      document.getElementById('s3-next-btn').style.display = 'none';
+
+      if (s3.mission === 0) {
+        s3.m1Correct = s3Vecs.map((v, i) => i).filter(i => s3Vecs[i].state === 'correct');
+      } else if (s3.mission === 1) {
+        s3.m2Correct = s3Vecs.map((v, i) => i).filter(i => s3Vecs[i].state === 'correct');
+      }
+
+      s3.mission++;
+      if (s3.mission >= S3_MISSIONS.length) {
+        s3.done = true;
+        setCaption('cap3', '🏆 Hoàn thành! Bạn đã phân biệt được 4 quan hệ cơ bản của vectơ.', 'correct');
+        document.getElementById('unlock-s4').classList.add('show');
+        unlockStage(4);
+        updateProgress();
+        return;
+      }
+
+      s3Vecs.forEach(v => { v.state = 'none'; });
+      s3.found = [];
+
+      s3UpdateMission();
+      s3Draw();
+      updateProgress();
+    }
+
+    function s3Shuffle() {
+      s3.score = 0; s3.done = false;
+      s3.m1Correct = []; s3.m2Correct = [];
+      document.getElementById('s3-score').textContent = '0';
+      s3Generate();
+    }
+
+    function s3Hint() {
+      const targets = s3GetTargets();
+      const unfound = targets.filter(i => !s3.found.includes(i));
+      if (unfound.length > 0) {
+        const i = unfound[0];
+        s3Vecs[i].state = 'hint';
+        s3Draw();
+        setCaption('cap3', 'Gợi ý: vectơ được highlight là một đáp án đúng.', '');
+        setTimeout(() => { if (s3Vecs[i].state === 'hint') s3Vecs[i].state = 'none'; s3Draw(); }, 2000);
+      }
+    }
+
+    // ══════════════════════════════════════════════════════
+    // STAGE 4 — LỰC TÁC DỤNG
+    // ══════════════════════════════════════════════════════
+    const S4_SITU = {
+      1: { pLen: 100, fLen: 100, desc: '⚖️ Cân bằng: kéo P⃗ (đỏ↓) và F⃗ (xanh↑) vào khinh khí cầu — cùng độ dài để cân bằng.' },
+      2: { pLen: 20, fLen: 60, desc: '🚀 Bay lên: khinh khí cầu bay lên. Lực đẩy F⃗ = 30 N, Trọng lực P⃗ = 10 N. Hãy kéo các lực vào khinh khí cầu và điều chỉnh tỉ lệ.' },
+      3: { pLen: 100, fLen: 100, desc: '🔬 Tự do: kéo cả hai vào rồi quan sát. Bạn có thể thay đổi tỉ lệ P⃗ và F⃗ bằng nút bên dưới.' },
+    };
+
+    let s4 = { situ: 1, balloonVy: 0, animFrame: null, pPlaced: false, fPlaced: false, pLen: 100, fLen: 100, done: false };
+    let s4ctx, s4CW, s4CH;
+    let s4DragVec = null; // 'p' or 'f'
+    let s4DragPos = { x: 0, y: 0 }; // current drag position
+    let s4BalloonCy = 0;
+    let s4PhysicsMsg = ''; // message explaining current motion
+
+    function initStage4() {
+      const canvas = document.getElementById('canvas4');
+      const setup = setupCanvas(canvas);
+      s4ctx = setup.ctx; s4CW = setup.CW; s4CH = setup.CH;
+      s4.situ = 1;
+      s4BalloonCy = s4CH * 0.5;
+      s4UpdateFreeButtons();
+      s4LoadSitu();
+      canvas.onmousedown = s4MouseDown;
+    }
+
+    function resizeStage4() {
+      const canvas = document.getElementById('canvas4');
+      if (!canvas) return;
+      const oldCH = s4CH;
+      const setup = setupCanvas(canvas);
+      s4ctx = setup.ctx; s4CW = setup.CW; s4CH = setup.CH;
+      if (oldCH && oldCH !== s4CH) {
+        s4BalloonCy = s4BalloonCy * (s4CH / oldCH);
+      } else {
+        s4BalloonCy = s4CH * 0.5;
+      }
+      s4UpdateFreeButtons();
+      s4UpdateBars();
+    }
+
+    function setSitu(n) {
+      s4.situ = n;
+      [1, 2, 3].forEach(i => {
+        document.getElementById('st-' + i).classList.toggle('active', i === n);
+      });
+      s4UpdateFreeButtons();
+      s4LoadSitu();
+      updateProgress();
+    }
+
+    function s4LoadSitu() {
+      s4.pPlaced = false; s4.fPlaced = false; s4.balloonVy = 0; s4DragVec = null;
+      s4BalloonCy = s4CH ? s4CH * 0.5 : 170;
+      const cfg = S4_SITU[s4.situ];
+      s4.pLen = cfg.pLen || 100;
+      s4.fLen = cfg.fLen || 100;
+      if (s4.situ === 3) { s4.pLen = 100; s4.fLen = 100; }
+      cancelAnimationFrame(s4.animFrame);
+      setCaption('cap4', cfg.desc, '');
+      s4UpdateBars();
+      if (s4ctx) { s4BalloonCy = s4CH * 0.5; s4DrawLoop(); }
+    }
+
+    function s4DrawLoop() {
+      cancelAnimationFrame(s4.animFrame);
+      s4.animFrame = requestAnimationFrame(function loop() {
+        s4Draw();
+        s4.animFrame = requestAnimationFrame(loop);
+      });
+    }
+
+    function s4UpdateBars() {
+      const maxL = 120;
+      const pp = Math.min(s4.pLen / maxL, 1) * 100;
+      const fp = Math.min(s4.fLen / maxL, 1) * 100;
+      document.getElementById('bar-p').style.width = pp + '%';
+      document.getElementById('bar-f').style.width = fp + '%';
+      document.getElementById('val-p').textContent = Math.round(s4.pLen / 2) + 'N';
+      document.getElementById('val-f').textContent = Math.round(s4.fLen / 2) + 'N';
+    }
+
+    function s4GetPalettePos() {
+      const CW = s4CW, CH = s4CH;
+      const kx = CW * 0.78;
+      return {
+        pkx: kx + CW * 0.08, pky: CH * 0.32,
+        fkx: kx + CW * 0.08, fky: CH * 0.65,
+        kx
+      };
+    }
+
+    function s4Draw() {
+      if (!s4ctx) return;
+      const ctx = s4ctx, CW = s4CW, CH = s4CH;
+      ctx.clearRect(0, 0, CW, CH);
+
+      // Sky
+      const sky = ctx.createLinearGradient(0, 0, 0, CH);
+      sky.addColorStop(0, '#87CEEB'); sky.addColorStop(0.6, '#b8dff5'); sky.addColorStop(1, '#d4eefc');
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, CW, CH);
+      drawCloud1(ctx, CW * .08, CH * .12, 50);
+      drawCloud1(ctx, CW * .42, CH * .07, 65);
+
+      // Self-healing setup if initialized before DOM dimensions are ready
+      if (CW === 0 || CH === 0) {
+        resizeStage4();
+        return;
+      }
+
+      // Physics update
+      if (s4.pPlaced && s4.fPlaced) {
+        if (s4.situ === 2 && s4.fLen !== 3 * s4.pLen) {
+          s4.balloonVy = 0;
+        } else {
+          const netForce = s4.fLen - s4.pLen;
+          s4.balloonVy -= netForce * 0.002;
+          s4.balloonVy *= 0.97;
+          s4BalloonCy += s4.balloonVy;
+
+          if (s4BalloonCy <= CH * 0.12) {
+            s4BalloonCy = CH * 0.12;
+            s4.balloonVy = 0;
+          } else if (s4BalloonCy >= CH * 0.80) {
+            s4BalloonCy = CH * 0.80;
+            s4.balloonVy = 0;
+          }
+        }
+      }
+
+      // Always apply a gentle swaying (X) and bobbing (Y) animation
+      if (typeof s4.bobTime === 'undefined') s4.bobTime = 0;
+      s4.bobTime += 0.025; // gentler speed
+      const bob = Math.sin(s4.bobTime) * 5;
+      const sway = Math.sin(s4.bobTime * 0.7) * 4;
+
+      const bx = CW * 0.42 + sway, by = s4BalloonCy + bob;
+      drawBalloon1(ctx, bx, by);
+
+      // Placed vectors on balloon with high-contrast outlines and labels
+      if (s4.pPlaced) {
+        drawArrow(ctx, bx, by, bx, by + s4.pLen, '#ffffff', 5.5); // white outline
+        drawArrow(ctx, bx, by, bx, by + s4.pLen, '#C15F3C', 3); // red force vector
+        drawVecLabel(ctx, bx + 12, by + s4.pLen * 0.55, 'P', '#C15F3C');
+      }
+      if (s4.fPlaced) {
+        drawArrow(ctx, bx, by, bx, by - s4.fLen, '#ffffff', 5.5); // white outline
+        drawArrow(ctx, bx, by, bx, by - s4.fLen, '#2D8B6F', 3); // green force vector
+        drawVecLabel(ctx, bx + 12, by - s4.fLen * 0.55, 'F', '#2D8B6F');
+      }
+
+      // Snap zone (moves with balloon)
+      if (!s4.pPlaced || !s4.fPlaced) {
+        ctx.strokeStyle = 'rgba(232, 162, 74,0.7)'; ctx.lineWidth = 2.5;
+        ctx.setLineDash([6, 4]); ctx.beginPath(); ctx.arc(bx, by, 36, 0, Math.PI * 2); ctx.stroke();
+        ctx.setLineDash([]);
+        ctx.fillStyle = 'rgba(160,120,32,0.7)'; ctx.font = 'bold 10px Be Vietnam Pro';
+        ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillText('Thả vào đây', bx, by + 42);
+      }
+
+      // Palette panel
+      const { pkx, pky, fkx, fky, kx } = s4GetPalettePos();
+      ctx.fillStyle = 'rgba(255,255,255,0.92)';
+      rrect(ctx, kx - 6, CH * 0.08, CW * 0.24, CH * 0.84, 12); ctx.fill();
+      ctx.strokeStyle = 'rgba(45, 139, 111,0.18)'; ctx.lineWidth = 1.5;
+      rrect(ctx, kx - 6, CH * 0.08, CW * 0.24, CH * 0.84, 12); ctx.stroke();
+      ctx.fillStyle = 'rgba(45, 139, 111,0.7)'; ctx.font = 'bold 10px Be Vietnam Pro';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+      ctx.fillText('KHO LỰC', kx + CW * 0.1, CH * 0.10);
+      ctx.fillStyle = 'rgba(100,100,100,0.6)'; ctx.font = '9px Be Vietnam Pro';
+      ctx.fillText('Kéo thả vào khí cầu', kx + CW * 0.1, CH * 0.14);
+
+      // P in palette (fixed display size to prevent overlaps)
+      if (!s4.pPlaced) {
+        ctx.fillStyle = 'rgba(193, 95, 60,0.1)'; ctx.beginPath(); ctx.arc(pkx, pky, 30, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(193, 95, 60,0.5)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(pkx, pky, 30, 0, Math.PI * 2); ctx.stroke();
+        drawArrow(ctx, pkx, pky - 18, pkx, pky + 18, '#C15F3C', 3);
+        ctx.fillStyle = '#C15F3C'; ctx.font = 'bold 11px Courier New'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        drawVecLabel(ctx, pkx, pky + 22, 'P', ctx.fillStyle, 13);
+        ctx.fillStyle = 'rgba(100,30,30,0.6)'; ctx.font = '9px Be Vietnam Pro';
+        ctx.fillText('Trọng lực', pkx, pky + 34);
+      } else {
+        ctx.fillStyle = 'rgba(45, 139, 111,0.15)'; ctx.beginPath(); ctx.arc(pkx, pky, 30, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#2D8B6F'; ctx.font = 'bold 11px Be Vietnam Pro'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('✓ Đã đặt', pkx, pky);
+      }
+
+      // F in palette (fixed display size to prevent overlaps)
+      if (!s4.fPlaced) {
+        ctx.fillStyle = 'rgba(45, 139, 111,0.1)'; ctx.beginPath(); ctx.arc(fkx, fky, 30, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = 'rgba(45, 139, 111,0.5)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(fkx, fky, 30, 0, Math.PI * 2); ctx.stroke();
+        drawArrow(ctx, fkx, fky + 18, fkx, fky - 18, '#2D8B6F', 3);
+        ctx.fillStyle = '#2D8B6F'; ctx.font = 'bold 11px Courier New'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        drawVecLabel(ctx, fkx, fky - 32, 'F', ctx.fillStyle, 13);
+        ctx.fillStyle = 'rgba(20,80,50,0.6)'; ctx.font = '9px Be Vietnam Pro';
+        ctx.fillText('Lực đẩy khí', fkx, fky + 22);
+      } else {
+        ctx.fillStyle = 'rgba(45, 139, 111,0.15)'; ctx.beginPath(); ctx.arc(fkx, fky, 30, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#2D8B6F'; ctx.font = 'bold 11px Be Vietnam Pro'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.fillText('✓ Đã đặt', fkx, fky);
+      }
+
+      // Dragging ghost
+      if (s4DragVec) {
+        const dc = s4DragVec === 'p' ? '#C15F3C' : '#2D8B6F';
+        const dl = s4DragVec === 'p' ? s4.pLen : s4.fLen;
+        const dy = s4DragVec === 'p' ? 1 : -1; // P goes down, F goes up
+        ctx.globalAlpha = 0.7;
+        drawArrow(ctx, s4DragPos.x, s4DragPos.y, s4DragPos.x, s4DragPos.y + dy * dl, '#ffffff', 5.5); // white outline
+        drawArrow(ctx, s4DragPos.x, s4DragPos.y, s4DragPos.x, s4DragPos.y + dy * dl, dc, 3);
+        ctx.globalAlpha = 1;
+        // Snap highlight when near balloon (generous 75px radius)
+        const dist = Math.sqrt((s4DragPos.x - bx) ** 2 + (s4DragPos.y - by) ** 2);
+        if (dist < 75) {
+          ctx.strokeStyle = 'rgba(232, 162, 74,0.9)'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.arc(bx, by, 42, 0, Math.PI * 2); ctx.stroke();
+        }
+      }
+
+      // Motion indicator
+      if (s4.pPlaced && s4.fPlaced) {
+        if (s4.situ === 2 && s4.fLen !== 3 * s4.pLen) {
+          // Don't show motion indicator if ratio is incorrect in Situation 2
+        } else {
+          const netF = s4.fLen - s4.pLen;
+          let motionText = '';
+          if (Math.abs(netF) < 3) motionText = '⚖️ Cân bằng — hai lực triệt tiêu nhau';
+          else if (netF > 0) motionText = `🚀 F > P → Lực đẩy thắng → Khí cầu bay lên! (${Math.round(netF / 2)}N dư)`;
+          else motionText = `⬇️ P > F → Trọng lực thắng → Khí cầu rơi xuống! (${Math.round(-netF / 2)}N dư)`;
+          ctx.fillStyle = 'rgba(13,27,75,0.82)';
+          rrect(ctx, 8, CH - 36, CW * 0.68, 28, 7); ctx.fill();
+          ctx.fillStyle = '#fff'; ctx.font = 'bold 11px Be Vietnam Pro';
+          ctx.textAlign = 'left'; ctx.textBaseline = 'middle';
+          ctx.fillText(motionText, 16, CH - 22);
+        }
+      }
+    }
+
+    function s4MouseDown(e) {
+      const canvas = document.getElementById('canvas4');
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+      const { pkx, pky, fkx, fky } = s4GetPalettePos();
+      if (!s4.pPlaced && Math.sqrt((mx - pkx) ** 2 + (my - pky) ** 2) < 34) {
+        s4DragVec = 'p'; s4DragPos = { x: mx, y: my };
+      } else if (!s4.fPlaced && Math.sqrt((mx - fkx) ** 2 + (my - fky) ** 2) < 34) {
+        s4DragVec = 'f'; s4DragPos = { x: mx, y: my };
+      }
+    }
+
+    function s4MouseMove(e) {
+      if (!s4DragVec) return;
+      const canvas = document.getElementById('canvas4');
+      const rect = canvas.getBoundingClientRect();
+      s4DragPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+    }
+
+    function s4MouseUp(e) {
+      if (!s4DragVec) return;
+      const canvas = document.getElementById('canvas4');
+      const rect = canvas.getBoundingClientRect();
+      const mx = e.clientX - rect.left, my = e.clientY - rect.top;
+
+      // Calculate visual balloon center at mouse release time
+      const bob = s4.bobTime ? Math.sin(s4.bobTime) * 5 : 0;
+      const sway = s4.bobTime ? Math.sin(s4.bobTime * 0.7) * 4 : 0;
+      const bx = s4CW * 0.42 + sway;
+      const by = s4BalloonCy + bob;
+      const dist = Math.sqrt((mx - bx) ** 2 + (my - by) ** 2);
+
+      if (dist < 75) { // Generous 75px snap radius
+        if (s4DragVec === 'p' && !s4.pPlaced) {
+          s4.pPlaced = true;
+          if (!s4.fPlaced) {
+            setCaption('cap4', 'P đã đặt tại vật ✓ — Tiếp theo kéo F (xanh) vào khinh khí cầu.', 'correct');
+          }
+        } else if (s4DragVec === 'f' && !s4.fPlaced) {
+          s4.fPlaced = true;
+          if (!s4.pPlaced) {
+            setCaption('cap4', 'F đã đặt tại vật ✓ — Tiếp theo kéo P (đỏ) vào khinh khí cầu.', 'correct');
+          }
+        }
+
+        if (s4.pPlaced && s4.fPlaced) {
+          if (s4.situ === 2) {
+            if (s4.fLen === 3 * s4.pLen) {
+              setCaption('cap4', 'Hoàn hảo! Hai vectơ lực biểu diễn đúng: điểm đặt, hướng, và tỉ lệ độ lớn.', 'correct');
+            } else {
+              s4.balloonVy = 0;
+              s4BalloonCy = s4CH * 0.5;
+              setCaption('cap4', 'Tỉ lệ xích: 1 đơn vị = 10 N. Lực 30 N phải dài gấp 3 lần lực 10 N.', 'wrong');
+            }
+          } else {
+            const netF = s4.fLen - s4.pLen;
+            let msg = '';
+            if (Math.abs(netF) < 3) {
+              msg = '⚖️ Cân bằng! |F| = |P| và ngược hướng → tổng lực = 0 → khí cầu đứng yên.';
+            } else if (netF > 0) {
+              msg = `🚀 F > P (${Math.round(s4.fLen / 2)}N > ${Math.round(s4.pLen / 2)}N) → lực đẩy khí thắng → khinh khí cầu bay lên!`;
+            } else {
+              msg = `⬇️ P > F (${Math.round(s4.pLen / 2)}N > ${Math.round(s4.fLen / 2)}N) → trọng lực thắng → khinh khí cầu rơi xuống!`;
+            }
+            setCaption('cap4', msg, Math.abs(netF) < 3 ? 'correct' : '');
+          }
+          s4UpdateBars();
+        }
+      } else {
+        setCaption('cap4', 'Vectơ lực phải đặt tại chính vật chịu lực — kéo thả vào khinh khí cầu!', 'wrong');
+      }
+      s4DragVec = null;
+    }
+
+    function s4Reset() { s4UpdateFreeButtons(); s4LoadSitu(); }
+
+    function s4AdjustF(delta) {
+      s4.fLen = Math.max(20, Math.min(120, s4.fLen + delta));
+      s4UpdateBars();
+      if (s4.pPlaced && s4.fPlaced) {
+        if (s4.situ === 2) {
+          if (s4.fLen === 3 * s4.pLen) {
+            setCaption('cap4', 'Hoàn hảo! Hai vectơ lực biểu diễn đúng: điểm đặt, hướng, và tỉ lệ độ lớn.', 'correct');
+          } else {
+            s4.balloonVy = 0;
+            s4BalloonCy = s4CH * 0.5;
+            setCaption('cap4', 'Tỉ lệ xích: 1 đơn vị = 10 N. Lực 30 N phải dài gấp 3 lần lực 10 N.', 'wrong');
+          }
+        } else {
+          const netF = s4.fLen - s4.pLen;
+          let msg = '';
+          if (Math.abs(netF) < 3) msg = '⚖️ Cân bằng! Hai lực bằng nhau.';
+          else if (netF > 0) msg = `🚀 F lớn hơn P ${Math.round(netF / 2)}N → khí cầu bay lên nhanh hơn!`;
+          else msg = `⬇️ P lớn hơn F ${Math.round(-netF / 2)}N → khí cầu rơi nhanh hơn!`;
+          setCaption('cap4', msg, '');
+        }
+      }
+    }
+
+    // Show/hide free mode buttons
+    function s4UpdateFreeButtons() {
+      const show = s4.situ === 3 || s4.situ === 2;
+      document.getElementById('s4-fminus').style.display = show ? 'inline-flex' : 'none';
+      document.getElementById('s4-fplus').style.display = show ? 'inline-flex' : 'none';
+      document.getElementById('s4-summary-btn').style.display = (s4.situ === 3) ? 'inline-flex' : 'none';
+    }
+
+    function s4ShowSummary() {
+      s4.done = true;
+      updateProgress();
+      document.getElementById('s4-summary-modal').classList.add('show');
+    }
+
+    function closeS4Summary(e) {
+      if (!e || e.target.id === 's4-summary-modal' || e.target.closest('.modal-close') || e.target.tagName === 'BUTTON') {
+        document.getElementById('s4-summary-modal').classList.remove('show');
+      }
+    }
+
+    function s4Replay() {
+      s4.pPlaced = false; s4.fPlaced = false; s4.balloonVy = 0;
+      s4BalloonCy = s4CH * 0.5; s4DragVec = null;
+      setCaption('cap4', S4_SITU[s4.situ].desc, '');
+    }
+
+    function drawBalloon1(ctx, x, y) {
+      ctx.save();
+      const ball = ctx.createRadialGradient(x - 10, y - 12, 3, x, y, 36);
+      ball.addColorStop(0, '#ff8a50'); ball.addColorStop(0.5, '#C58A2E'); ball.addColorStop(1, '#bf360c');
+      ctx.fillStyle = ball; ctx.beginPath(); ctx.arc(x, y, 36, 0, Math.PI * 2); ctx.fill();
+      // Sections
+      ctx.strokeStyle = 'rgba(0,0,0,0.08)'; ctx.lineWidth = 1.2;
+      [-16, 0, 16].forEach(dx => {
+        ctx.beginPath(); ctx.moveTo(x + dx, y - 36); ctx.quadraticCurveTo(x + dx + 6, y, x + dx, y + 36); ctx.stroke();
+      });
+      // Highlight
+      ctx.fillStyle = 'rgba(255,255,255,0.22)'; ctx.beginPath(); ctx.ellipse(x - 10, y - 14, 9, 14, -0.4, 0, Math.PI * 2); ctx.fill();
+      // Ropes
+      ctx.strokeStyle = 'rgba(80,50,20,0.65)'; ctx.lineWidth = 1;
+      [[-16, 34], [0, 36], [16, 34]].forEach(([dx, dy]) => {
+        ctx.beginPath(); ctx.moveTo(x + dx, y + dy); ctx.lineTo(x + dx * .3, y + 54); ctx.stroke();
+      });
+      // Basket
+      ctx.fillStyle = '#8B6914'; rrect(ctx, x - 14, y + 52, 28, 18, 3); ctx.fill();
+      ctx.strokeStyle = '#6b4f10'; ctx.lineWidth = 1.2;
+      rrect(ctx, x - 14, y + 52, 28, 18, 3); ctx.stroke();
+      ctx.restore();
+    }
+
+    // ══════════════════════════════════════════════════════
+    // INIT
+    // ══════════════════════════════════════════════════════
+    window.addEventListener('load', () => {
+      updateProgress();
+      initStage1();
+      // Unlock all for demo
+      [2, 3, 4].forEach(n => {
+        document.getElementById('sb-s' + n).classList.remove('locked');
+      });
+    });
+
+    window.addEventListener('resize', () => {
+      if (currentStage === 1) resizeStage1();
+      if (currentStage === 2) resizeStage2();
+      if (currentStage === 3) resizeStage3();
+      if (currentStage === 4) resizeStage4();
+    });
+
+    // Global window-level drag events for Stage 4
+    window.addEventListener('mousemove', (e) => {
+      if (currentStage === 4 && s4DragVec) {
+        const canvas = document.getElementById('canvas4');
+        if (canvas) {
+          const rect = canvas.getBoundingClientRect();
+          s4DragPos = { x: e.clientX - rect.left, y: e.clientY - rect.top };
+        }
+      }
+    });
+
+    window.addEventListener('mouseup', (e) => {
+      if (currentStage === 4 && s4DragVec) {
+        s4MouseUp(e);
+      }
+    });
+  
+    // ===== Báo chiều cao thật cho LMS (PHẦN 7.7) — tự thêm =====
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    const _athenaResizeObserver = new ResizeObserver(() => {
+      clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+    });
+    _athenaResizeObserver.observe(document.body);
+</script>
+</body>
+
+</html>

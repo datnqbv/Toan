@@ -6,8 +6,14 @@
 >
 > **v2 — thay đổi so với bản trước:** không còn chọn giữa 5 preset màu, dùng **1 bộ nhận diện
 > duy nhất** (Cream · Jade · Sage · Accent — PHẦN 1.1); font đổi sang **Be Vietnam Pro**; layout
-> mặc định **không dùng sidebar trái cố định** (PHẦN 3.6), header banner nếu có phải **ẩn được**
-> không xoá cứng; toàn bộ component chuẩn **mobile-first**, vùng chạm ≥44px.
+> mặc định **không dùng sidebar trái cố định** (PHẦN 3.6); toàn bộ component chuẩn **mobile-first**,
+> vùng chạm ≥44px.
+>
+> **v2.3 — bỏ hẳn header banner:** file build mới **không còn `<header>` trang trí** (ảnh nền/logo/
+> tiêu đề lớn) nữa — thay bằng khối **`.intro-text`** (đoạn dẫn giải ngắn 1-2 câu, dạng thẻ card
+> nhấn mạnh, không icon/badge — xem PHẦN 3.6). File cũ đã có header: **ẩn bằng CSS** (`display:none
+> !important` trên `.app-header` + nút toggle nếu có), **không xoá node/JS** — đỡ phải rà lại toàn
+> bộ code liên quan, chỉ cần thêm `.intro-text` mới bên cạnh.
 
 ---
 
@@ -73,8 +79,9 @@ Layout đề xuất cho bài này: **[AI điền dựa trên kịch bản]**
 ---
 
 > ⏳ **Chờ giáo viên xác nhận rồi mới đi tiếp.**
-> Nếu có ảnh minh hoạ đặc trưng cho bài (vd nhân vật, bối cảnh câu chuyện) → hỏi thêm:
-> *"Bạn có muốn thêm 1 header ảnh nền không? (tuỳ chọn, không bắt buộc — xem PHẦN 3.6)"*
+> Không còn hỏi "có muốn thêm header ảnh nền không" — mọi file mới mặc định **không có header**,
+> chỉ có khối `.intro-text` dẫn giải ngắn ở đầu trang (xem PHẦN 3.6). Nếu bài có nhiều module,
+> hỏi thêm: *"Bạn có cần Tab ngang chuyển module không? (PHẦN 3.6 — tách riêng khỏi intro-text)"*
 
 ---
 
@@ -171,16 +178,14 @@ AI đề xuất layout dựa trên kịch bản + tương tác đã chốt:
 Layout: [Đơn cuộn dọc / Tab ngang (nhiều module) / + Sidebar điều khiển nếu cần nhiều tham số]
 Lý do: [...]
 
-┌─ Header (tuỳ chọn, PHẢI ẩn được bằng display:none, không bắt buộc có) ─┐
-│ Icon + Tiêu đề bài + Mô tả ngắn                                        │
+┌─ Intro-text (BẮT BUỘC — đoạn dẫn giải ngắn, thay cho header cũ — PHẦN 3.6) ─┐
+│ 1-2 câu: bài này giúp bạn hiểu/làm được gì                             │
 └─────────────────────────────────────────────────────────────────────┘
 
-[Nếu nhiều module — Tab ngang thay cho sidebar cố định cũ]:
+[Nếu nhiều module — Tab ngang, tách riêng khỏi intro-text, đặt phía trên]:
 ┌─ Topbar sticky: logo + tab cuộn ngang (Module 1 ● / Module 2 / Module 3) ─┐
 └────────────────────────────────────────────────────────────────────────┘
 ┌─ Main (max 860px, margin auto) ───────────┐
-│ mod-header                                 │
-│ [sdiv] Tên section                         │
 │ sim-wrap                                   │
 │   sim-toolbar                              │
 │   canvas-wrap + tooltip                    │
@@ -192,7 +197,7 @@ Lý do: [...]
 
 [Nếu Đơn]:
 Max-width 860px, margin auto, padding 2rem desktop → 1rem mobile
-mod-header → sim-wrap → info-box
+intro-text → sim-wrap → info-box
 
 [Nếu cần Sidebar điều khiển — cột slider/checkbox thông số]:
 .workspace { grid-template-columns: 3.5fr 6.5fr }
@@ -228,6 +233,7 @@ tràn ngang ở 375px, xem checklist responsive ở PHẦN 3.6 cuối.
 📋 Kịch bản:      [tên bài, số module]
 🎨 Bộ nhận diện:  Aiducation Cream · Jade · Sage · Accent (cố định — PHẦN 1.1, không chọn preset)
 🔤 Font:          Be Vietnam Pro
+📝 Intro-text:    Bắt buộc, thay header — [câu dẫn giải đã viết cho bài này] (PHẦN 3.6)
 📐 Layout:        [Đơn cuộn dọc / Tab ngang / + Sidebar điều khiển]
 🖱️ Tương tác:    [A1, C1, D1, E1, E2...]
 📐 Đặc thù Toán: [liệt kê E nào đã chọn]
@@ -504,6 +510,11 @@ let PW = 0, PH = 0;   // Physical px — dùng cho canvas.width và ImageData
 
 function resizeCanvas() {
   const rect = wrapper.getBoundingClientRect();
+  // BẮT BUỘC: bỏ qua nếu đo được kích thước ~0 — xảy ra khi khung đang ẩn (display:none,
+  // tab/view chưa active) hoặc layout mobile chưa ổn định. Nếu không guard, canvas.width/height
+  // bị gán 0 rồi vẽ đè lên buffer cũ → hình vằn vện/vỡ (đã gặp thực tế ở simulation nhiều bước
+  // trên mobile). KHÔNG xoá điều kiện này dù canvas "có vẻ" luôn hiển thị lúc test trên desktop.
+  if (rect.width < 2 || rect.height < 2) return;
   CW = rect.width;
   CH = rect.height;
   const dpr = window.devicePixelRatio || 1;
@@ -531,6 +542,31 @@ ro.observe(wrapper);
 //   putImageData(imgData, 0, 0)  ← TRƯỚC khi setTransform
 //   ctx.setTransform(dpr, 0, 0, dpr, 0, 0)  ← SAU putImageData
 //   Rồi vẽ vector lên trên
+```
+
+**BẮT BUỘC: tự đo lại canvas khi đổi tab/view hoặc xoay màn hình — không chỉ dựa vào
+ResizeObserver lúc khởi tạo.** `ResizeObserver` không đảm bảo bắn lại đúng lúc trên mọi trình
+duyệt mobile khi phần tử chuyển từ `display:none` sang hiển thị (đổi tab, mở lại 1 module đã ẩn)
+— canvas có thể bị kẹt ở kích thước 0 hoặc kích thước đo lúc còn ẩn. Luôn expose lại hàm resize
+và chủ động gọi ở 2 chỗ này:
+
+```javascript
+// Lưu hàm resize ra ngoài phạm vi khởi tạo canvas để nơi khác gọi lại được
+canvasState[wsId].resize = resizeCanvas;
+
+// 1) Khi chuyển tab/view — gọi lại resize của canvas VỪA hiện ra
+function switchTab(n) {
+  // ...toggle class active như bình thường...
+  const activeWsId = /* id workspace vừa được hiện */;
+  requestAnimationFrame(() => { canvasState[activeWsId]?.resize(); });
+}
+
+// 2) Khi xoay màn hình thiết bị
+window.addEventListener('orientationchange', () => {
+  requestAnimationFrame(() => requestAnimationFrame(() => {
+    Object.values(canvasState).forEach(cs => cs?.resize());
+  }));
+});
 ```
 
 ### 2.2 Hệ tọa độ Math ↔ Canvas
@@ -566,36 +602,6 @@ function zoomAt(cx, cy, factor) {
   fullDraw();
 }
 ```
-
-### 2.4 Quy tắc chống lỗi Offset Tọa độ Click (BẮT BUỘC)
-
-> [!CAUTION]
-> **BẮT BUỘC:** Không được tính `c2m` dựa vào `canvas.width` (`PW`) hoặc lưu biến `rect` cố định từ trước. Luôn tuân thủ 3 quy tắc sau để tránh lệch điểm chạm khi click/chạm:
-
-1. **Lấy `getBoundingClientRect()` trực tiếp tại thời điểm phát sinh sự kiện chuột/cảm ứng:**
-   ```javascript
-   function getCanvasPos(e) {
-     const rect = canvas.getBoundingClientRect();
-     const t = (e.touches && e.touches[0]) || (e.changedTouches && e.changedTouches[0]) || e;
-     return {
-       px: t.clientX - rect.left,
-       py: t.clientY - rect.top
-     };
-   }
-   ```
-2. **Hàm quy đổi `c2m` luôn dùng kích thước CSS Pixels (`CW, CH`), KHÔNG dùng Retina Physical Pixels (`PW, PH`):**
-   ```javascript
-   // ✅ ĐÚNG: Chia theo CW/CH
-   const x = vXMin + (px / CW) * (vXMax - vXMin);
-   const y = vYMin + (1 - py / CH) * (vYMax - vYMin);
-   ```
-3. **Bỏ qua sự kiện click khi người dùng vừa thực hiện kéo rê di chuyển (`Pan Dragging`):**
-   ```javascript
-   canvas.addEventListener('click', e => {
-     if (Math.abs(e.clientX - startPX) > 4 || Math.abs(e.clientY - startPY) > 4) return; // Bỏ qua click giả do kéo pan
-     // Logic tương tác click thực tế...
-   });
-   ```
 
 ### 2.3 Vẽ lưới và trục tọa độ chuẩn
 
@@ -803,19 +809,128 @@ function drawLineLabel(label, color, bndFn) {
 - [ ] Label đường không chồng lên đường, không tràn ra ngoài canvas
 - [ ] Tooltip tọa độ hiện đúng vị trí chuột
 - [ ] Zoom scroll và pan Shift+kéo hoạt động
-- [ ] Canvas không vỡ khi resize cửa sổ
+- [ ] Canvas không vỡ khi resize cửa sổ, **và không vỡ khi đổi tab/view hoặc xoay màn hình mobile**
+      (đã guard kích thước 0 + tự gọi lại `resize()` ở 2 chỗ này — xem Mục 2.1)
 - [ ] Không có lỗi ResizeObserver loop
 
 **Sư phạm:**
 - [ ] Mỗi sai lầm trong kịch bản có phản hồi rõ ràng
 - [ ] Học sinh biết phải làm gì tiếp theo (caption đủ rõ)
 - [ ] Không có thông tin thừa làm rối
+- [ ] **Mọi phản hồi đúng/sai đều có giải thích ĐỦ CHI TIẾT bên dưới** — không chỉ 1 câu xác nhận
+      kiểu "Đúng rồi!"/"Sai rồi!" rồi dừng. Phải nêu rõ VÌ SAO (quy tắc/công thức đứng sau), đúng
+      như đã chốt ở `01_scenario_builder_v4_1.md` Bước 5 (bảng "Giải thích kiến thức"). Nếu lúc
+      build thấy `eb-body`/`hint-text`/caption nào chỉ có 1 câu ngắn xác nhận kết quả mà không có
+      lý do — đó là dấu hiệu bị viết sơ sài, phải quay lại kịch bản bổ sung, không tự bịa giải
+      thích qua loa cho xong.
+- [ ] **Không nhắc tên bộ sách giáo khoa cụ thể** (VD "Kết nối tri thức với cuộc sống", "Chân trời
+      sáng tạo"...) ở bất kỳ đâu học sinh nhìn thấy — `.intro-text`, caption, athenaGuidance, hay
+      bất kỳ mô tả nào khác. Nếu cần nhắc đến chương trình học, dùng cụm chung
+      **"Chương trình học tương tác"**, không gắn với 1 bộ sách nhất định.
+- [ ] **Mọi câu hỏi trắc nghiệm (MCQ) — vị trí đáp án đúng đã được RANDOM/xáo giữa các câu, KHÔNG
+      cố định ở A** (hoặc cùng 1 vị trí lặp lại xuyên suốt bài). Đây là lỗi rất hay gặp vì AI có xu
+      hướng "lười", luôn đặt đáp án đúng ở vị trí đầu tiên khi viết nhiều câu liên tiếp. Nếu kịch
+      bản dùng cơ chế sinh câu hỏi ĐỘNG (VD nút "Làm bài khác"/`newGame()` sinh số liệu mới), code
+      phải tự random lại vị trí đáp án đúng MỖI LẦN sinh, không hardcode cứng 1 vị trí trong logic
+      build — quy tắc gốc và cách viết `dap_an_dung`/`giai_thich_dung`/`goi_y_khi_sai` xem đầy đủ ở
+      `01_scenario_builder_v4_1.md` — mục "QUY TẮC TRẮC NGHIỆM (MCQ) BẮT BUỘC".
 
 ---
 
+### 2.9 Đánh giá biểu thức người dùng nhập — CẤM `eval()` VÀ `new Function()` (đã gặp lỗi thực tế)
+
+> **Lỗi thực tế đã gặp:** simulation cho học sinh nhập hàm số tự do (VD công cụ xét biến thiên,
+> vẽ đồ thị theo biểu thức nhập tay) hay viết theo phản xạ:
+> ```javascript
+> function compileAst(node){ return new Function('x','return '+astToJs(node)+';'); } // ❌ SAI
+> ```
+> Khi nhúng lên LMS, trình duyệt báo lỗi và **toàn bộ simulation không chạy được**:
+> ```
+> ⚠ Evaluating a string as JavaScript violates the following Content Security Policy directive
+> because 'unsafe-eval' is not an allowed source of script: script-src 'unsafe-inline' https://cdn.jsdelivr.net
+> ```
+> **`new Function(...)` bị CSP coi giống hệt `eval()`** — đây là nhầm lẫn rất hay gặp vì `new
+> Function` trông "có vẻ an toàn hơn" `eval` nhưng về mặt CSP thì KHÔNG khác gì nhau, cả hai đều
+> cần quyền `unsafe-eval` mà LMS không cấp. Quy tắc "không eval" ở Mục 7.1 áp dụng cho **cả hai**.
+
+**Cách làm đúng — luôn viết bộ đánh giá AST đệ quy thuần JS, không sinh/thực thi code từ chuỗi:**
+```javascript
+// Sau khi tokenize + parse chuỗi người dùng nhập thành cây cú pháp (AST) như bình thường —
+// bước ĐÁNH GIÁ giá trị tại 1 điểm x KHÔNG được compile ra chuỗi code rồi eval/new Function.
+// Thay vào đó, duyệt cây trực tiếp và tính toán ngay trong JS có sẵn:
+function evalAst(node, x){
+  switch(node.t){
+    case 'num': return node.v;
+    case 'var': return x;
+    case 'add': return evalAst(node.a,x) + evalAst(node.b,x);
+    case 'sub': return evalAst(node.a,x) - evalAst(node.b,x);
+    case 'mul': return evalAst(node.a,x) * evalAst(node.b,x);
+    case 'div': return evalAst(node.a,x) / evalAst(node.b,x);
+    case 'neg': return -evalAst(node.a,x);
+    case 'pow': return Math.pow(evalAst(node.a,x), evalAst(node.n,x));
+    case 'sqrt': return Math.sqrt(evalAst(node.a,x));
+    default: throw new Error('node');
+  }
+}
+// compileAst trả về đúng dạng closure f(x) => số như cách dùng new Function cũ —
+// mọi chỗ gọi f(x) trong phần còn lại của code KHÔNG cần đổi gì:
+function compileAst(node){ return function(x){ return evalAst(node, x); }; }
+```
+> Hiệu năng không đáng lo: độ sâu cây AST của 1 biểu thức toán phổ thông chỉ vài chục node, đệ quy
+> JS xử lý hàng nghìn lần/giây dễ dàng — đủ nhanh cho vẽ đồ thị real-time trên canvas.
+> **Áp dụng cho mọi dạng "đánh giá code động"**, không chỉ riêng máy tính đồ thị: nếu simulation
+> nào cần build công thức từ input người dùng (Toán/Lý/Hoá đều có thể gặp), luôn viết interpreter
+> đi bộ cây thay vì sinh chuỗi rồi thực thi.
+
+**Checklist bổ sung cho Mục 2.8 và Mục 7.8:**
+- [ ] Grep toàn file trước khi coi là xong: không còn `eval(` hay `new Function(` ở bất kỳ đâu
+- [ ] Nếu module có engine tính toán (đạo hàm/nghiệm/xét dấu...): mọi số liệu MỚI (khác SGK) đã
+      được xác nhận bằng cách chạy lại engine qua Node.js — không chỉ tính tay rồi gõ thẳng vào
+      code (xem Mục 2.10)
+
+### 2.10 Kiểm chứng engine tính toán bằng Node.js độc lập — KHÔNG tự tính tay rồi gõ thẳng số liệu
+
+> **Case study thực tế:** khi build 1 module xét biến thiên hàm số, agent viết engine tính đạo hàm/
+> nghiệm bằng JS thuần (tokenizer → parser → đạo hàm theo quy tắc thương/tích → giải phương trình
+> bậc 1-3 → xét dấu), test độc lập bằng Node so khớp đúng 2 ví dụ trong SGK trước khi nhúng vào
+> HTML. Sau đó viết số liệu MỚI (khác SGK, đúng quy tắc "phải khác SGK") cho các module luyện tập
+> tiếp theo — và **tự tính tay chọn hàm `(2x+7)/(x-5)` tưởng là đồng biến, nhưng chạy lại đúng
+> engine đã test thì hàm này NGHỊCH BIẾN** (y'=-17/(x-5)² luôn âm). Nếu không chạy lại engine mà
+> tin luôn vào tính tay, module luyện tập đó sẽ dạy sai. Tính tay biểu thức đạo hàm/dấu/nghiệm cho
+> hàm có bậc từ 2 trở lên rất dễ sai — kể cả khi làm cẩn thận — **không phải lỗi hiếm gặp, phải coi
+> là rủi ro mặc định** mỗi khi tự nghĩ ra số liệu mới cho bài có tính toán.
+
+**Quy trình bắt buộc khi module có engine tính toán (đạo hàm, nghiệm, xét dấu, giải hệ...):**
+
+```
+1. Viết các hàm tính toán thuần JS (không đụng DOM/canvas) — tokenize/parse, phân tích
+   (analyze), tìm điểm đặc biệt, xét dấu/kết luận — y hệt cấu trúc dùng trong HTML.
+
+2. Tách các hàm này khỏi phần DOM bằng 1 comment marker rõ ràng, ví dụ:
+     /* ================= UI / SESSION ================= */
+   Marker này để về sau còn TRÍCH RA test độc lập được — không phải chỉ để dễ đọc code.
+
+3. Test bằng Node: node script.js hoặc node -e "...", IN RA kết quả (điểm tới hạn, dấu từng
+   khoảng, kết luận), rồi so khớp bằng tay/đối chiếu đáp số đã biết (SGK, hoặc phản ví dụ tự
+   kiểm) trước khi tin tưởng. KHÔNG coi "code chạy không lỗi" là đủ — phải so khớp KẾT QUẢ.
+
+4. Copy nguyên khối hàm ĐÃ TEST vào <script> trong HTML — không gõ/viết lại từ đầu trong HTML,
+   dễ gõ sai/thiếu khi chép tay giữa 2 file.
+
+5. Với MỌI số liệu MỚI viết sau đó (khác SGK, dùng cho module luyện tập/đề kiểm tra khác) —
+   chạy lại ĐÚNG engine đã test ở bước 3 để xác nhận, không tự tính tay rồi gõ thẳng đáp số vào
+   code. Số liệu tự nghĩ ra để "khác SGK" là chỗ dễ sai nhất vì không có đáp số sách để đối
+   chiếu — càng phải dựa vào engine, không dựa vào tính nhẩm.
+```
+
+> **Áp dụng ngay cả khi không có sẵn tách sẵn file `.js`:** có thể trích trực tiếp đoạn code thuần
+> từ trong thẻ `<script>` của file HTML đã build (dùng đúng comment marker ở bước 2 để tìm điểm
+> cắt), dán vào 1 file `.js` tạm, thêm vài dòng gọi hàm + `console.log` rồi chạy `node` — không
+> cần viết lại engine từ đầu để test.
+
 ## PHẦN 3 — COMPONENT LIBRARY
 
-### 3.1 Sim Wrapper — Template đầy đủ (v2.2 Cập nhật)
+### 3.1 Sim Wrapper — Template đầy đủ
 
 ```html
 <div class="sim-wrap">
@@ -827,159 +942,58 @@ function drawLineLabel(label, color, bndFn) {
     <button class="sim-btn" id="guide-btn-m1" onclick="toggleGuide('m1')">
       <i class="ti ti-book"></i> Hướng dẫn
     </button>
+    <button class="sim-btn" id="audio-btn-m1" onclick="toggleAudio('m1')">
+      <i class="ti ti-headphones" id="audio-icon-m1"></i>
+    </button>
   </div>
 
-  <!-- Canvas Container với Zoom Controls dọc & Tọa độ nổi tích hợp -->
+  <!-- Canvas -->
   <div class="sim-canvas-wrap" id="canvasWrap">
     <canvas id="simCanvas"></canvas>
-    <div class="tooltip-box" id="tooltip"></div>
-    
-    <!-- 1. Thanh Zoom dọc chìm mờ ở góc trên bên phải canvas -->
-    <div class="canvas-zoom-controls">
-      <button class="btn-canvas-zoom" onclick="doZoom(0.7)" title="Phóng to"><i class="ti ti-plus"></i></button>
-      <button class="btn-canvas-zoom" onclick="doZoom(1.4)" title="Thu nhỏ"><i class="ti ti-minus"></i></button>
-      <button class="btn-canvas-zoom" onclick="resetView()" title="Đặt lại"><i class="ti ti-refresh"></i></button>
+    <div class="tooltip" id="tooltip">
+      <div class="tooltip-coord" id="tipCoord"></div>
+      <div class="tooltip-status" id="tipStatus"></div>
     </div>
-
-    <!-- 2. Thẻ tọa độ nổi mờ chìm sát góc dưới bên phải canvas (pointer-events: none) -->
-    <div class="coord-bar" id="coordBar">x: 0.00 · y: 0.00</div>
   </div>
 
-  <!-- Nút hành động chính (nằm ngay dưới Canvas trên Mobile & PC) -->
-  <button class="btn-primary btn-draw-boundary" id="btnAction">
-    <i class="ti ti-pencil"></i> Vẽ đường biên
-  </button>
-
-  <!-- Caption hướng dẫn -->
+  <!-- Caption -->
   <div class="sim-caption">
     <i class="ti ti-info-circle"></i>
     <span id="caption-m1">Nhập bất phương trình để bắt đầu...</span>
   </div>
+
+  <!-- Controls (nếu có animation) -->
+  <div class="sim-controls">
+    <button class="ctrl-btn" id="btnPlay-m1" onclick="togglePlay()">
+      <i class="ti ti-play" id="playIcon-m1"></i>
+    </button>
+    <button class="step-btn" onclick="stepPrev()" disabled>
+      <i class="ti ti-chevron-left"></i> Trước
+    </button>
+    <button class="step-btn" onclick="stepNext()">
+      Tiếp <i class="ti ti-chevron-right"></i>
+    </button>
+    <div class="speed-wrap">
+      <span>Tốc độ</span>
+      <input type="range" min="0.5" max="3" step="0.5" value="1"
+             oninput="setSpeed(this.value)">
+      <span id="speedLabel-m1">1×</span>
+    </div>
+    <button class="ctrl-btn" onclick="resetSim()" title="Đặt lại">
+      <i class="ti ti-refresh"></i>
+    </button>
+  </div>
+
+  <!-- Bottom bar: tọa độ + zoom -->
+  <div class="bottom-bar">
+    <div class="coord-bar" id="coordBar">x: 0.00 · y: 0.00</div>
+    <div class="zoom-btns">
+      <button class="btn-zoom" onclick="doZoom(0.7)">＋ Phóng To</button>
+      <button class="btn-zoom" onclick="doZoom(1.4)">－ Thu Nhỏ</button>
+      <button class="btn-zoom sec" onclick="resetView()">↺ Đặt Lại</button>
+    </div>
+  </div>
 </div>
-```
-
-```css
-/* CSS chuẩn cho Thanh Zoom dọc & Thẻ Tọa độ nổi tích hợp trong Canvas Wrapper */
-.canvas-zoom-controls {
-  position: absolute; top: 12px; right: 12px; z-index: 15;
-  display: flex; flex-direction: column;
-  background: rgba(250, 247, 240, 0.55); backdrop-filter: blur(6px); -webkit-backdrop-filter: blur(6px);
-  border: 1px solid rgba(229, 222, 207, 0.6); border-radius: var(--radius);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04); overflow: hidden; opacity: 0.8;
-  transition: opacity 0.2s ease, background 0.2s ease;
-}
-.canvas-zoom-controls:hover { opacity: 1; background: rgba(255, 255, 255, 0.92); }
-
-.btn-canvas-zoom {
-  width: 36px; height: 36px; padding: 0; background: transparent; border: none;
-  font-size: 16px; font-weight: 600; cursor: pointer; color: var(--ink-2);
-  display: flex; align-items: center; justify-content: center; transition: background .2s, color .2s;
-}
-.btn-canvas-zoom:not(:last-child) { border-bottom: 1px solid rgba(229, 222, 207, 0.6); }
-.btn-canvas-zoom:hover { background: var(--jade-pale); color: var(--jade-deep); }
-
-.coord-bar {
-  position: absolute; bottom: 4px; right: 4px; z-index: 12;
-  font-size: 11px; font-weight: 500; color: var(--ink-3); font-family: var(--font-mono);
-  font-variant-numeric: tabular-nums; background: rgba(250, 247, 240, 0.5);
-  backdrop-filter: blur(4px); -webkit-backdrop-filter: blur(4px);
-  padding: 2px 6px; border-radius: 4px; border: 1px solid rgba(229, 222, 207, 0.5);
-  opacity: 0.8; pointer-events: none;
-}
-.hint-text:empty { display: none; } /* Ẩn khoảng trắng rỗng khi chưa có thông báo */
-```
-
-```javascript
-/* JS chuẩn cho tính năng Lăn chuột Zoom (Mouse Wheel Zoom) trên Canvas */
-function setupWheel(canvas, getCW, getCH) {
-  canvas.addEventListener('wheel', e => {
-    e.preventDefault();
-    const rect = canvas.getBoundingClientRect();
-    const factor = e.deltaY > 0 ? 1.15 : 0.87;
-    const cx = e.clientX - rect.left, cy = e.clientY - rect.top;
-    const CW = getCW(), CH = getCH();
-    if (CW === 0 || CH === 0) return;
-    const { x: mx, y: my } = c2m(cx, cy, CW, CH);
-    const xRange = vXMax - vXMin, yRange = vYMax - vYMin;
-    const newXR = xRange * factor, newYR = yRange * factor;
-    if (newXR < 2 || newXR > 50000) return;
-    const pctX = cx / CW, pctY = 1 - cy / CH;
-    vXMin = mx - pctX * newXR; vXMax = vXMin + newXR;
-    vYMin = my - pctY * newYR; vYMax = vYMin + newYR;
-    fullRedraw();
-  }, { passive: false });
-}
-
-/* JS chuẩn cho tính năng Kéo di chuyển (Pan Dragging) bằng chuột & cảm ứng */
-let isPanning = false, startPX = 0, startPY = 0;
-let startXMin = 0, startXMax = 0, startYMin = 0, startYMax = 0;
-
-function setupPan(canvas, getCW, getCH) {
-  canvas.addEventListener('mousedown', e => {
-    isPanning = true;
-    startPX = e.clientX; startPY = e.clientY;
-    startXMin = vXMin; startXMax = vXMax; startYMin = vYMin; startYMax = vYMax;
-    canvas.style.cursor = 'grabbing';
-  });
-
-  canvas.addEventListener('mousemove', e => {
-    if (!isPanning) return;
-    const CW = getCW(), CH = getCH(); if (!CW || !CH) return;
-    const dx = e.clientX - startPX, dy = e.clientY - startPY;
-    const xRange = startXMax - startXMin, yRange = startYMax - startYMin;
-    const mxDiff = (dx / CW) * xRange, myDiff = (dy / CH) * yRange;
-    vXMin = startXMin - mxDiff; vXMax = startXMax - mxDiff;
-    vYMin = startYMin + myDiff; vYMax = startYMax + myDiff;
-    fullRedraw();
-  });
-
-  canvas.addEventListener('mouseleave', () => { if (isPanning) { isPanning = false; canvas.style.cursor = 'crosshair'; } });
-  window.addEventListener('mouseup', () => { if (isPanning) { isPanning = false; canvas.style.cursor = 'crosshair'; } });
-
-  canvas.addEventListener('touchstart', e => {
-    if (e.touches.length === 1) {
-      const t = e.touches[0];
-      isPanning = true;
-      startPX = t.clientX; startPY = t.clientY;
-      startXMin = vXMin; startXMax = vXMax; startYMin = vYMin; startYMax = vYMax;
-    }
-  }, { passive: true });
-
-  canvas.addEventListener('touchmove', e => {
-    if (!isPanning || e.touches.length !== 1) return;
-    const t = e.touches[0], CW = getCW(), CH = getCH(); if (!CW || !CH) return;
-    const dx = t.clientX - startPX, dy = t.clientY - startPY;
-    const xRange = startXMax - startXMin, yRange = startYMax - startYMin;
-    const mxDiff = (dx / CW) * xRange, myDiff = (dy / CH) * yRange;
-    vXMin = startXMin - mxDiff; vXMax = startXMax - mxDiff;
-    vYMin = startYMin + myDiff; vYMax = startYMax + myDiff;
-    fullRedraw();
-  }, { passive: true });
-
-  canvas.addEventListener('touchend', () => { isPanning = false; });
-}
-
-/* JS chuẩn cho các Nút bấm Zoom (.canvas-zoom-controls) */
-function applyZoom(factor) {
-  if (CW === 0 || CH === 0) return;
-  zoomAt(CW / 2, CH / 2, factor);
-}
-
-function zoomAt(cx, cy, factor) {
-  const { x: mx, y: my } = c2m(cx, cy);
-  const xRange = vXMax - vXMin, yRange = vYMax - vYMin;
-  const newXR = xRange * factor, newYR = yRange * factor;
-  if (newXR < 2 || newXR > 500) return;
-  const pctX = cx / CW, pctY = 1 - cy / CH;
-  vXMin = mx - pctX * newXR; vXMax = vXMin + newXR;
-  vYMin = my - pctY * newYR; vYMax = vYMin + newYR;
-  fullRedraw();
-}
-
-function resetView() {
-  vXMin = -10; vXMax = 10; vYMin = -10; vYMax = 10;
-  fullRedraw();
-}
 ```
 
 ### 3.2 Trạng thái nút
@@ -1064,43 +1078,44 @@ function resetView() {
 > Không còn ràng buộc theo preset. 3 component dưới đây dùng chung cho mọi bài, chọn theo layout
 > đã xác nhận ở BƯỚC 1 (Đơn / Tab ngang / + Sidebar điều khiển).
 
-**Header ảnh nền — tuỳ chọn, phải ẩn được:**
+**Intro-text — BẮT BUỘC, thay hoàn toàn cho header banner cũ:**
+
+> File build mới **không dựng `<header>` trang trí** (không ảnh nền, không logo lớn, không gradient).
+> Thay bằng 1 đoạn dẫn giải ngắn 1-2 câu ngay đầu trang, dạng thẻ card nhấn mạnh — không icon,
+> không title label, chỉ đoạn văn. Nội dung lấy tinh thần từ `objectives` sẽ khai báo ở Athena
+> manifest (PHẦN 7.3): bài này giúp học sinh hiểu/làm được gì.
+
 ```html
-<header>
-  <div class="header-badge label-small"><i class="ti ti-flask"></i> Thí nghiệm hóa học</div>
-  <h1>TIÊU ĐỀ BÀI HỌC VIẾT HOA</h1>
-  <div class="desc">Mô tả ngắn. Bộ sách: Kết nối tri thức với cuộc sống.</div>
-</header>
+<div class="intro-text">
+  Bạn sẽ luyện cách [1-2 câu mô tả mục tiêu bài học, giọng "bạn", không "em"].
+</div>
 ```
 ```css
-header {
-  width: 100%; max-width: 760px;
-  background: url('ĐỔI_URL_ẢNH_TẠI_ĐÂY');
-  background-position: center 30%; background-size: cover; background-repeat: no-repeat;
-  border-radius: 16px; padding: 1.5rem 2rem; overflow: hidden; position: relative;
-  box-shadow: var(--shadow);
+.intro-text {
+  max-width: 860px; margin: 24px auto 0; padding: 1rem 1.3rem;
+  background: var(--jade-pale); border: 1px solid var(--jade-soft);
+  border-left: 4px solid var(--jade); border-radius: var(--radius-lg);
+  font-size: 15px; color: var(--ink-2); line-height: 1.65;
 }
-header::before, header::after {
-  content: ''; position: absolute; border-radius: 50%;
-  background: rgba(255,255,255,0.10); pointer-events: none;
+@media (max-width: 640px) {
+  .intro-text { margin: 16px 1rem 0; padding: 0.9rem 1.1rem; font-size: 14px; }
 }
-header::before { width: 200px; height: 200px; top: -60px; right: -40px; }
-header::after  { width: 140px; height: 140px; bottom: -50px; left: 20%; }
-.header-badge {
-  background: transparent; border: none; color: rgba(255,255,255,0.9);
-  font-size: 1.05rem; font-weight: 600; margin-bottom: 6px;
-  display: flex; align-items: center; gap: 8px;
-}
-header h1 { color: #fff; font-size: 1.6rem; font-weight: 700; margin-bottom: 4px;
-  text-shadow: 0 2px 4px rgba(0,0,0,0.2); }
-header .desc { color: rgba(255,255,255,0.8); font-size: 0.95rem; max-width: 90%;
-  text-shadow: 0 1px 2px rgba(0,0,0,0.15); }
-
-/* BẮT BUỘC nếu header chứa id JS cập nhật động (điểm số, kết quả...):
-   tách phần tử đó ra ngoài header (vd .stat-bar riêng) để có thể ẩn header
-   mà không mất dữ liệu. Khi cần nhúng vào platform khác:
-   header { display: none; }  ← ẩn, không xoá node */
 ```
+
+**File cũ đã có header (đang patch/sửa lỗi, không build lại từ đầu):** KHÔNG xoá `<header>`/JS
+liên quan — chỉ ẩn bằng CSS, giữ nguyên node để tránh vỡ code khác đang trỏ vào:
+```css
+.app-header, .btn-show-header { display: none !important; }
+```
+Sau đó thêm `.intro-text` mới như trên, đặt ngay sau thẻ `</header>` đã ẩn, trước phần thân chính.
+Nếu header cũ có `<div class="tab-container">` chuyển module/chế độ gắn cứng bên trong — **tách
+tab đó ra thành khối riêng độc lập** (không nằm trong header đã ẩn), giữ nguyên `onclick`/id đang
+dùng, restyle nền sáng thay vì nền tối của header cũ, đặt phía trên `.intro-text`.
+
+> ⚠️ File cũ dùng bộ token tiền-v2 (`--primary`, `--bg`, `--surface`... thay vì `--jade-deep`,
+> `--cream`...) hoặc font khác Be Vietnam Pro: viết `.intro-text` bằng **đúng token đang có sẵn
+> trong file đó** để không vỡ layout (không migrate màu/font toàn file trong lúc chỉ thêm intro-text
+> — đó là việc khác, làm riêng khi giáo viên yêu cầu redesign toàn file).
 
 **Tab ngang — thay cho sidebar cố định khi có nhiều module:**
 ```html
@@ -1217,6 +1232,46 @@ dù đổi từ `<aside>` sang tab ngang.
 > Sidebar này là **tính năng thật** (chứa slider/checkbox), khác hoàn toàn `.sidebar` điều hướng
 > cũ đã bỏ ở Mục 3.2 — không bao giờ xoá nội dung bên trong, chỉ đổi thứ tự hiển thị trên mobile.
 
+### 3.6b Sidebar nhiều bước khoá dần + Canvas — "lướt ngang" trên mobile (BẮT BUỘC khi có cả 2)
+
+> **Khác với Sidebar điều khiển ở trên** (1 khối slider/checkbox, chỉ cần đổi `order` khi mobile):
+> đây là dạng sidebar chứa **nhiều thẻ bước khoá dần** (VD: TXĐ → Đạo hàm → Bảng dấu → Kết luận,
+> hoặc các bước Athena dẫn dắt) đặt cạnh 1 canvas/đồ thị. Nếu chỉ đổi `order` như sidebar thường,
+> khi học sinh cuộn dọc qua các thẻ bước sẽ **cuộn mất luôn canvas khỏi màn hình** — đã gặp thực tế
+> và học sinh phản ánh không thấy đồ thị đâu. Bắt buộc dùng pattern lướt ngang dưới đây thay vì
+> cuộn dọc bất cứ khi nào layout có ≥3 thẻ bước đi kèm 1 canvas cố định.
+
+```html
+<div class="workspace">
+  <div class="sidebar" id="stepSidebar"><!-- các .card bước, render động --></div>
+  <div class="mobile-hint">← vuốt ngang để xem các bước →</div>
+  <div class="canvas-area"><!-- canvas + chip-bar --></div>
+</div>
+```
+```css
+.mobile-hint{display:none;}
+
+@media (max-width:860px){
+  .workspace{flex-direction:column; min-height:auto;}
+  .canvas-area{order:1; height:280px; flex:none;}   /* canvas LUÔN cố định trên cùng */
+  .mobile-hint{
+    display:block; order:2; text-align:center; font-size:.72rem; color:var(--ink-3);
+    padding:7px 0; background:var(--cream-2); border-top:1px solid var(--paper-line);
+  }
+  .sidebar{
+    order:3; width:100%; border-right:none; border-top:none;
+    display:flex; flex-direction:row; overflow-y:hidden; overflow-x:auto;
+    scroll-snap-type:x mandatory; -webkit-overflow-scrolling:touch;
+    padding:12px 12px 20px; gap:12px;
+  }
+  .sidebar > *{ flex:0 0 86vw; scroll-snap-align:center; }  /* mỗi thẻ bước ~1 màn hình */
+  .sidebar > .card{ max-height:calc(100vh - 400px); min-height:160px; overflow-y:auto; }
+}
+```
+> Trên desktop, sidebar vẫn xếp cột dọc bình thường (không đổi gì) — pattern này **chỉ áp dụng
+> trong media query mobile**. Dòng `.mobile-hint` bắt buộc phải có — học sinh lần đầu gặp sidebar
+> lướt ngang không tự nhận ra được nếu không có gợi ý chữ.
+
 **Buttons — dùng token, không hardcode navy/teal:**
 ```css
 .btn-group { display: flex; gap: 7px; flex-wrap: wrap; }
@@ -1236,7 +1291,81 @@ dù đổi từ `<aside>` sang tab ngang.
 .btn-reset:hover { border-color: var(--jade); color: var(--jade); background: var(--jade-pale); }
 ```
 
-**Explanation Box — dùng token thay vì hex viết cứng:**
+**Trước mỗi bước tương tác — 2 dòng tách biệt, không trộn lẫn:**
+```html
+<div class="panel-section-label">Kết luận — điểm có thỏa mãn BPT?</div>
+<div class="step-guide">
+  <div class="step-guide-action"><i class="ti ti-hand-click"></i> Chọn Thỏa mãn hoặc Không thỏa mãn, rồi nhấn Kiểm tra.</div>
+  <div class="step-guide-knowledge"><i class="ti ti-bulb"></i> So sánh kết quả vừa tính với vế phải theo đúng dấu bất phương trình.</div>
+</div>
+<div class="choice-row">...</div>
+```
+```css
+.step-guide { margin: 4px 0 10px; display: flex; flex-direction: column; gap: 4px; }
+.step-guide-action, .step-guide-knowledge {
+  display: flex; align-items: flex-start; gap: 6px; font-size: 13px; line-height: 1.5;
+}
+.step-guide-action i, .step-guide-knowledge i { flex-shrink: 0; margin-top: 2px; }
+.step-guide-action { color: var(--ink-2); font-weight: 500; }
+.step-guide-action i { color: var(--jade-deep); }
+.step-guide-knowledge { color: var(--ink-3); font-style: italic; }
+.step-guide-knowledge i { color: var(--accent); }
+```
+> `.step-guide-action` = thuần thao tác (điền gì, ấn gì tiếp) — khớp cột "Hướng dẫn thao tác"
+> ở kịch bản. `.step-guide-knowledge` = kiến thức áp dụng, ngắn gọn 1 câu — khớp cột "Kiến thức
+> áp dụng". KHÔNG nhét sai lầm hay gặp vào đây — sai lầm chỉ hiện trong `.hint-text`/
+> `.explanation-box` SAU khi học sinh bấm Kiểm tra và trả lời sai (xem Mục 3.2/3.6).
+
+**Sổ tay kiến thức — nút gọi ra phía trên canvas, chỉ dùng cho module luyện tập (tuỳ chọn,
+quyết định từ kịch bản — xem `01_scenario_builder_v4_1.md` Bước 3 & Bước 5):**
+```html
+<!-- Đặt trong sim-wrap, NGAY PHÍA TRÊN canvas-wrap -->
+<button class="knowledge-toggle" id="btnKnowledge" onclick="toggleKnowledge()"
+        aria-expanded="false" aria-controls="knowledgeBox">
+  <i class="ti ti-notebook"></i> Sổ tay kiến thức
+</button>
+<div class="knowledge-box" id="knowledgeBox" hidden>
+  <div class="kb-title"><i class="ti ti-bookmark"></i> Kiến thức cần dùng</div>
+  <ul class="kb-list">
+    <li>[Công thức/quy tắc 1 — lấy đúng nội dung đã chốt ở kịch bản]</li>
+    <li>[Công thức/quy tắc 2]</li>
+  </ul>
+</div>
+```
+```css
+.knowledge-toggle {
+  display: inline-flex; align-items: center; gap: 6px;
+  min-height: 44px; padding: 8px 16px; margin-bottom: 10px;
+  border-radius: 20px; border: 1.5px solid var(--accent);
+  background: var(--accent-pale); color: var(--accent-text);
+  font-size: 0.85rem; font-weight: 600; cursor: pointer; transition: all .2s ease;
+}
+.knowledge-toggle:hover { background: var(--accent); color: #fff; }
+.knowledge-toggle[aria-expanded="true"] { background: var(--accent); color: #fff; }
+.knowledge-box {
+  width: 100%; max-width: 860px; margin-bottom: 12px;
+  background: var(--accent-pale); border: 1px solid var(--accent);
+  border-radius: var(--radius-lg); padding: 1rem 1.2rem;
+}
+.kb-title { display: flex; align-items: center; gap: 6px;
+  font-weight: 700; font-size: .85rem; color: var(--accent-text); margin-bottom: 8px; }
+.kb-list { padding-left: 1.1rem; font-size: .85rem; color: var(--ink-2); line-height: 1.65; }
+```
+```javascript
+function toggleKnowledge() {
+  const box = document.getElementById('knowledgeBox');
+  const btn = document.getElementById('btnKnowledge');
+  const willShow = box.hasAttribute('hidden');
+  if (willShow) box.removeAttribute('hidden'); else box.setAttribute('hidden', '');
+  btn.setAttribute('aria-expanded', String(willShow));
+}
+```
+> Khác với `.collapsible-panel` (Mục 3.7 — dùng cho hướng dẫn/quan sát, mặc định MỞ trên desktop,
+> thu gọn trên mobile): `.knowledge-box` mặc định **luôn ẩn** trên mọi kích thước màn hình, học
+> sinh chủ động bấm mới hiện — vì đây là tra cứu khi cần, không phải nội dung phải đọc trước.
+> Chỉ thêm component này khi kịch bản đã chốt "Có Sổ tay kiến thức" cho module — không thêm mặc
+> định cho mọi module.
+
 ```html
 <div class="explanation-box" id="explanationBox">
   <div class="eb-title" id="ebTitle"><i class="ti ti-info-circle"></i> Chuẩn bị thí nghiệm</div>
@@ -1286,6 +1415,8 @@ function setExplanationContent(icon, title, body, equation) {
 - [ ] Không tràn ngang ở 375px
 - [ ] Tab/menu ngang cuộn được, ẩn scrollbar
 - [ ] Sidebar điều khiển: canvas/kết quả hiện trước, control xuống sau (`order`)
+- [ ] Sidebar **nhiều thẻ bước** (≥3 bước) đi kèm canvas: mobile dùng **lướt ngang** (Mục 3.6b),
+      không cuộn dọc đẩy canvas ra khỏi màn hình
 
 
 ---
@@ -1419,6 +1550,42 @@ còn cao dù đã áp dụng Mục 3.7, khiến nút "Tiếp theo" bị đẩy x
 
 
 
+### 3.9 Athena Mascot — dùng đúng ảnh gốc, KHÔNG tự vẽ lại
+
+> **Đã thử SVG inline tự vẽ mô phỏng nhân vật — bị từ chối vì không đúng hình, nhìn không đẹp
+> bằng bản gốc.** Athena có 1 artwork chính thức duy nhất (ảnh nhân vật robot xanh jade, tai tròn,
+> mặt đen, mắt mint, đang cầm bút viết sổ). **Không tự vẽ SVG/icon khác để thay thế** — luôn lấy
+> lại đúng file ảnh gốc này, nhúng dạng base64 PNG.
+
+**Cách lấy ảnh gốc:** ảnh đã được nhúng sẵn trong các file đã build trước đó (VD
+`03-menh-de-phu-dinh.html`, `04-menh-de-keo-theo-dao.html`...). Khi cần dùng lại ở file mới,
+trích xuất chuỗi base64 từ 1 trong các file đó (tìm đoạn `data:image/png;base64,...` trong thẻ
+`<img>`), không yêu cầu giáo viên upload lại ảnh gốc mỗi lần.
+
+**Nguyên tắc nhúng — chỉ 1 bản base64 duy nhất trong toàn file (tránh lỗi đã gặp: nhúng lặp lại ở
+nhiều thẻ `<img>` làm file nặng gấp 4-5 lần không cần thiết):**
+```html
+<!-- Mọi thẻ <img> Athena trong HTML: để src rỗng, không hardcode base64 lặp lại -->
+<div class="athena-avatar"><img src="" alt="Athena"></div>
+```
+```javascript
+// 1 hằng số base64 DUY NHẤT ở đầu script, mọi nơi khác chỉ tham chiếu qua JS
+const ATHENA_AVATAR = "data:image/png;base64,...."; // dán nguyên chuỗi lấy được
+document.querySelectorAll('.athena-avatar img, .a-icon img').forEach(img => img.src = ATHENA_AVATAR);
+```
+```css
+.athena-avatar{ flex-shrink:0; width:44px; height:44px; border-radius:50%; overflow:hidden;
+  background:var(--jade-pale); border:2px solid var(--jade-soft); }
+.athena-avatar img{ width:100%; height:100%; object-fit:cover; display:block; }
+/* Icon nhỏ trong khối thoại 1 dòng .athena — cùng ảnh, thu nhỏ */
+.athena .a-icon{ width:28px; height:28px; flex-shrink:0; border-radius:50%; overflow:hidden; }
+.athena .a-icon img{ width:100%; height:100%; object-fit:cover; display:block; }
+```
+> File sẽ nặng thêm ~75-80KB do base64 (không tránh được nếu muốn ảnh chuẩn, không phụ thuộc
+> mạng ngoài) — nhưng **chỉ 1 lần**, không nhân lên theo số chỗ dùng. Nếu 1 file cần Athena xuất
+> hiện ở nhiều vị trí (nhiều thẻ `.athena-avatar`/`.a-icon`), luôn dùng đúng pattern gán qua JS ở
+> trên, không dán chuỗi base64 trực tiếp vào từng thẻ `<img src="...">` riêng lẻ.
+
 ## PHẦN 4 — NAMING CONVENTION
 
 ```
@@ -1492,7 +1659,9 @@ KHÔNG dùng tên biến kiểu cũ (--primary, --bg, --surface, --text...) tron
 - Tài nguyên ngoài chỉ được phép từ: cdn.jsdelivr.net, fonts.googleapis.com, fonts.gstatic.com.
   Ảnh: inline SVG, data: URI, hoặc https:.
 - KHÔNG dùng localStorage / cookie để lưu trạng thái — lưu qua LMS().state().
-- 1 file HTML tự chứa (self-contained). Không build step, không import, không eval (CSP nghiêm).
+- 1 file HTML tự chứa (self-contained). Không build step, không import, không `eval` VÀ KHÔNG
+  `new Function(...)` (CSP coi 2 cái này giống hệt nhau — xem lỗi thực tế + cách làm đúng ở
+  Mục 2.9, đặc biệt quan trọng nếu simulation có công cụ nhập hàm số/biểu thức tự do).
 ```
 
 ### 7.2 Safe accessor — dán đầu `<script>` đầu tiên
@@ -1606,12 +1775,6 @@ if (typeof ResizeObserver !== 'undefined') {
 - Margin/padding lớn cuối trang (`<body>` hoặc phần tử cuối cùng) — kiểm tra không còn khoảng đệm
   thừa sau phần tử cuối (thường là quiz/kết luận).
 
-**Quy tắc Khóa chiều cao bố cục theo bước dài nhất (Layout Height Locking):**
-- Đối với các simulation có mở từng bước dồn dập (ví dụ Module 2 có 4 bước mở dần), nếu để chiều cao co giãn tự nhiên, iframe LMS sẽ bị nảy/re-scale hoặc đẩy thanh sidebar khi học sinh bấm tới từng bước.
-- **Giải pháp bắt buộc:** Đặt `min-height` cố định trên `.sim-left` (ví dụ `min-height: 520px` desktop / `480px` mobile) tương ứng với chiều cao khi mở ĐẦY ĐỦ TẤT CẢ CÁC BƯỚC.
-- Việc này giúp chiều cao toàn trang (`scrollHeight`) được tính ổn định chuẩn xác 100% ngay từ khi trang vừa load, LMS iframe nhận đúng kích thước tối đa duy nhất 1 lần và không bao giờ bị giật/scale lại khi chuyển bước.
-- **Hướng dẫn cho AI:** Khi tạo bài mới hoặc refactor bài bất kỳ, AI sẽ tự động phân tích số bước trong kịch bản để thiết lập `min-height` chuẩn sẵn trong code, người dùng KHÔNG cần phải tự đo đạc hay sửa thủ công.
-
 > **Lưu ý:** contract LMS hiện tại chỉ định nghĩa `resize` là 1 hàm rỗng trong fallback, chưa nêu
 > rõ tham số mong đợi (`{height}` là suy đoán hợp lý theo convention của các iframe auto-resize
 > phổ biến). Cần xác nhận lại đúng shape tham số với phía kỹ thuật LMS trước khi áp dụng hàng loạt
@@ -1634,14 +1797,18 @@ if (typeof ResizeObserver !== 'undefined') {
 
 ### 7.9 Quy tắc đặt tên nhân vật AI (áp dụng mọi nội dung mới)
 
-> Toàn hệ thống Aiducation dùng thống nhất tên **"Athena"** cho gia sư AI. **Không** dùng "AI"
-> hay "Robot"/"robot" để chỉ nhân vật/trợ lý trong nội dung mới — kể cả khi kịch bản gốc còn ghi
-> tên cũ (do làm trước quy định này). Áp dụng cho mọi câu thoại, caption, tên nhân vật hiển thị
-> cho học sinh — **không** áp dụng cho các bài có "robot" là **đối tượng vật lý/toán học thật
-> trong đề bài** (ví dụ bài minh hoạ dãy số hội tụ bằng robot đi từng nửa quãng đường còn lại) —
-> trường hợp đó là nhân vật của đề toán, không phải trợ lý AI, giữ nguyên không đổi.
-
-
+> Toàn hệ thống Aiducation dùng thống nhất tên **"Athena"** — **không còn ngoại lệ**. Không dùng
+> "AI", "Robot"/"robot" để chỉ bất kỳ nhân vật nào trong nội dung mới, kể cả khi kịch bản gốc còn
+> ghi tên cũ (do làm trước quy định này), và **kể cả khi "robot" vốn là đối tượng vật lý/toán học
+> trong đề bài** (ví dụ bài minh hoạ dãy số hội tụ bằng robot đi từng nửa quãng đường còn lại, hay
+> robot kéo dây/xe trong bài tích vô hướng) — những trường hợp này giờ **đổi thẳng tên nhân vật
+> trong đề thành "Athena"**, không giữ tên "robot" nữa. Áp dụng cho mọi câu thoại, caption, tên
+> nhân vật hiển thị cho học sinh, và mọi nhãn/label gắn với hình vẽ nhân vật đó trên canvas
+> (xem `03_game_engine_toan.md` khi vẽ mascot).
+>
+> **File đã build từ trước theo quy tắc cũ** (còn giữ tên "Robot" cho nhân vật trong đề, ví dụ sim
+> Bài 11 — tích vô hướng, robot kéo xe): cần đổi lại tên hiển thị + lời thoại thành "Athena" khi
+> patch/sửa file đó, không chỉ áp dụng cho file build mới.
 
 ---
 
