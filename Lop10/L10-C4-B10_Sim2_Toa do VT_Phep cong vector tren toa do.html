@@ -255,7 +255,8 @@
         /* CANVAS CONTAINER */
         #canvas-wrapper {
             position: relative;
-            flex: 1;
+            flex: none;
+            height: clamp(400px, 46vw, 540px);
             border: 1px solid var(--border-light);
             border-radius: 8px;
             overflow: hidden;
@@ -268,8 +269,10 @@
 
         canvas {
             display: block;
-            width: 100%;
-            height: 100%;
+            position:absolute;
+            inset:0;
+            width:100%;
+            height:100%;
         }
 
         /* CONTROLS (Input / Slider) */
@@ -418,7 +421,7 @@
             body { padding:10px; }
             #main-content-layout { flex-direction:column; min-height:0; }
             #p5-workspace { order:-1; }
-            #canvas-wrapper { min-height:430px; }
+            #canvas-wrapper { height:430px; min-height:0; }
             #p5-sidebar {
                 width:100%; border-right:0; border-top:1px solid var(--border-light);
                 display:grid; grid-template-columns:repeat(3,minmax(0,1fr)); gap:12px;
@@ -432,7 +435,7 @@
             #p5-sim-wrap { border:0; border-radius:0; box-shadow:none; }
             .intro-text { padding:12px 14px; font-size:.86rem; }
             #p5-workspace { padding:12px; }
-            #canvas-wrapper { min-height:340px; }
+            #canvas-wrapper { height:340px; min-height:0; }
             #task-controls { flex-wrap:wrap; gap:10px; }
             #task-controls > * { max-width:100%; }
             .slider-container, .slider-container > div { max-width:100%; flex-wrap:wrap; }
@@ -829,9 +832,10 @@
                 if (!startTime) startTime = now;
                 let elapsed = now - startTime;
                 let t = Math.min(elapsed / robotAnim.duration, 1.0);
+                const easedT = t < 0.5 ? 2 * t * t : 1 - Math.pow(-2 * t + 2, 2) / 2;
 
-                pts.Robot.x = robotAnim.startX + t * (robotAnim.endX - robotAnim.startX);
-                pts.Robot.y = robotAnim.startY + t * (robotAnim.endY - robotAnim.startY);
+                pts.Robot.x = robotAnim.startX + easedT * (robotAnim.endX - robotAnim.startX);
+                pts.Robot.y = robotAnim.startY + easedT * (robotAnim.endY - robotAnim.startY);
 
                 updateRobotStatus(`🤖 (${pts.Robot.x.toFixed(1)} ; ${pts.Robot.y.toFixed(1)})`);
                 render();
@@ -1007,13 +1011,15 @@
                 if (Math.abs(pts.B.x - 8) < 0.5 && Math.abs(pts.B.y - 5) < 0.5) {
                     pts.B.x = 8; pts.B.y = 5; // Snap
                     dragPoint = null; // Thả chuột
-                    startRobotAnimation(pts.A, pts.B, 1500, () => {
+                    startRobotAnimation(pts.A, pts.B, 2200, () => {
                         setCaption("✅ <strong>AB = (8-2 ; 5-1) = (6 ; 4)</strong> — Robot đi phải 6, lên 4. Đó là tọa độ vectơ!", "italic");
                         unlockNext(2);
                     });
                 } else {
-                    pts.Robot = { x: pts.B.x, y: pts.B.y };
-                    updateRobotStatus(`🤖 (${pts.B.x.toFixed(1)} ; ${pts.B.y.toFixed(1)})`);
+                    // B chỉ là điểm đích đang được chọn; Robot phải đứng yên tại A
+                    // cho tới khi học sinh đặt B đúng và hoạt ảnh dịch chuyển bắt đầu.
+                    pts.Robot = { x: pts.A.x, y: pts.A.y };
+                    updateRobotStatus(`🤖 (${pts.A.x.toFixed(1)} ; ${pts.A.y.toFixed(1)})`);
                 }
             }
 
@@ -1097,14 +1103,11 @@
         }
 
         function drawRobot(ctx, x, y) {
-            ctx.save(); ctx.translate(x, y);
-            ctx.fillStyle = '#DCEAE1'; ctx.strokeStyle = '#14432F'; ctx.lineWidth = 2;
-            ctx.fillRect(-11, -9, 22, 18); ctx.strokeRect(-11, -9, 22, 18);
-            ctx.beginPath(); ctx.moveTo(0, -9); ctx.lineTo(0, -14); ctx.stroke();
-            ctx.beginPath(); ctx.arc(0, -15, 2, 0, Math.PI * 2); ctx.fillStyle = '#E8A24A'; ctx.fill();
-            ctx.beginPath(); ctx.arc(-5, -2, 2, 0, Math.PI * 2); ctx.arc(5, -2, 2, 0, Math.PI * 2);
-            ctx.fillStyle = '#2D8B6F'; ctx.fill();
-            ctx.beginPath(); ctx.moveTo(-5, 5); ctx.lineTo(5, 5); ctx.stroke();
+            ctx.save();
+            ctx.font = "28px 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif";
+            ctx.textAlign = 'center';
+            ctx.textBaseline = 'middle';
+            ctx.fillText('🤖', x, y);
             ctx.restore();
         }
 
@@ -1465,10 +1468,17 @@ Cảm ơn em đã hoàn thành mô phỏng Robot Navigation!`;
     }
     window.addEventListener('load', reportHeight);
     if (typeof ResizeObserver !== 'undefined') {
+      // Chỉ đo lại canvas khi chính khung canvas đổi kích thước.
+      // Không gọi resizeCanvas từ observer của body để tránh vòng lặp tăng chiều cao.
+      const _canvasResizeObserver = new ResizeObserver(() => {
+        clearTimeout(window._canvasRz);
+        window._canvasRz = setTimeout(resizeCanvas, 60);
+      });
+      _canvasResizeObserver.observe(document.getElementById('canvas-wrapper'));
+
       const _athenaResizeObserver = new ResizeObserver(() => {
-        clearTimeout(window._rz); window._rz = setTimeout(() => {
-          resizeCanvas(); reportHeight();
-        }, 100);
+        clearTimeout(window._rz);
+        window._rz = setTimeout(reportHeight, 100);
       });
       _athenaResizeObserver.observe(document.body);
     } else {
