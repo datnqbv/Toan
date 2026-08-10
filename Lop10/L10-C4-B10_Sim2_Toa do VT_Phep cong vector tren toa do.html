@@ -638,6 +638,15 @@
         let currentTask = 1;
         let unlockedTasks = 1;
         let completionSent = false;
+        const wrongAttempts = { 1:0, 2:0, 3:0, 4:0, 5:0, 6:0, 7:0 };
+        const solvedTasks = new Set();
+
+        function registerWrongAttempt(task) {
+            wrongAttempts[task] = (wrongAttempts[task] || 0) + 1;
+            updateFormulaBar();
+            LMS().event({ type:'answer', id:`task-${task}`, correct:false, attempt:wrongAttempts[task] });
+            return wrongAttempts[task];
+        }
 
         // Tọa độ các điểm (Math coordinates)
         let pts = {
@@ -674,7 +683,8 @@
         let challengeState = {
             questionText: "",
             correctAnswer: "",
-            type: ""
+            type: "",
+            wrongAttempts: 0
         };
 
         // 3. UI Controls & Events
@@ -795,7 +805,7 @@
                 setCaption("Kéo điểm G về vị trí trọng tâm tam giác ABC. Quan sát Drone bay đo khoảng cách.");
                 startAnimLoop();
 
-                if (unlockedTasks === 7) {
+                if (solvedTasks.has(7)) {
                     document.getElementById('p5-summary-table').style.display = 'block';
                     document.getElementById('p5-quick-challenge').style.display = 'block';
                     generateChallenge();
@@ -808,6 +818,7 @@
 
         function unlockNext(t) {
             if (t > unlockedTasks && t <= 7) {
+                solvedTasks.add(t - 1);
                 unlockedTasks = t;
                 document.querySelector(`.task-tab[data-task="${t}"]`).classList.remove('locked');
                 document.querySelector(`.task-tab[data-task="${t - 1}"]`).classList.add('completed');
@@ -862,20 +873,27 @@
                     unlockNext(3);
                 });
             } else if (val === "(6;4)" || val === "6;4" || val === "6,4") {
+                const attempt = registerWrongAttempt(2);
                 startRobotAnimation({ x: 8, y: 5 }, { x: 14, y: 9 }, 1500, () => {
-                    setCaption("⚠️ <strong>Robot đi sai hướng!</strong> Bạn nhập (6 ; 4) tức là dịch chuyển AB khiến robot đi tiếp từ B(8;5) đến (14;9) thay vì quay về A. Hãy tính phép trừ: BA = A - B = (2-8 ; 1-5) = (-6 ; -4).", "italic");
+                    setCaption(attempt < 2
+                        ? "⚠️ <strong>Robot đi sai hướng!</strong> Em đang dùng AB thay vì vectơ quay về BA. Hãy chú ý đổi thứ tự điểm đầu và điểm cuối."
+                        : "⚠️ Sau 2 lần thử: <strong>BA = A - B = (2-8 ; 1-5) = (-6 ; -4)</strong>.", "italic");
                     triggerShake();
                 });
             } else {
                 let coords = val.match(/-?\d+/g);
                 if (coords && coords.length === 2) {
+                    const attempt = registerWrongAttempt(2);
                     let dx = parseInt(coords[0]);
                     let dy = parseInt(coords[1]);
                     startRobotAnimation({ x: 8, y: 5 }, { x: 8 + dx, y: 5 + dy }, 1500, () => {
-                        setCaption(`⚠️ <strong>Robot đi sai hướng!</strong> Với dịch chuyển (${dx} ; ${dy}), robot đi tới (${(8 + dx).toFixed(1)} ; ${(5 + dy).toFixed(1)}). Hãy tính BA = A - B = (-6 ; -4).`, "italic");
+                        setCaption(attempt < 2
+                            ? `⚠️ Robot đi tới (${(8 + dx).toFixed(1)} ; ${(5 + dy).toFixed(1)}), chưa về A. Hãy tính BA theo thứ tự điểm cuối trừ điểm đầu.`
+                            : `⚠️ Sau 2 lần thử: <strong>BA = A - B = (2-8 ; 1-5) = (-6 ; -4)</strong>.`, "italic");
                         triggerShake();
                     });
                 } else {
+                    registerWrongAttempt(2);
                     setCaption("⚠️ Định dạng không hợp lệ. Vui lòng nhập dạng (x ; y) hoặc x ; y.", "italic");
                     triggerShake();
                 }
@@ -892,7 +910,10 @@
                     unlockNext(4);
                 });
             } else {
-                setCaption("⚠️ Chưa đúng! Hãy cộng tọa độ điểm A(2;1) với vectơ dịch chuyển (4;1).", "italic");
+                const attempt = registerWrongAttempt(3);
+                setCaption(attempt < 2
+                    ? "⚠️ Chưa đúng! Hãy cộng hoành độ với hoành độ, tung độ với tung độ."
+                    : "⚠️ Sau 2 lần thử: <strong>M = (2+4 ; 1+1) = (6 ; 2)</strong>.", "italic");
                 triggerShake();
             }
         }
@@ -906,7 +927,10 @@
                     unlockNext(5);
                 });
             } else {
-                setCaption("⚠️ Chưa đúng! Hãy lấy tọa độ điểm M(6;2) cộng với vectơ âm (-4;-1).", "italic");
+                const attempt = registerWrongAttempt(4);
+                setCaption(attempt < 2
+                    ? "⚠️ Chưa đúng! Cộng riêng từng tọa độ và chú ý cả hai thành phần của vectơ đều âm."
+                    : "⚠️ Sau 2 lần thử: <strong>A = (6-4 ; 2-1) = (2 ; 1)</strong>.", "italic");
                 triggerShake();
             }
         }
@@ -916,7 +940,10 @@
                 setCaption("✅ <strong>Chính xác!</strong> Khi k = -1, độ dài vectơ không đổi nhưng chiều bị đảo ngược 180 độ. Bạn đã mở khóa Bước 6!", "italic");
                 unlockNext(6);
             } else {
-                setCaption("⚠️ Chưa đúng! Bạn thử kéo slider sang k = -1 và quan sát chiều mũi tên xem thế nào nhé.", "italic");
+                const attempt = registerWrongAttempt(5);
+                setCaption(attempt < 2
+                    ? "⚠️ Chưa đúng! Hãy kéo slider sang k = -1 và quan sát chiều mũi tên."
+                    : "⚠️ Sau 2 lần thử: với <strong>k = -1, vectơ đảo chiều 180° và giữ nguyên độ dài</strong>.", "italic");
                 triggerShake();
             }
         }
@@ -999,8 +1026,10 @@
         });
 
         function endPointerDrag(e) {
+            const attemptedTask = dragPoint ? currentTask : null;
             dragPoint = null;
             if (e && canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+            if (attemptedTask) registerWrongAttempt(attemptedTask);
         }
         canvas.addEventListener('pointerup', endPointerDrag);
         canvas.addEventListener('pointercancel', endPointerDrag);
@@ -1063,6 +1092,7 @@
                 const gy = Math.round((pts.A.y + pts.B.y + pts.C.y) / 3 * 10) / 10;
                 if (Math.abs(pts.G.x - gx) < 0.5 && Math.abs(pts.G.y - gy) < 0.5) {
                     pts.G.x = gx; pts.G.y = gy;
+                    solvedTasks.add(7);
                     setCaption(`✅ Trọng tâm G(${gx};${gy}) là điểm cân bằng khối lượng tam giác.`);
                     document.getElementById('p5-summary-table').style.display = 'block';
                     document.getElementById('p5-quick-challenge').style.display = 'block';
@@ -1184,6 +1214,21 @@
             const bar = document.getElementById('formula-bar');
             if (!bar) return;
 
+            const revealAnswer = wrongAttempts[currentTask] >= 2 || solvedTasks.has(currentTask);
+            if (!revealAnswer) {
+                const prompts = {
+                    1: 'Gợi ý: AB = B − A. Hãy kéo B rồi quan sát sự thay đổi theo từng trục.',
+                    2: 'Gợi ý: vectơ quay về được tính theo thứ tự điểm cuối trừ điểm đầu.',
+                    3: 'Gợi ý: điểm mới = điểm ban đầu + vectơ dịch chuyển.',
+                    4: 'Gợi ý: cộng riêng hoành độ và tung độ; chú ý dấu âm.',
+                    5: 'Gợi ý: quan sát độ dài và chiều của vectơ khi k đổi dấu.',
+                    6: 'Gợi ý: tọa độ trung điểm là trung bình cộng tọa độ hai đầu mút.',
+                    7: 'Gợi ý: tọa độ trọng tâm là trung bình cộng tọa độ ba đỉnh.'
+                };
+                bar.textContent = prompts[currentTask] || '';
+                return;
+            }
+
             let html = "";
             if (currentTask === 1) {
                 let dx = pts.B.x - pts.A.x;
@@ -1222,6 +1267,7 @@
 
         // Thử thách nhanh
         window.generateChallenge = function () {
+            challengeState.wrongAttempts = 0;
             const types = ['vector', 'midpoint', 'addition', 'subtraction'];
             const type = types[Math.floor(Math.random() * types.length)];
             challengeState.type = type;
@@ -1261,6 +1307,8 @@
             }
 
             document.getElementById('challenge-question').innerHTML = challengeState.questionText;
+            document.getElementById('challenge-answer').value = '';
+            document.getElementById('challenge-feedback').textContent = '';
         }
 
         window.checkChallenge = function () {
@@ -1273,7 +1321,10 @@
                 feedback.innerHTML = "✅ Chính xác! Bạn làm rất tốt.";
                 feedback.style.color = "var(--math-green)";
             } else {
-                feedback.innerHTML = `❌ Chưa đúng! Đáp án đúng là: ${challengeState.correctAnswer}`;
+                challengeState.wrongAttempts++;
+                feedback.innerHTML = challengeState.wrongAttempts < 2
+                    ? '❌ Chưa đúng! Hãy kiểm tra lại công thức và thứ tự các tọa độ.'
+                    : `❌ Sau 2 lần thử, đáp án đúng là: ${challengeState.correctAnswer}`;
                 feedback.style.color = "var(--math-red)";
             }
         }
