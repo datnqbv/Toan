@@ -103,6 +103,8 @@
 
         .sim-container {
             width: min(100%, 1200px);
+            max-width: 100%;
+            min-width: 0;
             margin: 0 auto;
             background: #ffffff;
             border: 2px solid var(--p5-teal);
@@ -143,6 +145,7 @@
         /* Dashboard Core Layout */
         .sim-workspace {
             display: flex;
+            min-width: 0;
             min-height: 620px;
             background-color: #ffffff;
         }
@@ -261,6 +264,7 @@
         /* Main Workspace Content Canvas Area */
         .sim-main-content {
             flex: 1;
+            min-width: 0;
             display: flex;
             flex-direction: column;
             position: relative;
@@ -269,6 +273,8 @@
 
         .canvas-container {
             flex: 1;
+            min-width: 0;
+            max-width: 100%;
             position: relative;
             overflow: hidden;
             background-color: #e0f2fe; /* Đại dương mờ nếu map chưa load */
@@ -291,6 +297,7 @@
             color: var(--ink-2);
             font-size: 0.92rem;
             line-height: 1.65;
+            overflow-wrap:anywhere;
         }
 
         /* Step Interactive UI Widget controls over canvas overlay */
@@ -307,6 +314,14 @@
             z-index: 10;
             display: none;
         }
+
+        .widget-collapse-btn {
+            display:none; width:100%; min-height:44px; padding:8px 10px;
+            border:0; background:transparent; color:var(--jade-dark);
+            font:700 .84rem var(--font-main); cursor:pointer;
+            align-items:center; justify-content:space-between; gap:10px;
+        }
+        .widget-collapse-btn .collapse-icon { transition:transform .2s ease; }
 
         /* Toggle Button styling Component Preset 5 */
         .toggle-btn {
@@ -406,6 +421,10 @@
 
         .p5-btn:active {
             transform: translateY(0);
+        }
+
+        .p5-btn:disabled {
+            opacity:.55; cursor:not-allowed; transform:none;
         }
 
         .p5-btn-teal {
@@ -581,8 +600,12 @@
             .canvas-container { min-height:350px; }
             .step-widget-overlay {
                 top:8px; right:8px; left:8px; width:auto; max-height:48%;
-                overflow-y:auto; padding:10px;
+                overflow-y:auto; padding:8px 10px 10px;
             }
+            #widgetStep1 .widget-collapse-btn { display:flex; }
+            #widgetStep1.mobile-collapsed { padding:0 6px; max-height:52px; }
+            #widgetStep1.mobile-collapsed .widget-body { display:none; }
+            #widgetStep1.mobile-collapsed .collapse-icon { transform:rotate(180deg); }
             .ai-coach-panel { height:auto; min-height:104px; padding:12px; align-items:flex-start; gap:10px; }
             .ai-avatar { width:44px; height:44px; font-size:20px; }
             .explanation-box { min-height:76px; padding:10px 12px; font-size:.82rem; }
@@ -702,7 +725,11 @@
                 <canvas id="stormCanvas"></canvas>
 
                 <div class="step-widget-overlay" id="widgetStep1" style="display: block;">
-                    <div class="text-input-area">
+                    <button class="widget-collapse-btn" id="btnToggleStep1Panel" type="button"
+                            aria-expanded="true" aria-controls="step1WidgetBody">
+                        <span>Mô tả vị trí tâm bão</span><span class="collapse-icon" aria-hidden="true">⌃</span>
+                    </button>
+                    <div class="text-input-area widget-body" id="step1WidgetBody">
                         <label style="font-size: 12px; font-weight:700; color: var(--p5-teal);">Mô tả vị trí tâm bão bằng lời của em:</label>
                         <input type="text" id="txtDescInput" placeholder="Ví dụ: nằm ở ngoài khơi Trung Bộ...">
                         <button class="p5-btn p5-btn-teal" id="btnSubmitStep1" style="width:100%">Gửi báo cáo khí tượng</button>
@@ -744,7 +771,7 @@
                         <label>Độ mờ bản đồ địa lý</label>
                         <input type="range" min="0" max="100" value="100" class="p5-slider" id="sldMapOpacity">
                         <div style="margin-top:8px;">
-                            <button class="p5-btn" style="width:100%; background:var(--p5-teal); color:white;" onclick="alert('Chuyển hướng đến học phần Bài học: Tọa độ của vectơ thông qua Manim Video!')">🎥 Xem video: Tọa độ vectơ</button>
+                            <button class="p5-btn p5-btn-teal" style="width:100%;" id="btnCompleteSimulation" disabled>Hoàn thành mô phỏng</button>
                         </div>
                     </div>
                 </div>
@@ -1252,6 +1279,20 @@
     const tabs = document.querySelectorAll('.timeline-tab');
     const overlays = document.querySelectorAll('.step-widget-overlay');
     const coachSpeech = document.getElementById('aiCoachSpeech');
+    const step1Panel = document.getElementById('widgetStep1');
+    const step1PanelToggle = document.getElementById('btnToggleStep1Panel');
+    const completeButton = document.getElementById('btnCompleteSimulation');
+
+    function setStep1PanelCollapsed(collapsed) {
+        step1Panel.classList.toggle('mobile-collapsed', collapsed);
+        step1PanelToggle.setAttribute('aria-expanded', String(!collapsed));
+        step1PanelToggle.querySelector('.collapse-icon').textContent = collapsed ? '⌄' : '⌃';
+    }
+    step1PanelToggle.addEventListener('click', () => {
+        setStep1PanelCollapsed(!step1Panel.classList.contains('mobile-collapsed'));
+        reportHeight();
+    });
+    if (window.matchMedia('(max-width: 640px)').matches) setStep1PanelCollapsed(true);
 
     tabs.forEach(tab => {
         tab.addEventListener('click', () => {
@@ -1337,6 +1378,7 @@
             state.gridOpacity = 1.0;
             state.storm = { ...config.points.t12_target };
             document.getElementById('sldMapOpacity').value = 30;
+            completeButton.disabled = true;
             coachSpeech.innerText = "Tuyệt vời! Hãy kéo thanh trượt Slider phía trên để biến mất hoàn toàn bản đồ địa lý thực tế. Khi đó, bài toán thực tế đã biến đổi hoàn toàn thành bài toán giải tích đại số thuần túy trên hệ trục phẳng Oxy.";
         }
 
@@ -1360,6 +1402,7 @@
             return;
         }
         coachSpeech.innerHTML = `⚠️ Phản hồi: Các mô tả ngôn từ tự nhiên như của em chưa đủ định lượng chính xác để lệnh sơ tán dân cư an toàn! <strong>Chúng ta bắt buộc phải có một công cụ số hóa chuẩn mực.</strong> Hãy click chọn <span style='color:var(--p5-gold-dark)'>Bước 2</span> dưới timeline.`;
+        if (window.matchMedia('(max-width: 640px)').matches) setStep1PanelCollapsed(true);
     });
 
     // Xem lại hành trình bão tại Bước 1
@@ -1452,10 +1495,6 @@
             updateSidebarDisplay();
             triggerRedraw();
             LMS().event({ type:'answer', id:'step-5', correct:true });
-            if (!state.completionSent) {
-                state.completionSent = true;
-                LMS().complete({ score:1, maxScore:1 });
-            }
         } else {
             triggerWidgetShake(widget5);
             coachSpeech.innerText = "Vị trí em chọn chưa chính xác với quy luật vectơ tịnh tiến rồi. Hãy chú ý: lấy tọa độ mốc 10h là (108.5 ; 13.8) cộng thêm hoành độ vectơ là -4.0 và tung độ là +0.8 nhé!";
@@ -1466,10 +1505,24 @@
     document.getElementById('sldMapOpacity').addEventListener('input', (e) => {
         const val = parseInt(e.target.value);
         state.mapOpacity = val / 100.0;
+        completeButton.disabled = val !== 0;
         triggerRedraw();
         if (val === 0) {
             coachSpeech.innerText = "Giờ đây bản đồ thực địa đã biến mất hoàn toàn. Chúng ta chỉ còn lại hệ Oxy thuần túy, các cặp số giải tích và các phép toán vectơ hình học lý thú.";
         }
+    });
+
+    completeButton.addEventListener('click', () => {
+        if (state.mapOpacity !== 0) return;
+        coachSpeech.innerHTML = '<strong>Hoàn thành!</strong> Em đã chuyển bài toán thực tế về hệ Oxy và dùng phép cộng tọa độ vectơ để dự đoán đường đi của tâm bão.';
+        LMS().event({ type:'simulation-complete', id:'step-6' });
+        if (!state.completionSent) {
+            state.completionSent = true;
+            LMS().complete({ score:1, maxScore:1 });
+        }
+        completeButton.disabled = true;
+        completeButton.textContent = 'Đã hoàn thành';
+        reportHeight();
     });
 
     /* --- CƠ CHẾ KÉO THẢ CHUỘT / ĐIỂM CHẠM TRÊN CANVAS ĐỘNG --- */
