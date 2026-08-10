@@ -1,0 +1,3471 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 3: Tổng hợp lực — Simulation 1: Giải cứu Drone</title>
+  <script type="application/json" id="athena-context">
+{
+  "title": "Module 3: Tổng hợp lực — Simulation 1: Giải cứu Drone",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Hiểu rằng một drone bay trong gió chịu đồng thời 2 lực (lực đẩy động cơ Fₐ và lực gió F_G), và lực quyết định hướng bay thực tế là hợp lực (tổng vectơ) R̄",
+    "Hiểu quy tắc hình bình hành để cộng hai vectơ lực khác hướng: R = √(F₁² + F₂² + 2F₁F₂cosα), khác với việc cộng đại số thông thường (chỉ đúng khi 2 lực cùng hướng)",
+    "Vận dụng kiến thức tổng hợp lực để điều khiển drone bù trừ ảnh hưởng của gió qua 3 màn chơi có mức gió tăng dần"
+  ],
+  "structure": [
+    { "id": "level-1", "title": "Màn 1: Gió lặng (Khởi động) — không có gió cản, điều chỉnh hướng và lực đẩy để drone bay thẳng tới người bị nạn" },
+    { "id": "level-2", "title": "Màn 2: Gió nhẹ (Thử thách) — gió 15N thổi ngang sang phải, cần chỉnh hướng lực đẩy chếch sang trái để bù gió" },
+    { "id": "level-3", "title": "Màn 3: Gió bão (Giải cứu) — gió 30N thổi mạnh sang phải, cần tính toán lực đẩy và góc bù gió chính xác" },
+    { "id": "quiz", "title": "Bảng câu hỏi củng cố (mở khóa sau khi chơi) — 3 câu trắc nghiệm 3 lựa chọn về tổng hợp lực" }
+  ],
+  "athenaGuidance": "Có 3 câu hỏi trắc nghiệm cố định, 3 lựa chọn A/B/C mỗi câu, TUYỆT ĐỐI không nói thẳng đáp án trước khi học sinh tự chọn. Câu 1: 'Drone đang chịu tác động của mấy lực?' — ĐÁP ÁN ĐÚNG là B '2 lực — động cơ và gió' (không phải A chỉ 1 lực động cơ, không phải C từ 3 lực trở lên vì trọng lực và lực nâng đã cân bằng nhau). Câu 2: 'Nếu tăng tốc độ gió, đường bay thực tế sẽ thay đổi thế nào (giữ nguyên lực đẩy và hướng động cơ)?' — ĐÁP ÁN ĐÚNG là B 'Drone bị lệch nhiều hơn về phía gió thổi' (không phải A bay nhanh hơn cùng hướng, không phải C bay chậm hơn cùng hướng — vì gió ngang làm LỆCH hướng chứ không đổi tốc độ theo hướng cũ). Câu 3: 'Hợp lực R̄ = 80N + 30N = 110N — đúng hay sai?' — ĐÁP ÁN ĐÚNG là B 'Sai — chỉ đúng khi hai lực cùng hướng' (không phải A cho là đúng khi cộng trực tiếp, không phải C nói không thể cộng hai lực khác hướng — thực ra CÓ THỂ cộng bằng quy tắc hình bình hành R=√(F₁²+F₂²+2F₁F₂cosα), chỉ là không được cộng đại số đơn giản như số thường trừ khi hai lực cùng hướng). Athena có thể gợi ý học sinh tick 'Hiện hình bình hành' trong simulation để quan sát trực quan cách tính hợp lực đúng, thay vì đọc thẳng công thức kết quả."
+}
+  </script>
+  
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    /* --- CSS Reset & Variables --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+    
+    :root {
+  /* Neutrals · giấy & mực */
+  --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC;
+  --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
+  --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+
+  /* Jade · hành động chính */
+  --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F;
+  --jade-text:#1B5E48; --jade-soft:#A9D0BE; --jade-pale:#DCEAE1;
+
+  /* Sage · phụ trợ */
+  --sage:#A8C9B8; --sage-deep:#7CA792; --sage-text:#46685A; --sage-pale:#E1ECE4;
+
+  /* Accent · điểm nhấn ấm */
+  --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+
+  /* Semantic · đúng/sai/cảnh báo/info */
+  --correct:#2D8B6F; --correct-bg:#DCEAE1;
+  --wrong:#C15F3C;   --wrong-bg:#F3E2D6;
+  --warning:#C58A2E; --warning-bg:#F5E7CB;
+  --info:#4E7F92;    --info-bg:#DCE7EB;
+
+  --white:#FFFFFF;
+  --radius:10px; --radius-lg:14px; --radius-sm:6px;
+  --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+  --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+  --shadow-lg: 0 14px 38px rgba(20, 67, 47, 0.12);
+
+  /* Illustration only · fill phẳng cho minh hoạ (KHÔNG dùng cho UI/text) */
+  --il-terracotta:#C1704B; --il-brick:#9E4A2E; --il-ochre:#C99A3C; --il-olive:#8A9A5B;
+  --il-forest:#2E6B52; --il-dusty-blue:#6E93A6; --il-slate:#4E6E7E; --il-mauve:#8A6A7E; --il-sand:#D8C4A0;
+
+  /* Vector màu canvas Vật lý/Toán (cộng lực, cộng vận tốc...) — PHẦN 1.1 file design Toán */
+  --color-v1: var(--jade); --color-v2: var(--info);
+  --color-resultant: var(--accent); --color-force-red: var(--wrong); --color-gravity: var(--ink-3);
+
+  /* --- alias cho code cũ (giữ để var(--ten-cu) phía dưới vẫn chạy đúng màu mới) --- */
+  --primary: var(--jade-deep);
+  --primary-mid: var(--jade);
+  --primary-light: var(--jade-pale);
+  --accent-dark: var(--accent-deep);
+  --accent-light: var(--accent-pale);
+  --teal-mid: var(--jade-text);
+  --bg-color: var(--cream);
+  --card-bg: var(--white);
+  --card-border: var(--paper-line);
+  --text-main: var(--ink);
+  --text-muted: var(--ink-3);
+  --color-thrust: var(--jade);
+  --color-thrust-glow: var(--jade-soft);
+  --color-wind: var(--info);
+  --color-wind-glow: var(--info-bg);
+  --color-resultant-glow: var(--accent-pale);
+  --green: var(--correct);
+  --red: var(--wrong);
+  --border: var(--paper-line);
+  --surface: var(--white);
+}
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden;
+    }
+    
+    /* --- Layout Container --- */
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0.85rem 1.1rem;
+    }
+    
+    header {
+      display: none !important;
+      border-radius: 12px;
+      padding: 0.9rem 1.4rem;
+      margin-bottom: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(45, 139, 111,0.3);
+      position: relative;
+      overflow: hidden;
+    }
+    header::before {
+      content:'';position:absolute;inset:0;
+      background: radial-gradient(circle at 80% 50%, rgba(232, 162, 74,0.08) 0%, transparent 60%);
+    }
+    header > * { position: relative; z-index: 1; }
+
+    .header-title-container { display: flex; flex-direction: column; }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-start;
+      gap: 0.35rem;
+      background: rgba(232, 162, 74,0.18);
+      border: 1px solid rgba(232, 162, 74,0.4);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.25rem 0.6rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.4rem;
+    }
+
+    header h1 {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      text-shadow: 0 2px 8px rgba(0,0,0,0.25);
+    }
+
+    header p {
+      color: rgba(255,255,255,0.72);
+      font-size: 0.85rem;
+      margin-top: 0.1rem;
+    }
+
+    .header-stats { display: flex; gap: 0.6rem; }
+
+    .stat-badge {
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.2);
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+    }
+
+    .stat-badge .stat-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      color: rgba(255,255,255,0.6);
+      font-weight: 600;
+      letter-spacing: 0.06em;
+    }
+
+    .stat-badge .stat-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+    
+    /* --- Main Workspace Grid --- */
+    .workspace {
+      display: grid;
+      grid-template-columns: 3.5fr 6.5fr;
+      gap: 0.85rem;
+      margin-bottom: 0.85rem;
+      align-items: stretch;
+    }
+    
+    @media (max-width: 1024px) {
+      .workspace {
+        grid-template-columns: 1fr;
+        align-items: start;
+      }
+      .canvas-container { order: -1; }
+      .sidebar { height: auto; }
+    }
+
+    .intro-text {
+      width: 100%;
+      margin-bottom: 0.85rem;
+      padding: 0.9rem 1.1rem;
+      background: var(--jade-pale);
+      border: 1px solid var(--jade-soft);
+      border-left: 4px solid var(--jade-deep);
+      border-radius: var(--radius-lg);
+      color: var(--ink-2);
+      font-size: 0.85rem;
+      line-height: 1.65;
+    }
+    
+    /* --- Left Sidebar (Controls) --- */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      height: 100%;
+    }
+
+    /* --- Right Content Area --- */
+    .canvas-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+    
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 0.9rem 1.1rem;
+      box-shadow: 0 2px 8px rgba(45, 139, 111,0.07);
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.7rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.45rem;
+    }
+
+    .card-title i { color: var(--primary-mid); font-size: 1.15rem; }
+
+    /* --- Sliders Style --- */
+    .control-group { margin-bottom: 0.7rem; }
+    .control-group:last-child { margin-bottom: 0; }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+
+    .slider-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .slider-value {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 0.1rem 0.45rem;
+      border-radius: 5px;
+      border: 1px solid rgba(45, 139, 111,0.15);
+    }
+
+    .slider-container { position: relative; display: flex; align-items: center; }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 5px;
+      background: #E5DECF;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(0,0,0,0.2);
+      transition: transform 0.1s;
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover { transform: scale(1.25); }
+
+    #slider-thrust-mag::-webkit-slider-thumb { background: var(--color-thrust); }
+    #slider-thrust-dir::-webkit-slider-thumb  { background: var(--color-thrust); }
+    #slider-wind-mag::-webkit-slider-thumb    { background: var(--color-wind); }
+
+    /* --- Checkboxes Style --- */
+    .checkbox-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 0.45rem; }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-main);
+      padding: 0.35rem 0.5rem;
+      background: var(--accent-light);
+      border: 1px solid #E5DECF;
+      border-radius: 7px;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .checkbox-item:hover { background: #F0EAD6; border-color: var(--primary-mid); }
+    .checkbox-item input[type="checkbox"] { display: none; }
+
+    .checkbox-custom {
+      width: 16px; height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid var(--primary-mid);
+      display: flex; align-items: center; justify-content: center;
+      transition: var(--transition); flex-shrink: 0;
+    }
+
+    .checkbox-custom i { font-size: 0.7rem; color: #fff; transform: scale(0); transition: var(--transition); }
+
+    .checkbox-item input[type="checkbox"]:checked + .checkbox-custom {
+      background: var(--active-color, var(--primary-mid));
+      border-color: var(--active-color, var(--primary-mid));
+    }
+
+    .checkbox-item input[type="checkbox"]:checked + .checkbox-custom i { transform: scale(1); }
+
+    .cb-thrust      { --active-color: var(--color-thrust); }
+    .cb-wind        { --active-color: var(--color-wind); }
+    .cb-resultant   { --active-color: var(--accent-dark); }
+    .cb-parallelogram{ --active-color: var(--teal-mid); }
+
+    /* --- Toggle Switch --- */
+    .toggle-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--accent-light);
+      border: 1px dashed var(--accent-dark);
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    .toggle-info { display: flex; flex-direction: column; gap: 0.05rem; }
+    .toggle-info span { font-weight: 700; color: var(--accent-dark); font-size: 0.85rem; }
+    .toggle-info p { font-size: 0.75rem; color: var(--text-muted); }
+
+    .switch { position: relative; display: inline-block; width: 44px; height: 22px; }
+    .switch input { opacity: 0; width: 0; height: 0; }
+
+    .slider-switch {
+      position: absolute; cursor: pointer; top:0; left:0; right:0; bottom:0;
+      background: #E5DECF; transition:.4s; border-radius: 34px;
+    }
+
+    .slider-switch:before {
+      position: absolute; content:""; height:16px; width:16px;
+      left:3px; bottom:3px; background:#fff; transition:.4s; border-radius:50%;
+    }
+
+    .switch input:checked + .slider-switch { background: var(--primary-mid); }
+    .switch input:checked + .slider-switch:before { transform: translateX(22px); }
+    
+    /* --- Action Buttons --- */
+    .button-group { display: flex; gap: 0.55rem; }
+
+    .btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.55rem 0.75rem;
+      font-family: var(--font-main);
+      font-weight: 700;
+      font-size: 0.88rem;
+      border: none;
+      border-radius: 16px;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .btn-launch {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(45, 139, 111,0.3);
+    }
+
+    .btn-launch:hover { background: var(--teal-mid); transform: translateY(-1px); }
+    .btn-launch:active { transform: translateY(0); }
+
+    .btn-launch.flying {
+      background: #C15F3C;
+      color: #fff;
+      box-shadow: 0 4px 14px rgba(193, 95, 60,0.3);
+    }
+
+    .btn-reset {
+      background: #FAF7F0;
+      border: 1.5px dashed #E5DECF;
+      color: var(--text-muted);
+    }
+
+    .btn-reset:hover { border-color: var(--primary-mid); color: var(--primary-mid); }
+
+    .btn-explore {
+      background: var(--accent);
+      color: var(--primary);
+      box-shadow: 0 4px 14px rgba(232, 162, 74,0.4);
+      flex: 1.3;
+    }
+
+    .btn-explore:hover { background: #e8bc62; transform: translateY(-1px); }
+
+    /* --- Canvas wrapper --- */
+    .canvas-wrapper {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #87CEEB;
+      box-shadow: 0 4px 20px rgba(45, 139, 111,0.12);
+    }
+    
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 800 / 600;
+      cursor: default;
+    }
+    
+    /* --- Info Bar --- */
+    .info-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      background: var(--primary-light);
+      border: 1px solid rgba(45, 139, 111,0.15);
+      border-radius: 10px;
+      padding: 0.8rem 0.9rem;
+    }
+
+    .info-bar.success {
+      background: #DCEAE1;
+      border-color: var(--primary-mid);
+    }
+
+    .info-item { display: flex; align-items: center; gap: 0.45rem; }
+    .info-icon { font-size: 1.2rem; color: var(--primary-mid); display: flex; align-items: center; }
+    .info-bar.success .info-icon { color: var(--green); }
+    .info-data { display: flex; flex-direction: column; }
+    .info-label { font-size: 0.68rem; color: var(--text-muted); text-transform: uppercase; font-weight: 700; letter-spacing:.06em; }
+    .info-value { font-size: 0.95rem; font-weight: 700; color: var(--text-main); }
+    .info-bar.success .info-value { color: var(--green); }
+
+    /* --- Coach Box --- */
+    .coach-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary-mid);
+      border-radius: 10px;
+      padding: 1.5rem 0.9rem;
+      display: flex;
+      gap: 0.7rem;
+      align-items: flex-start;
+    }
+
+    .coach-avatar {
+      width: 30px; height: 30px;
+      border-radius: 8px;
+      background: var(--primary-light);
+      border: 1px solid rgba(45, 139, 111,0.2);
+      display: flex; align-items: center; justify-content: center;
+      color: var(--primary-mid);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .coach-name { font-size: 0.8rem; font-weight: 700; color: var(--primary); margin-bottom: 0.05rem; }
+    .coach-text { font-size: 0.85rem; color: var(--text-2, #4A5568); }
+
+    /* --- Canvas Overlay (success) --- */
+    .canvas-overlay {
+      position: absolute; top:0; left:0; right:0; bottom:0;
+      background: rgba(45, 139, 111,0.82);
+      backdrop-filter: blur(6px);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 2rem;
+      opacity: 0; pointer-events: none;
+      transition: opacity 0.4s ease; z-index: 10;
+    }
+
+    .canvas-overlay.show { opacity: 1; pointer-events: auto; }
+
+    .overlay-icon {
+      width: 70px; height: 70px; border-radius: 50%;
+      background: rgba(232, 162, 74,0.15);
+      border: 2px solid var(--accent);
+      display: flex; align-items: center; justify-content: center;
+      font-size: 2.2rem; color: var(--accent);
+      margin-bottom: 1.25rem;
+    }
+
+    .overlay-title { font-size: 1.5rem; font-weight: 800; color: #fff; margin-bottom: 0.5rem; }
+    .overlay-desc { color: rgba(255,255,255,0.75); font-size: 0.9rem; max-width:400px; margin-bottom: 1.5rem; }
+    
+    /* --- Bottom Sections (Quiz & Theory) --- */
+    .bottom-section {
+      display: grid;
+      grid-template-columns: 1.3fr 0.7fr;
+      gap: 0.85rem;
+      margin-top: 0.85rem;
+      align-items: start;
+    }
+    
+    @media (max-width: 1024px) {
+      .bottom-section {
+        grid-template-columns: 1fr;
+      }
+    }
+    
+    /* --- Quiz card needs relative positioning --- */
+    .quiz-card { position: relative; overflow: hidden; }
+
+    /* --- Quiz locked overlay --- */
+    .quiz-locked-overlay {
+      position: absolute; top:0; left:0; right:0; bottom:0;
+      background: rgba(255, 255, 255, 0.75);
+      backdrop-filter: blur(8px);
+      -webkit-backdrop-filter: blur(8px);
+      border-radius: var(--radius-lg);
+      display: flex; flex-direction: column;
+      align-items: center; justify-content: center;
+      text-align: center; padding: 2rem;
+      z-index: 5;
+      transition: opacity 0.4s, pointer-events 0.4s;
+    }
+
+    .quiz-locked-overlay.unlocked { opacity: 0; pointer-events: none; }
+    .lock-icon { font-size: 2.2rem; color: var(--accent-dark); margin-bottom:.6rem; }
+    .lock-title { font-size: 1rem; font-weight: 700; color: var(--primary); margin-bottom:.3rem; }
+    .lock-desc { font-size: 0.82rem; color: var(--text-muted); max-width:300px; }
+
+    /* Quiz items */
+    .quiz-list { display: flex; flex-direction: column; gap: 0.75rem; }
+
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .quiz-question-header {
+      padding: .65rem 0.9rem;
+      display: flex; justify-content: space-between; align-items: center;
+      cursor: pointer; user-select: none;
+      background: var(--accent-light);
+    }
+
+    .quiz-question-header:hover { background: #F0EAD6; }
+    .quiz-title-text { font-size: .88rem; font-weight: 600; color: var(--text-main); display:flex; align-items:center; gap:.5rem; }
+    .quiz-title-text i { color: var(--accent-dark); }
+    .quiz-arrow { font-size:.8rem; color: var(--text-muted); transition: transform .3s; }
+    .quiz-item.expanded .quiz-arrow { transform: rotate(180deg); }
+
+    .quiz-body { max-height: 0; overflow: hidden; transition: max-height .3s ease-out; border-top: 0 solid var(--border); }
+    .quiz-item.expanded .quiz-body { max-height: 420px; border-top-width: 1px; }
+    .quiz-content { padding: 0.8rem; }
+
+    .options-list { display:flex; flex-direction:column; gap:.4rem; margin-bottom:.65rem; }
+
+    .option-btn {
+      width:100%; text-align:left;
+      background: var(--accent-light);
+      border: 1px solid #E5DECF;
+      padding: .5rem 0.8rem;
+      border-radius: 7px;
+      color: var(--text-main);
+      font-size: .82rem;
+      cursor: pointer;
+      display:flex; justify-content:space-between; align-items:center;
+      transition: var(--transition);
+      font-family: var(--font-main);
+    }
+
+    .option-btn:hover:not(.disabled) { background: #F0EAD6; border-color: var(--primary-mid); }
+    .option-btn.selected-correct { background: #DCEAE1; border-color: var(--green); color: var(--green); font-weight:700; }
+    .option-btn.selected-wrong { background: #F3E2D6; border-color: var(--red); color: var(--red); font-weight:700; }
+    .option-btn.correct-reveal { background: #DCEAE1; border-color: var(--green); color: var(--green); }
+    .option-btn.disabled { cursor:not-allowed; opacity:.6; }
+
+    .quiz-explanation {
+      background: var(--primary-light);
+      border-left: 3px solid var(--primary-mid);
+      padding: .7rem 1rem;
+      border-radius: 0 8px 8px 0;
+      font-size: .82rem;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    @keyframes fadeIn { from{opacity:0;transform:translateY(4px)} to{opacity:1;transform:translateY(0)} }
+
+    .quiz-explanation.show { display:block; animation: fadeIn .3s forwards; }
+    .quiz-explanation.correct { border-left-color: var(--green); }
+    .quiz-explanation.wrong { border-left-color: var(--red); }
+    .quiz-explanation-title { font-weight:700; font-size:.82rem; margin-bottom:.2rem; display:flex; align-items:center; gap:.3rem; }
+    .quiz-explanation.correct .quiz-explanation-title { color: var(--green); }
+    .quiz-explanation.wrong .quiz-explanation-title { color: var(--red); }
+
+    .quiz-locked-overlay.unlocked {
+      opacity: 0;
+      pointer-events: none;
+    }
+    
+    /* Question Item Styles */
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+    }
+    
+    /* --- Walkthrough / Timeline --- */
+    .btn-step {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      color: var(--text-main);
+      padding: 0.4rem 0.8rem;
+      font-size: 0.75rem;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: var(--font-main);
+    }
+
+    .btn-step:hover:not(:disabled) { background: var(--primary-light); border-color: var(--primary-mid); }
+    .btn-step:disabled { opacity: 0.35; cursor: not-allowed; }
+
+    .timeline-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.6rem;
+    }
+
+    @media (max-width: 768px) { .timeline-steps { grid-template-columns: 1fr; } }
+
+    .timeline-step {
+      background: var(--accent-light);
+      border: 1.5px solid #E5DECF;
+      border-radius: 10px;
+      padding: 0.75rem 0.85rem;
+      position: relative;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .timeline-step.active {
+      background: var(--primary-light);
+      border-color: var(--primary-mid);
+      box-shadow: 0 0 12px rgba(60, 165, 122,0.15);
+    }
+
+    .timeline-step.completed {
+      border-color: var(--green);
+      background: #DCEAE1;
+    }
+
+    .step-number {
+      position: absolute; top: .8rem; right: 1rem;
+      font-size: 1.5rem; font-weight: 800;
+      color: rgba(45, 139, 111,0.06); line-height:1;
+    }
+
+    .timeline-step.active .step-number   { color: rgba(60, 165, 122,0.18); }
+    .timeline-step.completed .step-number{ color: rgba(45, 139, 111,0.18); }
+
+    .step-title {
+      font-size: 0.88rem; font-weight: 700;
+      margin-bottom: 0.3rem;
+      display: flex; align-items: center; gap: .35rem;
+      color: var(--text-main);
+    }
+
+    .timeline-step.active .step-title    { color: var(--primary); }
+    .timeline-step.completed .step-title { color: var(--green); }
+
+    .step-desc { font-size: 0.75rem; color: var(--text-muted); line-height: 1.45; }
+    .timeline-step.active .step-desc { color: var(--text-main); }
+
+    /* Theory box */
+    .theory-box { font-size:.85rem; color: var(--text-muted); display:flex; flex-direction:column; gap:.7rem; }
+    .collapsible-panel { width: 100%; }
+    .cp-toggle {
+      width: 100%; min-height: 44px; padding: 0.65rem 0;
+      display: flex; align-items: center; justify-content: space-between; gap: 0.75rem;
+      border: 0; border-bottom: 1px solid var(--border); background: transparent;
+      color: var(--primary); font: inherit; font-size: 1rem; font-weight: 700;
+      text-align: left; cursor: pointer;
+    }
+    .cp-toggle > span { display: inline-flex; align-items: center; gap: 0.45rem; }
+    .cp-toggle > span i { color: var(--color-thrust); font-size: 1.15rem; }
+    .cp-chevron { color: var(--text-muted); transition: transform 0.25s ease; }
+    .cp-body {
+      max-height: 900px; padding-top: 0.75rem; overflow: hidden; opacity: 1;
+      transition: max-height 0.3s ease, opacity 0.2s ease, padding-top 0.3s ease;
+    }
+    .collapsible-panel.collapsed .cp-body { max-height: 0; padding-top: 0; opacity: 0; }
+    .collapsible-panel.collapsed .cp-chevron { transform: rotate(180deg); }
+    .formula-badge {
+      align-self:center; background: var(--primary-light);
+      border: 1px solid rgba(45, 139, 111,0.2);
+      padding: .4rem 1rem; border-radius: 7px;
+      font-family: var(--font-mono); font-size: .9rem;
+      color: var(--primary); margin: .25rem 0;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15rem;
+    }
+    
+    .sqrt-container {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 2px;
+    }
+    
+    .sqrt-symbol {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 1.25em;
+      line-height: 0.9;
+      margin-right: -3px;
+      transform: translateY(-1.5px);
+    }
+    
+    .sqrt-content {
+      border-top: 1.5px solid currentColor;
+      padding-top: 1.5px;
+      line-height: 1.1;
+      display: inline-block;
+    }
+    
+    .vec {
+      position: relative;
+      display: inline-block;
+      padding-top: 0.15em;
+      font-style: italic;
+    }
+    
+    .vec::after {
+      content: "→";
+      position: absolute;
+      top: -0.45em;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0.7);
+      font-size: 0.75em;
+    }
+    .theory-tip {
+      background: var(--blue-light, #DCE7EB);
+      border: 1px solid #90CAF9;
+      padding: .5rem 0.75rem; border-radius: 8px;
+      font-size: .8rem; color: var(--text-main);
+      display:flex; gap:.4rem; align-items:flex-start;
+      margin-top: 0.75rem;
+    }
+    .theory-tip i { color: #4E7F92; font-size:.9rem; margin-top:.1rem; }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+      position:absolute; top:0; left:0;
+      width:100%; height:100%;
+      pointer-events:none; z-index:12;
+    }
+
+    /* --- Level Selector UI --- */
+    .level-selector-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      flex-grow: 1;
+    }
+    
+    .level-item {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 0.6rem 0.85rem;
+      background: var(--accent-light);
+      border: 1px solid #E5DECF;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--text-main);
+      transition: var(--transition);
+      user-select: none;
+      flex-grow: 1;
+    }
+    
+    .level-item:hover:not(.locked) {
+      background: #F0EAD6;
+      border-color: var(--primary-mid);
+      transform: translateY(-1px);
+    }
+    
+    .level-item.active {
+      background: var(--primary-light);
+      border-color: var(--primary-mid);
+      color: var(--primary);
+      box-shadow: 0 2px 8px rgba(60, 165, 122, 0.12);
+    }
+    
+    .level-item.locked {
+      opacity: 0.5;
+      background: #E5DECF;
+      border-color: #D1D5DB;
+      cursor: not-allowed;
+    }
+    
+    .level-title-wrapper {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+    
+    .level-stars {
+      font-family: var(--font-mono);
+      color: var(--accent-dark);
+      font-weight: 700;
+      letter-spacing: 0.05em;
+    }
+    
+    .level-item.locked .level-stars {
+      color: var(--text-muted);
+    }
+    
+    #level-selector-card {
+      display: flex;
+      flex-direction: column;
+      flex-grow: 1;
+    }
+    
+    .remembrance-card {
+      display: flex;
+      flex-direction: column;
+    }
+    
+  
+    /* Pass 2 (mục E) — vùng chạm tối thiểu 44px cho nút bấm thật trên mobile.
+       Không đụng desktop, không thu nhỏ phần tử nào — chỉ nới ra nếu đang < 44px. */
+    @media (max-width: 1024px) {
+      button, .btn, a.btn, input[type="button"], input[type="submit"] {
+        min-height: 44px;
+      }
+      .checkbox-item, .level-item, .toggle-container { min-height: 44px; }
+      input[type="range"]::-webkit-slider-thumb { width: 26px; height: 26px; }
+      input[type="range"]::-moz-range-thumb { width: 26px; height: 26px; }
+    }
+
+    @media (max-width: 640px) {
+      .container { padding: 0.5rem 0.375rem 1rem; }
+      .intro-text { margin-bottom: 0.5rem; padding: 0.7rem 0.8rem; }
+      .workspace, .canvas-container, .sidebar { gap: 0.5rem; }
+      .canvas-wrapper { border-radius: 10px; }
+      .info-bar { grid-template-columns: 1fr; padding: 0.65rem 0.75rem; }
+      .checkbox-grid { grid-template-columns: 1fr; }
+      .button-group { flex-wrap: wrap; }
+      .coach-box { padding: 0.8rem; }
+      .canvas-overlay { padding: 1rem; }
+      .overlay-icon { width: 52px; height: 52px; margin-bottom: 0.65rem; }
+      .overlay-title { font-size: 1.15rem; }
+      .remembrance-card { padding-top: 0.6rem; padding-bottom: 0.6rem; }
+    }
+</style>
+</head>
+<body>
+
+  <div class="container">
+    
+    <!-- Header -->
+    <header>
+      <div class="header-title-container">
+        <span class="header-badge"><i class="ti ti-drone"></i> Simulation 1</span>
+        <h1>MODULE 3: TỔNG HỢP LỰC — GIẢI CỨU DRONE</h1>
+        <p>Phân tích chuyển động của thiết bị bay trong trường lực gió bằng Quy tắc hình bình hành</p>
+      </div>
+      
+      <div class="header-stats">
+        <div class="stat-badge">
+          <div class="stat-label">Tổng Điểm</div>
+          <div id="stat-total-score" class="stat-value" style="color: var(--accent);">0</div>
+        </div>
+        <div class="stat-badge">
+          <div class="stat-label">Hợp lực R̄</div>
+          <div id="stat-resultant-val" class="stat-value">95 N</div>
+        </div>
+        <div class="stat-badge">
+          <div class="stat-label">Góc hợp lực</div>
+          <div id="stat-resultant-ang" class="stat-value">25.6°</div>
+        </div>
+      </div>
+    </header>
+
+    <div class="intro-text">
+      Điều chỉnh độ lớn và hướng của lực đẩy để bù lực gió, sau đó quan sát hợp lực theo quy tắc hình bình hành và đưa drone đến đúng mục tiêu cứu nạn.
+    </div>
+    
+    <!-- Main Workspace -->
+    <div class="workspace">
+      
+      <!-- Left Column: Controls Sidebar -->
+      <div class="sidebar">
+        
+
+        <!-- Vector Parameters Card -->
+        <div class="card">
+          <div class="card-title">
+            <i class="ti ti-adjustments-horizontal"></i>
+            <span>Thiết lập thông số lực</span>
+          </div>
+          
+          <!-- Slider 1: Thrust Magnitude -->
+          <div class="control-group">
+            <div class="slider-header">
+              <span class="slider-label" style="color: var(--color-thrust)">
+                <i class="ti ti-bolt"></i> Độ lớn lực đẩy (Fₐ)
+              </span>
+              <span id="label-thrust-mag" class="slider-value">80 N</span>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="slider-thrust-mag" min="0" max="100" value="80">
+            </div>
+          </div>
+          
+          <!-- Slider 2: Thrust Direction -->
+          <div class="control-group">
+            <div class="slider-header">
+              <span class="slider-label" style="color: var(--color-thrust)">
+                <i class="ti ti-compass"></i> Hướng lực đẩy (θ)
+              </span>
+              <span id="label-thrust-dir" class="slider-value">35°</span>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="slider-thrust-dir" min="0" max="360" value="35">
+            </div>
+          </div>
+          
+          <!-- Slider 3: Wind Force -->
+          <div class="control-group">
+            <div class="slider-header">
+              <span class="slider-label" style="color: var(--color-wind)">
+                <i class="ti ti-wind"></i> Tốc độ/Lực gió (F_G)
+              </span>
+              <span id="label-wind-mag" class="slider-value">30 N</span>
+            </div>
+            <div class="slider-container">
+              <input type="range" id="slider-wind-mag" min="0" max="50" value="30">
+            </div>
+          </div>
+        </div>
+        
+        <!-- Display Customization Card -->
+        <div class="card">
+          <div class="card-title">
+            <i class="ti ti-eye"></i>
+            <span>Tùy chọn hiển thị</span>
+          </div>
+          
+          <div class="checkbox-grid">
+            <label class="checkbox-item cb-thrust">
+              <input type="checkbox" id="cb-show-thrust" checked>
+              <div class="checkbox-custom"><i class="ti ti-check"></i></div>
+              <span>Lực đẩy Fₐ</span>
+            </label>
+            
+            <label class="checkbox-item cb-wind">
+              <input type="checkbox" id="cb-show-wind" checked>
+              <div class="checkbox-custom"><i class="ti ti-check"></i></div>
+              <span>Lực gió F_G</span>
+            </label>
+            
+            <label class="checkbox-item cb-resultant">
+              <input type="checkbox" id="cb-show-resultant" checked>
+              <div class="checkbox-custom"><i class="ti ti-check"></i></div>
+              <span>Hợp lực R̄</span>
+            </label>
+            
+            <label class="checkbox-item cb-parallelogram">
+              <input type="checkbox" id="cb-show-parallelogram">
+              <div class="checkbox-custom"><i class="ti ti-check"></i></div>
+              <span>Hình bình hành</span>
+            </label>
+          </div>
+          
+          <div class="control-group" style="margin-top: 1rem;">
+            <div class="toggle-container">
+              <div class="toggle-info">
+                <span>Chế độ ẩn hợp lực</span>
+                <p>Ẩn R̄ trên màn hình để dự đoán trước</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="toggle-hide-resultant">
+                <span class="slider-switch"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+        
+        <!-- Action Buttons Card -->
+        <div class="card">
+          <div class="button-group">
+            <button id="btn-reset" class="btn btn-reset">
+              <i class="ti ti-refresh"></i> Đặt lại
+            </button>
+            <button id="btn-launch" class="btn btn-launch">
+              <i class="ti ti-player-play"></i> Bay!
+            </button>
+          </div>
+          <button id="btn-explore" class="btn btn-explore" style="width: 100%; margin-top: 0.75rem;">
+            <i class="ti ti-rocket"></i> Xem khám phá
+          </button>
+        </div>
+
+        <!-- Level Selector Card -->
+        <div class="card" id="level-selector-card">
+          <div class="card-title">
+            <i class="ti ti-trophy" style="color: var(--accent-dark);"></i>
+            <span>Màn chơi & Thành tích</span>
+          </div>
+          
+          <div class="level-selector-container">
+            <div class="level-item active" id="lvl-item-1" onclick="selectLevel(1)">
+              <div class="level-title-wrapper">
+                <i class="ti ti-circle-number-1" style="color: var(--primary-mid);"></i>
+                <span>Màn 1: Gió lặng (0N)</span>
+              </div>
+              <span class="level-stars" id="lvl-stars-1">☆☆☆</span>
+            </div>
+            
+            <div class="level-item locked" id="lvl-item-2" onclick="selectLevel(2)">
+              <div class="level-title-wrapper">
+                <i class="ti ti-lock" id="lvl-lock-icon-2"></i>
+                <span id="lvl-name-2">Màn 2: Gió nhẹ (15N)</span>
+              </div>
+              <span class="level-stars" id="lvl-stars-2">☆☆☆</span>
+            </div>
+            
+            <div class="level-item locked" id="lvl-item-3" onclick="selectLevel(3)">
+              <div class="level-title-wrapper">
+                <i class="ti ti-lock" id="lvl-lock-icon-3"></i>
+                <span id="lvl-name-3">Màn 3: Gió bão (30N)</span>
+              </div>
+              <span class="level-stars" id="lvl-stars-3">☆☆☆</span>
+            </div>
+            
+            <div class="level-item" id="lvl-item-4" onclick="selectLevel(4)">
+              <div class="level-title-wrapper">
+                <i class="ti ti-disabled"></i>
+                <span>Chế độ tự do (Sandbox)</span>
+              </div>
+              <span class="level-stars" id="lvl-stars-4">— — —</span>
+            </div>
+          </div>
+        </div>
+        
+      </div>
+      
+      <!-- Right Column: Canvas Container -->
+      <div class="canvas-container">
+        
+        <!-- The Main Interactive Canvas -->
+        <div class="canvas-wrapper">
+          <canvas id="sim-canvas" width="800" height="600"></canvas>
+          
+          <!-- Victory Confetti Canvas overlay -->
+          <canvas id="confetti-canvas"></canvas>
+          
+          <!-- Success Overlay message -->
+          <div id="success-overlay" class="canvas-overlay">
+            <div class="overlay-icon">
+              <i class="ti ti-circle-check"></i>
+            </div>
+            <div class="overlay-title">Cứu nạn thành công!</div>
+            <div class="overlay-desc">
+              Bạn đã bù lực gió xuất sắc giúp Drone tiếp cận mục tiêu. Quy tắc hình bình hành giải thích hiện tượng này như thế nào?
+            </div>
+            <button id="overlay-btn-explore" class="btn btn-explore">
+              <i class="ti ti-arrow-right"></i> Xem phân tích Khám phá
+            </button>
+          </div>
+        </div>
+        
+        <!-- Info Bar under Canvas -->
+        <div id="info-bar" class="info-bar">
+          <div class="info-item">
+            <div class="info-icon"><i class="ti ti-target-arrow"></i></div>
+            <div class="info-data">
+              <span class="info-label">Khoảng cách đến mục tiêu</span>
+              <span id="info-distance" class="info-value">-- m</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-icon"><i class="ti ti-clock"></i></div>
+            <div class="info-data">
+              <span class="info-label">Thời gian bay dự kiến</span>
+              <span id="info-time" class="info-value">-- s</span>
+            </div>
+          </div>
+          
+          <div class="info-item">
+            <div class="info-icon"><i class="ti ti-arrow-up-right"></i></div>
+            <div class="info-data">
+              <span class="info-label">Hướng bay thực tế</span>
+              <span id="info-angle" class="info-value">--°</span>
+            </div>
+          </div>
+        </div>
+        
+        <!-- AI Coach Chatbox -->
+        <div class="coach-box">
+          <div class="coach-avatar">
+            <i class="ti ti-robot"></i>
+          </div>
+          <div class="coach-content">
+            <div class="coach-name">Athena Coach</div>
+            <div id="coach-text" class="coach-text">
+              Hãy điều chỉnh lực đẩy và hướng bay của drone để đưa nó đến mục tiêu cứu hộ. Gió đang thổi mạnh về bên phải đấy nhé!
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div> <!-- End Main Workspace -->
+
+    <!-- Walkthrough Section (Timeline Steps) -->
+    <div id="walkthrough-section" class="card walkthrough-section" style="margin-top: 0.85rem;">
+      <div class="walkthrough-header">
+        <div style="display: flex; align-items: center; gap: 0.5rem;">
+          <i class="ti ti-school" style="color: var(--color-resultant)"></i>
+          <span style="font-family: var(--font-heading); font-weight: 700; font-size: 1.15rem;">Khám phá: Dựng hình hình bình hành tổng hợp lực - Hãy nhìn lên màn hình drone ban đầu
+</span>
+        </div>
+        <div class="walkthrough-controls">
+          <button id="btn-prev-step" class="btn-step" disabled onclick="prevStep()">
+            <i class="ti ti-chevron-left"></i> Trước
+          </button>
+          <button id="btn-next-step" class="btn-step" onclick="nextStep()">
+            Tiếp theo <i class="ti ti-chevron-right"></i>
+          </button>
+        </div>
+      </div>
+      
+      <div class="timeline-steps">
+        <!-- Step 1 -->
+        <div class="timeline-step active" id="step-1" onclick="setStep(1)">
+          <span class="step-number">01</span>
+          <div class="step-title">
+            <i class="ti ti-circle-1"></i> Hai lực tác động
+          </div>
+          <p class="step-desc">Drone chịu đồng thời 2 lực: lực đẩy (Fₐ) và gió (F_g)</p>
+        </div>
+        
+        <!-- Step 2 -->
+        <div class="timeline-step" id="step-2" onclick="setStep(2)">
+          <span class="step-number">02</span>
+          <div class="step-title">
+            <i class="ti ti-arrows-minimize"></i> Dịch chuyển về cùng gốc
+          </div>
+          <p class="step-desc">Để tổng hợp lực, ta dịch chuyển các vector về cùng điểm đặt (không đổi hướng và độ lớn)</p>
+        </div>
+        
+        <!-- Step 3 -->
+        <div class="timeline-step" id="step-3" onclick="setStep(3)">
+          <span class="step-number">03</span>
+          <div class="step-title">
+            <i class="ti ti-vector-triangle"></i> Tạo thành hình bình hành
+          </div>
+          <p class="step-desc">Vẽ bản sao của mỗi vector từ đầu vector kia → tạo thành hình bình hành</p>
+        </div>
+        
+        <!-- Step 4 -->
+        <div class="timeline-step" id="step-4" onclick="setStep(4)">
+          <span class="step-number">04</span>
+          <div class="step-title">
+            <i class="ti ti-arrow-up-right"></i> Đường chéo là hợp lực
+          </div>
+          <p class="step-desc">Đường chéo của hình bình hành chính là hợp lực R̄ — đây là hướng và độ lớn lực thực tế tác động lên drone.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Section: Quiz & Remembrance -->
+    <div class="bottom-section">
+      
+      <!-- Quiz Area -->
+      <div class="card quiz-card">
+        <!-- Glassmorphic locked screen overlay -->
+        <div id="quiz-locked" class="quiz-locked-overlay">
+          <div class="lock-icon"><i class="ti ti-lock"></i></div>
+          <h3 class="lock-title">Bảng câu hỏi bị khóa</h3>
+          <p class="lock-desc">Đưa drone cứu hộ đến mục tiêu hoặc hoàn thành 4 bước "Xem khám phá" để mở khóa phần kiểm tra nhanh.</p>
+        </div>
+        
+        <div class="card-title" style="justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="ti ti-help-octagon" style="color: var(--color-resultant)"></i>
+            <span>Kiểm tra nhanh (Quiz)</span>
+          </div>
+          <span style="font-size: 0.75rem; background: rgba(16, 185, 129, 0.15); color: var(--color-thrust); padding: 0.2rem 0.5rem; border-radius: 6px; font-weight: 700;">3 CÂU HỎI</span>
+        </div>
+        
+        <div class="quiz-list">
+          
+          <!-- Question 1 -->
+          <div class="quiz-item" id="q1">
+            <div class="quiz-question-header" onclick="toggleQuiz(1)">
+              <span class="quiz-title-text">❓ Câu 1: Drone đang chịu tác động của mấy lực?</span>
+              <span class="quiz-arrow"><i class="ti ti-chevron-down"></i></span>
+            </div>
+            <div class="quiz-body">
+              <div class="quiz-content">
+                <div class="options-list">
+                  <button class="option-btn" onclick="selectOption(1, 'A')">
+                    <span>A. 1 lực — chỉ có động cơ</span>
+                    <i class="ti ti-circle"></i>
+                  </button>
+                  <button class="option-btn" onclick="selectOption(1, 'B')">
+                    <span>B. 2 lực — động cơ và gió</span>
+                    <i class="ti ti-circle"></i>
+                  </button>
+                  <button class="option-btn" onclick="selectOption(1, 'C')">
+                    <span>C. 3 lực trở lên</span>
+                    <i class="ti ti-circle"></i>
+                  </button>
+                </div>
+                <div id="exp-q1" class="quiz-explanation">
+                  <div class="quiz-explanation-title"></div>
+                  <div class="quiz-explanation-text"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Question 2 -->
+          <div class="quiz-item" id="q2">
+            <div class="quiz-question-header" onclick="toggleQuiz(2)">
+              <span class="quiz-title-text">❓ Câu 2: Nếu tăng tốc độ gió, đường bay thực tế sẽ thay đổi thế nào (giữ nguyên lực đẩy và hướng động cơ)?</span>
+              <span class="quiz-arrow"><i class="ti ti-chevron-down"></i></span>
+            </div>
+            <div class="quiz-body">
+              <div class="quiz-content">
+                <div class="options-list">
+                  <button class="option-btn" onclick="selectOption(2, 'A')">
+                    <span>A. Drone bay nhanh hơn theo cùng hướng</span>
+                    <i class="ti ti-circle"></i>
+                  </button>
+                  <button class="option-btn" onclick="selectOption(2, 'B')">
+                    <span>B. Drone bị lệch nhiều hơn về phía gió thổi</span>
+                    <i class="ti ti-circle"></i>
+                  </button>
+                  <button class="option-btn" onclick="selectOption(2, 'C')">
+                    <span>C. Drone bay chậm hơn nhưng vẫn cùng hướng</span>
+                    <i class="ti ti-circle"></i>
+                  </button>
+                </div>
+                <div id="exp-q2" class="quiz-explanation">
+                  <div class="quiz-explanation-title"></div>
+                  <div class="quiz-explanation-text"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+          <!-- Question 3 -->
+          <div class="quiz-item" id="q3">
+            <div class="quiz-question-header" onclick="toggleQuiz(3)">
+              <span class="quiz-title-text">❓ Câu 3: Hợp lực R̄ = 80N + 30N = 110N — đúng hay sai?</span>
+              <span class="quiz-arrow"><i class="ti ti-chevron-down"></i></span>
+            </div>
+            <div class="quiz-body">
+              <div class="quiz-content">
+                <div class="options-list">
+                  <button class="option-btn" onclick="selectOption(3, 'A')">
+                    <span>A. Đúng — cộng hai lực lại là được</span>
+                    <i class="ti ti-circle"></i>
+                  </button>
+                  <button class="option-btn" onclick="selectOption(3, 'B')">
+                    <span>B. Sai — chỉ đúng khi hai lực cùng hướng</span>
+                    <i class="ti ti-circle"></i>
+                  </button>
+                  <button class="option-btn" onclick="selectOption(3, 'C')">
+                    <span>C. Sai — không thể cộng hai lực khác hướng</span>
+                    <i class="ti ti-circle"></i>
+                  </button>
+                </div>
+                <div id="exp-q3" class="quiz-explanation">
+                  <div class="quiz-explanation-title"></div>
+                  <div class="quiz-explanation-text"></div>
+                </div>
+              </div>
+            </div>
+          </div>
+          
+        </div>
+      </div>
+
+      <!-- Theory & Remembrance Area -->
+      <div class="card remembrance-card">
+        <div class="collapsible-panel" id="theoryPanel">
+          <button class="cp-toggle" type="button" onclick="toggleCollapsible('theoryPanel')"
+                  aria-expanded="true" aria-controls="theoryPanel-body">
+            <span><i class="ti ti-book"></i> Ghi nhớ cốt lõi</span>
+            <i class="ti ti-chevron-up cp-chevron"></i>
+          </button>
+          <div class="cp-body" id="theoryPanel-body">
+            <div class="theory-box">
+              <p><strong>Tổng hợp lực</strong> là thay thế nhiều lực tác dụng đồng thời vào cùng một vật bằng một lực duy nhất có tác dụng giống hệt hệ lực đó. Lực thay thế gọi là <strong>hợp lực</strong>.</p>
+              <p><strong>Quy tắc hình bình hành:</strong> Nếu hai lực đồng quy được biểu diễn bằng hai cạnh của một hình bình hành vẽ từ điểm đồng quy, thì đường chéo xuất phát từ điểm đó biểu diễn hợp lực của chúng.</p>
+
+              <div class="formula-badge">
+                R = <span class="sqrt-container"><span class="sqrt-symbol">&radic;</span><span class="sqrt-content">F₁² + F₂² + 2F₁F₂cos(&alpha;)</span></span>
+              </div>
+
+              <p>Trong đó, <strong>&alpha;</strong> là góc hợp bởi hai lực thành phần <span class="vec">F</span>₁ và <span class="vec">F</span>₂.</p>
+            </div>
+
+            <div class="theory-tip">
+              <i class="ti ti-bulb"></i>
+              <div>
+                <strong>Mẹo bù gió:</strong> Khi gió thổi sang phải (hướng 0°), bạn cần hướng lực đẩy drone chếch lên trên (hướng lớn hơn 32°) để kéo hợp lực R̄ quay về đúng tâm mục tiêu!
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Javascript Simulation Logic -->
+  <script>
+    // ===== LMS safe accessor (PHẦN 7.2 design Toán) — tự thêm, không đụng logic khác =====
+    function LMS(){return window.AiducationLMS||{ready:function(){},progress:function(){},event:function(){},state:function(){},complete:function(){},resize:function(){}};}
+
+    function toggleCollapsible(id) {
+      const panel = document.getElementById(id);
+      if (!panel) return;
+      const collapsed = panel.classList.toggle('collapsed');
+      const button = panel.querySelector('.cp-toggle');
+      if (button) button.setAttribute('aria-expanded', String(!collapsed));
+      requestAnimationFrame(reportHeight);
+    }
+
+    document.addEventListener('DOMContentLoaded', () => {
+      const panel = document.getElementById('theoryPanel');
+      if (!panel) return;
+      const collapsed = window.matchMedia('(max-width: 768px)').matches;
+      panel.classList.toggle('collapsed', collapsed);
+      const button = panel.querySelector('.cp-toggle');
+      if (button) button.setAttribute('aria-expanded', String(!collapsed));
+    });
+
+    
+    // --- Vector 2D Class Helper ---
+    const Vec2 = {
+      add: (a, b) => ({ x: a.x + b.x, y: a.y + b.y }),
+      sub: (a, b) => ({ x: a.x - b.x, y: a.y - b.y }),
+      scale: (v, s) => ({ x: v.x * s, y: v.y * s }),
+      len: v => Math.sqrt(v.x ** 2 + v.y ** 2),
+      norm: v => {
+        const l = Vec2.len(v) || 1;
+        return { x: v.x / l, y: v.y / l };
+      },
+      dot: (a, b) => a.x * b.x + a.y * b.y,
+      angle: v => Math.atan2(v.y, v.x), // radians
+      fromAngle: (ang, length = 1) => ({
+        x: Math.cos(ang) * length,
+        y: Math.sin(ang) * length
+      }),
+      rotate: (v, rad) => ({
+        x: v.x * Math.cos(rad) - v.y * Math.sin(rad),
+        y: v.x * Math.sin(rad) + v.y * Math.cos(rad)
+      }),
+      dist: (a, b) => Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2)
+    };
+
+    // --- State Setup ---
+    const canvas = document.getElementById('sim-canvas');
+    const ctx = canvas.getContext('2d');
+    const CW = 800;
+    const CH = 600;
+    
+    // Retina/High-DPI display scaling for sharp graphics
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = CW * dpr;
+    canvas.height = CH * dpr;
+    ctx.scale(dpr, dpr);
+    
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const confCtx = confettiCanvas.getContext('2d');
+    confettiCanvas.width = CW * dpr;
+    confettiCanvas.height = CH * dpr;
+    confCtx.scale(dpr, dpr);
+
+    // Simulation parameters
+    const startPos = { x: 160, y: 480 };
+    const targetPos = { x: 640, y: 120 };
+    const targetRadius = 32;
+
+    // Physics parameters & state
+    let F_thrust_mag = 80; // magnitude (N)
+    let F_thrust_deg = 35; // degrees (math angle, 0 = right, 90 = up)
+    let F_wind_mag = 30;   // wind force pointing horizontal to right (N)
+    
+    let drone = {
+      x: startPos.x,
+      y: startPos.y,
+      vx: 0,
+      vy: 0,
+      rotorAngle: 0,
+      history: [] // flight path coordinates
+    };
+
+    // UI checkboxes & modes
+    let showThrust = true;
+    let showWind = true;
+    let showResultant = true;
+    let showParallelogram = false;
+    let hideResultantToggle = false; // "Ẩn hợp lực" mode
+
+    // Simulation states: 'idle' | 'flying' | 'success' | 'crashed' | 'walkthrough'
+    let simState = 'idle';
+    let flightProgress = 0; // 0 to 1
+    let flightDuration = 3.5; // seconds
+    let flightStartTime = 0;
+    
+    // Wind particles
+    let windParticles = [];
+    const NUM_WIND_PARTICLES = 30;
+    
+    // Confetti particles
+    let confettiParticles = [];
+    
+    // Walkthrough State
+    let walkthroughStep = 1;
+    let walkthroughDronePos = { x: 400, y: 300 }; // centered
+    let walkthroughTimer = 0;
+    
+    // Quiz state data
+    const quizAnswers = {
+      1: { correct: 'B', selected: null },
+      2: { correct: 'B', selected: null },
+      3: { correct: 'B', selected: null }
+    };
+    
+    const quizExplanations = {
+      1: {
+        A: { status: 'wrong', title: 'Chưa đúng', text: 'Chưa đúng. Ngoài động cơ, drone còn chịu lực gió tác động ngang. Hãy thử tắt hiển thị \'Hợp lực\' và quan sát — drone sẽ bay lệch khỏi hướng động cơ.' },
+        B: { status: 'correct', title: 'Chính xác!', text: 'Chính xác! Drone chịu đồng thời lực đẩy từ động cơ (Fₐ) và lực gió (F_G). Hai lực này hợp thành một lực tổng gọi là hợp lực (R̄) — đây mới là lực quyết định hướng bay thực tế của drone.' },
+        C: { status: 'wrong', title: 'Chưa chính xác', text: 'Trong bài này drone chỉ chịu 2 lực: lực đẩy động cơ và lực gió. Các lực như trọng lực và lực nâng đã cân bằng nhau (drone bay ổn định về độ cao).' }
+      },
+      2: {
+        A: { status: 'wrong', title: 'Chưa đúng', text: 'Không phải vậy. Gió tác động ngang — nó làm LỆCH hướng bay, không làm tăng tốc độ theo hướng cũ. Hãy thử tăng slider gió và xem quỹ đạo bay thay đổi thế nào.' },
+        B: { status: 'correct', title: 'Chính xác!', text: 'Đúng! Khi gió mạnh hơn, vector F_G dài hơn → hợp lực R̄ nghiêng nhiều hơn về phía gió → drone lệch hướng nhiều hơn. Thử kéo slider \'Tốc độ gió\' và quan sát đường nét đứt vàng thay đổi trên canvas.' },
+        C: { status: 'wrong', title: 'Chưa chính xác', text: 'Gió không làm chậm drone (trừ khi thổi ngược chiều). Gió ngang làm LỆCH hướng bay. Tổng tốc độ thực tế của drone là độ lớn hợp lực — thường lớn hơn từng lực thành phần.' }
+      },
+      3: {
+        A: { status: 'wrong', title: 'Sai rồi', text: 'Chưa đúng. Lực là đại lượng vector — phải tính cả hướng lẫn độ lớn. Nếu Fₐ = 80N hướng Bắc và F_G = 30N hướng Đông thì R̄ ≈ 85.4N (không phải 110N). Tick \'Hiện hình bình hành\' để thấy R̄ thực sự.' },
+        B: { status: 'correct', title: 'Chính xác!', text: 'Chính xác! Vector không cộng như số thông thường. R̄ = 80+30 = 110N CHỈ đúng khi Fₐ và F_G cùng hướng. Khi hai lực tạo góc với nhau, ta phải dùng quy tắc hình bình hành: R = √(F₁² + F₂² + 2F₁F₂cosα) Thử tick \'Hiện hình bình hành\' để thấy cách tính đúng.' },
+        C: { status: 'wrong', title: 'Chưa chính xác', text: 'Có thể cộng vector khác hướng — đó chính là mục tiêu của bài học này! Quy tắc hình bình hành cho phép tổng hợp bất kỳ hai vector nào, bất kể góc giữa chúng.' }
+      }
+    };
+
+    // --- Levels & Scoring System ---
+    const LEVELS = [
+      {
+        id: 1,
+        name: "Màn 1: Gió lặng (Khởi động)",
+        desc: "Không có gió cản. Điều chỉnh hướng và lực đẩy để drone bay thẳng tới người bị nạn.",
+        wind: 0,
+        unlocked: true,
+        completed: false,
+        stars: 0,
+        points: 0,
+        attempts: 0
+      },
+      {
+        id: 2,
+        name: "Màn 2: Gió nhẹ (Thử thách)",
+        desc: "Gió nhẹ thổi ngang (15 N) sang phải. Bạn cần điều chỉnh hướng lực đẩy chếch sang trái để bù gió.",
+        wind: 15,
+        unlocked: false,
+        completed: false,
+        stars: 0,
+        points: 0,
+        attempts: 0
+      },
+      {
+        id: 3,
+        name: "Màn 3: Gió bão (Giải cứu)",
+        desc: "Gió bão thổi mạnh (30 N) sang phải. Hãy tính toán lực đẩy và góc bù gió chính xác để giải cứu drone!",
+        wind: 30,
+        unlocked: false,
+        completed: false,
+        stars: 0,
+        points: 0,
+        attempts: 0
+      },
+      {
+        id: 4,
+        name: "Chế độ tự do (Sandbox)",
+        desc: "Tự do điều chỉnh mọi thông số lực đẩy và sức gió để nghiên cứu hiện tượng vật lý.",
+        wind: 30,
+        unlocked: true,
+        completed: false,
+        stars: 0,
+        points: 0,
+        attempts: 0,
+        isSandbox: true
+      }
+    ];
+
+    let currentLevelId = 1;
+    let isNearMatch = false;
+    let isPerfectMatch = false;
+
+    const Score = {
+      points: 0,
+      
+      init() {
+        this.points = 0;
+        this.render();
+      },
+
+      add(pts) {
+        this.points += pts;
+        this.render();
+      },
+
+      render() {
+        const el = document.getElementById('stat-total-score');
+        if (el) el.textContent = this.points;
+      },
+
+      calculateStars(levelId, distToTarget, attempts) {
+        if (distToTarget > 35) return 0;
+        let stars = 1;
+        if (distToTarget < 15 && attempts === 1) {
+          stars = 3;
+        } else if (distToTarget < 25 && attempts <= 2) {
+          stars = 2;
+        }
+        return stars;
+      }
+    };
+
+    function selectLevel(id) {
+      if (simState === 'flying' || simState === 'walkthrough') return;
+      
+      const lvl = LEVELS.find(l => l.id === id);
+      if (!lvl || !lvl.unlocked) {
+        const lvlCard = document.getElementById('level-selector-card');
+        shakeCanvas(lvlCard);
+        return;
+      }
+
+      currentLevelId = id;
+      
+      // Update UI active class
+      for (let i = 1; i <= 4; i++) {
+        const item = document.getElementById('lvl-item-' + i);
+        if (item) {
+          item.classList.remove('active');
+          if (i === id) item.classList.add('active');
+        }
+      }
+
+      // Configure simulation parameters for this level
+      F_wind_mag = lvl.wind;
+      document.getElementById('slider-wind-mag').value = F_wind_mag;
+      
+      if (lvl.isSandbox) {
+        document.getElementById('slider-wind-mag').disabled = false;
+      } else {
+        document.getElementById('slider-wind-mag').disabled = true;
+      }
+
+      // Reset attempts for the selected level if it's not completed yet
+      if (!lvl.completed) {
+        lvl.attempts = 0;
+      }
+
+      // Update description/coach text
+      document.getElementById('coach-text').textContent = lvl.desc;
+
+      // Reset drone state and recalculate
+      drone.x = startPos.x;
+      drone.y = startPos.y;
+      drone.vx = 0;
+      drone.vy = 0;
+      drone.history = [];
+      
+      // Reset thrust values
+      F_thrust_mag = 80;
+      F_thrust_deg = 35;
+      document.getElementById('slider-thrust-mag').value = 80;
+      document.getElementById('slider-thrust-dir').value = 35;
+      
+      document.getElementById('success-overlay').classList.remove('show');
+      document.getElementById('info-bar').className = 'info-bar';
+
+      // Reset launch button state
+      simState = 'idle';
+      const launchBtn = document.getElementById('btn-launch');
+      if (launchBtn) {
+        launchBtn.innerHTML = '<i class="ti ti-player-play"></i> Bay!';
+        launchBtn.className = 'btn btn-launch';
+        launchBtn.disabled = false;
+      }
+      disableInputs(false);
+      
+      recalcForces();
+      draw();
+    }
+
+    // Vector drawing scale (1 Newton = 1.5 pixels)
+    const FORCE_SCALE = 1.5;
+
+    // Interaction vars
+    let isDraggingEnd = false;
+    let canvasRect = canvas.getBoundingClientRect();
+
+    // --- Dynamic AI Coach Speech Script ---
+    const COACH_SPEECH = {
+      idle: "Điều chỉnh hướng và độ lớn lực đẩy để drone bay đến mục tiêu.",
+      adjusting: "Quan sát vector hợp lực R̄ (vàng) thay đổi theo từng lực thành phần.",
+      near: "Gần đến rồi! Tinh chỉnh thêm hướng lực đẩy.",
+      success: "✓ Chính xác! Drone đã đến nơi. Hãy xem phần Khám phá để hiểu tại sao.",
+      missed: "Drone bay lệch mục tiêu rồi. Gió ngang thổi sang phải, hãy xoay hướng lực đẩy drone chếch sang trái để bù gió.",
+      wind0: "Khi không có gió, hợp lực = lực đẩy. Thử tăng gió để xem điều gì xảy ra!",
+      parallelogram: "Đường chéo hình bình hành = hợp lực R̄ — thay đổi slider để thấy hình thay đổi.",
+      walkthrough_1: "Drone chịu đồng thời 2 lực: lực đẩy (Fₐ) và gió (F_g)",
+      walkthrough_2: "Để tổng hợp lực, ta dịch chuyển các vector về cùng điểm đặt (không đổi hướng và độ lớn)",
+      walkthrough_3: "Vẽ bản sao của mỗi vector từ đầu vector kia → tạo thành hình bình hành",
+      walkthrough_4: "Đường chéo của hình bình hành chính là hợp lực R̄ — đây là hướng và độ lớn lực thực tế tác động lên drone. Drone không bay theo Fₐ hay F_G riêng lẻ, mà bay theo HỢP LỰC R̄.",
+      after_walkthrough: "Bạn đã hiểu quy tắc hình bình hành! Thử các câu hỏi bên dưới để kiểm tra."
+    };
+
+    function updateCoachText(key) {
+      document.getElementById('coach-text').textContent = COACH_SPEECH[key];
+    }
+
+    // --- Initialization ---
+    function init() {
+      // Wind particles init
+      windParticles = [];
+      for (let i = 0; i < NUM_WIND_PARTICLES; i++) {
+        windParticles.push({
+          x: Math.random() * CW,
+          y: Math.random() * CH,
+          speed: 1.5 + Math.random() * 2,
+          len: 15 + Math.random() * 20,
+          opacity: 0.1 + Math.random() * 0.3
+        });
+      }
+
+      // Event listeners
+      setupEvents();
+      
+      // Initialize Score
+      Score.init();
+      
+      // Select Level 1 by default
+      selectLevel(1);
+    }
+
+    // --- Physics Math & Force Recalculation ---
+    let F_thrust = { x: 0, y: 0 };
+    let F_wind = { x: 0, y: 0 };
+    let F_resultant = { x: 0, y: 0 };
+
+    function recalcForces() {
+      // Thrust: góc theo toán học (0=phải, 90=lên)
+      // Trong canvas Y đảo ngược nên sin âm
+      const rad = F_thrust_deg * Math.PI / 180;
+      F_thrust.x =  F_thrust_mag * Math.cos(rad);
+      F_thrust.y = -F_thrust_mag * Math.sin(rad); // canvas Y down = negative math
+
+      // Wind luôn sang phải
+      F_wind.x = F_wind_mag;
+      F_wind.y = 0;
+
+      // Hợp lực
+      F_resultant = Vec2.add(F_thrust, F_wind);
+
+      // Tính góc lý tưởng để đến đích (hint cho học sinh)
+      const toTarget = Vec2.sub(targetPos, startPos);
+      // Hướng đến đích từ startPos (canvas coords)
+      const idealAngleMath = Math.atan2(-toTarget.y, toTarget.x) * 180 / Math.PI;
+      // Góc lực đẩy cần thiết để bù gió:
+      // F_thrust * cos(a) + F_wind = toTarget.x * scale
+      // F_thrust * sin(a)          = -toTarget.y * scale  (canvas Y)
+      // Tính góc resultant đến đích
+      const idealResAngle = Math.atan2(-toTarget.y, toTarget.x); // radians canvas
+      // Để R hướng đến đích: R_x = Ft*cos(a) + Fw, R_y = -Ft*sin(a)
+      // R hướng = idealResAngle → tan(idealResAngle) = R_y/R_x
+      // Cần Ft đủ lớn. Với Ft_mag hiện tại:
+      // Ft*cos(a) = R*cos(idealResAngle) - Fw
+      // Ft*sin(a) = -R*sin(idealResAngle)
+      // → a = atan2(-(-R*sin), R*cos - Fw) ... tính gần đúng
+      const resLen = Vec2.len(F_resultant);
+
+      // Update UI displays
+      document.getElementById('stat-resultant-val').textContent =
+        Math.round(resLen) + ' N';
+
+      let resAngleRad = Math.atan2(-F_resultant.y, F_resultant.x);
+      let resAngleDeg = ((resAngleRad * 180 / Math.PI) + 360) % 360;
+      document.getElementById('stat-resultant-ang').textContent =
+        Math.round(resAngleDeg) + '°';
+
+      // Slider labels
+      document.getElementById('label-thrust-mag').textContent = Math.round(F_thrust_mag) + ' N';
+      document.getElementById('label-thrust-dir').textContent = Math.round(F_thrust_deg) + '°';
+      document.getElementById('label-wind-mag').textContent   = Math.round(F_wind_mag) + ' N';
+
+      // Dự đoán đường bay: ray từ startPos theo hướng F_resultant
+      if (resLen > 1) {
+        const rNorm = Vec2.norm(F_resultant);
+        const toTgt = Vec2.sub(targetPos, startPos);
+        const projLen = Vec2.dot(toTgt, rNorm);
+        let distAtClosest = 0;
+        let estTime = 0;
+
+        if (projLen > 0) {
+          const closest = Vec2.add(startPos, Vec2.scale(rNorm, projLen));
+          distAtClosest = Vec2.dist(closest, targetPos);
+          const speed = resLen * 2.5;
+          estTime = Vec2.dist(startPos, targetPos) / speed;
+        } else {
+          distAtClosest = Vec2.dist(startPos, targetPos);
+          estTime = 99;
+        }
+
+        document.getElementById('info-distance').textContent =
+          Math.round(distAtClosest) + ' m';
+        document.getElementById('info-time').textContent =
+          distAtClosest < 25 ? '~' + estTime.toFixed(1) + ' s' : '—';
+        document.getElementById('info-angle').textContent =
+          Math.round(resAngleDeg) + '°';
+
+        // Calculate match states for vector glow
+        isPerfectMatch = (distAtClosest < 15);
+        isNearMatch = (distAtClosest < 28);
+
+        // Gợi ý khi gần đúng
+        if (distAtClosest < 25 && simState === 'idle') {
+          updateCoachText('near');
+        } else if (F_wind_mag === 0 && simState === 'idle') {
+          updateCoachText('wind0');
+        }
+
+        // Start RAF loop if near match is true to animate the glow pulse
+        if (isNearMatch && simState === 'idle' && !rafId) {
+          startLoop();
+        }
+      } else {
+        isNearMatch = false;
+        isPerfectMatch = false;
+      }
+    }
+
+    // --- Drawing Functions ---
+    
+    // Draw tropical island top-down map — Preset 5 palette
+    function drawMapBackground(ctx) {
+      // Nền biển — màu sáng phù hợp Preset 5
+      const sea = ctx.createLinearGradient(0, 0, 0, CH);
+      sea.addColorStop(0, '#5BA4CF');
+      sea.addColorStop(1, '#3A7FC1');
+      ctx.fillStyle = sea;
+      ctx.fillRect(0, 0, CW, CH);
+
+      // Lưới nhẹ
+      ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+      ctx.lineWidth = 1;
+      for (let x = 0; x < CW; x += 50) {
+        ctx.beginPath(); ctx.moveTo(x,0); ctx.lineTo(x,CH); ctx.stroke();
+      }
+      for (let y = 0; y < CH; y += 50) {
+        ctx.beginPath(); ctx.moveTo(0,y); ctx.lineTo(CW,y); ctx.stroke();
+      }
+
+      // Đảo xuất phát (góc dưới trái)
+      ctx.save();
+      ctx.fillStyle = '#4A8C5C'; // rừng
+      ctx.beginPath();
+      ctx.moveTo(-20, CH+20);
+      ctx.quadraticCurveTo(60, CH-40, 160, CH-90);
+      ctx.quadraticCurveTo(260, CH-130, 300, CH+20);
+      ctx.closePath(); ctx.fill();
+
+      // Bãi biển đảo xuất phát
+      ctx.fillStyle = '#C8A96E';
+      ctx.beginPath();
+      ctx.moveTo(-20, CH+20);
+      ctx.quadraticCurveTo(70, CH-20, 180, CH-65);
+      ctx.quadraticCurveTo(260, CH-90, 300, CH+20);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+
+      // Đảo mục tiêu (góc trên phải)
+      ctx.save();
+      ctx.fillStyle = '#2D6A4F'; // rừng nhiệt đới đậm
+      ctx.beginPath();
+      ctx.moveTo(CW+20, -20);
+      ctx.quadraticCurveTo(CW-60, 40, CW-160, 90);
+      ctx.quadraticCurveTo(CW-250, 130, CW-290, -20);
+      ctx.closePath(); ctx.fill();
+
+      ctx.fillStyle = '#C8A96E';
+      ctx.beginPath();
+      ctx.moveTo(CW+20, -20);
+      ctx.quadraticCurveTo(CW-65, 20, CW-165, 65);
+      ctx.quadraticCurveTo(CW-250, 95, CW-290, -20);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+
+      // --- Các đảo phụ trang trí (nằm ngoài đường bay xiên góc của drone) ---
+      
+      // Đảo 3: Góc dưới bên phải (gần CW, CH)
+      ctx.save();
+      ctx.fillStyle = '#2D6A4F'; // rừng đậm
+      ctx.beginPath();
+      ctx.moveTo(CW + 20, CH - 140);
+      ctx.quadraticCurveTo(CW - 80, CH - 100, CW - 130, CH - 30);
+      ctx.quadraticCurveTo(CW - 160, CH + 20, CW + 20, CH + 20);
+      ctx.closePath(); ctx.fill();
+
+      ctx.fillStyle = '#C8A96E'; // cát
+      ctx.beginPath();
+      ctx.moveTo(CW + 20, CH - 125);
+      ctx.quadraticCurveTo(CW - 70, CH - 90, CW - 110, CH - 25);
+      ctx.quadraticCurveTo(CW - 135, CH + 20, CW + 20, CH + 20);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+
+      // Đảo 4: Góc trên bên trái (gần 0, 0)
+      ctx.save();
+      ctx.fillStyle = '#4A8C5C'; // rừng nhạt
+      ctx.beginPath();
+      ctx.moveTo(-20, 110);
+      ctx.quadraticCurveTo(45, 80, 75, -20);
+      ctx.lineTo(-20, -20);
+      ctx.closePath(); ctx.fill();
+
+      ctx.fillStyle = '#C8A96E'; // cát
+      ctx.beginPath();
+      ctx.moveTo(-20, 95);
+      ctx.quadraticCurveTo(35, 70, 60, -20);
+      ctx.lineTo(-20, -20);
+      ctx.closePath(); ctx.fill();
+      ctx.restore();
+
+      // Đảo nhỏ 5: Giữa bên trái (phía trên đảo xuất phát)
+      ctx.save();
+      // Bãi cát bao quanh
+      ctx.fillStyle = '#C8A96E';
+      ctx.beginPath(); ctx.arc(90, 240, 22, 0, Math.PI * 2); ctx.fill();
+      // Lõi rừng xanh ở giữa
+      ctx.fillStyle = '#4A8C5C';
+      ctx.beginPath(); ctx.arc(90, 240, 16, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+      // Đảo nhỏ 6: Giữa bên phải (phía dưới đảo mục tiêu)
+      ctx.save();
+      // Bãi cát bao quanh
+      ctx.fillStyle = '#C8A96E';
+      ctx.beginPath(); ctx.arc(710, 310, 25, 0, Math.PI * 2); ctx.fill();
+      // Lõi rừng xanh ở giữa
+      ctx.fillStyle = '#2D6A4F';
+      ctx.beginPath(); ctx.arc(710, 310, 18, 0, Math.PI * 2); ctx.fill();
+      ctx.restore();
+
+      // Vài đám mây nhẹ
+      [
+        [150, 60, 40], [380, 30, 55], [580, 80, 35], [700, 45, 45]
+      ].forEach(([cx, cy, sz]) => {
+        ctx.fillStyle = 'rgba(255,255,255,0.22)';
+        [[0,0,sz*.5],[sz*.35,-sz*.2,sz*.4],[sz*.7,0,sz*.45]].forEach(([dx,dy,r]) => {
+          ctx.beginPath(); ctx.arc(cx+dx, cy+dy, r, 0, Math.PI*2); ctx.fill();
+        });
+      });
+
+      // Gió particles — handled by updateAndDrawWind()
+    }
+
+
+    // Draw target marker (rescue ring & flag)
+    function drawTarget(ctx) {
+      const time = Date.now() * 0.003;
+      const pulse = 1 + 0.15 * Math.sin(time * 2);
+      
+      ctx.save();
+      // Glowing outer ring
+      ctx.strokeStyle = 'rgba(239, 68, 68, ' + (0.15 + 0.1 * Math.sin(time * 2)) + ')';
+      ctx.lineWidth = 12;
+      ctx.beginPath();
+      ctx.arc(targetPos.x, targetPos.y, targetRadius * pulse * 1.3, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // Dashed border circle
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([6, 6]);
+      ctx.beginPath();
+      ctx.arc(targetPos.x, targetPos.y, targetRadius, 0, Math.PI * 2);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Fill circle base
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.1)';
+      ctx.beginPath();
+      ctx.arc(targetPos.x, targetPos.y, targetRadius, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Target flagpole & flag
+      ctx.shadowColor = 'rgba(0,0,0,0.5)';
+      ctx.shadowBlur = 4;
+      
+      // Pole
+      ctx.strokeStyle = '#e2e8f0';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(targetPos.x - 8, targetPos.y + 16);
+      ctx.lineTo(targetPos.x - 8, targetPos.y - 18);
+      ctx.stroke();
+
+      // Flag banner
+      ctx.fillStyle = '#ef4444';
+      ctx.beginPath();
+      ctx.moveTo(targetPos.x - 8, targetPos.y - 18);
+      ctx.lineTo(targetPos.x + 16, targetPos.y - 10);
+      ctx.lineTo(targetPos.x - 8, targetPos.y - 2);
+      ctx.closePath();
+      ctx.fill();
+
+      // Red cross symbol inside flag
+      ctx.fillStyle = '#fff';
+      ctx.fillRect(targetPos.x - 4, targetPos.y - 12, 8, 2);
+      ctx.fillRect(targetPos.x - 1, targetPos.y - 15, 2, 8);
+
+      // Waving rescue person (simplified vector)
+      ctx.fillStyle = '#fbbf24'; // Orange head
+      ctx.beginPath();
+      ctx.arc(targetPos.x + 8, targetPos.y + 6, 4, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.strokeStyle = '#fbbf24';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      // Body
+      ctx.moveTo(targetPos.x + 8, targetPos.y + 10);
+      ctx.lineTo(targetPos.x + 8, targetPos.y + 18);
+      // Arms waving
+      ctx.moveTo(targetPos.x + 8, targetPos.y + 12);
+      ctx.lineTo(targetPos.x + 2, targetPos.y + 8 + 3 * Math.sin(time));
+      ctx.moveTo(targetPos.x + 8, targetPos.y + 12);
+      ctx.lineTo(targetPos.x + 14, targetPos.y + 7 - 3 * Math.sin(time));
+      // Legs
+      ctx.moveTo(targetPos.x + 8, targetPos.y + 18);
+      ctx.lineTo(targetPos.x + 4, targetPos.y + 24);
+      ctx.moveTo(targetPos.x + 8, targetPos.y + 18);
+      ctx.lineTo(targetPos.x + 12, targetPos.y + 24);
+      ctx.stroke();
+
+      // Text label
+      ctx.shadowBlur = 0;
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.7)';
+      ctx.beginPath();
+      ctx.roundRect(targetPos.x - 35, targetPos.y - 38, 70, 16, 4);
+      ctx.fill();
+
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = 'bold 9px ' + varColor('font-main');
+      ctx.textAlign = 'center';
+      ctx.fillText('MỤC TIÊU', targetPos.x, targetPos.y - 26);
+
+      ctx.restore();
+    }
+
+    // Helper to get CSS variables in JS context
+    function varColor(name) {
+      return getComputedStyle(document.documentElement).getPropertyValue('--' + name).trim();
+    }
+
+    // Standard arrow drafting utility
+    function drawArrow(ctx, x1, y1, x2, y2, color, lw = 2.5) {
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const len = Math.sqrt(dx*dx + dy*dy);
+      if (len < 4) return;
+
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lw;
+      ctx.beginPath();
+      ctx.moveTo(x1, y1);
+      
+      const headSize = Math.min(12, len * 0.25);
+      const nx = dx / len * headSize;
+      const ny = dy / len * headSize;
+      
+      ctx.lineTo(x2 - nx * 0.6, y2 - ny * 0.6);
+      ctx.stroke();
+
+      // Arrow head triangle
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - nx - ny * 0.45, y2 - ny + nx * 0.45);
+      ctx.lineTo(x2 - nx + ny * 0.45, y2 - ny - nx * 0.45);
+      ctx.closePath();
+      ctx.fill();
+      ctx.restore();
+    }
+
+    // Vector drawing according to game engine guidelines
+    function drawForceVector(ctx, ox, oy, vec, color, label, opts = {}) {
+      const {
+        lw = 2.8,
+        scale = FORCE_SCALE,
+        showLabel = true,
+        showValue = true,
+        dashed = false
+      } = opts;
+
+      const ex = ox + vec.x * scale;
+      const ey = oy + vec.y * scale;
+      const len = Math.sqrt(vec.x**2 + vec.y**2) * scale;
+
+      if (len < 4) return;
+
+      // Body line
+      ctx.save();
+      ctx.strokeStyle = color;
+      ctx.lineWidth = lw;
+      if (dashed) ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      
+      const headSize = Math.min(14, len * 0.3);
+      const nx = (ex - ox) / len * headSize;
+      const ny = (ey - oy) / len * headSize;
+      ctx.lineTo(ex - nx * 0.6, ey - ny * 0.6);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Arrow head triangle
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(ex, ey);
+      ctx.lineTo(ex - nx - ny * 0.45, ey - ny + nx * 0.45);
+      ctx.lineTo(ex - nx + ny * 0.45, ey - ny - nx * 0.45);
+      ctx.closePath();
+      ctx.fill();
+
+      // Base origin anchor dot
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(ox, oy, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+      
+      ctx.globalAlpha = 0.2;
+      ctx.beginPath();
+      ctx.arc(ox, oy, 9, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.globalAlpha = 1.0;
+
+      // Text label drawing
+      if (showLabel) {
+        // Position label slightly perpendicular to the vector direction
+        const lx = (ox + ex) / 2 + ny * 0.4 + 8;
+        const ly = (oy + ey) / 2 - nx * 0.4 - 5;
+        
+        ctx.font = 'bold 10px ' + varColor('font-mono');
+        const text = label + (showValue ? ' (' + Math.round(Vec2.len(vec)) + 'N)' : '');
+        const tw = ctx.measureText(text).width;
+        
+        // Background badge
+        ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+        ctx.strokeStyle = 'rgba(255,255,255,0.06)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.roundRect(lx - 6, ly - 13, tw + 12, 18, 4);
+        ctx.fill();
+        ctx.stroke();
+
+        ctx.fillStyle = color;
+        ctx.textAlign = 'left';
+        ctx.textBaseline = 'top';
+        ctx.fillText(text, lx, ly - 10);
+      }
+      ctx.restore();
+    }
+
+    // Draw the drone model
+    function drawDrone(ctx, x, y, angle = 0, scale = 1.0) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.scale(scale, scale);
+      
+      // Shadow below drone
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.25)';
+      ctx.beginPath();
+      ctx.ellipse(0, 24, 28, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      // 1. Quadcopter diagonal arms
+      ctx.strokeStyle = '#475569';
+      ctx.lineWidth = 5;
+      ctx.lineCap = 'round';
+      
+      // Arm 1 (top-left to bottom-right)
+      ctx.beginPath();
+      ctx.moveTo(-22, -22);
+      ctx.lineTo(22, 22);
+      ctx.stroke();
+      
+      // Arm 2 (top-right to bottom-left)
+      ctx.beginPath();
+      ctx.moveTo(22, -22);
+      ctx.lineTo(-22, 22);
+      ctx.stroke();
+
+      // Red/blue markings on front arms to indicate direction
+      ctx.strokeStyle = '#ef4444'; // Red front
+      ctx.lineWidth = 5.5;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(15, -15);
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-15, -15);
+      ctx.stroke();
+
+      // 2. Propeller guards (rings)
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 2;
+      const ringRadius = 14;
+      const positions = [
+        { x: -22, y: -22 },
+        { x: 22, y: -22 },
+        { x: 22, y: 22 },
+        { x: -22, y: 22 }
+      ];
+      
+      positions.forEach(pos => {
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, ringRadius, 0, Math.PI * 2);
+        ctx.stroke();
+        
+        // Ring center motor hub
+        ctx.fillStyle = '#64748b';
+        ctx.beginPath();
+        ctx.arc(pos.x, pos.y, 4, 0, Math.PI * 2);
+        ctx.fill();
+
+        // 3. Spinning rotor blades
+        ctx.save();
+        ctx.translate(pos.x, pos.y);
+        ctx.rotate(drone.rotorAngle);
+        ctx.strokeStyle = 'rgba(248, 250, 252, 0.4)';
+        ctx.lineWidth = 2;
+        ctx.beginPath();
+        ctx.moveTo(-11, 0);
+        ctx.lineTo(11, 0);
+        ctx.stroke();
+        ctx.restore();
+      });
+
+      // 4. Central circular body
+      const bodyGrad = ctx.createRadialGradient(-3, -3, 2, 0, 0, 16);
+      bodyGrad.addColorStop(0, '#f8fafc');
+      bodyGrad.addColorStop(0.3, '#cbd5e1');
+      bodyGrad.addColorStop(1, '#475569');
+      ctx.fillStyle = bodyGrad;
+      ctx.beginPath();
+      ctx.arc(0, 0, 15, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Body shell border
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(0, 0, 15, 0, Math.PI * 2);
+      ctx.stroke();
+
+      // 5. LED Status Light
+      const blink = Date.now() % 1000 > 500;
+      if (simState === 'success') {
+        ctx.fillStyle = blink ? '#10b981' : '#047857';
+      } else if (simState === 'crashed') {
+        ctx.fillStyle = blink ? '#ef4444' : '#b91c1c';
+      } else if (simState === 'flying') {
+        ctx.fillStyle = blink ? '#f59e0b' : '#b45309';
+      } else {
+        ctx.fillStyle = blink ? '#3b82f6' : '#1d4ed8'; // blue standby
+      }
+      ctx.beginPath();
+      ctx.arc(0, 0, 4, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Inner glow
+      ctx.fillStyle = 'rgba(255,255,255,0.7)';
+      ctx.beginPath();
+      ctx.arc(-1, -1, 1.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    // Draw the forecasted flight trajectory line
+    function drawPredictedTrajectory(ctx) {
+      if (simState === 'flying' || hideResultantToggle) return;
+
+      const len = Vec2.len(F_resultant);
+      if (len < 5) return;
+
+      ctx.save();
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.28)';
+      ctx.lineWidth = 2.5;
+      ctx.setLineDash([6, 6]);
+      
+      const rNorm = Vec2.norm(F_resultant);
+      const ex = startPos.x + rNorm.x * 600;
+      const ey = startPos.y + rNorm.y * 600;
+
+      ctx.beginPath();
+      ctx.moveTo(startPos.x, startPos.y);
+      ctx.lineTo(ex, ey);
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Draw the actual flight history line when drone takes off
+    function drawFlightHistory(ctx) {
+      if (drone.history.length < 2) return;
+
+      ctx.save();
+      ctx.strokeStyle = 'rgba(245, 158, 11, 0.45)';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath();
+      ctx.moveTo(drone.history[0].x, drone.history[0].y);
+      for (let i = 1; i < drone.history.length; i++) {
+        ctx.lineTo(drone.history[i].x, drone.history[i].y);
+      }
+      ctx.stroke();
+      ctx.restore();
+    }
+
+    // Wind particles simulation and render
+    function updateAndDrawWind(ctx) {
+      const active = showWind;
+      const speedFactor = F_wind_mag * 0.12;
+
+      windParticles.forEach(p => {
+        // Move particle
+        if (active && speedFactor > 0.05) {
+          p.x += p.speed * speedFactor;
+        }
+        
+        // Loop back
+        if (p.x > CW + 50) {
+          p.x = -50;
+          p.y = Math.random() * CH;
+        }
+
+        // Draw particle line
+        if (active && F_wind_mag > 0) {
+          ctx.save();
+          ctx.strokeStyle = 'rgba(21, 101, 192, ' + p.opacity + ')';
+          ctx.lineWidth = 1.2;
+          ctx.beginPath();
+          ctx.moveTo(p.x, p.y);
+          ctx.lineTo(p.x + p.len * (0.5 + speedFactor * 0.1), p.y);
+          ctx.stroke();
+          ctx.restore();
+        }
+      });
+    }
+
+    // Render the vector parallelogram
+    function drawParallelogram(ctx, ox, oy, fThrust, fWind, color) {
+      const ex1 = ox + fThrust.x * FORCE_SCALE;
+      const ey1 = oy + fThrust.y * FORCE_SCALE;
+
+      const ex2 = ox + fWind.x * FORCE_SCALE;
+      const ey2 = oy + fWind.y * FORCE_SCALE;
+
+      // Parallelogram diagonal vertex
+      const diagX = ox + (fThrust.x + fWind.x) * FORCE_SCALE;
+      const diagY = oy + (fThrust.y + fWind.y) * FORCE_SCALE;
+
+      ctx.save();
+      // Draw shaded polygon
+      ctx.fillStyle = 'rgba(245, 158, 11, 0.06)';
+      ctx.beginPath();
+      ctx.moveTo(ox, oy);
+      ctx.lineTo(ex1, ey1);
+      ctx.lineTo(diagX, diagY);
+      ctx.lineTo(ex2, ey2);
+      ctx.closePath();
+      ctx.fill();
+
+      // Outer dashed parallel lines
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1.8;
+      ctx.setLineDash([4, 4]);
+      
+      // Line from thrust tip to diag tip
+      ctx.beginPath();
+      ctx.moveTo(ex1, ey1);
+      ctx.lineTo(diagX, diagY);
+      ctx.stroke();
+
+      // Line from wind tip to diag tip
+      ctx.beginPath();
+      ctx.moveTo(ex2, ey2);
+      ctx.lineTo(diagX, diagY);
+      ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // --- Optimized Drawing & Animation Loop (03_game_engine.md Section 3.4) ---
+    let rafId = null;
+    let lastTime = 0;
+
+    function drawVectors(ctx, originX, originY, opts) {
+      if (simState === 'flying') {
+        ctx.save();
+        ctx.globalAlpha = 0.55;
+      }
+
+      // 1. Thrust Vector
+      if (showThrust && Vec2.len(F_thrust) > 1) {
+        if (isNearMatch && hideResultantToggle && simState === 'idle') {
+          const glowAlpha = 0.15 + 0.1 * Math.sin(Date.now() * 0.008);
+          ctx.save();
+          ctx.strokeStyle = isPerfectMatch ? 'rgba(16, 185, 129, ' + (glowAlpha + 0.1) + ')' : 'rgba(245, 158, 11, ' + glowAlpha + ')';
+          ctx.lineWidth = 12;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(originX, originY);
+          ctx.lineTo(originX + F_thrust.x * FORCE_SCALE, originY + F_thrust.y * FORCE_SCALE);
+          ctx.stroke();
+          ctx.restore();
+        }
+        drawForceVector(ctx, originX, originY, F_thrust, varColor('color-thrust'), 'Fₐ', opts);
+      }
+
+      // 2. Wind Vector
+      if (showWind && Vec2.len(F_wind) > 1) {
+        drawForceVector(ctx, originX, originY, F_wind, varColor('color-wind'), 'F_G', opts);
+      }
+
+      // 3. Resultant Vector (only shown if not hidden by toggle)
+      if (showResultant && !hideResultantToggle && Vec2.len(F_resultant) > 1) {
+        if (isNearMatch && simState === 'idle') {
+          const glowAlpha = 0.2 + 0.15 * Math.sin(Date.now() * 0.008);
+          ctx.save();
+          ctx.strokeStyle = isPerfectMatch ? 'rgba(16, 185, 129, ' + (glowAlpha + 0.2) + ')' : 'rgba(245, 158, 11, ' + glowAlpha + ')';
+          ctx.lineWidth = 14;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(originX, originY);
+          ctx.lineTo(originX + F_resultant.x * FORCE_SCALE, originY + F_resultant.y * FORCE_SCALE);
+          ctx.stroke();
+          ctx.restore();
+        }
+        drawForceVector(ctx, originX, originY, F_resultant, varColor('color-resultant'), 'R̄', {
+          ...opts,
+          lw: 3.5,
+          showValue: true
+        });
+      }
+
+      if (simState === 'flying') {
+        ctx.restore();
+      }
+    }
+
+    function draw() {
+      // Clear Canvas
+      ctx.clearRect(0, 0, CW, CH);
+
+      if (simState !== 'walkthrough') {
+        // --- 1. Standard Interactive Simulation Mode ---
+        drawMapBackground(ctx);
+        updateAndDrawWind(ctx);
+        drawTarget(ctx);
+        drawPredictedTrajectory(ctx);
+        drawFlightHistory(ctx);
+
+        // Update rotor blades rotation
+        let rotorSpeed = 0.15;
+        if (simState === 'flying') rotorSpeed = 0.6;
+        drone.rotorAngle += rotorSpeed;
+
+        // Draw Drone
+        drawDrone(ctx, drone.x, drone.y);
+
+        // Force Vectors origin base point (acts on the drone center)
+        const originX = drone.x;
+        const originY = drone.y;
+
+        // Draw Parallelogram (if checked)
+        if (showParallelogram && !hideResultantToggle) {
+          drawParallelogram(ctx, originX, originY, F_thrust, F_wind, 'rgba(45, 139, 111,0.3)');
+        }
+
+        // Draw individual vectors
+        const opts = {
+          lw: 2.8,
+          scale: FORCE_SCALE,
+          showLabel: true,
+          showValue: true,
+          dashed: false
+        };
+        
+        drawVectors(ctx, originX, originY, opts);
+
+        // Drag handle UI indicator (only if not flying & hovering)
+        if (simState === 'idle') {
+          const tipX = originX + F_thrust.x * FORCE_SCALE;
+          const tipY = originY + F_thrust.y * FORCE_SCALE;
+          
+          ctx.save();
+          ctx.strokeStyle = '#fff';
+          ctx.lineWidth = 1.5;
+          ctx.beginPath();
+          ctx.arc(tipX, tipY, 8, 0, Math.PI * 2);
+          ctx.stroke();
+          
+          ctx.fillStyle = 'rgba(255,255,255,0.25)';
+          ctx.beginPath();
+          ctx.arc(tipX, tipY, 8, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.restore();
+        }
+
+      } else {
+        // --- 2. Step-by-Step Educational Walkthrough Mode ---
+        drawWalkthrough(ctx, 1/60);
+      }
+    }
+
+    function startLoop() {
+      if (rafId) return;
+      lastTime = performance.now();
+      function loop(timestamp) {
+        const dt = Math.min(0.1, (timestamp - lastTime) / 1000);
+        lastTime = timestamp;
+
+        // Update rotor blades rotation
+        let rotorSpeed = 0.12;
+        if (simState === 'flying') rotorSpeed = 0.5;
+        drone.rotorAngle += rotorSpeed;
+
+        // Flight integration handling
+        if (simState === 'flying') {
+          updateFlight(dt);
+        }
+
+        // Confetti updates
+        if (confettiParticles.length > 0) {
+          updateAndDrawConfetti(dt);
+        }
+
+        // Render scene
+        ctx.clearRect(0, 0, CW, CH);
+        if (simState === 'walkthrough') {
+          drawWalkthrough(ctx, dt);
+        } else {
+          drawMapBackground(ctx);
+          updateAndDrawWind(ctx);
+          drawTarget(ctx);
+          drawPredictedTrajectory(ctx);
+          drawFlightHistory(ctx);
+          drawDrone(ctx, drone.x, drone.y);
+
+          const originX = drone.x;
+          const originY = drone.y;
+
+          if (showParallelogram && !hideResultantToggle) {
+            drawParallelogram(ctx, originX, originY, F_thrust, F_wind, 'rgba(45, 139, 111,0.3)');
+          }
+
+          const opts = {
+            lw: 2.8,
+            scale: FORCE_SCALE,
+            showLabel: true,
+            showValue: true,
+            dashed: false
+          };
+
+          drawVectors(ctx, originX, originY, opts);
+        }
+
+        // Request next frame if needed
+        if (shouldContinueLoop()) {
+          rafId = requestAnimationFrame(loop);
+        } else {
+          rafId = null;
+        }
+      }
+      rafId = requestAnimationFrame(loop);
+    }
+
+    function stopLoop() {
+      if (rafId) {
+        cancelAnimationFrame(rafId);
+        rafId = null;
+      }
+    }
+
+    function shouldContinueLoop() {
+      return (simState === 'flying') || 
+             (simState === 'walkthrough') || 
+             (confettiParticles.length > 0) || 
+             isDraggingEnd ||
+             (simState === 'idle' && isNearMatch); // Pulse the glow when idle and near match!
+    }
+
+    // --- Interactive Dragging Event Handlers ---
+    function setupEvents() {
+      // Sliders inputs
+      document.getElementById('slider-thrust-mag').addEventListener('input', e => {
+        if (simState !== 'idle') return;
+        F_thrust_mag = parseFloat(e.target.value);
+        recalcForces();
+        draw();
+      });
+
+      document.getElementById('slider-thrust-dir').addEventListener('input', e => {
+        if (simState !== 'idle') return;
+        F_thrust_deg = parseFloat(e.target.value);
+        recalcForces();
+        draw();
+      });
+
+      document.getElementById('slider-wind-mag').addEventListener('input', e => {
+        if (simState !== 'idle') return;
+        F_wind_mag = parseFloat(e.target.value);
+        recalcForces();
+        draw();
+      });
+
+      // Checkboxes inputs
+      document.getElementById('cb-show-thrust').addEventListener('change', e => {
+        showThrust = e.target.checked;
+        draw();
+      });
+      document.getElementById('cb-show-wind').addEventListener('change', e => {
+        showWind = e.target.checked;
+        draw();
+      });
+      document.getElementById('cb-show-resultant').addEventListener('change', e => {
+        showResultant = e.target.checked;
+        draw();
+      });
+      document.getElementById('cb-show-parallelogram').addEventListener('change', e => {
+        showParallelogram = e.target.checked;
+        if (showParallelogram && simState === 'idle') {
+          updateCoachText('parallelogram');
+        }
+        draw();
+      });
+
+      // Toggle switch
+      document.getElementById('toggle-hide-resultant').addEventListener('change', e => {
+        hideResultantToggle = e.target.checked;
+        recalcForces();
+        draw();
+      });
+
+      // Action Buttons
+      document.getElementById('btn-reset').addEventListener('click', resetSimulation);
+      
+      document.getElementById('btn-launch').addEventListener('click', () => {
+        if (simState === 'idle') {
+          startFlight();
+        } else if (simState === 'flying') {
+          cancelFlight();
+        } else if (simState === 'crashed') {
+          resetSimulation();
+        }
+      });
+
+      document.getElementById('btn-explore').addEventListener('click', () => {
+        startWalkthrough();
+      });
+
+      document.getElementById('overlay-btn-explore').addEventListener('click', () => {
+        document.getElementById('success-overlay').classList.remove('show');
+        startWalkthrough();
+      });
+
+      // Pointer Events: dùng chung cho chuột, bút và cảm ứng iPad/mobile.
+      canvas.style.touchAction = 'none';
+      canvas.addEventListener('pointerdown', onPointerDown);
+      canvas.addEventListener('pointermove', onPointerMove);
+      canvas.addEventListener('pointerup', onPointerUp);
+      canvas.addEventListener('pointercancel', onPointerUp);
+    }
+
+    function getMousePos(e) {
+      canvasRect = canvas.getBoundingClientRect();
+      const scaleX = CW / canvasRect.width;
+      const scaleY = CH / canvasRect.height;
+      return {
+        x: (e.clientX - canvasRect.left) * scaleX,
+        y: (e.clientY - canvasRect.top) * scaleY
+      };
+    }
+
+    // Segment hit detection from 03_game_engine.md Section 1.1
+    function hitSegment(mx, my, x1, y1, x2, y2, tolerance = 12) {
+      const dx = x2 - x1, dy = y2 - y1;
+      const lenSq = dx*dx + dy*dy;
+      if (lenSq === 0) return Math.sqrt((mx-x1)**2 + (my-y1)**2) < tolerance;
+      const t = Math.max(0, Math.min(1, ((mx-x1)*dx + (my-y1)*dy) / lenSq));
+      const cx = x1 + t*dx, cy = y1 + t*dy;
+      return Math.sqrt((mx-cx)**2 + (my-cy)**2) < tolerance;
+    }
+
+    function checkDragHit(mx, my) {
+      const tipX = drone.x + F_thrust.x * FORCE_SCALE;
+      const tipY = drone.y + F_thrust.y * FORCE_SCALE;
+      
+      // Priority 1: tip endpoint click (HANDLE = 18)
+      const d = Vec2.dist({ x: mx, y: my }, { x: tipX, y: tipY });
+      if (d < 18) return true;
+      
+      // Priority 2: segment click body (tolerance = 14)
+      return hitSegment(mx, my, drone.x, drone.y, tipX, tipY, 14);
+    }
+
+    function onMouseDown(e) {
+      if (simState !== 'idle') return;
+      const pos = getMousePos(e);
+      if (checkDragHit(pos.x, pos.y)) {
+        isDraggingEnd = true;
+        canvas.style.cursor = 'grabbing';
+        startLoop(); // Start RAF loop for smooth dragging visual response
+      }
+    }
+
+    function onMouseMove(e) {
+      const pos = getMousePos(e);
+      
+      if (isDraggingEnd) {
+        // Drag vector endpoint calculation
+        const dx = pos.x - drone.x;
+        const dy = -(pos.y - drone.y); // math coordinates inverted Y
+
+        let newMag = Vec2.len({ x: dx, y: dy }) / FORCE_SCALE;
+        newMag = Math.max(0, Math.min(100, newMag)); // clamp to 0-100N
+
+        let newAngle = Math.atan2(dy, dx) * 180 / Math.PI;
+        if (newAngle < 0) newAngle += 360;
+
+        F_thrust_mag = newMag;
+        F_thrust_deg = newAngle;
+
+        // Sync values to slider UI controls
+        document.getElementById('slider-thrust-mag').value = newMag;
+        document.getElementById('slider-thrust-dir').value = newAngle;
+
+        recalcForces();
+        updateCoachText('adjusting');
+      } else {
+        // Hover pointer cursor shift
+        if (simState === 'idle' && checkDragHit(pos.x, pos.y)) {
+          canvas.style.cursor = 'grab';
+        } else {
+          canvas.style.cursor = 'default';
+        }
+      }
+    }
+
+    function onMouseUp() {
+      if (isDraggingEnd) {
+        isDraggingEnd = false;
+        canvas.style.cursor = 'default';
+        recalcForces();
+      }
+    }
+
+    function onPointerDown(e) {
+      onMouseDown(e);
+      if (isDraggingEnd) canvas.setPointerCapture(e.pointerId);
+    }
+
+    function onPointerMove(e) {
+      onMouseMove(e);
+    }
+
+    function onPointerUp(e) {
+      onMouseUp();
+      if (canvas.hasPointerCapture && canvas.hasPointerCapture(e.pointerId)) {
+        canvas.releasePointerCapture(e.pointerId);
+      }
+    }
+
+    // Touch translation mapping
+    function touchToMouse(e) {
+      if (e.touches.length === 0) return null;
+      return {
+        clientX: e.touches[0].clientX,
+        clientY: e.touches[0].clientY
+      };
+    }
+
+    function onTouchStart(e) {
+      const mEvt = touchToMouse(e);
+      if (mEvt) {
+        onMouseDown(mEvt);
+        if (isDraggingEnd) e.preventDefault();
+      }
+    }
+
+    function onTouchMove(e) {
+      const mEvt = touchToMouse(e);
+      if (mEvt) {
+        onMouseMove(mEvt);
+        if (isDraggingEnd) e.preventDefault();
+      }
+    }
+
+    function onTouchEnd() {
+      onMouseUp();
+    }
+
+    // --- Flight Dynamics Implementation ---
+    function startFlight() {
+      simState = 'flying';
+      drone.x = startPos.x;
+      drone.y = startPos.y;
+      drone.vx = 0;
+      drone.vy = 0;
+      drone.history = [{ x: drone.x, y: drone.y }];
+      flightStartTime = Date.now();
+
+      // Increment attempt counter for non-sandbox level
+      const lvl = LEVELS.find(l => l.id === currentLevelId);
+      if (lvl && !lvl.isSandbox) {
+        lvl.attempts++;
+      }
+
+      // UI updates during flight
+      document.getElementById('btn-launch').innerHTML = '<i class="ti ti-square"></i> Dừng';
+      document.getElementById('btn-launch').className = 'btn btn-launch flying';
+      disableInputs(true);
+      
+      startLoop(); // Start loop for flight integration
+    }
+
+    function cancelFlight() {
+      simState = 'idle';
+      drone.x = startPos.x;
+      drone.y = startPos.y;
+      drone.history = [];
+      document.getElementById('btn-launch').innerHTML = '<i class="ti ti-player-play"></i> Bay!';
+      document.getElementById('btn-launch').className = 'btn btn-launch';
+      disableInputs(false);
+      recalcForces();
+      
+      stopLoop();
+      draw(); // Draw final static scene
+    }
+
+    function updateFlight(dt) {
+      // Integration of kinematics (Euler implementation)
+      const speedScale = 1.35; // velocity scaling
+      drone.vx = F_resultant.x * speedScale;
+      drone.vy = F_resultant.y * speedScale;
+
+      // Update position
+      drone.x += drone.vx * dt;
+      drone.y += drone.vy * dt;
+
+      // Push history coordinates
+      drone.history.push({ x: drone.x, y: drone.y });
+
+      // Target path distance details
+      const distToTarget = Vec2.dist({ x: drone.x, y: drone.y }, targetPos);
+      document.getElementById('info-distance').textContent = Math.round(distToTarget) + ' m';
+
+      // 1. Success check: drone overlaps target circle boundary
+      if (distToTarget < 35) {
+        flightCompleted(true);
+        return;
+      }
+
+      // 2. Outer canvas crash / miss boundary checks
+      const rNorm = Vec2.norm(F_resultant);
+      const toTgt = Vec2.sub(targetPos, startPos);
+      const projLen = Vec2.dot(toTgt, rNorm);
+      const droneOffset = Vec2.sub({ x: drone.x, y: drone.y }, startPos);
+      const currentProj = Vec2.dot(droneOffset, rNorm);
+      
+      const passedTarget = (projLen > 0 && currentProj > projLen + 35);
+      const isOffscreen = (drone.x < 0 || drone.x > CW || drone.y < 0 || drone.y > CH);
+
+      if (passedTarget || isOffscreen) {
+        flightCompleted(false);
+      }
+    }
+
+    function flightCompleted(success) {
+      if (success) {
+        simState = 'success';
+        updateCoachText('success');
+        document.getElementById('info-bar').className = 'info-bar success';
+        document.getElementById('info-distance').textContent = '0 m (Cứu nạn thành công!)';
+        document.getElementById('btn-launch').innerHTML = '<i class="ti ti-check"></i> Hoàn thành';
+        document.getElementById('btn-launch').disabled = false;
+        document.getElementById('btn-explore').disabled = false;
+
+        // Trigger confetti explosion (keeps loop running)
+        triggerVictoryConfetti();
+        
+        // --- Score & Stars calculation ---
+        const lvl = LEVELS.find(l => l.id === currentLevelId);
+        let earnedStars = 0;
+        let earnedPoints = 0;
+        
+        if (lvl && !lvl.isSandbox) {
+          // Calculate distance accuracy at landing
+          const distToTarget = Vec2.dist({ x: drone.x, y: drone.y }, targetPos);
+          earnedStars = Score.calculateStars(currentLevelId, distToTarget, lvl.attempts);
+          
+          // Only award points if it is better than their previous score
+          if (earnedStars > lvl.stars) {
+            const starDiff = earnedStars - lvl.stars;
+            earnedPoints = starDiff * 50; // 50 points per star difference
+            lvl.stars = earnedStars;
+            lvl.points += earnedPoints;
+            Score.add(earnedPoints);
+          }
+          
+          lvl.completed = true;
+          
+          // Update stars in the sidebar selector
+          const starStr = '★'.repeat(lvl.stars) + '☆'.repeat(3 - lvl.stars);
+          document.getElementById('lvl-stars-' + lvl.id).textContent = starStr;
+          
+          // Unlock the next level
+          const nextLvl = LEVELS.find(l => l.id === currentLevelId + 1);
+          if (nextLvl && !nextLvl.unlocked) {
+            nextLvl.unlocked = true;
+            const nextItem = document.getElementById('lvl-item-' + nextLvl.id);
+            if (nextItem) {
+              nextItem.classList.remove('locked');
+              // Remove the lock icon from HTML
+              nextItem.querySelector('.level-title-wrapper').innerHTML = 
+                `<i class="ti ti-circle-number-${nextLvl.id}" style="color: var(--primary-mid);"></i><span>${nextLvl.name}</span>`;
+            }
+          }
+        }
+        
+        // Update Victory modal text & stars
+        const modalTitle = document.querySelector('#success-overlay .overlay-title');
+        const modalDesc = document.querySelector('#success-overlay .overlay-desc');
+        
+        if (lvl && !lvl.isSandbox) {
+          modalTitle.textContent = "Màn " + lvl.id + " Hoàn Thành!";
+          const starStr = '⭐'.repeat(earnedStars) + '☆'.repeat(3 - earnedStars);
+          modalDesc.innerHTML = `Bạn đạt đánh giá: <span style="color: var(--accent); font-weight: bold; font-size: 1.2rem;">${starStr}</span><br>Bù gió xuất sắc giúp Drone cứu nạn thành công ở khoảng cách ${Math.round(Vec2.dist(drone, targetPos))}m sau ${lvl.attempts} lần thử!`;
+        } else {
+          modalTitle.textContent = "Bay thử nghiệm thành công!";
+          modalDesc.textContent = "Drone đã tiếp cận mục tiêu trong chế độ Tự do. Bạn có muốn xem phân tích Khám phá?";
+        }
+
+        // Show next level button in success overlay
+        const overlayBtnExplore = document.getElementById('overlay-btn-explore');
+        let nextBtn = document.getElementById('overlay-btn-next-level');
+        if (!nextBtn) {
+          nextBtn = document.createElement('button');
+          nextBtn.id = 'overlay-btn-next-level';
+          nextBtn.className = 'btn btn-launch';
+          nextBtn.style.marginTop = '0.75rem';
+          nextBtn.innerHTML = '<i class="ti ti-arrow-right"></i> Màn tiếp theo';
+          overlayBtnExplore.parentNode.insertBefore(nextBtn, overlayBtnExplore.nextSibling);
+        }
+        
+        // Hide next button if it's the last level or Sandbox
+        const hasNextLevel = currentLevelId < 3 && LEVELS.find(l => l.id === currentLevelId + 1)?.unlocked;
+        if (hasNextLevel && !lvl.isSandbox) {
+          nextBtn.style.display = 'inline-flex';
+          nextBtn.onclick = () => {
+            document.getElementById('success-overlay').classList.remove('show');
+            selectLevel(currentLevelId + 1);
+          };
+        } else {
+          nextBtn.style.display = 'none';
+        }
+
+        // Show victory modal overlay after delay
+        setTimeout(() => {
+          document.getElementById('success-overlay').classList.add('show');
+        }, 1200);
+
+        // Unlock the Quiz if all 3 curriculum levels are completed
+        const allCompleted = LEVELS.filter(l => l.id <= 3).every(l => l.completed);
+        if (allCompleted) {
+          unlockQuizSection();
+        }
+
+      } else {
+        simState = 'crashed';
+        updateCoachText('missed');
+        shakeCanvas(canvas);
+        
+        const launchBtn = document.getElementById('btn-launch');
+        if (launchBtn) {
+          launchBtn.innerHTML = '<i class="ti ti-refresh"></i> Thử lại';
+          launchBtn.className = 'btn btn-launch';
+          launchBtn.disabled = false;
+        }
+
+        stopLoop();
+        draw(); // Draw static scene
+      }
+    }
+
+    function resetSimulation() {
+      simState = 'idle';
+      drone.x = startPos.x;
+      drone.y = startPos.y;
+      drone.vx = 0;
+      drone.vy = 0;
+      drone.history = [];
+      
+      const lvl = LEVELS.find(l => l.id === currentLevelId);
+      F_thrust_mag = 80;
+      F_thrust_deg = 35;
+      F_wind_mag = lvl ? lvl.wind : 30;
+      
+      document.getElementById('slider-thrust-mag').value = 80;
+      document.getElementById('slider-thrust-dir').value = 35;
+      document.getElementById('slider-wind-mag').value = F_wind_mag;
+
+      document.getElementById('cb-show-thrust').checked = true;
+      document.getElementById('cb-show-wind').checked = true;
+      document.getElementById('cb-show-resultant').checked = true;
+      document.getElementById('cb-show-parallelogram').checked = false;
+      document.getElementById('toggle-hide-resultant').checked = false;
+
+      showThrust = true;
+      showWind = true;
+      showResultant = true;
+      showParallelogram = false;
+      hideResultantToggle = false;
+
+      document.getElementById('info-bar').className = 'info-bar';
+      document.getElementById('btn-launch').innerHTML = '<i class="ti ti-player-play"></i> Bay!';
+      document.getElementById('btn-launch').className = 'btn btn-launch';
+      document.getElementById('btn-launch').disabled = false;
+      
+      document.getElementById('success-overlay').classList.remove('show');
+      
+      stopLoop();
+      disableInputs(false);
+      recalcForces();
+      draw(); // Draw static scene
+    }
+
+    function disableInputs(disabled) {
+      document.getElementById('slider-thrust-mag').disabled = disabled;
+      document.getElementById('slider-thrust-dir').disabled = disabled;
+      
+      const lvl = LEVELS.find(l => l.id === currentLevelId);
+      if (lvl && lvl.isSandbox) {
+        document.getElementById('slider-wind-mag').disabled = disabled;
+      } else {
+        document.getElementById('slider-wind-mag').disabled = true; // Always lock wind in levels 1, 2, 3
+      }
+      document.getElementById('btn-explore').disabled = disabled;
+    }
+
+    // Screen shaking animation on crash
+    function shakeCanvas(canvasEl) {
+      let t = 0;
+      const offsets = [0, -8, 8, -6, 6, -4, 4, -2, 2, 0];
+      function frame() {
+        if (t >= offsets.length) {
+          canvasEl.style.transform = '';
+          return;
+        }
+        canvasEl.style.transform = 'translateX(' + offsets[t] + 'px)';
+        t++;
+        requestAnimationFrame(frame);
+      }
+      frame();
+    }
+
+    // --- Educational Walkthrough Mode Logic ---
+    function startWalkthrough() {
+      simState = 'walkthrough';
+      walkthroughStep = 1;
+      walkthroughTimer = 0;
+      disableInputs(true);
+      document.getElementById('btn-launch').disabled = true;
+      
+      document.getElementById('walkthrough-section').scrollIntoView({ behavior: 'smooth' });
+      setStep(1);
+      
+      startLoop(); // Start RAF loop for walkthrough
+    }
+
+    // Stop walkthrough animation loop
+    function stopWalkthrough() {
+      simState = 'idle';
+      disableInputs(false);
+      document.getElementById('btn-launch').disabled = false;
+      
+      stopLoop(); // Stop walkthrough loop
+      resetSimulation(); // This will also call draw()
+    }
+
+    function setStep(step) {
+      walkthroughStep = step;
+      walkthroughTimer = 0;
+      
+      // Update UI step cards classes
+      for (let i = 1; i <= 4; i++) {
+        const stepCard = document.getElementById('step-' + i);
+        stepCard.className = 'timeline-step';
+        if (i === step) stepCard.classList.add('active');
+        if (i < step) stepCard.classList.add('completed');
+      }
+
+      // Update button locks
+      document.getElementById('btn-prev-step').disabled = (step === 1);
+      
+      const nextBtn = document.getElementById('btn-next-step');
+      if (step === 4) {
+        nextBtn.innerHTML = 'Hiểu rồi! <i class="ti ti-check"></i>';
+        nextBtn.className = 'btn-step';
+        nextBtn.style.background = 'rgba(16, 185, 129, 0.2)';
+        nextBtn.style.borderColor = 'var(--color-thrust)';
+        nextBtn.style.color = 'var(--color-thrust)';
+      } else {
+        nextBtn.innerHTML = 'Tiếp theo <i class="ti ti-chevron-right"></i>';
+        nextBtn.className = 'btn-step';
+        nextBtn.style.background = 'var(--primary-light)';
+        nextBtn.style.borderColor = 'var(--card-border)';
+        nextBtn.style.color = 'var(--text-main)';
+      }
+
+      // Update AI Coach speech based on step
+      updateCoachText('walkthrough_' + step);
+    }
+
+    function nextStep() {
+      if (walkthroughStep < 4) {
+        setStep(walkthroughStep + 1);
+      } else {
+        // Walkthrough complete - unlock quiz and return
+        stopWalkthrough();
+        unlockQuizSection();
+        updateCoachText('after_walkthrough');
+      }
+    }
+
+    function prevStep() {
+      if (walkthroughStep > 1) {
+        setStep(walkthroughStep - 1);
+      }
+    }
+
+    // Render logic for the walkthrough scene
+    let wtDroneOffset = 0;
+    
+    function drawWalkthrough(ctx, dt) {
+      walkthroughTimer += dt;
+
+      // Draw neutral grid canvas background
+      ctx.fillStyle = '#060913';
+      ctx.fillRect(0, 0, CW, CH);
+
+      ctx.strokeStyle = 'rgba(45, 139, 111,0.06)';
+      ctx.lineWidth = 1;
+      const gridSize = 40;
+      for (let x = 0; x < CW; x += gridSize) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CH); ctx.stroke();
+      }
+      for (let y = 0; y < CH; y += gridSize) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CW, y); ctx.stroke();
+      }
+
+      // Draw centered coordinate axis reference line (crosshair)
+      ctx.strokeStyle = 'rgba(45, 139, 111,0.12)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(walkthroughDronePos.x - 120, walkthroughDronePos.y);
+      ctx.lineTo(walkthroughDronePos.x + 120, walkthroughDronePos.y);
+      ctx.moveTo(walkthroughDronePos.x, walkthroughDronePos.y - 120);
+      ctx.lineTo(walkthroughDronePos.x, walkthroughDronePos.y + 120);
+      ctx.stroke();
+
+      // Slowly rotate blades
+      drone.rotorAngle += 0.12;
+
+      // Render walkthrough drone
+      const ox = walkthroughDronePos.x;
+      const oy = walkthroughDronePos.y;
+      drawDrone(ctx, ox, oy, 0, 1.25);
+
+      // Force sizes for walkthrough
+      const thrustVec = { x: 70, y: -50 }; // F_d component
+      const windVec = { x: 50, y: 0 };    // F_g component
+      const resVec = Vec2.add(thrustVec, windVec);
+
+      const opts = { scale: 1.8, showLabel: true, showValue: false };
+
+      if (walkthroughStep === 1) {
+        // --- Step 1: Two forces acting on drone ---
+        // Thrust from center
+        drawForceVector(ctx, ox, oy, thrustVec, varColor('color-thrust'), 'Lực đẩy Fₐ', opts);
+        
+        // Wind acting on left side pushing right
+        // We show wind vector offset to emphasize "wind pushing side"
+        const windOffsetOrigin = { x: ox - 80, y: oy };
+        drawForceVector(ctx, windOffsetOrigin.x, windOffsetOrigin.y, windVec, varColor('color-wind'), 'Lực gió F_G', opts);
+
+        // Wind flow visual lines
+        ctx.save();
+        ctx.strokeStyle = 'rgba(59, 130, 246, 0.15)';
+        ctx.lineWidth = 1;
+        for (let i = -2; i <= 2; i++) {
+          const lY = oy + i * 25;
+          const shift = (Date.now() * 0.06) % 60;
+          ctx.beginPath();
+          ctx.moveTo(ox - 140 + shift, lY);
+          ctx.lineTo(ox - 90 + shift, lY);
+          ctx.stroke();
+        }
+        ctx.restore();
+
+      } else if (walkthroughStep === 2) {
+        // --- Step 2: Translate forces to common origin ---
+        // Thrust stays at origin
+        drawForceVector(ctx, ox, oy, thrustVec, varColor('color-thrust'), 'Lực đẩy Fₐ', opts);
+
+        // Wind slides from left edge to center
+        // Interpolate wind origin based on timer (lerp)
+        const duration = 1.0;
+        const progress = Math.min(1.0, walkthroughTimer / duration);
+        const easeProgress = 1 - (1 - progress) ** 3; // outCubic
+        
+        const startX = ox - 80;
+        const currentX = startX + (ox - startX) * easeProgress;
+
+        drawForceVector(ctx, currentX, oy, windVec, varColor('color-wind'), 'Lực gió F_G', opts);
+
+      } else if (walkthroughStep === 3) {
+        // --- Step 3: Draw Parallelogram outline ---
+        drawForceVector(ctx, ox, oy, thrustVec, varColor('color-thrust'), 'Lực đẩy Fₐ', opts);
+        drawForceVector(ctx, ox, oy, windVec, varColor('color-wind'), 'Lực gió F_G', opts);
+
+        // Fade in parallelogram drawing lines
+        const duration = 1.2;
+        const progress = Math.min(1.0, walkthroughTimer / duration);
+        const alpha = progress * 0.85;
+
+        const ex1 = ox + thrustVec.x * opts.scale;
+        const ey1 = oy + thrustVec.y * opts.scale;
+
+        const ex2 = ox + windVec.x * opts.scale;
+        const ey2 = oy + windVec.y * opts.scale;
+
+        const diagX = ox + resVec.x * opts.scale;
+        const diagY = oy + resVec.y * opts.scale;
+
+        ctx.save();
+        // Shaded region
+        ctx.fillStyle = 'rgba(245, 158, 11, ' + (progress * 0.06) + ')';
+        ctx.beginPath();
+        ctx.moveTo(ox, oy);
+        ctx.lineTo(ex1, ey1);
+        ctx.lineTo(diagX, diagY);
+        ctx.lineTo(ex2, ey2);
+        ctx.closePath();
+        ctx.fill();
+
+        // Parallelogram border
+        ctx.strokeStyle = 'rgba(255, 255, 255, ' + alpha + ')';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 5]);
+        
+        ctx.beginPath();
+        ctx.moveTo(ex1, ey1);
+        ctx.lineTo(diagX, diagY);
+        ctx.stroke();
+
+        ctx.beginPath();
+        ctx.moveTo(ex2, ey2);
+        ctx.lineTo(diagX, diagY);
+        ctx.stroke();
+        ctx.restore();
+
+      } else if (walkthroughStep === 4) {
+        // --- Step 4: Resultant diagonal vector ---
+        drawForceVector(ctx, ox, oy, thrustVec, varColor('color-thrust'), 'Fₐ', opts);
+        drawForceVector(ctx, ox, oy, windVec, varColor('color-wind'), 'F_G', opts);
+
+        // Draw static parallelogram
+        const ex1 = ox + thrustVec.x * opts.scale;
+        const ey1 = oy + thrustVec.y * opts.scale;
+        const ex2 = ox + windVec.x * opts.scale;
+        const ey2 = oy + windVec.y * opts.scale;
+        const diagX = ox + resVec.x * opts.scale;
+        const diagY = oy + resVec.y * opts.scale;
+
+        ctx.save();
+        ctx.fillStyle = 'rgba(245, 158, 11, 0.06)';
+        ctx.beginPath();
+        ctx.moveTo(ox, oy); ctx.lineTo(ex1, ey1); ctx.lineTo(diagX, diagY); ctx.lineTo(ex2, ey2);
+        ctx.closePath(); ctx.fill();
+
+        ctx.strokeStyle = 'rgba(255,255,255,0.4)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([5, 5]);
+        ctx.beginPath(); ctx.moveTo(ex1, ey1); ctx.lineTo(diagX, diagY); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(ex2, ey2); ctx.lineTo(diagX, diagY); ctx.stroke();
+        ctx.restore();
+
+        // Resultant vector grows along diagonal
+        const growthDuration = 1.0;
+        const progress = Math.min(1.0, walkthroughTimer / growthDuration);
+        const easeProgress = 1 - (1 - progress) ** 2; // outQuad
+        const currentRes = Vec2.scale(resVec, easeProgress);
+
+        drawForceVector(ctx, ox, oy, currentRes, varColor('color-resultant'), 'Hợp lực R̄', {
+          ...opts,
+          lw: 3.5
+        });
+
+        // Pulsing glow for Resultant
+        if (progress >= 1.0) {
+          const glowAlpha = 0.25 + 0.15 * Math.sin(Date.now() * 0.008);
+          ctx.save();
+          ctx.strokeStyle = 'rgba(245, 158, 11, ' + glowAlpha + ')';
+          ctx.lineWidth = 14;
+          ctx.lineCap = 'round';
+          ctx.beginPath();
+          ctx.moveTo(ox, oy);
+          ctx.lineTo(diagX, diagY);
+          ctx.stroke();
+          ctx.restore();
+        }
+
+        // Animate a mini-drone flying along R̄ loop
+        const loopTime = 3.5; // seconds
+        const flightTime = walkthroughTimer % loopTime;
+        if (flightTime < 2.0) {
+          const t = flightTime / 2.0; // 0 to 1
+          const easeT = t; // linear flight
+          const fx = ox + resVec.x * opts.scale * easeT;
+          const fy = oy + resVec.y * opts.scale * easeT;
+          
+          // Draw faint flight trajectory path
+          ctx.save();
+          ctx.strokeStyle = 'rgba(245, 158, 11, 0.4)';
+          ctx.lineWidth = 2;
+          ctx.setLineDash([3, 3]);
+          ctx.beginPath();
+          ctx.moveTo(ox, oy);
+          ctx.lineTo(fx, fy);
+          ctx.stroke();
+          ctx.restore();
+
+          // Render ghost flying drone
+          drawDrone(ctx, fx, fy, 0, 0.85);
+        }
+      }
+    }
+
+    // --- Victory Confetti Effects ---
+    function triggerVictoryConfetti() {
+      confettiParticles = [];
+      const colors = ['#f59e0b', '#10b981', '#3b82f6', '#ec4899', '#8b5cf6', '#fff'];
+      
+      for (let i = 0; i < 60; i++) {
+        confettiParticles.push({
+          x: Math.random() * CW,
+          y: -10 - Math.random() * 50,
+          vx: -2 + Math.random() * 4,
+          vy: 3 + Math.random() * 6,
+          radius: 3 + Math.random() * 5,
+          color: colors[i % colors.length],
+          rotation: Math.random() * Math.PI * 2,
+          rotationSpeed: -0.1 + Math.random() * 0.2,
+          opacity: 1.0
+        });
+      }
+    }
+
+    function updateAndDrawConfetti(dt) {
+      confCtx.clearRect(0, 0, CW, CH);
+      
+      confettiParticles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.rotation += p.rotationSpeed;
+        
+        // slow fadeout as it lands
+        if (p.y > CH - 20) {
+          p.opacity -= 0.015;
+        }
+
+        confCtx.save();
+        confCtx.globalAlpha = p.opacity;
+        confCtx.translate(p.x, p.y);
+        confCtx.rotate(p.rotation);
+        confCtx.fillStyle = p.color;
+        
+        // draw square/rectangle confetti
+        confCtx.fillRect(-p.radius, -p.radius * 1.5, p.radius * 2, p.radius * 3);
+        confCtx.restore();
+      });
+
+      // Filter out faded particles
+      confettiParticles = confettiParticles.filter(p => p.opacity > 0 && p.y < CH + 10);
+    }
+
+    // --- Quiz Handler Functions ---
+    function unlockQuizSection() {
+      const lockOverlay = document.getElementById('quiz-locked');
+      lockOverlay.classList.add('unlocked');
+    }
+
+    function toggleQuiz(id) {
+      const item = document.getElementById('q' + id);
+      const isExpanded = item.classList.contains('expanded');
+      
+      // Close all first
+      for (let i = 1; i <= 3; i++) {
+        document.getElementById('q' + i).classList.remove('expanded');
+      }
+      
+      // Toggle current
+      if (!isExpanded) {
+        item.classList.add('expanded');
+      }
+    }
+
+    function selectOption(qId, option) {
+      const state = quizAnswers[qId];
+      if (state.selected !== null) return; // Answer locked once selected
+      
+      state.selected = option;
+      const isCorrect = (option === state.correct);
+
+      // Highlight selected buttons
+      const item = document.getElementById('q' + qId);
+      const optionBtns = item.querySelectorAll('.option-btn');
+      
+      const optionIndex = { 'A': 0, 'B': 1, 'C': 2 }[option];
+      const correctIndex = { 'A': 0, 'B': 1, 'C': 2 }[state.correct];
+
+      optionBtns.forEach((btn, idx) => {
+        btn.classList.add('disabled');
+        
+        if (idx === optionIndex) {
+          if (isCorrect) {
+            btn.classList.add('selected-correct');
+            btn.querySelector('i').className = 'ti ti-circle-check';
+          } else {
+            btn.classList.add('selected-wrong');
+            btn.querySelector('i').className = 'ti ti-circle-x';
+          }
+        }
+        
+        // Reveal correct answer anyway if user got it wrong
+        if (idx === correctIndex && !isCorrect) {
+          btn.classList.add('correct-reveal');
+          btn.querySelector('i').className = 'ti ti-circle-check';
+        }
+      });
+
+      // Display quiz explanation block
+      const expBlock = document.getElementById('exp-q' + qId);
+      const expData = quizExplanations[qId][option];
+      
+      expBlock.className = 'quiz-explanation show ' + expData.status;
+      expBlock.querySelector('.quiz-explanation-title').innerHTML = 
+        (expData.status === 'correct' ? '<i class="ti ti-check"></i> ' : '<i class="ti ti-x"></i> ') + expData.title;
+      expBlock.querySelector('.quiz-explanation-text').textContent = expData.text;
+
+      // Pulse avatar AI Coach when quiz is answered
+      const coachText = isCorrect ? "Tuyệt vời! Bạn trả lời hoàn toàn chính xác câu hỏi " + qId + " rồi." : "Chưa chính xác câu " + qId + " rồi. Hãy đọc kĩ giải thích để củng cố lý thuyết nhé.";
+      document.getElementById('coach-text').textContent = coachText;
+    }
+
+    // Initialize simulation on load
+    window.addEventListener('load', init);
+
+  
+    // ===== Báo chiều cao thật cho LMS (PHẦN 7.7) — tự thêm =====
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      const _athenaResizeObserver = new ResizeObserver(() => {
+        clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+      });
+      _athenaResizeObserver.observe(document.body);
+    } else {
+      setInterval(reportHeight, 800);
+    }
+</script>
+</body>
+</html>

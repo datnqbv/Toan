@@ -1,0 +1,4868 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 3: Tổng hợp lực & Vận tốc — Simulation 2: Ứng dụng thực tế</title>
+  <script type="application/json" id="athena-context">
+{
+  "title": "Module 3: Tổng hợp lực & Vận tốc — Simulation 2: Ứng dụng thực tế",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Vận dụng phép cộng vectơ (quy tắc hình bình hành) để tổng hợp vận tốc/lực trong 4 tình huống thực tế: chèo thuyền qua sông có dòng chảy, máy bay bay trong gió ngang, hai người kéo vật, cẩu treo vật bằng 2 dây",
+    "Hiểu vì sao không thể cộng đại số đơn giản các độ lớn vectơ khi chúng không cùng hướng, mà phải dùng công thức vectơ (Pythagore khi vuông góc, hoặc R=2Tcosθ khi đối xứng)",
+    "Nhận ra ảnh hưởng của góc giữa hai vectơ thành phần đến độ lớn của hợp vectơ"
+  ],
+  "structure": [
+    { "id": "scenario-1", "title": "Tình huống 1 — Chèo thuyền qua sông: dòng chảy đẩy thuyền lệch hướng, cần chỉnh góc chèo ngược dòng để cập đúng bến B" },
+    { "id": "scenario-2", "title": "Tình huống 2 — Máy bay bay trong gió ngang: gió thổi từ Tây sang Đông, cần chỉnh hướng mũi máy bay để bay trúng đích theo hướng mong muốn" },
+    { "id": "scenario-3", "title": "Tình huống 3 — Hai người kéo vật: điều chỉnh lực kéo của người A và B (slider hoặc kéo mũi tên) để hợp lực R hướng đúng và đạt đúng độ lớn mục tiêu" },
+    { "id": "scenario-4", "title": "Tình huống 4 — Cẩu treo vật bằng 2 dây: lực căng dây T₁, T₂ và góc treo θ ảnh hưởng đến hợp lực nâng R = 2·T·cos(θ)" },
+    { "id": "quiz", "title": "Bảng trắc nghiệm (mở khóa sau khi hoàn thành mô phỏng) — mỗi tình huống có 2 câu hỏi củng cố, tổng 8 câu" }
+  ],
+  "athenaGuidance": "Có 8 câu hỏi trắc nghiệm cố định (2 câu/tình huống), TUYỆT ĐỐI không nói thẳng đáp án trước khi học sinh tự chọn. Tình huống 1 (thuyền qua sông, v_t=4, v_d=2, vuông góc nhau): Câu 1 'Nếu tốc độ dòng chảy mạnh gấp đôi, hướng di chuyển thực tế của thuyền sẽ thế nào?' — đáp án đúng A 'Thuyền bị lệch nhiều hơn về phía hạ lưu'; Câu 2 'Vận tốc tổng hợp v có bằng phép cộng thông thường v=v_t+v_d=4+2=6 m/s không?' — đáp án đúng B 'Sai, phải cộng theo quy tắc hình bình hành' (thực tế v=√(4²+2²)=√20≈4.47 m/s). Tình huống 2 (máy bay trong gió, gió 50m/s hướng Đông, đích hướng Đông Bắc 45°): Câu 1 'Khi góc giữa mũi máy bay và hướng gió là 180° (gió ngược chiều bay), vận tốc tổng hợp sẽ thế nào?' — đáp án đúng B 'Nhỏ nhất, độ lớn bằng hiệu |v_mb−v_gió|'; Câu 2 'Phi công hướng thẳng mũi máy bay vào đích B khi có gió ngang — đúng hay sai?' — đáp án đúng B 'Sai, phải chếch mũi ngược chiều gió để hợp vectơ hướng đúng về B'. Tình huống 3 (2 người kéo vật, F₁=F₂=60N): Câu 1 'Góc α nào giữa 2 dây kéo giúp hợp lực lớn nhất?' — đáp án đúng C 'α=0° (kéo cùng hướng)', hợp lực đạt cực đại R=120N; Câu 2 'Nếu kéo dài thêm dây của người B (giữ nguyên độ lớn lực và phương kéo), lực tác dụng có đổi không?' — đáp án đúng B 'Không thay đổi, vì vectơ lực chỉ phụ thuộc độ lớn và hướng, không phụ thuộc chiều dài dây'. Tình huống 4 (cẩu treo vật, T₁=T₂=50N): Câu 1 'Nếu tăng góc treo θ từ 30° lên 60° (giữ nguyên lực căng dây), hợp lực kéo R hướng lên thay đổi thế nào?' — đáp án đúng B 'Giảm đi' (vì R=2Tcosθ, θ tăng thì cosθ giảm); Câu 2 'Để hợp lực R tăng gấp đôi mà không đổi góc treo, phải làm gì?' — đáp án đúng B 'Phải tăng gấp đôi lực căng của CẢ HAI dây T₁ và T₂' (không phải chỉ 1 dây, không phải giảm góc). Athena có thể gợi ý học sinh thử điều chỉnh slider/góc trong mô phỏng để tự quan sát trước khi trả lời, thay vì đọc thẳng công thức kết quả."
+}
+  </script>
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+  <!-- Google Fonts -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    /* --- CSS Reset & Variables --- */
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    :root {
+  /* Neutrals · giấy & mực */
+  --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC;
+  --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
+  --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+
+  /* Jade · hành động chính */
+  --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F;
+  --jade-text:#1B5E48; --jade-soft:#A9D0BE; --jade-pale:#DCEAE1;
+
+  /* Sage · phụ trợ */
+  --sage:#A8C9B8; --sage-deep:#7CA792; --sage-text:#46685A; --sage-pale:#E1ECE4;
+
+  /* Accent · điểm nhấn ấm */
+  --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+
+  /* Semantic · đúng/sai/cảnh báo/info */
+  --correct:#2D8B6F; --correct-bg:#DCEAE1;
+  --wrong:#C15F3C;   --wrong-bg:#F3E2D6;
+  --warning:#C58A2E; --warning-bg:#F5E7CB;
+  --info:#4E7F92;    --info-bg:#DCE7EB;
+
+  --white:#FFFFFF;
+  --radius:10px; --radius-lg:14px; --radius-sm:6px;
+  --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+  --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+  --shadow-lg: 0 14px 38px rgba(20, 67, 47, 0.12);
+
+  /* Illustration only · fill phẳng cho minh hoạ (KHÔNG dùng cho UI/text) */
+  --il-terracotta:#C1704B; --il-brick:#9E4A2E; --il-ochre:#C99A3C; --il-olive:#8A9A5B;
+  --il-forest:#2E6B52; --il-dusty-blue:#6E93A6; --il-slate:#4E6E7E; --il-mauve:#8A6A7E; --il-sand:#D8C4A0;
+
+  /* Vector màu canvas Vật lý/Toán (cộng lực, cộng vận tốc...) — PHẦN 1.1 file design Toán */
+  --color-v1: var(--jade); --color-v2: var(--info);
+  --color-resultant: var(--accent); --color-force-red: var(--wrong); --color-gravity: var(--ink-3);
+
+  /* --- alias cho code cũ (giữ để var(--ten-cu) phía dưới vẫn chạy đúng màu mới) --- */
+  --primary: var(--jade-deep);
+  --primary-mid: var(--jade);
+  --primary-light: var(--jade-pale);
+  --accent-dark: var(--accent-deep);
+  --accent-light: var(--accent-pale);
+  --teal-mid: var(--jade-text);
+  --bg-color: var(--cream);
+  --card-bg: var(--white);
+  --card-border: var(--paper-line);
+  --text-main: var(--ink);
+  --text-muted: var(--ink-3);
+  --color-v1-glow: var(--jade-soft);
+  --color-v2-glow: var(--info-bg);
+  --color-resultant-glow: var(--accent-pale);
+  --green: var(--correct);
+  --red: var(--wrong);
+  --border: var(--paper-line);
+  --surface: var(--white);
+}
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      font-family: var(--font-main);
+      line-height: 1.5;
+      overflow-x: hidden;
+      padding-bottom: 2rem;
+    }
+
+    .container {
+      max-width: 1400px;
+      margin: 0 auto;
+      padding: 0.85rem 1.1rem;
+    }
+
+    /* --- Header --- */
+    header {
+      background: linear-gradient(135deg, rgba(45, 139, 111, 0.88) 0%, rgba(26, 122, 94, 0.88) 100%), url('https://www.aiducation.edu.vn/images/fifingfig_Modern_editorial_illustration_of_a_stylized_Vietnames_f0b08847-9f6d-48cf-90ac-b8ed2eb77baf.png') no-repeat center center;
+      background-size: cover;
+      border-radius: 12px;
+      padding: 0.9rem 1.4rem;
+      margin-bottom: 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 4px 20px rgba(45, 139, 111, 0.25);
+      position: relative;
+      overflow: hidden;
+    }
+
+    header::before {
+      content: '';
+      position: absolute;
+      inset: 0;
+      background: radial-gradient(circle at 80% 50%, rgba(232, 162, 74, 0.08) 0%, transparent 60%);
+    }
+
+    header>* {
+      position: relative;
+      z-index: 1;
+    }
+
+    .header-title-container {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      align-self: flex-start;
+      gap: 0.35rem;
+      background: rgba(232, 162, 74, 0.18);
+      border: 1px solid rgba(232, 162, 74, 0.4);
+      color: var(--accent);
+      font-size: 0.75rem;
+      font-weight: 700;
+      padding: 0.2rem 0.55rem;
+      border-radius: 999px;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 0.35rem;
+    }
+
+    header h1 {
+      font-size: 1.55rem;
+      font-weight: 800;
+      color: #ffffff;
+      letter-spacing: -0.01em;
+      text-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
+    }
+
+    header p {
+      color: rgba(255, 255, 255, 0.75);
+      font-size: 0.85rem;
+      margin-top: 0.1rem;
+    }
+
+    .header-stats {
+      display: flex;
+      gap: 0.6rem;
+    }
+
+    .stat-badge {
+      background: rgba(255, 255, 255, 0.08);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      padding: 0.35rem 0.75rem;
+      border-radius: 8px;
+      text-align: center;
+      backdrop-filter: blur(8px);
+      min-width: 90px;
+    }
+
+    .stat-badge .stat-label {
+      font-size: 0.68rem;
+      text-transform: uppercase;
+      color: rgba(255, 255, 255, 0.55);
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .stat-badge .stat-value {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--accent);
+    }
+
+    /* --- Skin Selector (Tabs) --- */
+    .skin-selector {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.5rem;
+      margin-bottom: 0.85rem;
+    }
+
+    .skin-tab {
+      background: var(--surface);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      padding: 0.65rem 0.5rem;
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 0.88rem;
+      color: var(--primary);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.45rem;
+      box-shadow: 0 2px 6px rgba(45, 139, 111, 0.04);
+      transition: var(--transition);
+    }
+
+    .skin-tab:hover {
+      background: var(--primary-light);
+      border-color: var(--primary-mid);
+      transform: translateY(-1px);
+    }
+
+    .skin-tab.active {
+      background: linear-gradient(135deg, var(--primary) 0%, var(--teal-mid) 100%);
+      color: #ffffff;
+      border-color: var(--primary);
+      box-shadow: 0 4px 12px rgba(45, 139, 111, 0.15);
+    }
+
+    /* --- Workspace Grid --- */
+    .workspace {
+      display: grid;
+      grid-template-columns: 3.5fr 6.5fr;
+      gap: 0.85rem;
+      margin-bottom: 0.85rem;
+      align-items: stretch;
+    }
+
+    @media (max-width: 1024px) {
+      .workspace {
+        grid-template-columns: 1fr;
+      }
+
+      .skin-selector {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+
+    /* --- Left Sidebar (Controls) --- */
+    .sidebar {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1rem;
+      box-shadow: 0 2px 8px rgba(45, 139, 111, 0.05);
+      position: relative;
+    }
+
+    .card-title {
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+      border-bottom: 1px solid var(--border);
+      padding-bottom: 0.45rem;
+    }
+
+    .card-title i {
+      color: var(--primary-mid);
+      font-size: 1.15rem;
+    }
+
+    /* --- Control Group --- */
+    .control-group {
+      margin-bottom: 0.8rem;
+    }
+
+    .control-group:last-child {
+      margin-bottom: 0;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.35rem;
+    }
+
+    .slider-label {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: 0.35rem;
+    }
+
+    .slider-value {
+      font-family: var(--font-mono);
+      font-size: 0.82rem;
+      font-weight: 700;
+      background: var(--primary-light);
+      color: var(--primary);
+      padding: 0.1rem 0.45rem;
+      border-radius: 5px;
+      border: 1px solid rgba(45, 139, 111, 0.12);
+    }
+
+    .slider-container {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 6px;
+      background: #E5DECF;
+      border-radius: 3px;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+      transition: transform 0.1s;
+      background: var(--primary-mid);
+    }
+
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    /* --- Checkboxes --- */
+    .checkbox-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 0.45rem;
+    }
+
+    .checkbox-item {
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+      cursor: pointer;
+      font-size: 0.8rem;
+      font-weight: 500;
+      color: var(--text-main);
+      padding: 0.35rem 0.5rem;
+      background: var(--accent-light);
+      border: 1px solid #E5DECF;
+      border-radius: 7px;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .checkbox-item:hover {
+      background: #F0EAD6;
+      border-color: var(--primary-mid);
+    }
+
+    .checkbox-item input[type="checkbox"] {
+      display: none;
+    }
+
+    .checkbox-custom {
+      width: 16px;
+      height: 16px;
+      border-radius: 4px;
+      border: 1.5px solid var(--primary-mid);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition);
+      flex-shrink: 0;
+    }
+
+    .checkbox-custom i {
+      font-size: 0.7rem;
+      color: #fff;
+      transform: scale(0);
+      transition: var(--transition);
+    }
+
+    .checkbox-item input[type="checkbox"]:checked+.checkbox-custom {
+      background: var(--active-color, var(--primary-mid));
+      border-color: var(--active-color, var(--primary-mid));
+    }
+
+    .checkbox-item input[type="checkbox"]:checked+.checkbox-custom i {
+      transform: scale(1);
+    }
+
+    .cb-v1 {
+      --active-color: var(--color-v1);
+    }
+
+    .cb-v2 {
+      --active-color: var(--color-v2);
+    }
+
+    .cb-resultant {
+      --active-color: var(--accent-dark);
+    }
+
+    .cb-parallelogram {
+      --active-color: var(--teal-mid);
+    }
+
+    .cb-formulas {
+      --active-color: var(--primary);
+    }
+
+    /* --- Toggle Switch --- */
+    .toggle-container {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      background: var(--accent-light);
+      border: 1px dashed var(--accent-dark);
+      padding: 0.5rem 0.75rem;
+      border-radius: 8px;
+      font-size: 0.85rem;
+    }
+
+    .toggle-info {
+      display: flex;
+      flex-direction: column;
+      gap: 0.05rem;
+    }
+
+    .toggle-info span {
+      font-weight: 700;
+      color: var(--accent-dark);
+      font-size: 0.85rem;
+    }
+
+    .toggle-info p {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+    }
+
+    .switch {
+      position: relative;
+      display: inline-block;
+      width: 44px;
+      height: 22px;
+    }
+
+    .switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider-switch {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: #E5DECF;
+      transition: .4s;
+      border-radius: 34px;
+    }
+
+    .slider-switch:before {
+      position: absolute;
+      content: "";
+      height: 16px;
+      width: 16px;
+      left: 3px;
+      bottom: 3px;
+      background: #fff;
+      transition: .4s;
+      border-radius: 50%;
+    }
+
+    .switch input:checked+.slider-switch {
+      background: var(--primary-mid);
+    }
+
+    .switch input:checked+.slider-switch:before {
+      transform: translateX(22px);
+    }
+
+    /* --- Action Buttons --- */
+    .button-group {
+      display: flex;
+      gap: 0.55rem;
+    }
+
+    .btn {
+      flex: 1;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.35rem;
+      padding: 0.6rem 0.85rem;
+      font-family: var(--font-main);
+      font-weight: 700;
+      font-size: 0.88rem;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+      transition: var(--transition);
+      user-select: none;
+    }
+
+    .btn-action {
+      background: var(--primary);
+      color: #fff;
+      box-shadow: 0 4px 12px rgba(45, 139, 111, 0.2);
+    }
+
+    .btn-action:hover:not(:disabled) {
+      background: var(--teal-mid);
+      transform: translateY(-1px);
+    }
+
+    .btn-action:active {
+      transform: translateY(0);
+    }
+
+    .btn-action:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .btn-reset {
+      background: #FAF7F0;
+      border: 1.5px dashed #E5DECF;
+      color: var(--text-muted);
+      flex: 0.6;
+    }
+
+    .btn-reset:hover {
+      border-color: var(--primary-mid);
+      color: var(--primary-mid);
+    }
+
+    .btn-next-mission {
+      background: var(--accent);
+      color: var(--primary);
+      box-shadow: 0 4px 12px rgba(232, 162, 74, 0.3);
+      display: none;
+      width: 100%;
+      margin-top: 0.6rem;
+    }
+
+    .btn-next-mission:hover {
+      background: #CE8A33;
+    }
+
+    /* --- Right Canvas Column --- */
+    .canvas-container {
+      display: flex;
+      flex-direction: column;
+      gap: 0.7rem;
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      border-radius: 16px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #DCEAE1;
+      box-shadow: 0 4px 20px rgba(45, 139, 111, 0.08);
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: auto;
+      aspect-ratio: 800 / 550;
+      cursor: default;
+    }
+
+    /* --- Canvas Overlay --- */
+    .canvas-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(45, 139, 111, 0.85);
+      backdrop-filter: blur(6px);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 2rem;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.4s ease;
+      z-index: 10;
+    }
+
+    .canvas-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .overlay-icon {
+      width: 65px;
+      height: 65px;
+      border-radius: 50%;
+      background: rgba(232, 162, 74, 0.15);
+      border: 2px solid var(--accent);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 2.2rem;
+      color: var(--accent);
+      margin-bottom: 1rem;
+    }
+
+    .overlay-title {
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 0.5rem;
+    }
+
+    .overlay-desc {
+      color: rgba(255, 255, 255, 0.78);
+      font-size: 0.9rem;
+      max-width: 440px;
+      margin-bottom: 1.25rem;
+    }
+
+    /* --- Info Bar under Canvas --- */
+    .info-bar {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 0.5rem;
+      background: var(--primary-light);
+      border: 1px solid rgba(45, 139, 111, 0.12);
+      border-radius: 10px;
+      padding: 0.5rem 0.9rem;
+    }
+
+    .info-bar.success {
+      background: #DCEAE1;
+      border-color: var(--primary-mid);
+    }
+
+    .info-item {
+      display: flex;
+      align-items: center;
+      gap: 0.45rem;
+    }
+
+    .info-icon {
+      font-size: 1.2rem;
+      color: var(--primary-mid);
+      display: flex;
+      align-items: center;
+    }
+
+    .info-data {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .info-label {
+      font-size: 0.68rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 700;
+      letter-spacing: .05em;
+    }
+
+    .info-value {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .info-bar.success .info-value {
+      color: var(--green);
+    }
+
+    /* --- Coach Box --- */
+    .coach-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--primary-mid);
+      border-radius: 10px;
+      padding: 1rem 0.9rem;
+      display: flex;
+      gap: 0.5rem;
+      align-items: flex-start;
+    }
+
+    .coach-avatar {
+      width: 32px;
+      height: 32px;
+      border-radius: 8px;
+      background: var(--primary-light);
+      border: 1px solid rgba(45, 139, 111, 0.15);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: var(--primary-mid);
+      font-size: 1.2rem;
+      flex-shrink: 0;
+    }
+
+    .coach-content {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .coach-name {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.05rem;
+    }
+
+    .coach-text {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+    }
+
+    /* --- Sơ đồ 4 bước --- */
+    .walkthrough-section {
+      margin-top: 0.85rem;
+    }
+
+    .walkthrough-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 0.65rem;
+    }
+
+    .walkthrough-title {
+      font-family: var(--font-heading);
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 0.4rem;
+    }
+
+    .walkthrough-title i {
+      color: var(--accent-dark);
+    }
+
+    .timeline-steps {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.6rem;
+    }
+
+    @media (max-width: 768px) {
+      .timeline-steps {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .timeline-step {
+      background: var(--accent-light);
+      border: 1.5px solid #E5DECF;
+      border-radius: 10px;
+      padding: 0.7rem 0.8rem;
+      position: relative;
+      transition: var(--transition);
+      cursor: pointer;
+    }
+
+    .timeline-step.active {
+      background: var(--primary-light);
+      border-color: var(--primary-mid);
+      box-shadow: 0 0 12px rgba(60, 165, 122, 0.12);
+    }
+
+    .timeline-step.completed {
+      border-color: var(--green);
+      background: #DCEAE1;
+    }
+
+    .step-number {
+      position: absolute;
+      top: 0.6rem;
+      right: 0.8rem;
+      font-size: 1.5rem;
+      font-weight: 800;
+      color: rgba(45, 139, 111, 0.05);
+      line-height: 1;
+    }
+
+    .timeline-step.active .step-number {
+      color: rgba(60, 165, 122, 0.12);
+    }
+
+    .timeline-step.completed .step-number {
+      color: rgba(45, 139, 111, 0.12);
+    }
+
+    .step-title {
+      font-size: 0.88rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+      display: flex;
+      align-items: center;
+      gap: .35rem;
+      color: var(--text-main);
+    }
+
+    .timeline-step.active .step-title {
+      color: var(--primary);
+    }
+
+    .timeline-step.completed .step-title {
+      color: var(--green);
+    }
+
+    .step-desc {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      line-height: 1.35;
+    }
+
+    .timeline-step.active .step-desc {
+      color: var(--text-main);
+    }
+
+    /* Modal Popup */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(15, 27, 53, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: var(--transition);
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-box {
+      background: #fff;
+      border-radius: 16px;
+      width: 90%;
+      max-width: 500px;
+      padding: 1.5rem;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.15);
+      transform: translateY(15px);
+      transition: var(--transition);
+      position: relative;
+    }
+
+    .modal-overlay.show .modal-box {
+      transform: translateY(0);
+    }
+
+    .modal-close {
+      position: absolute;
+      top: 1rem;
+      right: 1rem;
+      background: none;
+      border: none;
+      font-size: 1.3rem;
+      color: var(--text-muted);
+      cursor: pointer;
+    }
+
+    .modal-close:hover {
+      color: var(--red);
+    }
+
+    .modal-title {
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    .modal-desc {
+      font-size: 0.95rem;
+      color: var(--text-muted);
+      margin-bottom: 1.25rem;
+      line-height: 1.5;
+    }
+
+    .modal-fig {
+      background: var(--accent-light);
+      border: 1px solid var(--card-border);
+      border-radius: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+      margin-bottom: 1rem;
+      width: 100%;
+    }
+
+    .modal-fig canvas {
+      width: 100%;
+      height: auto;
+      aspect-ratio: 400 / 150;
+      display: block;
+    }
+
+    /* --- Bottom Grid (Quiz & Remembrance) --- */
+    .bottom-section {
+      display: grid;
+      grid-template-columns: 1.2fr 0.8fr;
+      gap: 0.85rem;
+      margin-top: 0.85rem;
+      align-items: start;
+    }
+
+    @media (max-width: 1024px) {
+      .bottom-section {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    /* Quiz Area */
+    .quiz-card {
+      min-height: 250px;
+    }
+
+    .quiz-locked-overlay {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(255, 255, 255, 0.8);
+      backdrop-filter: blur(6px);
+      border-radius: var(--radius-lg);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      text-align: center;
+      padding: 1.5 rem;
+      z-index: 5;
+      transition: var(--transition);
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .quiz-locked-overlay.unlocked {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .lock-icon {
+      font-size: 2rem;
+      color: var(--accent-dark);
+      margin-bottom: .5rem;
+    }
+
+    .lock-title {
+      font-size: 1.1rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: .2rem;
+    }
+
+    .lock-desc {
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      max-width: 280px;
+    }
+
+    .quiz-list {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .quiz-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      overflow: hidden;
+      background: var(--surface);
+    }
+
+    .quiz-question-header {
+      padding: .55rem 0.85rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+      background: var(--accent-light);
+    }
+
+    .quiz-question-header:hover {
+      background: #EFEAD3;
+    }
+
+    .quiz-title-text {
+      font-size: .88rem;
+      font-weight: 600;
+      color: var(--text-main);
+      display: flex;
+      align-items: center;
+      gap: .4rem;
+    }
+
+    .quiz-arrow {
+      font-size: .8rem;
+      color: var(--text-muted);
+      transition: transform .25s;
+    }
+
+    .quiz-item.expanded .quiz-arrow {
+      transform: rotate(180deg);
+    }
+
+    .quiz-body {
+      max-height: 0;
+      overflow: hidden;
+      transition: max-height 0.25s ease-out;
+    }
+
+    .quiz-item.expanded .quiz-body {
+      max-height: 400px;
+      border-top: 1px solid var(--border);
+    }
+
+    .quiz-content {
+      padding: 0.75rem;
+    }
+
+    .options-list {
+      display: flex;
+      flex-direction: column;
+      gap: .35rem;
+      margin-bottom: .55rem;
+    }
+
+    .option-btn {
+      width: 100%;
+      text-align: left;
+      background: var(--accent-light);
+      border: 1px solid #E5DECF;
+      padding: .45rem 0.75rem;
+      border-radius: 6px;
+      color: var(--text-main);
+      font-size: .82rem;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: var(--transition);
+      font-family: var(--font-main);
+    }
+
+    .option-btn:hover:not(.disabled) {
+      background: #EFEAD3;
+      border-color: var(--primary-mid);
+    }
+
+    .option-btn.selected-correct {
+      background: #DCEAE1;
+      border-color: var(--green);
+      color: var(--green);
+      font-weight: 700;
+    }
+
+    .option-btn.selected-wrong {
+      background: #F3E2D6;
+      border-color: var(--red);
+      color: var(--red);
+      font-weight: 700;
+    }
+
+    .option-btn.correct-reveal {
+      background: #DCEAE1;
+      border-color: var(--green);
+      color: var(--green);
+    }
+
+    .option-btn.disabled {
+      cursor: not-allowed;
+      opacity: .6;
+    }
+
+    .quiz-explanation {
+      background: var(--primary-light);
+      border-left: 3px solid var(--primary-mid);
+      padding: .6rem 0.85rem;
+      border-radius: 0 6px 6px 0;
+      font-size: .82rem;
+      color: var(--text-muted);
+      display: none;
+    }
+
+    .quiz-explanation.show {
+      display: block;
+    }
+
+    .quiz-explanation.correct {
+      border-left-color: var(--green);
+    }
+
+    .quiz-explanation.wrong {
+      border-left-color: var(--red);
+    }
+
+    .quiz-explanation-title {
+      font-weight: 700;
+      font-size: .82rem;
+      margin-bottom: .15rem;
+    }
+
+    .quiz-explanation.correct .quiz-explanation-title {
+      color: var(--green);
+    }
+
+    .quiz-explanation.wrong .quiz-explanation-title {
+      color: var(--red);
+    }
+
+    /* Remembrance & Tips */
+    .remembrance-card {
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .theory-box {
+      font-size: .85rem;
+      color: var(--text-muted);
+      display: flex;
+      flex-direction: column;
+      gap: .4rem;
+    }
+
+    .formula-display {
+      align-self: center;
+      background: var(--primary-light);
+      border: 1px solid rgba(45, 139, 111, 0.15);
+      padding: .45rem 1rem;
+      border-radius: 8px;
+      font-family: var(--font-mono);
+      font-size: .9rem;
+      color: var(--primary);
+      margin: .25rem 0;
+      font-weight: 700;
+      text-align: center;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.15rem;
+    }
+
+    .sqrt-container {
+      display: inline-flex;
+      align-items: center;
+      margin-left: 2px;
+    }
+
+    .sqrt-symbol {
+      font-family: system-ui, -apple-system, sans-serif;
+      font-size: 1.25em;
+      line-height: 0.9;
+      margin-right: -3px;
+      transform: translateY(-1.5px);
+    }
+
+    .sqrt-content {
+      border-top: 1.5px solid currentColor;
+      padding-top: 1.5px;
+      line-height: 1.1;
+      display: inline-block;
+    }
+
+    .vec {
+      position: relative;
+      display: inline-block;
+      padding-top: 0.1em;
+      font-style: italic;
+    }
+
+    .vec::after {
+      content: "→";
+      position: absolute;
+      top: -0.45em;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0.7);
+      font-size: 0.75em;
+    }
+
+    .theory-special-cases {
+      display: flex;
+      flex-direction: column;
+      gap: 0.25rem;
+      margin-top: 0.25rem;
+      border-top: 1px dashed var(--border);
+      padding-top: 0.4rem;
+    }
+
+    .special-case-item {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.8rem;
+    }
+
+    .special-case-item span:first-child {
+      font-weight: 600;
+      color: var(--text-main);
+    }
+
+    .special-case-item span:last-child {
+      font-family: var(--font-mono);
+      color: var(--primary);
+    }
+
+    .theory-tip {
+      background: #DCE7EB;
+      border: 1px solid #90CAF9;
+      padding: .45rem 0.75rem;
+      border-radius: 8px;
+      font-size: .8rem;
+      color: var(--text-main);
+      display: flex;
+      gap: .4rem;
+      align-items: flex-start;
+      margin-top: 0.4rem;
+    }
+
+    .theory-tip i {
+      color: #4E7F92;
+      font-size: 1rem;
+      margin-top: .05rem;
+    }
+
+    /* Confetti Canvas */
+    #confetti-canvas {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 12;
+    }
+
+    .formula-badge-inline {
+      font-family: var(--font-mono);
+      background: var(--primary-light);
+      padding: 0.05rem 0.25rem;
+      border-radius: 4px;
+      color: var(--primary);
+      font-weight: 600;
+      font-size: 0.82rem;
+    }
+
+    /* Shake animation */
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0)
+      }
+
+      20% {
+        transform: translateX(-6px)
+      }
+
+      40% {
+        transform: translateX(6px)
+      }
+
+      60% {
+        transform: translateX(-4px)
+      }
+
+      80% {
+        transform: translateX(4px)
+      }
+    }
+
+    .shake {
+      animation: shake .4s ease;
+    }
+  
+    /* Pass 2 (mục E) — vùng chạm tối thiểu 44px cho nút bấm thật trên mobile.
+       Không đụng desktop, không thu nhỏ phần tử nào — chỉ nới ra nếu đang < 44px. */
+    @media (max-width: 767px) {
+      button, .btn, a.btn, input[type="button"], input[type="submit"] {
+        min-height: 44px;
+      }
+    }
+</style>
+</head>
+
+<body>
+
+  <div class="container">
+
+    <!-- Header -->
+    <header>
+      <div class="header-title-container">
+        <span class="header-badge"><i class="ti ti-compass"></i> Simulation 2</span>
+        <h1>ỨNG DỤNG THỰC TẾ — TỔNG HỢP VẬN TỐC & LỰC</h1>
+        <p>Tìm hiểu các hiện tượng thực tế bằng Quy tắc hình bình hành và Định lí Cosin</p>
+      </div>
+
+      <div class="header-stats">
+        <div class="stat-badge">
+          <div class="stat-label">Tổng Điểm</div>
+          <div id="stat-total-score" class="stat-value">0</div>
+        </div>
+        <div class="stat-badge">
+          <div id="stat-resultant-label" class="stat-label">Hợp lực R</div>
+          <div id="stat-resultant-val" class="stat-value">--</div>
+        </div>
+      </div>
+    </header>
+
+    <!-- Tabs Chọn Skin -->
+    <div class="skin-selector">
+      <button class="skin-tab active" data-skin="1" onclick="switchSkin(1)">
+        <i class="ti ti-ship"></i> 1. Thuyền vượt sông
+      </button>
+      <button class="skin-tab" data-skin="2" onclick="switchSkin(2)">
+        <i class="ti ti-plane-departure"></i> 2. Máy bay gặp gió
+      </button>
+      <button class="skin-tab" data-skin="3" onclick="switchSkin(3)">
+        <i class="ti ti-package"></i> 3. Kéo hộp hàng
+      </button>
+      <button class="skin-tab" data-skin="4" onclick="switchSkin(4)">
+        <i class="ti ti-anchor"></i> 4. Neo tàu cân bằng
+      </button>
+    </div>
+
+    <!-- Main Workspace -->
+    <div class="workspace">
+
+      <!-- Cột trái: Điều khiển -->
+      <div class="sidebar">
+
+        <!-- Nhóm thông số -->
+        <div class="card" id="controls-card">
+          <div class="card-title">
+            <i class="ti ti-adjustments-horizontal"></i>
+            <span id="controls-card-title">Thiết lập thông số</span>
+          </div>
+
+          <!-- Slider nhóm skin 1 -->
+          <div class="skin-controls-group" id="controls-skin-1">
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-v1)">
+                  <i class="ti ti-ship"></i> Tốc độ thuyền (v_t)
+                </span>
+                <span id="label-vt" class="slider-value">4.0 m/s</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-vt" min="1.0" max="10.0" step="0.1" value="4.0"
+                  oninput="onSliderChange()">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-v2)">
+                  <i class="ti ti-waves"></i> Tốc độ dòng nước (v_d)
+                </span>
+                <span id="label-vd" class="slider-value">2.0 m/s</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-vd" min="0.0" max="5.0" step="0.1" value="2.0"
+                  oninput="onSliderChange()">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-v1)">
+                  <i class="ti ti-compass"></i> Hướng thuyền (θ)
+                </span>
+                <span id="label-theta-boat" class="slider-value">90°</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-theta-boat" min="0" max="180" value="90" oninput="onSliderChange()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Slider nhóm skin 2 -->
+          <div class="skin-controls-group" id="controls-skin-2" style="display:none;">
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-v1)">
+                  <i class="ti ti-engine"></i> Tốc độ máy bay (v_mb)
+                </span>
+                <span id="label-vmb" class="slider-value">200 m/s</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-vmb" min="100" max="250" step="5" value="200" oninput="onSliderChange()">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-v2)">
+                  <i class="ti ti-wind"></i> Tốc độ gió (v_gió)
+                </span>
+                <span id="label-vwind" class="slider-value">50 m/s</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-vwind" min="0" max="100" step="2" value="50" oninput="onSliderChange()">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-v1)">
+                  <i class="ti ti-navigation"></i> Hướng mũi máy bay (θ_mb)
+                </span>
+                <span id="label-theta-mb" class="slider-value">80°</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-theta-mb" min="0" max="360" value="80" oninput="onSliderChange()">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-v2)">
+                  <i class="ti ti-compass"></i> Hướng gió (θ_gió)
+                </span>
+                <span id="label-theta-wind" class="slider-value">0° (Đông)</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-theta-wind" min="0" max="360" value="0" oninput="onSliderChange()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Slider nhóm skin 3 -->
+          <div class="skin-controls-group" id="controls-skin-3" style="display:none;">
+            <p
+              style="font-size:0.82rem; color:var(--accent-dark); margin-bottom: 0.5rem; font-weight:600; display:flex; align-items:center; gap:3px;">
+              <i class="ti ti-info-circle"></i> Mẹo: Kéo trực tiếp đầu mũi tên trên canvas để chỉnh lực!
+            </p>
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-force-red)">
+                  <i class="ti ti-line-dashed"></i> Lực người A (F₁)
+                </span>
+                <span id="label-f1" class="slider-value">60 N</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-f1" min="0" max="100" value="60" oninput="onSliderChange()">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-v2)">
+                  <i class="ti ti-line-dashed"></i> Lực người B (F₂)
+                </span>
+                <span id="label-f2" class="slider-value">60 N</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-f2" min="0" max="100" value="60" oninput="onSliderChange()">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--text-main)">
+                  <i class="ti ti-angle"></i> Góc α giữa 2 lực
+                </span>
+                <span id="label-alpha" class="slider-value">60°</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-alpha" min="0" max="180" value="60" oninput="onSliderChange()">
+              </div>
+            </div>
+          </div>
+
+          <!-- Slider nhóm skin 4 -->
+          <div class="skin-controls-group" id="controls-skin-4" style="display:none;">
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-force-red)">
+                  <i class="ti ti-arrow-up-right"></i> Lực căng T₁
+                </span>
+                <span id="label-t1" class="slider-value">50 N</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-t1" min="0" max="100" value="50" oninput="onSliderChange()">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-v2)">
+                  <i class="ti ti-arrow-up-right"></i> Lực căng T₂
+                </span>
+                <span id="label-t2" class="slider-value">50 N</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-t2" min="0" max="100" value="50" oninput="onSliderChange()">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-force-red)">
+                  <i class="ti ti-angle"></i> Góc dây 1 với phương đứng (θ₁)
+                </span>
+                <span id="label-theta1" class="slider-value">30°</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-theta1" min="0" max="90" value="30" oninput="onSliderChange()">
+              </div>
+            </div>
+
+            <div class="control-group">
+              <div class="slider-header">
+                <span class="slider-label" style="color: var(--color-v2)">
+                  <i class="ti ti-angle"></i> Góc dây 2 với phương đứng (θ₂)
+                </span>
+                <span id="label-theta2" class="slider-value">30°</span>
+              </div>
+              <div class="slider-container">
+                <input type="range" id="slider-theta2" min="0" max="90" value="30" oninput="onSliderChange()">
+              </div>
+            </div>
+          </div>
+
+        </div>
+
+        <!-- Tùy chọn hiển thị -->
+        <div class="card">
+          <div class="card-title">
+            <i class="ti ti-eye"></i>
+            <span>Tùy chọn hiển thị</span>
+          </div>
+
+          <div class="checkbox-grid">
+            <label class="checkbox-item cb-v1">
+              <input type="checkbox" id="cb-show-v1" checked onchange="onCheckboxChange()">
+              <div class="checkbox-custom"><i class="ti ti-check"></i></div>
+              <span id="cb-v1-text">Vectơ 1 (v_t)</span>
+            </label>
+
+            <label class="checkbox-item cb-v2">
+              <input type="checkbox" id="cb-show-v2" checked onchange="onCheckboxChange()">
+              <div class="checkbox-custom"><i class="ti ti-check"></i></div>
+              <span id="cb-v2-text">Vectơ 2 (v_d)</span>
+            </label>
+
+            <label class="checkbox-item cb-resultant">
+              <input type="checkbox" id="cb-show-resultant" checked onchange="onCheckboxChange()">
+              <div class="checkbox-custom"><i class="ti ti-check"></i></div>
+              <span id="cb-res-text">Vectơ tổng (v)</span>
+            </label>
+
+            <label class="checkbox-item cb-parallelogram">
+              <input type="checkbox" id="cb-show-parallelogram" onchange="onCheckboxChange()">
+              <div class="checkbox-custom"><i class="ti ti-check"></i></div>
+              <span>Hình bình hành</span>
+            </label>
+          </div>
+
+          <div class="control-group" style="margin-top: 0.75rem;">
+            <div class="toggle-container">
+              <div class="toggle-info">
+                <span>Ẩn hiện phân tích</span>
+                <p>Hiển thị chi tiết tính toán công thức</p>
+              </div>
+              <label class="switch">
+                <input type="checkbox" id="cb-show-formulas" checked onchange="toggleFormulas()">
+                <span class="slider-switch"></span>
+              </label>
+            </div>
+          </div>
+        </div>
+
+        <!-- Nút hành động -->
+        <div class="card">
+          <div class="button-group">
+            <button class="btn btn-reset" onclick="resetParams()">
+              <i class="ti ti-refresh"></i> Đặt lại
+            </button>
+            <button id="btn-action" class="btn btn-action" onclick="runSimulation()">
+              <i class="ti ti-player-play"></i> Mô phỏng
+            </button>
+          </div>
+          <button id="btn-next-mission" class="btn btn-next-mission" onclick="nextMission()">
+            Nhiệm vụ tiếp theo <i class="ti ti-arrow-right"></i>
+          </button>
+        </div>
+
+        <!-- Trợ lý ảo AI Coach -->
+        <div class="coach-box">
+          <div class="coach-avatar">
+            <i class="ti ti-robot"></i>
+          </div>
+          <div class="coach-content">
+            <div class="coach-name">Trợ lý Athena Coach</div>
+            <div id="coach-text" class="coach-text">
+              Hãy điều chỉnh các slider để tìm hiểu cách hai vectơ vận tốc/lực thành phần tổng hợp thành vectơ kết quả!
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Cột phải: Canvas & Trợ lý ảo -->
+      <div class="canvas-container">
+
+        <!-- Canvas Wrapper -->
+        <div class="canvas-wrapper">
+          <canvas id="sim-canvas" width="800" height="550"></canvas>
+          <canvas id="confetti-canvas"></canvas>
+
+          <!-- Màn thành công -->
+          <div id="success-overlay" class="canvas-overlay">
+            <div class="overlay-icon">
+              <i class="ti ti-circle-check"></i>
+            </div>
+            <div class="overlay-title">Hoàn thành thử thách!</div>
+            <div id="success-overlay-desc" class="overlay-desc">
+              Thật tuyệt vời! Bạn đã áp dụng thành công kiến thức để giải quyết bài toán.
+            </div>
+            <button class="btn btn-action" style="max-width: 250px;" onclick="closeSuccessOverlay()">
+              Tiếp tục Khám phá <i class="ti ti-arrow-right"></i>
+            </button>
+          </div>
+        </div>
+
+        <!-- Thanh kết quả dưới canvas -->
+        <div id="info-bar" class="info-bar">
+          <div class="info-item">
+            <div class="info-icon"><i id="info-icon-1" class="ti ti-compass"></i></div>
+            <div class="info-data">
+              <span id="info-lbl-1" class="info-label">Độ lớn v tổng</span>
+              <span id="info-val-1" class="info-value">4.47 m/s</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon"><i id="info-icon-2" class="ti ti-arrow-up-right"></i></div>
+            <div class="info-data">
+              <span id="info-lbl-2" class="info-label">Hướng di chuyển</span>
+              <span id="info-val-2" class="info-value">63.4° so với bờ</span>
+            </div>
+          </div>
+
+          <div class="info-item">
+            <div class="info-icon"><i id="info-icon-3" class="ti ti-map-pin"></i></div>
+            <div class="info-data">
+              <span id="info-lbl-3" class="info-label">Trạng thái</span>
+              <span id="info-val-3" class="info-value">Tĩnh</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+    <!-- Walkthrough Sơ đồ 4 bước hình bình hành -->
+    <div class="card walkthrough-section">
+      <div class="walkthrough-header">
+        <div class="walkthrough-title">
+          <i class="ti ti-circle-number-4"></i>
+          <span>Khám phá: Quy trình 4 bước dựng hình bình hành vectơ</span>
+        </div>
+      </div>
+
+      <div class="timeline-steps">
+        <div class="timeline-step" id="wt-step-1" onclick="showWalkthrough(1)">
+          <span class="step-number">01</span>
+          <div class="step-title">1. Biểu diễn</div>
+          <p class="step-desc">Vẽ hai vectơ thành phần xuất phát từ vị trí thực tế của sự vật.</p>
+        </div>
+        <div class="timeline-step" id="wt-step-2" onclick="showWalkthrough(2)">
+          <span class="step-number">02</span>
+          <div class="step-title">2. Đồng gốc</div>
+          <p class="step-desc">Tịnh tiến (dịch chuyển song song) hai vectơ về chung một điểm gốc O.</p>
+        </div>
+        <div class="timeline-step" id="wt-step-3" onclick="showWalkthrough(3)">
+          <span class="step-number">03</span>
+          <div class="step-title">3. Dựng hình</div>
+          <p class="step-desc">Từ ngọn mỗi vectơ, vẽ đoạn song song với vectơ kia tạo thành hình bình hành.</p>
+        </div>
+        <div class="timeline-step" id="wt-step-4" onclick="showWalkthrough(4)">
+          <span class="step-number">04</span>
+          <div class="step-title">4. Đường chéo</div>
+          <p class="step-desc">Vẽ vectơ tổng xuất phát từ gốc O đi theo đường chéo hình bình hành.</p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Bottom Grid (Quiz & Remembrance) -->
+    <div class="bottom-section">
+
+      <!-- Trắc nghiệm nhanh (Quiz) -->
+      <div class="card quiz-card" style="position: relative;">
+        <!-- Màn khóa câu hỏi -->
+        <div id="quiz-locked" class="quiz-locked-overlay">
+          <div class="lock-icon"><i class="ti ti-lock"></i></div>
+          <h3 class="lock-title">Bảng trắc nghiệm đang khóa</h3>
+          <p class="lock-desc">Hoàn thành thử thách mô phỏng của skin hiện tại hoặc click đủ 4 bước "Xem khám phá" để mở
+            khóa.</p>
+        </div>
+
+        <div class="card-title" style="justify-content: space-between;">
+          <div style="display: flex; align-items: center; gap: 0.5rem;">
+            <i class="ti ti-help-octagon" style="color: var(--accent-dark)"></i>
+            <span>Kiểm tra nhanh (Quiz)</span>
+          </div>
+          <span id="quiz-badge"
+            style="font-size: 0.82rem; background: var(--primary-light); color: var(--primary-mid); padding: 0.2rem 0.55rem; border-radius: 6px; font-weight: 700; text-transform: uppercase;">2
+            CÂU HỎI</span>
+        </div>
+
+        <div class="quiz-list" id="quiz-list-container">
+          <!-- Câu hỏi sẽ được chèn động từ Javascript -->
+        </div>
+      </div>
+
+      <!-- Bảng Ghi nhớ cốt lõi -->
+      <div class="card remembrance-card">
+        <div class="card-title">
+          <i class="ti ti-book-2"></i>
+          <span>Ghi nhớ cốt lõi</span>
+        </div>
+
+        <div class="theory-box">
+          <p>
+            Tổng hợp vectơ (lực, vận tốc) là tìm một vectơ tổng hợp có tác dụng tương đương hai vectơ thành phần, tuân
+            theo <strong>Quy tắc hình bình hành</strong>.
+          </p>
+
+          <div id="math-analysis-box" style="display: block;">
+            <p style="margin-bottom:0.25rem;">Độ lớn của vectơ tổng hợp được tính theo <strong>Định lí Cosin tổng
+                quát</strong>:</p>
+            <div class="formula-display">
+              R = <span class="sqrt-container"><span class="sqrt-symbol">&radic;</span><span class="sqrt-content">A² +
+                  B² + 2 &middot; A &middot; B &middot; cos(&alpha;)</span></span>
+            </div>
+            <p style="font-size:0.74rem; color:var(--text-muted); text-align:center;">Trong đó &alpha; là góc giữa hai
+              vectơ thành phần <span class="vec">A</span> và <span class="vec">B</span>.</p>
+          </div>
+
+          <div class="theory-special-cases">
+            <div class="special-case-item">
+              <span>Cùng hướng (&alpha; = 0°):</span>
+              <span>R = A + B (Max)</span>
+            </div>
+            <div class="special-case-item">
+              <span>Vuông góc (&alpha; = 90°):</span>
+              <span>R = <span class="sqrt-container"><span class="sqrt-symbol">&radic;</span><span
+                    class="sqrt-content">A² + B²</span></span> (Pythagore)</span>
+            </div>
+            <div class="special-case-item">
+              <span>Ngược hướng (&alpha; = 180°):</span>
+              <span>R = |A - B| (Min)</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="theory-tip">
+          <i class="ti ti-bulb"></i>
+          <div id="theory-tip-text">
+            Mẹo: Để khử bớt tác động lệch dòng chảy của dòng nước (hoặc gió), hãy điều khiển phương chuyển động của vật
+            chếch ngược chiều tác dụng ngoại lực một góc phù hợp.
+          </div>
+        </div>
+
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- Walkthrough Popup Modal -->
+  <div class="modal-overlay" id="wt-modal" onclick="closeWalkthroughModal()">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <button class="modal-close" onclick="closeWalkthroughModal()">&times;</button>
+      <div class="modal-title" id="wt-modal-title">
+        <i class="ti ti-school"></i> <span>Bước 1: Biểu diễn lực</span>
+      </div>
+      <p class="modal-desc" id="wt-modal-desc">
+        Mô tả chi tiết bước này...
+      </p>
+      <div class="modal-fig">
+        <canvas id="modal-fig-canvas" width="400" height="150"></canvas>
+      </div>
+      <button class="btn btn-action" style="width: 100%;" onclick="closeWalkthroughModal()">Đã hiểu</button>
+    </div>
+  </div>
+
+  <script>
+    // ===== LMS safe accessor (PHẦN 7.2 design Toán) — tự thêm, không đụng logic khác =====
+    function LMS(){return window.AiducationLMS||{ready:function(){},progress:function(){},event:function(){},state:function(){},complete:function(){},resize:function(){}};}
+
+    // --- Vector 2D helper functions ---
+    const Vec2 = {
+      add: (a, b) => ({ x: a.x + b.x, y: a.y + b.y }),
+      sub: (a, b) => ({ x: a.x - b.x, y: a.y - b.y }),
+      scale: (v, s) => ({ x: v.x * s, y: v.y * s }),
+      len: v => Math.sqrt(v.x ** 2 + v.y ** 2),
+      norm: v => {
+        const l = Vec2.len(v) || 1;
+        return { x: v.x / l, y: v.y / l };
+      },
+      dot: (a, b) => a.x * b.x + a.y * b.y,
+      angle: v => Math.atan2(v.y, v.x), // radians
+      fromAngle: (ang, length = 1) => ({
+        x: Math.cos(ang) * length,
+        y: Math.sin(ang) * length
+      }),
+      rotate: (v, rad) => ({
+        x: v.x * Math.cos(rad) - v.y * Math.sin(rad),
+        y: v.x * Math.sin(rad) + v.y * Math.cos(rad)
+      }),
+      dist: (a, b) => Math.sqrt((a.x - b.x) ** 2 + (a.y - b.y) ** 2)
+    };
+
+    // --- State variables ---
+    let currentSkin = 1;
+    let totalScore = 0;
+    let scoresBySkin = { 1: 0, 2: 0, 3: 0, 4: 0 };
+    let starsBySkin = { 1: 0, 2: 0, 3: 0, 4: 0 };
+    let challengeCompleted = { 1: false, 2: false, 3: false, 4: false };
+    let userInteracted = false;
+
+    // Simulation settings & objects
+    const canvas = document.getElementById('sim-canvas');
+    const ctx = canvas.getContext('2d');
+    const CW = 800;
+    const CH = 550;
+
+    // Retinal support
+    const dpr = window.devicePixelRatio || 1;
+    canvas.width = CW * dpr;
+    canvas.height = CH * dpr;
+    ctx.scale(dpr, dpr);
+
+    const confettiCanvas = document.getElementById('confetti-canvas');
+    const confCtx = confettiCanvas.getContext('2d');
+    confettiCanvas.width = CW * dpr;
+    confettiCanvas.height = CH * dpr;
+    confCtx.scale(dpr, dpr);
+
+    // Canvas rendering coordinates & positions
+    // Boat scene variables
+    const s1Start = { x: 150, y: 450 };
+    const s1Width = 500;
+    const s1RiverTop = 130;
+    const s1RiverBottom = 450;
+
+    // Plane scene variables
+    const s2Start = { x: 150, y: 420 };
+    const s2Target = { x: 550, y: 140 }; // precisely at 45 degrees relative to A: (400, -280) -> wait, 400 and -280 is angle -35 deg in canvas coordinates, let's adjust to exactly 45 deg: (150+300, 420-300) = (450, 120).
+    const s2TargetReal = { x: 470, y: 100 }; // Wait, if A is (150, 430), let's place target B at (500, 80) which is delta_x = 350, delta_y = -350 (45 degrees upward).
+
+    // Physical state variables for active scene
+    let boat = { x: 150, y: 450, theta: 90, vt: 4.0, vd: 2.0, t: 0, path: [], animate: false };
+    let plane = { x: 150, y: 430, theta: 80, vmb: 200, vwind: 50, thetaWind: 0, t: 0, path: [], animate: false };
+    let crate = { x: 400, y: 390, f1: 60, f2: 60, alpha: 60, rx: 0, ry: 0, t: 0, path: [], animate: false, tilt: 0 };
+
+    // Tension/Anchor variables
+    let anchor = { x: 400, y: 300, t1: 50, t2: 50, theta1: 30, theta2: 30, rx: 0, ry: 0, yOffset: 0, t: 0, animate: false, state: 'idle' };
+
+    // Vector drag interaction in Skin 3
+    let dragMode = null; // 'f1_end' | 'f2_end' | null
+    let dragStartPos = { x: 0, y: 0 };
+
+    // Walkthrough current highlights
+    let activeWalkthroughStep = null;
+    let walkthroughState = false;
+
+    // Confetti array
+    let confettiList = [];
+
+    // Wind & Water animation elements
+    let flowOffset = 0;
+    let windParticles = [];
+    let planeClouds = [];
+    let boatWakeParticles = [];
+    let crateDustParticles = [];
+    let seaBubbles = [];
+    let globalTime = 0;
+
+    // --- Quiz Data Database ---
+    const QUIZ_DATABASE = {
+      1: [
+        {
+          id: 'q1_1',
+          question: "Câu 1: Nếu tốc độ dòng chảy (v_d) mạnh gấp đôi, hướng di chuyển thực tế của thuyền sẽ thế nào?",
+          options: {
+            A: "A. Thuyền bị lệch nhiều hơn về phía hạ lưu (xuôi dòng)",
+            B: "B. Thuyền bị lệch ít hơn",
+            C: "C. Hướng di chuyển không thay đổi"
+          },
+          correct: 'A',
+          selected: null,
+          explanation: "Khi v_d tăng → vectơ dòng chảy dài hơn → vectơ tổng hợp v (vàng) sẽ nghiêng nhiều hơn về phía dòng chảy, tức là lệch nhiều hơn về phía hạ lưu."
+        },
+        {
+          id: 'q1_2',
+          question: "Câu 2: Vận tốc tổng hợp v của thuyền có bằng phép cộng thông thường v = v_t + v_d = 4 + 2 = 6 m/s hay không?",
+          options: {
+            A: "A. Đúng, chỉ cần cộng trực tiếp độ lớn lại",
+            B: "B. Sai, vì vận tốc là đại lượng vectơ nên phải cộng theo quy tắc hình bình hành"
+          },
+          correct: 'B',
+          selected: null,
+          explanation: "Chính xác! Do v_t và v_d vuông góc nhau (90°), ta phải áp dụng định lí Pythagore: v = √(v_t² + v_d²) = √(4² + 2²) = √20 ≈ 4.47 m/s, nhỏ hơn rất nhiều so với 6 m/s."
+        }
+      ],
+      2: [
+        {
+          id: 'q2_1',
+          question: "Câu 1: Khi góc giữa mũi máy bay và hướng gió là 180° (gió thổi ngược chiều bay), vận tốc tổng hợp của máy bay so với mặt đất sẽ thế nào?",
+          options: {
+            A: "A. Lớn nhất",
+            B: "B. Nhỏ nhất và có độ lớn bằng hiệu |v_mb - v_gió|",
+            C: "C. Bằng 0"
+          },
+          correct: 'B',
+          selected: null,
+          explanation: "Hai vectơ ngược chiều sẽ triệt tiêu một phần độ lớn của nhau, tạo ra hợp vectơ có độ lớn nhỏ nhất bằng hiệu độ lớn hai vectơ thành phần."
+        },
+        {
+          id: 'q2_2',
+          question: "Câu 2: Phi công muốn bay thẳng từ sân bay A sang B khi có gió ngang cản. Việc điều chỉnh mũi máy bay hướng thẳng tới B là đúng hay sai?",
+          options: {
+            A: "A. Đúng, cứ hướng thẳng mũi vào đích là sẽ đến nơi",
+            B: "B. Sai, phải chếch mũi ngược chiều gió thổi để hợp vectơ hướng đúng về B"
+          },
+          correct: 'B',
+          selected: null,
+          explanation: "Gió ngang sẽ thổi máy bay lệch khỏi đường bay dự định. Phi công buộc phải chếch đầu ngược chiều gió một góc bù thích hợp để hợp lực vận tốc chỉ đúng về đích B."
+        }
+      ],
+      3: [
+        {
+          id: 'q3_1',
+          question: "Câu 1: Hai người kéo một vật nặng với các lực F_1 = F_2 = 60N. Góc α nào giữa hai dây kéo giúp hợp lực kéo lớn nhất?",
+          options: {
+            A: "A. α = 180° (kéo ngược nhau)",
+            B: "B. α = 90° (kéo vuông góc)",
+            C: "C. α = 0° (kéo cùng một hướng)"
+          },
+          correct: 'C',
+          selected: null,
+          explanation: "Góc α càng nhỏ thì hai lực kéo càng hỗ trợ tốt cho nhau. Khi α = 0°, hợp lực đạt cực đại bằng tổng hai lực R = 120N."
+        },
+        {
+          id: 'q3_2',
+          question: "Câu 2: Nếu kéo dài thêm dây kéo của người B (giữ nguyên độ lớn lực và phương kéo), lực tác dụng lên hộp có thay đổi không?",
+          options: {
+            A: "A. Tăng lên vì dây dài kéo lực khỏe hơn",
+            B: "B. Không thay đổi vì vectơ lực chỉ phụ thuộc độ lớn và hướng, không đổi điểm đặt",
+            C: "C. Giảm đi vì dây trùng bớt lực"
+          },
+          correct: 'B',
+          selected: null,
+          explanation: "Vectơ lực kéo đặt lên vật chỉ có 2 yếu tố quyết định là độ lớn (N) và hướng kéo. Chiều dài sợi dây vật lý không thay đổi độ lớn của lực truyền đến vật."
+        }
+      ],
+      4: [
+        {
+          id: 'q4_1',
+          question: "Câu 1: Giữ nguyên lực căng dây T_1 = T_2 = 50N, nếu tăng góc treo θ giữa hai dây từ 30° lên 60°, hợp lực kéo R hướng lên sẽ thay đổi thế nào?",
+          options: {
+            A: "A. Tăng lên",
+            B: "B. Giảm đi",
+            C: "C. Không thay đổi"
+          },
+          correct: 'B',
+          selected: null,
+          explanation: "Khi góc treo tăng lên, hai lực T₁ và T₂ chếch ngang nhiều hơn, triệt tiêu lực ngang của nhau lớn hơn và làm giảm thành phần lực nâng hướng lên. R = 2·T·cos(θ) sẽ giảm đi."
+        },
+        {
+          id: 'q4_2',
+          question: "Câu 2: Hai dây treo đối xứng nhau. Để hợp lực căng dây nâng R tăng gấp đôi mà không đổi góc treo, ta phải làm thế nào?",
+          options: {
+            A: "A. Chỉ cần tăng gấp đôi lực căng của dây bên trái T₁",
+            B: "B. Phải tăng gấp đôi lực căng của cả hai dây T₁ và T₂",
+            C: "C. Giảm góc nghiêng của các dây cẩu đi một nửa"
+          },
+          correct: 'B',
+          selected: null,
+          explanation: "Theo biểu thức tổng hợp R = 2·T·cos(θ), muốn hợp lực R tăng gấp đôi mà góc θ giữ nguyên, ta buộc phải tăng lực căng T của cả hai sợi dây lên gấp đôi."
+        }
+      ]
+    };
+
+    // Dynamic Speeches by Coach Robot
+    const COACH_SPEECHES = {
+      1: {
+        idle: "Thuyền chèo từ bờ A muốn cập bến B (đối diện). Do nước chảy mạnh sang phải, thuyền sẽ bị trôi xuôi dòng. Hãy chỉnh góc chèo (ví dụ: 120° ngược dòng) để đưa thuyền cập đúng bến B!",
+        success: "Tuyệt vời! Thuyền phải hướng chếch 120° so với dòng nước (tức chếch 30° ngược dòng) để trung hòa lực đẩy của dòng sông. Thử câu hỏi ôn tập bên dưới nhé!",
+        failed: "Tiếc quá, thuyền bị dòng nước đẩy trôi lệch khỏi bến B rồi! Hãy điều khiển hướng thuyền nghiêng ngược dòng sông (góc lớn hơn 90°) để bù dòng chảy nhé."
+      },
+      2: {
+        idle: "Gió đang thổi từ Tây sang Đông (0°) với vận tốc 50m/s. Máy bay cất cánh từ sân bay A muốn hạ cánh thẳng vào sân bay B ở hướng Đông Bắc (45°). Hãy điều chỉnh hướng mũi máy bay để bay trúng đích B!",
+        success: "Xuất sắc! Máy bay phải bay chéo ở hướng góc ~55.2° so với phương nằm ngang để bù lại lượng gió đẩy từ trái qua phải, giúp máy bay trượt theo góc 45° đến đích.",
+        failed: "Máy bay bị gió đẩy chệch hướng bay và trôi lệch khỏi sân bay B rồi! Hãy chỉnh lại hướng mũi bay ngược gió một ít để bù lệch nhé."
+      },
+      3: {
+        idle: "Hãy tác động lực kéo của người A và người B bằng slider hoặc kéo trực tiếp đầu mũi tên lực trên canvas. Làm sao để tổng hợp lực R hướng thẳng lên phía Bắc (vuông góc) và đạt đúng 80N nhé!",
+        success: "Chính xác! Lực tổng hợp R hướng thẳng đứng lên trên với độ lớn đúng 80N. Hai lực thành phần đối xứng kéo nghiêng góc alpha giúp phân chia lực đều đặn.",
+        failed: "Hợp lực kéo R chưa hướng đúng về phía Bắc hoặc chưa đạt đúng 80N. Hãy chú ý chỉnh sao cho độ lớn R = 80N và hướng kéo hướng thẳng lên trên."
+      },
+      4: {
+        idle: "Neo tàu nặng P = 80N kéo thẳng đứng xuống. Hai sợi dây cẩu T_1 và T_2 giữ neo ở góc treo ban đầu θ₁ = θ₂ = 30°. Hãy tăng giảm lực căng hoặc góc để neo đạt trạng thái cân bằng (R = 80N kéo thẳng lên) nhé!",
+        success: "Cân bằng hoàn hảo! Hợp lực căng dây R bằng đúng trọng lực P = 80N hướng lên, giữ neo lơ lửng ổn định không bị chìm hay nổi. Trạng thái này gọi là Cân bằng lực!",
+        failed: "Chưa cân bằng! Nếu lực căng dây quá yếu (R < P), neo sẽ chìm xuống đáy biển. Nếu lực quá mạnh (R > P), neo sẽ bị kéo vọt lên mặt nước. Hãy căn chỉnh chính xác!"
+      }
+    };
+
+    // --- Switch between Skins ---
+    function switchSkin(skinId) {
+      if (boat.animate || plane.animate || crate.animate || anchor.animate) return;
+
+      currentSkin = skinId;
+
+      // Update Tab UI
+      document.querySelectorAll('.skin-tab').forEach(btn => {
+        btn.classList.remove('active');
+        if (parseInt(btn.getAttribute('data-skin')) === skinId) {
+          btn.classList.add('active');
+        }
+      });
+
+      // Show appropriate controls
+      document.querySelectorAll('.skin-controls-group').forEach(grp => grp.style.display = 'none');
+      document.getElementById(`controls-skin-${skinId}`).style.display = 'block';
+
+      // Update checkbox texts and aliases
+      const cbV1 = document.getElementById('cb-v1-text');
+      const cbV2 = document.getElementById('cb-v2-text');
+      const cbRes = document.getElementById('cb-res-text');
+      const info1 = document.getElementById('info-lbl-1');
+      const info2 = document.getElementById('info-lbl-2');
+      const resultLbl = document.getElementById('stat-resultant-label');
+
+      const actBtn = document.getElementById('btn-action');
+      actBtn.innerHTML = '<i class="ti ti-player-play"></i> Mô phỏng';
+      actBtn.disabled = false;
+
+      if (skinId === 1) {
+        cbV1.textContent = "Vận tốc thuyền v_t";
+        cbV2.textContent = "Dòng nước v_d";
+        cbRes.textContent = "Vận tốc tổng hợp v";
+        info1.textContent = "Độ lớn v tổng";
+        info2.textContent = "Hướng di chuyển";
+        resultLbl.textContent = "Vận tốc tổng v";
+        actBtn.innerHTML = '<i class="ti ti-player-play"></i> Chèo thuyền!';
+      } else if (skinId === 2) {
+        cbV1.textContent = "Vận tốc máy bay v_mb";
+        cbV2.textContent = "Vận tốc gió v_g";
+        cbRes.textContent = "Vận tốc tổng v";
+        info1.textContent = "Độ lớn v tổng";
+        info2.textContent = "Hướng di chuyển";
+        resultLbl.textContent = "Vận tốc tổng v";
+        actBtn.innerHTML = '<i class="ti ti-player-play"></i> Cất cánh!';
+      } else if (skinId === 3) {
+        cbV1.textContent = "Lực người A F₁";
+        cbV2.textContent = "Lực người B F₂";
+        cbRes.textContent = "Hợp lực kéo R";
+        info1.textContent = "Hợp lực R";
+        info2.textContent = "Góc kéo thực tế";
+        resultLbl.textContent = "Hợp lực R";
+        actBtn.innerHTML = '<i class="ti ti-bolt"></i> Áp dụng lực!';
+      } else if (skinId === 4) {
+        cbV1.textContent = "Lực căng dây T₁";
+        cbV2.textContent = "Lực căng dây T₂";
+        cbRes.textContent = "Hợp lực căng R";
+        info1.textContent = "Hợp lực căng R";
+        info2.textContent = "Trọng lực neo P";
+        resultLbl.textContent = "Hợp lực căng R";
+        actBtn.innerHTML = '<i class="ti ti-scale"></i> Thả neo!';
+      }
+
+      // Reset active walkthrough steps
+      activeWalkthroughStep = null;
+      document.querySelectorAll('.timeline-step').forEach(s => s.classList.remove('active'));
+
+      // Reset user interaction state
+      userInteracted = false;
+
+      // Update coach text
+      updateCoachText(COACH_SPEECHES[skinId].idle);
+
+      // Update theory tip text dynamically
+      const tipText = document.getElementById('theory-tip-text');
+      if (skinId === 1 || skinId === 2) {
+        tipText.textContent = "Mẹo: Để khử bớt tác động lệch của dòng chảy (hoặc gió), hãy chèo thuyền hoặc bay chếch ngược chiều tác dụng ngoại lực một góc phù hợp.";
+      } else {
+        tipText.textContent = "Mẹo: Góc giữa hai lực thành phần càng lớn (tiến về 180\u00B0) thì độ lớn hợp lực R càng nhỏ. Góc vuông 90\u00B0 dùng định lí Pythagore.";
+      }
+
+      // Render Quiz questions
+      renderQuiz();
+
+      // Hide success overlay
+      document.getElementById('success-overlay').classList.remove('show');
+
+      // Redraw canvas
+      resetParams();
+    }
+
+    // --- Update Coach speech text ---
+    function updateCoachText(txt) {
+      document.getElementById('coach-text').textContent = txt;
+    }
+
+    // --- Reset parameters of the active skin ---
+    function resetParams() {
+      // Clear path
+      boat.path = []; boat.animate = false; boat.t = 0;
+      plane.path = []; plane.animate = false; plane.t = 0;
+      crate.path = []; crate.animate = false; crate.t = 0;
+      anchor.animate = false; anchor.t = 0; anchor.yOffset = 0; anchor.state = 'idle';
+
+      // Reset coordinates
+      boat.x = s1Start.x; boat.y = s1Start.y;
+      plane.x = s2Start.x; plane.y = s2Start.y;
+      crate.x = 400; crate.y = 390; crate.tilt = 0;
+      anchor.x = 400; anchor.y = 300;
+
+      // Reset UI elements
+      document.getElementById('info-bar').className = 'info-bar';
+      document.getElementById('btn-action').disabled = false;
+      document.getElementById('btn-next-mission').style.display = 'none';
+
+      // Sync variables from slider values
+      if (currentSkin === 1) {
+        boat.vt = parseFloat(document.getElementById('slider-vt').value);
+        boat.vd = parseFloat(document.getElementById('slider-vd').value);
+        boat.theta = parseFloat(document.getElementById('slider-theta-boat').value);
+      } else if (currentSkin === 2) {
+        plane.vmb = parseFloat(document.getElementById('slider-vmb').value);
+        plane.vwind = parseFloat(document.getElementById('slider-vwind').value);
+        plane.theta = parseFloat(document.getElementById('slider-theta-mb').value);
+        plane.thetaWind = parseFloat(document.getElementById('slider-theta-wind').value);
+      } else if (currentSkin === 3) {
+        crate.f1 = parseFloat(document.getElementById('slider-f1').value);
+        crate.f2 = parseFloat(document.getElementById('slider-f2').value);
+        crate.alpha = parseFloat(document.getElementById('slider-alpha').value);
+      } else if (currentSkin === 4) {
+        anchor.t1 = parseFloat(document.getElementById('slider-t1').value);
+        anchor.t2 = parseFloat(document.getElementById('slider-t2').value);
+        anchor.theta1 = parseFloat(document.getElementById('slider-theta1').value);
+        anchor.theta2 = parseFloat(document.getElementById('slider-theta2').value);
+      }
+
+      onSliderChange(false);
+      draw();
+    }
+
+    // --- Handle Slider modifications dynamically ---
+    function onSliderChange(fromUser = true) {
+      if (fromUser) {
+        userInteracted = true;
+      }
+      // 1. Update text displays
+      if (currentSkin === 1) {
+        boat.vt = parseFloat(document.getElementById('slider-vt').value);
+        boat.vd = parseFloat(document.getElementById('slider-vd').value);
+        boat.theta = parseFloat(document.getElementById('slider-theta-boat').value);
+
+        document.getElementById('label-vt').textContent = boat.vt.toFixed(1) + " m/s";
+        document.getElementById('label-vd').textContent = boat.vd.toFixed(1) + " m/s";
+        document.getElementById('label-theta-boat').textContent = boat.theta + "°";
+
+        // Math vector sum:
+        // angle in canvas coordinates:
+        // Water flows from left to right (x-axis = 0 degrees) -> angle = 0
+        // Boat angle theta relative to flow:
+        const angleRad = (180 - boat.theta) * Math.PI / 180; // 0 is upstream (left), 180 is downstream (right)
+        // Let's match the script: 90 is straight across.
+        // If boat heading theta: 0 is downstream (right), 90 is straight across (upward), 180 is upstream (left).
+        const headingRad = boat.theta * Math.PI / 180;
+        const vt_vec = { x: boat.vt * Math.cos(headingRad), y: -boat.vt * Math.sin(headingRad) };
+        const vd_vec = { x: boat.vd, y: 0 };
+        const v_vec = Vec2.add(vt_vec, vd_vec);
+        const v_mag = Vec2.len(v_vec);
+        // Angle with the bank (flow direction)
+        const resultAngleRad = Math.atan2(-v_vec.y, v_vec.x);
+        let resultAngleDeg = resultAngleRad * 180 / Math.PI;
+        if (resultAngleDeg < 0) resultAngleDeg += 360;
+
+        // Update stats
+        document.getElementById('stat-resultant-val').textContent = v_mag.toFixed(2) + " m/s";
+        document.getElementById('info-val-1').textContent = v_mag.toFixed(2) + " m/s";
+        document.getElementById('info-val-2').textContent = resultAngleDeg.toFixed(1) + "° so với dòng chảy";
+        document.getElementById('info-val-3').textContent = "Sẵn sàng";
+
+      } else if (currentSkin === 2) {
+        plane.vmb = parseFloat(document.getElementById('slider-vmb').value);
+        plane.vwind = parseFloat(document.getElementById('slider-vwind').value);
+        plane.theta = parseFloat(document.getElementById('slider-theta-mb').value);
+        plane.thetaWind = parseFloat(document.getElementById('slider-theta-wind').value);
+
+        document.getElementById('label-vmb').textContent = plane.vmb + " m/s";
+        document.getElementById('label-vwind').textContent = plane.vwind + " m/s";
+        document.getElementById('label-theta-mb').textContent = plane.theta + "°";
+
+        // Compass naming for wind
+        let windDirText = plane.thetaWind + "°";
+        if (plane.thetaWind === 0 || plane.thetaWind === 360) windDirText += " (Đông)";
+        else if (plane.thetaWind === 90) windDirText += " (Bắc)";
+        else if (plane.thetaWind === 180) windDirText += " (Tây)";
+        else if (plane.thetaWind === 270) windDirText += " (Nam)";
+        document.getElementById('label-theta-wind').textContent = windDirText;
+
+        const planeRad = plane.theta * Math.PI / 180;
+        const mb_vec = { x: plane.vmb * Math.cos(planeRad), y: -plane.vmb * Math.sin(planeRad) };
+        const windRad = plane.thetaWind * Math.PI / 180;
+        const wind_vec = { x: plane.vwind * Math.cos(windRad), y: -plane.vwind * Math.sin(windRad) }; // Inverted Y for canvas
+        const res_vec = Vec2.add(mb_vec, wind_vec);
+        const res_mag = Vec2.len(res_vec);
+
+        let resAngleDeg = (Math.atan2(-res_vec.y, res_vec.x) * 180 / Math.PI + 360) % 360;
+
+        document.getElementById('stat-resultant-val').textContent = res_mag.toFixed(1) + " m/s";
+        document.getElementById('info-val-1').textContent = res_mag.toFixed(1) + " m/s";
+        document.getElementById('info-val-2').textContent = resAngleDeg.toFixed(1) + "°";
+        document.getElementById('info-val-3').textContent = "Sẵn sàng";
+
+      } else if (currentSkin === 3) {
+        crate.f1 = parseFloat(document.getElementById('slider-f1').value);
+        crate.f2 = parseFloat(document.getElementById('slider-f2').value);
+        crate.alpha = parseFloat(document.getElementById('slider-alpha').value);
+
+        document.getElementById('label-f1').textContent = crate.f1 + " N";
+        document.getElementById('label-f2').textContent = crate.f2 + " N";
+        document.getElementById('label-alpha').textContent = crate.alpha + "°";
+
+        // Symmetric placement around 90 degrees (North)
+        const alphaRad = crate.alpha * Math.PI / 180;
+        const ang1 = Math.PI / 2 + alphaRad / 2;  // Up-Left
+        const ang2 = Math.PI / 2 - alphaRad / 2;  // Up-Right
+
+        const f1_vec = { x: crate.f1 * Math.cos(ang1), y: -crate.f1 * Math.sin(ang1) };
+        const f2_vec = { x: crate.f2 * Math.cos(ang2), y: -crate.f2 * Math.sin(ang2) };
+        const r_vec = Vec2.add(f1_vec, f2_vec);
+        const r_mag = Vec2.len(r_vec);
+
+        // Direction angle in Math coordinates (0 is East, 90 is North)
+        let rAngleDeg = Math.atan2(-r_vec.y, r_vec.x) * 180 / Math.PI;
+        if (rAngleDeg < 0) rAngleDeg += 360;
+
+        document.getElementById('stat-resultant-val').textContent = r_mag.toFixed(1) + " N";
+        document.getElementById('info-val-1').textContent = r_mag.toFixed(1) + " N";
+        document.getElementById('info-val-2').textContent = rAngleDeg.toFixed(1) + "°";
+        document.getElementById('info-val-3').textContent = "Chờ tác dụng lực";
+
+      } else if (currentSkin === 4) {
+        anchor.t1 = parseFloat(document.getElementById('slider-t1').value);
+        anchor.t2 = parseFloat(document.getElementById('slider-t2').value);
+        anchor.theta1 = parseFloat(document.getElementById('slider-theta1').value);
+        anchor.theta2 = parseFloat(document.getElementById('slider-theta2').value);
+
+        document.getElementById('label-t1').textContent = anchor.t1 + " N";
+        document.getElementById('label-t2').textContent = anchor.t2 + " N";
+        document.getElementById('label-theta1').textContent = anchor.theta1 + "°";
+        document.getElementById('label-theta2').textContent = anchor.theta2 + "°";
+
+        // Rope tension vector calculation:
+        // T1 pulls left-up at angle theta1 from vertical:
+        const a1 = Math.PI / 2 + (anchor.theta1 * Math.PI / 180);
+        // T2 pulls right-up at angle theta2 from vertical:
+        const a2 = Math.PI / 2 - (anchor.theta2 * Math.PI / 180);
+
+        const t1_vec = { x: anchor.t1 * Math.cos(a1), y: -anchor.t1 * Math.sin(a1) };
+        const t2_vec = { x: anchor.t2 * Math.cos(a2), y: -anchor.t2 * Math.sin(a2) };
+        const r_vec = Vec2.add(t1_vec, t2_vec);
+        const r_mag = Vec2.len(r_vec);
+
+        // Hướng R
+        let rAngleDeg = Math.atan2(-r_vec.y, r_vec.x) * 180 / Math.PI;
+        if (rAngleDeg < 0) rAngleDeg += 360;
+
+        document.getElementById('stat-resultant-val').textContent = r_mag.toFixed(1) + " N";
+        document.getElementById('info-val-1').textContent = r_mag.toFixed(1) + " N";
+        document.getElementById('info-val-2').textContent = "80.0 N (hướng xuống)";
+        document.getElementById('info-val-3').textContent = "Cân bằng?";
+      }
+
+      updateCoachCaptionOnInteract();
+      draw();
+    }
+
+    // --- Show/Hide formulas and calculation values ---
+    function toggleFormulas() {
+      const show = document.getElementById('cb-show-formulas').checked;
+      document.getElementById('math-analysis-box').style.display = show ? 'block' : 'none';
+    }
+
+    // --- Execute walkthrough sequence (4-steps schema) ---
+    function showWalkthrough(stepId) {
+      if (activeWalkthroughStep === stepId) {
+        // Toggle off
+        activeWalkthroughStep = null;
+        document.querySelectorAll('.timeline-step').forEach(s => s.classList.remove('active'));
+        draw();
+        return;
+      }
+
+      activeWalkthroughStep = stepId;
+
+      // Update UI cards
+      document.querySelectorAll('.timeline-step').forEach(s => {
+        s.classList.remove('active');
+        if (s.id === `wt-step-${stepId}`) s.classList.add('active');
+      });
+
+      // Load info into modal
+      const modal = document.getElementById('wt-modal');
+      const title = document.getElementById('wt-modal-title');
+      const desc = document.getElementById('wt-modal-desc');
+
+      const details = {
+        1: {
+          title: "Bước 1: Biểu diễn hai lực/vận tốc riêng biệt",
+          desc: "Biểu diễn các lực hoặc vận tốc thành phần tại chính xác điểm tác dụng vật lý ban đầu của chúng. Lúc này, các vectơ có thể xuất phát từ các điểm khác nhau trên hình."
+        },
+        2: {
+          title: "Bước 2: Dịch chuyển về cùng một điểm gốc O",
+          desc: "Tịnh tiến các vectơ sao cho gốc của chúng hội tụ tại cùng một điểm O. Tính chất tự do của vectơ cho phép dịch chuyển thoải mái mà không làm thay đổi phương hướng và độ lớn của vectơ."
+        },
+        3: {
+          title: "Bước 3: Dựng các cạnh của hình bình hành",
+          desc: "Từ ngọn của vectơ thứ nhất, kẻ đường thẳng song song và bằng độ dài của vectơ thứ hai. Kẻ tương tự từ đầu mút của vectơ thứ hai để khép kín thành một hình bình hành."
+        },
+        4: {
+          title: "Bước 4: Đường chéo hình bình hành là vectơ tổng",
+          desc: "Vectơ có gốc tại O và hướng dọc theo đường chéo tới đỉnh đối diện chính là vectơ tổng hợp kết quả (hợp lực hoặc vận tốc tổng hợp). Độ dài đường chéo thể hiện độ lớn thực tế."
+        }
+      };
+
+      title.innerHTML = `<i class="ti ti-school"></i> <span>${details[stepId].title}</span>`;
+      desc.textContent = details[stepId].desc;
+
+      modal.classList.add('show');
+
+      // Render detail in modal mini-canvas
+      renderModalFig(stepId);
+
+      // Draw main canvas with highlighting
+      draw();
+
+      // Mark step as completed
+      document.getElementById(`wt-step-${stepId}`).classList.add('completed');
+
+      // If student clicked all 4 steps, unlock the quiz!
+      checkUnlockQuiz();
+    }
+
+    function closeWalkthroughModal() {
+      document.getElementById('wt-modal').classList.remove('show');
+    }
+
+    function checkUnlockQuiz() {
+      const steps = [1, 2, 3, 4];
+      const allDone = steps.every(id => document.getElementById(`wt-step-${id}`).classList.contains('completed'));
+      if (allDone || challengeCompleted[currentSkin]) {
+        document.getElementById('quiz-locked').classList.add('unlocked');
+      }
+    }
+
+    // --- Mini canvas illustration inside modal ---
+    function renderModalFig(stepId) {
+      const mCanvas = document.getElementById('modal-fig-canvas');
+      const mCtx = mCanvas.getContext('2d');
+      mCtx.clearRect(0, 0, 400, 150);
+
+      const ox = 200, oy = 75;
+      const v1 = { x: 80, y: -20 };
+      const v2 = { x: 30, y: 50 };
+
+      mCtx.save();
+      mCtx.lineWidth = 2.5;
+      mCtx.lineCap = 'round';
+
+      if (stepId === 1) {
+        // Step 1: Draw vectors separated
+        drawArrow(mCtx, 60, 110, 60 + v1.x, 110 + v1.y, '#3CA57A', 2.5);
+        mCtx.fillStyle = '#3CA57A';
+        mCtx.font = 'bold 12px Courier New';
+        mCtx.fillText("v1", 60 + v1.x / 2 - 10, 110 + v1.y / 2 - 10);
+
+        drawArrow(mCtx, 280, 50, 280 + v2.x, 50 + v2.y, '#4E7F92', 2.5);
+        mCtx.fillStyle = '#4E7F92';
+        mCtx.fillText("v2", 280 + v2.x / 2 + 10, 50 + v2.y / 2 + 10);
+      } else if (stepId === 2) {
+        // Step 2: Conjoined at origin
+        mCtx.beginPath();
+        mCtx.arc(ox, oy, 4, 0, Math.PI * 2);
+        mCtx.fillStyle = '#1A1A1A';
+        mCtx.fill();
+        mCtx.font = '11px Courier New';
+        mCtx.fillText("O", ox - 15, oy + 5);
+
+        drawArrow(mCtx, ox, oy, ox + v1.x, oy + v1.y, '#3CA57A', 2.5);
+        drawArrow(mCtx, ox, oy, ox + v2.x, oy + v2.y, '#4E7F92', 2.5);
+      } else if (stepId === 3) {
+        // Step 3: Draw parallelogram
+        mCtx.beginPath();
+        mCtx.arc(ox, oy, 4, 0, Math.PI * 2);
+        mCtx.fillStyle = '#1A1A1A';
+        mCtx.fill();
+
+        drawArrow(mCtx, ox, oy, ox + v1.x, oy + v1.y, '#3CA57A', 1.5);
+        drawArrow(mCtx, ox, oy, ox + v2.x, oy + v2.y, '#4E7F92', 1.5);
+
+        // Dashed lines
+        mCtx.strokeStyle = '#666';
+        mCtx.lineWidth = 1.5;
+        mCtx.setLineDash([4, 4]);
+
+        mCtx.beginPath();
+        mCtx.moveTo(ox + v1.x, oy + v1.y);
+        mCtx.lineTo(ox + v1.x + v2.x, oy + v1.y + v2.y);
+        mCtx.lineTo(ox + v2.x, oy + v2.y);
+        mCtx.stroke();
+        mCtx.setLineDash([]);
+      } else if (stepId === 4) {
+        // Step 4: Resultant diagonal
+        mCtx.beginPath();
+        mCtx.arc(ox, oy, 4, 0, Math.PI * 2);
+        mCtx.fillStyle = '#1A1A1A';
+        mCtx.fill();
+
+        drawArrow(mCtx, ox, oy, ox + v1.x, oy + v1.y, 'rgba(60, 165, 122,0.3)', 1.5);
+        drawArrow(mCtx, ox, oy, ox + v2.x, oy + v2.y, 'rgba(78, 127, 146,0.3)', 1.5);
+
+        // Dashed lines
+        mCtx.strokeStyle = 'rgba(100,100,100,0.3)';
+        mCtx.setLineDash([4, 4]);
+        mCtx.beginPath();
+        mCtx.moveTo(ox + v1.x, oy + v1.y);
+        mCtx.lineTo(ox + v1.x + v2.x, oy + v1.y + v2.y);
+        mCtx.lineTo(ox + v2.x, oy + v2.y);
+        mCtx.stroke();
+        mCtx.setLineDash([]);
+
+        // Thick yellow diagonal
+        const res = Vec2.add(v1, v2);
+        drawArrow(mCtx, ox, oy, ox + res.x, oy + res.y, '#E8A24A', 4);
+        mCtx.fillStyle = '#CE8A33';
+        mCtx.font = 'bold 12px Courier New';
+        mCtx.fillText("R", ox + res.x + 8, oy + res.y);
+      }
+      mCtx.restore();
+    }
+
+    // --- Dynamic rendering of Quiz ---
+    function renderQuiz() {
+      const quizContainer = document.getElementById('quiz-list-container');
+      const questions = QUIZ_DATABASE[currentSkin];
+
+      quizContainer.innerHTML = '';
+
+      questions.forEach((q, idx) => {
+        const itemHtml = `
+          <div class="quiz-item" id="qi-${idx}">
+            <div class="quiz-question-header" onclick="toggleQuizAccordion(${idx})">
+              <span class="quiz-title-text"><i class="ti ti-help"></i> ${q.question}</span>
+              <span class="quiz-arrow" id="qa-arrow-${idx}"><i class="ti ti-chevron-down"></i></span>
+            </div>
+            <div class="quiz-body" id="qb-body-${idx}">
+              <div class="quiz-content">
+                <div class="options-list">
+                  ${Object.keys(q.options).map(key => `
+                    <button class="option-btn" id="opt-btn-${idx}-${key}" onclick="answerQuiz(${idx}, '${key}')">
+                      <span>${q.options[key]}</span>
+                      <i class="ti ti-circle" id="opt-icon-${idx}-${key}"></i>
+                    </button>
+                  `).join('')}
+                </div>
+                <div id="q-exp-${idx}" class="quiz-explanation">
+                  <div class="quiz-explanation-title" id="q-exp-title-${idx}">Kết quả</div>
+                  <div class="quiz-explanation-text" id="q-exp-txt-${idx}">...</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        `;
+        quizContainer.insertAdjacentHTML('beforeend', itemHtml);
+      });
+
+      // Auto expand the first question
+      toggleQuizAccordion(0);
+    }
+
+    function toggleQuizAccordion(idx) {
+      const bodies = document.querySelectorAll('.quiz-body');
+      const arrows = document.querySelectorAll('.quiz-arrow');
+      const items = document.querySelectorAll('.quiz-item');
+
+      const isExpanded = items[idx].classList.contains('expanded');
+
+      // Collapse all
+      items.forEach(it => it.classList.remove('expanded'));
+      bodies.forEach(b => b.style.maxHeight = '0px');
+      arrows.forEach(a => a.style.transform = 'rotate(0deg)');
+
+      if (!isExpanded) {
+        items[idx].classList.add('expanded');
+        const body = document.getElementById(`qb-body-${idx}`);
+        body.style.maxHeight = '400px';
+        const arrow = document.getElementById(`qa-arrow-${idx}`);
+        arrow.style.transform = 'rotate(180deg)';
+      }
+    }
+
+    function answerQuiz(qIdx, optKey) {
+      const q = QUIZ_DATABASE[currentSkin][qIdx];
+      if (q.selected !== null) return; // already answered
+
+      q.selected = optKey;
+      const options = Object.keys(q.options);
+
+      // Disable options
+      options.forEach(k => {
+        const btn = document.getElementById(`opt-btn-${qIdx}-${k}`);
+        btn.classList.add('disabled');
+      });
+
+      const chosenBtn = document.getElementById(`opt-btn-${qIdx}-${optKey}`);
+      const chosenIcon = document.getElementById(`opt-icon-${qIdx}-${optKey}`);
+      const expBox = document.getElementById(`q-exp-${qIdx}`);
+      const expTitle = document.getElementById(`q-exp-title-${qIdx}`);
+      const expTxt = document.getElementById(`q-exp-txt-${qIdx}`);
+
+      if (optKey === q.correct) {
+        chosenBtn.classList.add('selected-correct');
+        chosenIcon.className = 'ti ti-circle-check-filled';
+        expBox.className = 'quiz-explanation correct show';
+        expTitle.textContent = "Chính xác! 🎉";
+        expTxt.textContent = q.explanation;
+
+        // Add points
+        totalScore += 10;
+        scoresBySkin[currentSkin] += 10;
+        document.getElementById('stat-total-score').textContent = totalScore;
+      } else {
+        chosenBtn.classList.add('selected-wrong');
+        chosenIcon.className = 'ti ti-circle-x-filled';
+
+        // Reveal correct option
+        const correctBtn = document.getElementById(`opt-btn-${qIdx}-${q.correct}`);
+        correctBtn.classList.add('correct-reveal');
+
+        expBox.className = 'quiz-explanation wrong show';
+        expTitle.textContent = "Chưa chính xác! ❌";
+        expTxt.textContent = q.explanation;
+
+        // Shake the card on wrong answer
+        const card = document.getElementById(`qi-${qIdx}`);
+        card.classList.add('shake');
+        setTimeout(() => card.classList.remove('shake'), 400);
+      }
+
+      // Check if both quiz questions are answered
+      const currentQuestions = QUIZ_DATABASE[currentSkin];
+      const allAnswered = currentQuestions.every(qi => qi.selected !== null);
+      if (allAnswered && !challengeCompleted[currentSkin]) {
+        // Unlock quiz panel entirely
+        document.getElementById('quiz-locked').classList.add('unlocked');
+      }
+    }
+
+    // --- Arrow Drawing Helper ---
+    // Adopted from 03_game_engine.md drawForceVector for maximum visual compliance
+    function drawArrow(gCtx, x1, y1, x2, y2, color, thickness = 2, label = "") {
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      if (len < 2) return;
+
+      const angle = Math.atan2(dy, dx);
+
+      gCtx.save();
+      gCtx.strokeStyle = color;
+      gCtx.fillStyle = color;
+      gCtx.lineWidth = thickness;
+      gCtx.lineCap = 'round';
+
+      // Stop body slightly before the arrowhead to avoid overlap
+      const hs = Math.min(14, len * 0.3);
+      const nx = (dx / len) * hs;
+      const ny = (dy / len) * hs;
+
+      // Draw line body
+      gCtx.beginPath();
+      gCtx.moveTo(x1, y1);
+      gCtx.lineTo(x2 - nx * 0.6, y2 - ny * 0.6);
+      gCtx.stroke();
+
+      // Draw arrowhead
+      gCtx.beginPath();
+      gCtx.moveTo(x2, y2);
+      gCtx.lineTo(x2 - nx - ny * 0.45, y2 - ny + nx * 0.45);
+      gCtx.lineTo(x2 - nx + ny * 0.45, y2 - ny - nx * 0.45);
+      gCtx.closePath();
+      gCtx.fill();
+
+      // Starting point dot and halo
+      gCtx.fillStyle = color;
+      gCtx.beginPath(); gCtx.arc(x1, y1, 3.5, 0, Math.PI * 2); gCtx.fill();
+      gCtx.globalAlpha = 0.18;
+      gCtx.beginPath(); gCtx.arc(x1, y1, 9, 0, Math.PI * 2); gCtx.fill();
+      gCtx.globalAlpha = 1;
+
+      // Label with background pill (rounded rect) for legibility
+      if (label) {
+        // Label offset along the normal
+        const lx = (x1 + x2) / 2 + (dy / len) * 8 + 6;
+        const ly = (y1 + y2) / 2 - (dx / len) * 8 - 6;
+
+        gCtx.font = 'bold 12px Be Vietnam Pro';
+        const tw = gCtx.measureText(label).width;
+
+        // Background rounded rect pill
+        gCtx.fillStyle = 'rgba(255, 255, 255, 0.88)';
+        gCtx.beginPath();
+        if (typeof gCtx.roundRect === 'function') {
+          gCtx.roundRect(lx - 5, ly - 10, tw + 10, 16, 4);
+        } else {
+          gCtx.rect(lx - 5, ly - 10, tw + 10, 16);
+        }
+        gCtx.fill();
+
+        // Draw label text
+        gCtx.fillStyle = color;
+        gCtx.textAlign = 'left';
+        gCtx.textBaseline = 'middle';
+        gCtx.fillText(label, lx, ly - 1);
+      }
+      gCtx.restore();
+    }
+
+    function updateCoachCaptionOnInteract() {
+      // Do not update when drawing or during active animation or when success overlay is showing
+      if (!userInteracted) return;
+      if (boat.animate || plane.animate || crate.animate || anchor.animate) return;
+      if (document.getElementById('success-overlay').classList.contains('show')) return;
+
+      let angle = 0;
+      if (currentSkin === 1) {
+        angle = Math.round(boat.theta);
+      } else if (currentSkin === 2) {
+        angle = Math.round(Math.abs(plane.theta - plane.thetaWind)) % 360;
+      } else if (currentSkin === 3) {
+        angle = Math.round(crate.alpha);
+      } else if (currentSkin === 4) {
+        angle = Math.round(180 - anchor.theta1 - anchor.theta2);
+      }
+
+      const showPara = document.getElementById('cb-show-parallelogram').checked;
+
+      if (angle === 0 || angle === 360) {
+        updateCoachText("Góc = 0°: Hai vector cùng hướng \u2192 R = A + B (lớn nhất có thể với hai vector này).");
+      } else if (angle === 90 || angle === 270) {
+        updateCoachText("Góc = 90°: Hai vector vuông góc \u2192 Pythagore: R = \u221A(A\u00B2 + B\u00B2).");
+      } else if (angle === 180) {
+        updateCoachText("Góc = 180°: Hai vector ngược chiều \u2192 R = |A - B| (nhỏ nhất có thể).");
+      } else if (showPara) {
+        updateCoachText("Đường chéo hình bình hành = vector tổng R. Thay đổi slider để thấy hình thay đổi theo.");
+      } else {
+        updateCoachText("Quan sát vector tổng (vàng) thay đổi real-time khi thay đổi từng thành phần.");
+      }
+    }
+
+    function onCheckboxChange() {
+      userInteracted = true;
+      updateCoachCaptionOnInteract();
+      draw();
+    }
+
+    // --- River waves and Sky wind effects ---
+    function updateEnvironment() {
+      flowOffset = (flowOffset + 0.5) % 72000;
+      globalTime += 0.05; // Increment time
+
+      // Update wind particles (Skin 2)
+      if (windParticles.length === 0) {
+        for (let i = 0; i < 25; i++) {
+          windParticles.push({
+            x: Math.random() * CW,
+            y: Math.random() * CH,
+            s: 1 + Math.random() * 2.5,
+            w: 15 + Math.random() * 20
+          });
+        }
+      }
+
+      windParticles.forEach(p => {
+        let wx = 1, wy = 0;
+        if (currentSkin === 2) {
+          const windRad = plane.thetaWind * Math.PI / 180;
+          wx = Math.cos(windRad);
+          wy = -Math.sin(windRad); // Inverted Y for canvas
+        }
+        p.x += wx * p.s;
+        p.y += wy * p.s;
+        if (p.x > CW + 20) p.x = -20;
+        if (p.x < -20) p.x = CW + 20;
+        if (p.y > CH + 20) p.y = -20;
+        if (p.y < -20) p.y = CH + 20;
+      });
+
+      // Update boat wakes (Skin 1)
+      if (currentSkin === 1 && boat.animate) {
+        if (Math.random() < 0.6) {
+          boatWakeParticles.push({
+            x: boat.x - Math.cos((90 - boat.theta) * Math.PI / 180) * 12,
+            y: boat.y + Math.sin((90 - boat.theta) * Math.PI / 180) * 12,
+            vx: (Math.random() - 0.5) * 0.4 - Math.cos((90 - boat.theta) * Math.PI / 180) * 0.3,
+            vy: (Math.random() - 0.5) * 0.4 + Math.sin((90 - boat.theta) * Math.PI / 180) * 0.3,
+            size: 3 + Math.random() * 5,
+            alpha: 0.8,
+            decay: 0.02 + Math.random() * 0.02
+          });
+        }
+      }
+      boatWakeParticles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= p.decay;
+        p.size += 0.1;
+      });
+      boatWakeParticles = boatWakeParticles.filter(p => p.alpha > 0);
+
+      // Update plane trails (vapor trail)
+      if (currentSkin === 2 && plane.animate) {
+        if (Math.random() < 0.5) {
+          const planeRad = plane.theta * Math.PI / 180;
+          const backX = plane.x - Math.cos(planeRad) * 20;
+          const backY = plane.y + Math.sin(planeRad) * 20;
+
+          planeClouds.push({
+            x: backX,
+            y: backY,
+            vx: -Math.cos(planeRad) * 0.2 + (Math.random() - 0.5) * 0.1,
+            vy: Math.sin(planeRad) * 0.2 + (Math.random() - 0.5) * 0.1,
+            size: 4 + Math.random() * 4,
+            alpha: 0.7,
+            decay: 0.015,
+            isVapor: true
+          });
+        }
+      }
+      planeClouds.forEach(c => {
+        if (c.isVapor) {
+          c.x += c.vx;
+          c.y += c.vy;
+          c.alpha -= c.decay;
+          c.size += 0.08;
+        }
+      });
+      planeClouds = planeClouds.filter(c => !c.isVapor || c.alpha > 0);
+
+      // Update crate friction dust (Skin 3)
+      if (currentSkin === 3 && crate.animate) {
+        if (Math.random() < 0.4) {
+          crateDustParticles.push({
+            x: crate.x + (Math.random() - 0.5) * 35,
+            y: crate.y + 20,
+            vx: (Math.random() - 0.5) * 0.5,
+            vy: -0.2 - Math.random() * 0.4,
+            size: 2 + Math.random() * 4,
+            alpha: 0.6,
+            decay: 0.015 + Math.random() * 0.015
+          });
+        }
+      }
+      crateDustParticles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.alpha -= p.decay;
+      });
+      crateDustParticles = crateDustParticles.filter(p => p.alpha > 0);
+
+      // Update sea bubbles (Skin 4)
+      if (currentSkin === 4) {
+        if (seaBubbles.length < 20) {
+          seaBubbles.push({
+            x: Math.random() * CW,
+            y: CH - 30,
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: -0.4 - Math.random() * 0.7,
+            r: 1 + Math.random() * 3,
+            swaySeed: Math.random() * 100
+          });
+        }
+
+        if (anchor.animate && Math.random() < 0.7) {
+          const ax = anchor.x;
+          const ay = anchor.y + anchor.yOffset;
+          seaBubbles.push({
+            x: ax + (Math.random() - 0.5) * 30,
+            y: ay + 15,
+            vx: (Math.random() - 0.5) * 0.8,
+            vy: -1.2 - Math.random() * 1.5,
+            r: 1.5 + Math.random() * 3.5,
+            swaySeed: Math.random() * 100
+          });
+        }
+      }
+      seaBubbles.forEach(b => {
+        b.y += b.vy;
+        b.x += b.vx + Math.sin(b.y * 0.05 + b.swaySeed) * 0.25;
+      });
+      seaBubbles = seaBubbles.filter(b => b.y > 105);
+    }
+
+    // --- Core Canvas Render loop ---
+    function draw() {
+      ctx.clearRect(0, 0, CW, CH);
+
+      const showV1 = document.getElementById('cb-show-v1').checked;
+      const showV2 = document.getElementById('cb-show-v2').checked;
+      const showRes = document.getElementById('cb-show-resultant').checked;
+      const showPara = document.getElementById('cb-show-parallelogram').checked;
+
+      // 1. Draw environmental background
+      if (currentSkin === 1) {
+        renderRiverBackground();
+      } else if (currentSkin === 2) {
+        renderSkyBackground();
+      } else if (currentSkin === 3) {
+        renderGridBackground();
+      } else if (currentSkin === 4) {
+        renderSeaBackground();
+      }
+
+      // 2. Draw Physics system
+      if (currentSkin === 1) {
+        renderBoatScene(showV1, showV2, showRes, showPara);
+      } else if (currentSkin === 2) {
+        renderPlaneScene(showV1, showV2, showRes, showPara);
+      } else if (currentSkin === 3) {
+        renderCrateScene(showV1, showV2, showRes, showPara);
+      } else if (currentSkin === 4) {
+        renderAnchorScene(showV1, showV2, showRes, showPara);
+      }
+
+      // Draw Confetti celebration
+      if (confettiList.length > 0) {
+        updateConfetti();
+        drawConfetti();
+      }
+    }
+
+    // --- Confetti particle effects ---
+    function makeConfetti() {
+      const colors = ['#E8A24A', '#3CA57A', '#2D8B6F', '#C15F3C', '#4E7F92', '#ffffff'];
+      confettiList = [];
+      for (let i = 0; i < 45; i++) {
+        confettiList.push({
+          x: CW * (0.2 + Math.random() * 0.6),
+          y: CH * (0.1 + Math.random() * 0.4),
+          vx: (Math.random() - 0.5) * 4,
+          vy: -4 - Math.random() * 4,
+          r: 4 + Math.random() * 4,
+          color: colors[i % colors.length],
+          rot: Math.random() * Math.PI,
+          rotV: (Math.random() - 0.5) * 0.1,
+          life: 1.0
+        });
+      }
+    }
+
+    function updateConfetti() {
+      confettiList.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        p.vy += 0.15; // gravity
+        p.rot += p.rotV;
+        p.life -= 0.01;
+      });
+      confettiList = confettiList.filter(p => p.life > 0);
+    }
+
+    function drawConfetti() {
+      confCtx.clearRect(0, 0, CW, CH);
+      confettiList.forEach(p => {
+        confCtx.save();
+        confCtx.globalAlpha = p.life;
+        confCtx.translate(p.x, p.y);
+        confCtx.rotate(p.rot);
+        confCtx.fillStyle = p.color;
+        confCtx.fillRect(-p.r, -p.r * 1.5, p.r * 2, p.r * 3);
+        confCtx.restore();
+      });
+    }
+
+    // --- Sub-renderers for Backgrounds ---
+
+    // --- Visual Upgrades & Sub-renderers ---
+    function drawBankTrees(x, y, r) {
+      ctx.save();
+      ctx.fillStyle = 'rgba(0,0,0,0.15)';
+      ctx.beginPath();
+      ctx.ellipse(x + 2, y + r - 3, r * 0.6, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#5D4037';
+      ctx.fillRect(x - 3, y + r - 10, 6, 12);
+
+      ctx.fillStyle = '#2E7D32';
+      ctx.beginPath();
+      ctx.arc(x, y, r, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#4CAF50';
+      ctx.beginPath();
+      ctx.arc(x - r * 0.3, y - r * 0.3, r * 0.6, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#81C784';
+      ctx.beginPath();
+      ctx.arc(x - r * 0.1, y - r * 0.5, r * 0.4, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawFlowingRipples(offset, yStart, waveLen, count) {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.28)';
+      ctx.lineWidth = 1.5;
+      for (let i = 0; i < count; i++) {
+        const y = yStart + i * 35;
+        ctx.beginPath();
+        for (let x = -waveLen; x < CW + waveLen; x += waveLen) {
+          const rx = x + (offset % waveLen);
+          ctx.moveTo(rx, y);
+          ctx.bezierCurveTo(rx + waveLen * 0.25, y - 6, rx + waveLen * 0.75, y + 6, rx + waveLen, y);
+        }
+        ctx.stroke();
+      }
+      ctx.restore();
+    }
+
+    function drawFloatingLilies(offset) {
+      ctx.save();
+      const pads = [
+        { sx: 100, sy: s1RiverTop + 60, r: 8 },
+        { sx: 350, sy: s1RiverTop + 180, r: 10 },
+        { sx: 600, sy: s1RiverTop + 100, r: 7 },
+        { sx: 200, sy: s1RiverTop + 280, r: 9 },
+        { sx: 500, sy: s1RiverTop + 240, r: 8 },
+        { sx: 720, sy: s1RiverTop + 290, r: 10 }
+      ];
+      pads.forEach(p => {
+        let x = p.sx + (offset * 0.6);
+        if (x > CW + 30) x = (x % (CW + 60)) - 30;
+
+        ctx.fillStyle = 'rgba(45, 139, 111, 0.12)';
+        ctx.beginPath();
+        ctx.arc(x + 1, p.sy + 1, p.r, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = '#2E7D32';
+        ctx.beginPath();
+        ctx.arc(x, p.sy, p.r, 0.15 * Math.PI, 1.85 * Math.PI);
+        ctx.lineTo(x, p.sy);
+        ctx.closePath();
+        ctx.fill();
+
+        if (p.r >= 9) {
+          ctx.fillStyle = '#FFF';
+          ctx.beginPath();
+          ctx.arc(x - 2, p.sy - 2, 2.5, 0, Math.PI * 2);
+          ctx.arc(x + 2, p.sy - 2, 2.5, 0, Math.PI * 2);
+          ctx.arc(x, p.sy + 1, 2.5, 0, Math.PI * 2);
+          ctx.fill();
+          ctx.fillStyle = '#FDD835';
+          ctx.beginPath();
+          ctx.arc(x, p.sy - 1, 1.5, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      });
+      ctx.restore();
+    }
+
+    function drawNavigationLand(cx, cy, rx, ry, opacity) {
+      ctx.save();
+      ctx.fillStyle = `rgba(143, 191, 169, ${opacity * 0.35})`;
+      ctx.strokeStyle = `rgba(143, 191, 169, ${opacity * 0.6})`;
+      ctx.lineWidth = 1.5;
+
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx + 12, ry + 12, 10 * Math.PI / 180, 0, Math.PI * 2);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx, ry, 10 * Math.PI / 180, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = `rgba(224, 218, 193, ${opacity * 0.45})`;
+      ctx.beginPath();
+      ctx.ellipse(cx, cy, rx * 0.8, ry * 0.8, 10 * Math.PI / 180, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.restore();
+    }
+
+    function drawCompassRose(x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.strokeStyle = 'rgba(78, 127, 146, 0.16)';
+      ctx.lineWidth = 1;
+
+      ctx.beginPath(); ctx.arc(0, 0, 36, 0, Math.PI * 2); ctx.stroke();
+      ctx.beginPath(); ctx.arc(0, 0, 42, 0, Math.PI * 2); ctx.stroke();
+
+      const colors = ['#C15F3C', '#4E7F92'];
+      drawCompassSpike(0, -38, 7, colors[0]);
+      drawCompassSpike(0, 38, 7, colors[1]);
+      drawCompassSpike(38, 0, 7, colors[1]);
+      drawCompassSpike(-38, 0, 7, colors[1]);
+
+      ctx.fillStyle = 'rgba(15, 27, 53, 0.5)';
+      ctx.font = 'bold 9px Arial';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText("N", 0, -48);
+      ctx.fillText("S", 0, 48);
+      ctx.fillText("E", 48, 0);
+      ctx.fillText("W", -48, 0);
+      ctx.restore();
+    }
+
+    function drawCompassSpike(tx, ty, width, color) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      const len = Math.sqrt(tx * tx + ty * ty);
+      const px = -ty / len * width;
+      const py = tx / len * width;
+      ctx.lineTo(px, py);
+      ctx.lineTo(tx, ty);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = 'rgba(0,0,0,0.15)';
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(tx, ty);
+      ctx.lineTo(-px, -py);
+      ctx.closePath();
+      ctx.fill();
+    }
+
+    function drawFloatingClouds() {
+      if (planeClouds.length === 0) {
+        planeClouds = [
+          { x: 100, y: 120, speed: 0.15, scale: 0.7 },
+          { x: 450, y: 220, speed: 0.1, scale: 1.1 },
+          { x: 250, y: 340, speed: 0.2, scale: 0.8 },
+          { x: 680, y: 150, speed: 0.08, scale: 1.0 },
+          { x: -50, y: 270, speed: 0.12, scale: 0.9 }
+        ];
+      }
+      ctx.save();
+      planeClouds.forEach(c => {
+        if (c.isVapor) return;
+        c.x += c.speed;
+        if (c.x > CW + 80) c.x = -80;
+
+        ctx.save();
+        ctx.translate(c.x, c.y);
+        ctx.scale(c.scale, c.scale);
+
+        ctx.fillStyle = 'rgba(150, 180, 200, 0.08)';
+        ctx.beginPath();
+        ctx.ellipse(0, 10, 40, 15, 0, 0, Math.PI * 2);
+        ctx.fill();
+
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.72)';
+        ctx.beginPath();
+        ctx.arc(-18, 0, 15, 0, Math.PI * 2);
+        ctx.arc(0, -10, 22, 0, Math.PI * 2);
+        ctx.arc(18, 0, 15, 0, Math.PI * 2);
+        ctx.rect(-22, -2, 44, 15);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.restore();
+      });
+      ctx.restore();
+    }
+
+    function drawWindStreamlines() {
+      ctx.save();
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.48)';
+      ctx.lineWidth = 2.0;
+
+      const windRad = plane.thetaWind * Math.PI / 180;
+      const wx = Math.cos(windRad);
+      const wy = -Math.sin(windRad);
+
+      windParticles.forEach(p => {
+        ctx.beginPath();
+        const xStart = p.x;
+        const yStart = p.y;
+        const xEnd = p.x + wx * p.w;
+        const yEnd = p.y + wy * p.w;
+
+        const grad = ctx.createLinearGradient(xStart, yStart, xEnd, yEnd);
+        grad.addColorStop(0, 'rgba(255, 255, 255, 0.0)');
+        grad.addColorStop(0.5, 'rgba(255, 255, 255, 0.55)');
+        grad.addColorStop(1, 'rgba(255, 255, 255, 0.0)');
+
+        ctx.strokeStyle = grad;
+        ctx.moveTo(xStart, yStart);
+        ctx.lineTo(xEnd, yEnd);
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    function drawSeaGodRays() {
+      ctx.save();
+      const rayAlpha = 0.08 + Math.sin(globalTime * 0.8) * 0.03;
+      const angleOffset = Math.sin(globalTime * 0.4) * 0.05;
+
+      const rays = [
+        { sx: 100, w1: 30, w2: 90, h: 350 },
+        { sx: 320, w1: 45, w2: 120, h: 420 },
+        { sx: 520, w1: 25, w2: 80, h: 300 },
+        { sx: 700, w1: 50, w2: 150, h: 450 }
+      ];
+
+      rays.forEach(r => {
+        ctx.fillStyle = `rgba(180, 240, 255, ${rayAlpha})`;
+        ctx.beginPath();
+        ctx.moveTo(r.sx - r.w1 / 2, 98);
+        ctx.lineTo(r.sx + r.w1 / 2, 98);
+        const targetX = r.sx + Math.sin(angleOffset) * 100;
+        ctx.lineTo(targetX + r.w2 / 2, 98 + r.h);
+        ctx.lineTo(targetX - r.w2 / 2, 98 + r.h);
+        ctx.closePath();
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function drawWavingSeaweed() {
+      ctx.save();
+      const weedClumps = [
+        { x: 50, h: 80 }, { x: 80, h: 110 }, { x: 120, h: 70 },
+        { x: CW - 60, h: 90 }, { x: CW - 100, h: 120 }, { x: CW - 150, h: 75 },
+        { x: 260, h: 60 }, { x: 580, h: 65 }
+      ];
+
+      weedClumps.forEach(w => {
+        ctx.strokeStyle = w.h > 80 ? '#1B5E20' : '#2E7D32';
+        ctx.lineWidth = w.h > 80 ? 5.5 : 4;
+
+        ctx.beginPath();
+        ctx.moveTo(w.x, CH - 20);
+        const segments = 4;
+        let lastX = w.x;
+        let lastY = CH - 20;
+        const segH = w.h / segments;
+        for (let i = 1; i <= segments; i++) {
+          const y = CH - 20 - i * segH;
+          const sway = Math.sin(globalTime * 1.5 + w.x + i * 0.8) * 8 * (i / segments);
+          const cx = w.x + sway;
+          ctx.quadraticCurveTo(lastX, lastY - segH / 2, cx, y);
+          lastX = cx;
+          lastY = y;
+        }
+        ctx.stroke();
+      });
+      ctx.restore();
+    }
+
+    function drawSeaBubbles() {
+      ctx.save();
+      if (seaBubbles.length === 0) {
+        for (let i = 0; i < 15; i++) {
+          seaBubbles.push({
+            x: Math.random() * CW,
+            y: 110 + Math.random() * (CH - 150),
+            vx: (Math.random() - 0.5) * 0.3,
+            vy: -0.6 - Math.random() * 0.8,
+            r: 1.5 + Math.random() * 3.5,
+            swaySeed: Math.random() * 100
+          });
+        }
+      }
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.25)';
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 0.8;
+
+      seaBubbles.forEach(b => {
+        ctx.beginPath();
+        ctx.arc(b.x, b.y, b.r, 0, Math.PI * 2);
+        ctx.stroke();
+        ctx.beginPath();
+        ctx.arc(b.x - b.r * 0.3, b.y - b.r * 0.3, b.r * 0.2, 0, Math.PI * 2);
+        ctx.fillStyle = 'rgba(255, 255, 255, 0.5)';
+        ctx.fill();
+      });
+      ctx.restore();
+    }
+
+    function drawTexturedRope(gCtx, x1, y1, x2, y2, baseColor, forceVal) {
+      gCtx.save();
+      const dx = x2 - x1;
+      const dy = y2 - y1;
+      const len = Math.sqrt(dx * dx + dy * dy);
+
+      if (forceVal > 0) {
+        gCtx.strokeStyle = baseColor;
+        gCtx.lineWidth = 4 + (forceVal / 100) * 4;
+        gCtx.globalAlpha = 0.2 + Math.sin(globalTime * 8) * 0.1;
+        gCtx.beginPath(); gCtx.moveTo(x1, y1); gCtx.lineTo(x2, y2); gCtx.stroke();
+        gCtx.globalAlpha = 1.0;
+      }
+
+      gCtx.strokeStyle = '#8D6E63';
+      gCtx.lineWidth = 3.0;
+      gCtx.beginPath(); gCtx.moveTo(x1, y1); gCtx.lineTo(x2, y2); gCtx.stroke();
+
+      gCtx.strokeStyle = '#5D4037';
+      gCtx.lineWidth = 1.5;
+      gCtx.setLineDash([4, 6]);
+      gCtx.beginPath(); gCtx.moveTo(x1, y1); gCtx.lineTo(x2, y2); gCtx.stroke();
+      gCtx.setLineDash([]);
+
+      if (forceVal > 0) {
+        gCtx.strokeStyle = baseColor;
+        gCtx.lineWidth = 2.0;
+        gCtx.setLineDash([8, 15]);
+        gCtx.lineDashOffset = -globalTime * 30;
+        gCtx.beginPath(); gCtx.moveTo(x1, y1); gCtx.lineTo(x2, y2); gCtx.stroke();
+        gCtx.setLineDash([]);
+      }
+      gCtx.restore();
+    }
+
+    function renderRiverBackground() {
+      const riverGrad = ctx.createLinearGradient(0, s1RiverTop, 0, s1RiverBottom);
+      riverGrad.addColorStop(0, '#A7D7C5');
+      riverGrad.addColorStop(0.3, '#BCE3D6');
+      riverGrad.addColorStop(0.7, '#A7D7C5');
+      riverGrad.addColorStop(1, '#8FBFA9');
+      ctx.fillStyle = riverGrad;
+      ctx.fillRect(0, s1RiverTop, CW, s1RiverBottom - s1RiverTop);
+
+      ctx.fillStyle = '#E8DDB5';
+      ctx.fillRect(0, s1RiverTop - 8, CW, 8);
+      ctx.fillRect(0, s1RiverBottom, CW, 8);
+
+      const grassGradTop = ctx.createLinearGradient(0, 0, 0, s1RiverTop - 8);
+      grassGradTop.addColorStop(0, '#5A8F66');
+      grassGradTop.addColorStop(1, '#70AB7E');
+      ctx.fillStyle = grassGradTop;
+      ctx.fillRect(0, 0, CW, s1RiverTop - 8);
+
+      const grassGradBottom = ctx.createLinearGradient(0, s1RiverBottom + 8, 0, CH);
+      grassGradBottom.addColorStop(0, '#70AB7E');
+      grassGradBottom.addColorStop(1, '#5A8F66');
+      ctx.fillStyle = grassGradBottom;
+      ctx.fillRect(0, s1RiverBottom + 8, CW, CH - s1RiverBottom - 8);
+
+      drawBankTrees(80, s1RiverTop - 35, 15);
+      drawBankTrees(240, s1RiverTop - 45, 18);
+      drawBankTrees(550, s1RiverTop - 35, 14);
+      drawBankTrees(700, s1RiverTop - 40, 16);
+
+      drawBankTrees(100, s1RiverBottom + 45, 16);
+      drawBankTrees(300, s1RiverBottom + 50, 18);
+      drawBankTrees(500, s1RiverBottom + 40, 14);
+      drawBankTrees(680, s1RiverBottom + 45, 16);
+
+      drawFlowingRipples(flowOffset * 0.8, s1RiverTop + 35, 90, 4);
+      drawFlowingRipples(flowOffset * 1.2 + 40, s1RiverTop + 140, 120, 3);
+      drawFlowingRipples(flowOffset * 1.5 + 80, s1RiverTop + 245, 100, 4);
+
+      drawFloatingLilies(flowOffset);
+
+      ctx.fillStyle = '#6D4C41';
+      ctx.fillRect(s1Start.x - 25, s1Start.y, 50, 20);
+      ctx.fillStyle = '#4E342E';
+      ctx.fillRect(s1Start.x - 22, s1Start.y, 8, 30);
+      ctx.fillRect(s1Start.x + 14, s1Start.y, 8, 30);
+
+      ctx.fillStyle = '#6D4C41';
+      ctx.fillRect(s1Start.x - 25, s1RiverTop - 20, 50, 20);
+      ctx.fillStyle = '#4E342E';
+      ctx.fillRect(s1Start.x - 22, s1RiverTop - 20, 8, 30);
+      ctx.fillRect(s1Start.x + 14, s1RiverTop - 20, 8, 30);
+
+      ctx.font = 'bold 12px Be Vietnam Pro';
+      ctx.fillStyle = '#2D8B6F';
+      ctx.textAlign = 'center';
+      ctx.fillText("Bến A (Xuất phát)", s1Start.x, s1Start.y + 42);
+
+      ctx.fillStyle = '#C15F3C';
+      ctx.fillText("Bến B (Đích đối diện)", s1Start.x, s1RiverTop - 32);
+
+      ctx.beginPath();
+      ctx.arc(s1Start.x, s1Start.y, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#E53935';
+      ctx.fill();
+
+      ctx.beginPath();
+      ctx.arc(s1Start.x, s1RiverTop, 4, 0, Math.PI * 2);
+      ctx.fillStyle = '#4CAF50';
+      ctx.fill();
+    }
+
+    function renderSkyBackground() {
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, CH);
+      skyGrad.addColorStop(0, '#CBE6F7');
+      skyGrad.addColorStop(1, '#EDF5FB');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, CW, CH);
+
+      drawNavigationLand(200, 100, 90, 70, 0.4);
+      drawNavigationLand(620, 380, 150, 100, 0.6);
+      drawNavigationLand(480, 80, 60, 45, 0.3);
+      drawNavigationLand(80, 450, 110, 80, 0.55);
+
+      ctx.strokeStyle = 'rgba(78, 127, 146, 0.08)';
+      ctx.lineWidth = 1;
+      for (let x = 40; x < CW; x += 60) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CH); ctx.stroke();
+        ctx.fillStyle = 'rgba(78, 127, 146, 0.3)';
+        ctx.font = '9px monospace';
+        ctx.fillText(x + "°E", x + 3, CH - 6);
+      }
+      for (let y = 40; y < CH; y += 60) {
+        ctx.beginPath(); ctx.moveTo(0, y); ctx.lineTo(CW, y); ctx.stroke();
+        ctx.fillStyle = 'rgba(78, 127, 146, 0.3)';
+        ctx.font = '9px monospace';
+        ctx.fillText(y + "°N", 5, y - 3);
+      }
+
+      drawCompassRose(CW - 80, 100);
+      drawFloatingClouds();
+      drawWindStreamlines();
+
+      ctx.save();
+      ctx.translate(s2Start.x, s2Start.y);
+      ctx.rotate(45 * Math.PI / 180);
+      ctx.fillStyle = '#546E7A';
+      ctx.fillRect(-35, -7, 70, 14);
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(-30, 0); ctx.lineTo(30, 0); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+
+      ctx.fillStyle = '#2D8B6F';
+      ctx.beginPath(); ctx.arc(s2Start.x, s2Start.y, 6, 0, Math.PI * 2); ctx.fill();
+      ctx.font = 'bold 12px Be Vietnam Pro';
+      ctx.textAlign = 'center';
+      ctx.fillText("Sân bay A (Xuất phát)", s2Start.x, s2Start.y + 24);
+
+      ctx.save();
+      ctx.translate(s2TargetReal.x, s2TargetReal.y);
+      ctx.rotate(45 * Math.PI / 180);
+      ctx.fillStyle = '#546E7A';
+      ctx.fillRect(-35, -7, 70, 14);
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 3]);
+      ctx.beginPath(); ctx.moveTo(-30, 0); ctx.lineTo(30, 0); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.restore();
+
+      ctx.fillStyle = '#C15F3C';
+      ctx.beginPath(); ctx.arc(s2TargetReal.x, s2TargetReal.y, 8, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#fff'; ctx.lineWidth = 1.5; ctx.stroke();
+      ctx.fillStyle = '#1A1A1A';
+      ctx.fillText("Sân bay B (Đông Bắc)", s2TargetReal.x, s2TargetReal.y - 20);
+
+      ctx.strokeStyle = 'rgba(45, 139, 111, 0.25)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([6, 5]);
+      ctx.beginPath();
+      ctx.moveTo(s2Start.x, s2Start.y);
+      ctx.lineTo(s2TargetReal.x, s2TargetReal.y);
+      ctx.stroke();
+      ctx.setLineDash([]);
+    }
+
+    function renderGridBackground() {
+      const woodGrad = ctx.createLinearGradient(0, 0, CW, CH);
+      woodGrad.addColorStop(0, '#FCFAF4');
+      woodGrad.addColorStop(1, '#F3ECE0');
+      ctx.fillStyle = woodGrad;
+      ctx.fillRect(0, 0, CW, CH);
+
+      ctx.strokeStyle = 'rgba(190, 175, 145, 0.28)';
+      ctx.lineWidth = 1.5;
+      for (let x = 50; x < CW; x += 50) {
+        ctx.beginPath(); ctx.moveTo(x, 0); ctx.lineTo(x, CH); ctx.stroke();
+      }
+
+      const shadowGrad = ctx.createRadialGradient(400, 390, 5, 400, 390, 300);
+      shadowGrad.addColorStop(0, 'rgba(139, 125, 95, 0.06)');
+      shadowGrad.addColorStop(1, 'rgba(139, 125, 95, 0)');
+      ctx.fillStyle = shadowGrad;
+      ctx.fillRect(0, 0, CW, CH);
+
+      ctx.strokeStyle = 'rgba(60, 165, 122, 0.05)';
+      ctx.lineWidth = 1;
+      for (let r = 50; r <= 200; r += 50) {
+        ctx.beginPath();
+        ctx.arc(400, 390, r, 0, Math.PI * 2);
+        ctx.stroke();
+      }
+    }
+
+    function drawFloatingShip() {
+      ctx.save();
+      const sy = 92;
+
+      // 1. Draw hull shadow in water
+      ctx.fillStyle = 'rgba(5, 15, 30, 0.2)';
+      ctx.fillRect(110, sy + 15, 580, 10);
+
+      // 2. Draw Ship Hull (Red bottom, black top - classic cargo ship paint)
+      // Bottom Red hull
+      ctx.fillStyle = '#C15F3C';
+      ctx.beginPath();
+      ctx.moveTo(120, sy + 12);
+      ctx.lineTo(680, sy + 12);
+      ctx.lineTo(640, sy + 25);
+      ctx.lineTo(160, sy + 25);
+      ctx.closePath();
+      ctx.fill();
+
+      // Top Black hull
+      ctx.fillStyle = '#212121';
+      ctx.beginPath();
+      ctx.moveTo(90, sy - 12);
+      ctx.lineTo(710, sy - 12);
+      ctx.quadraticCurveTo(720, sy - 12, 725, sy - 2);
+      ctx.lineTo(680, sy + 12);
+      ctx.lineTo(120, sy + 12);
+      ctx.quadraticCurveTo(100, sy + 6, 90, sy - 12);
+      ctx.closePath();
+      ctx.fill();
+
+      // White accent line separating red and black
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(106, sy + 12);
+      ctx.lineTo(694, sy + 12);
+      ctx.stroke();
+
+      // 3. Cabin structures (White superstructure on deck)
+      ctx.fillStyle = '#ECEFF1';
+      ctx.fillRect(140, sy - 37, 80, 25);
+      ctx.fillRect(160, sy - 57, 50, 20);
+
+      // Windows on cabin
+      ctx.fillStyle = '#37474F';
+      ctx.fillRect(170, sy - 50, 6, 5);
+      ctx.fillRect(190, sy - 50, 6, 5);
+      ctx.fillRect(150, sy - 30, 6, 5);
+      ctx.fillRect(170, sy - 30, 6, 5);
+      ctx.fillRect(190, sy - 30, 6, 5);
+
+      // Funnel (chimney)
+      ctx.fillStyle = '#C15F3C';
+      ctx.fillRect(145, sy - 52, 12, 15);
+      ctx.fillStyle = '#212121';
+      ctx.fillRect(145, sy - 57, 12, 5);
+
+      // Radar antenna
+      ctx.strokeStyle = '#37474F';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.moveTo(185, sy - 57);
+      ctx.lineTo(185, sy - 69);
+      ctx.stroke();
+      ctx.fillStyle = '#90A4AE';
+      ctx.fillRect(175, sy - 72, 20, 3);
+
+      // 4. Cargo containers (colorful blocks on deck)
+      const containers = [
+        { x: 260, color: '#4E7F92' },
+        { x: 300, color: '#2D8B6F' },
+        { x: 340, color: '#FF8F00' },
+        { x: 380, color: '#4E7F92' },
+        { x: 420, color: '#C15F3C' },
+        { x: 460, color: '#2D8B6F' },
+        { x: 500, color: '#FF8F00' },
+        { x: 540, color: '#37474F' },
+        { x: 580, color: '#4E7F92' },
+        { x: 620, color: '#C15F3C' }
+      ];
+      containers.forEach(c => {
+        ctx.fillStyle = 'rgba(0,0,0,0.15)';
+        ctx.fillRect(c.x + 2, sy - 27, 35, 15);
+        ctx.fillStyle = c.color;
+        ctx.fillRect(c.x, sy - 29, 35, 17);
+        ctx.strokeStyle = 'rgba(255,255,255,0.15)';
+        ctx.lineWidth = 1;
+        ctx.strokeRect(c.x, sy - 29, 35, 17);
+      });
+
+      ctx.restore();
+    }
+
+    function renderSeaBackground() {
+      const skyGrad = ctx.createLinearGradient(0, 0, 0, 90);
+      skyGrad.addColorStop(0, '#CDE6F7');
+      skyGrad.addColorStop(1, '#EDF5FB');
+      ctx.fillStyle = skyGrad;
+      ctx.fillRect(0, 0, CW, 90);
+
+      // Draw the floating ship
+      drawFloatingShip();
+
+      // Sea water body with deep vertical gradient
+      const seaGrad = ctx.createLinearGradient(0, 108, 0, CH);
+      seaGrad.addColorStop(0, 'rgba(11, 158, 219, 0.45)');
+      seaGrad.addColorStop(0.2, 'rgba(8, 102, 163, 0.78)');
+      seaGrad.addColorStop(1, 'rgba(5, 33, 74, 0.95)');
+      ctx.fillStyle = seaGrad;
+      ctx.fillRect(0, 108, CW, CH - 108);
+
+      const sandGrad = ctx.createLinearGradient(0, CH - 30, 0, CH);
+      sandGrad.addColorStop(0, '#102F44');
+      sandGrad.addColorStop(1, '#0C1C2B');
+      ctx.fillStyle = sandGrad;
+      ctx.fillRect(0, CH - 25, CW, 25);
+
+      drawSeaGodRays();
+      drawWavingSeaweed();
+      drawSeaBubbles();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.45)';
+      ctx.lineWidth = 1.5;
+      const rippleOffset = flowOffset * 0.4;
+      ctx.beginPath();
+      for (let x = -40; x < CW + 40; x += 80) {
+        const rx = x + (rippleOffset % 80);
+        ctx.moveTo(rx, 100);
+        ctx.bezierCurveTo(rx + 20, 97, rx + 60, 103, rx + 80, 100);
+      }
+      ctx.stroke();
+    }
+
+    // --- Physics Scenes Renderers ---
+
+    function renderBoatScene(showV1, showV2, showRes, showPara) {
+      const scale = 25; // 1 m/s = 25px
+      const bx = boat.x;
+      const by = boat.y;
+
+      const boatRad = boat.theta * Math.PI / 180;
+      const vt = { x: boat.vt * Math.cos(boatRad), y: -boat.vt * Math.sin(boatRad) };
+      const vd = { x: boat.vd, y: 0 };
+      const vr = Vec2.add(vt, vd);
+
+      // Draw boat wake foam
+      ctx.save();
+      boatWakeParticles.forEach(p => {
+        ctx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+
+      if (activeWalkthroughStep !== null) {
+        ctx.save();
+        if (activeWalkthroughStep === 1) {
+          drawArrow(ctx, bx, by, bx + vt.x * scale, by + vt.y * scale, '#3CA57A', 3.5, "v_t");
+          drawArrow(ctx, 400, 200, 400 + vd.x * scale, 200 + vd.y * scale, '#4E7F92', 3.5, "v_d");
+        } else if (activeWalkthroughStep === 2) {
+          drawArrow(ctx, bx, by, bx + vt.x * scale, by + vt.y * scale, '#3CA57A', 3.5, "v_t");
+          drawArrow(ctx, bx, by, bx + vd.x * scale, by + vd.y * scale, '#4E7F92', 3.5, "v_d");
+        } else if (activeWalkthroughStep === 3) {
+          drawArrow(ctx, bx, by, bx + vt.x * scale, by + vt.y * scale, '#3CA57A', 1.5, "v_t");
+          drawArrow(ctx, bx, by, bx + vd.x * scale, by + vd.y * scale, '#4E7F92', 1.5, "v_d");
+          ctx.strokeStyle = '#666'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(bx + vt.x * scale, by + vt.y * scale);
+          ctx.lineTo(bx + vr.x * scale, by + vr.y * scale);
+          ctx.lineTo(bx + vd.x * scale, by + vd.y * scale);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        } else if (activeWalkthroughStep === 4) {
+          drawArrow(ctx, bx, by, bx + vt.x * scale, by + vt.y * scale, 'rgba(60, 165, 122,0.35)', 1.5);
+          drawArrow(ctx, bx, by, bx + vd.x * scale, by + vd.y * scale, 'rgba(78, 127, 146,0.35)', 1.5);
+          ctx.strokeStyle = 'rgba(100,100,100,0.2)'; ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(bx + vt.x * scale, by + vt.y * scale);
+          ctx.lineTo(bx + vr.x * scale, by + vr.y * scale);
+          ctx.lineTo(bx + vd.x * scale, by + vd.y * scale);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          drawArrow(ctx, bx, by, bx + vr.x * scale, by + vr.y * scale, '#E8A24A', 4, "v");
+        }
+        ctx.restore();
+        drawBoatIcon(bx, by, boat.theta);
+        return;
+      }
+
+      if (boat.path.length > 1) {
+        ctx.strokeStyle = 'rgba(232, 162, 74,0.6)';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([2, 3]);
+        ctx.beginPath();
+        ctx.moveTo(boat.path[0].x, boat.path[0].y);
+        for (let i = 1; i < boat.path.length; i++) {
+          ctx.lineTo(boat.path[i].x, boat.path[i].y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      if (!boat.animate) {
+        const dy = s1RiverTop - s1Start.y;
+        const dt = dy / vr.y;
+        const finalX = s1Start.x + vr.x * dt;
+
+        ctx.strokeStyle = 'rgba(232, 162, 74,0.35)';
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([4, 5]);
+        ctx.beginPath();
+        ctx.moveTo(s1Start.x, s1Start.y);
+        ctx.lineTo(finalX, s1RiverTop);
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.beginPath();
+        ctx.arc(finalX, s1RiverTop, 6, 0, Math.PI * 2);
+        ctx.fillStyle = Math.abs(finalX - s1Start.x) < 12 ? '#2D8B6F' : '#C15F3C';
+        ctx.fill();
+      }
+
+      if (showPara) {
+        ctx.strokeStyle = 'rgba(45, 139, 111,0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(bx + vt.x * scale, by + vt.y * scale);
+        ctx.lineTo(bx + vr.x * scale, by + vr.y * scale);
+        ctx.lineTo(bx + vd.x * scale, by + vd.y * scale);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      if (showV1) {
+        drawArrow(ctx, bx, by, bx + vt.x * scale, by + vt.y * scale, '#2D8B6F', 3, "v_t");
+      }
+      if (showV2) {
+        drawArrow(ctx, bx, by, bx + vd.x * scale, by + vd.y * scale, '#4E7F92', 3, "v_d");
+      }
+      if (showRes) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(232, 162, 74,0.35)';
+        ctx.lineWidth = 9;
+        ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(bx, by); ctx.lineTo(bx + vr.x * scale, by + vr.y * scale); ctx.stroke();
+        ctx.restore();
+        drawArrow(ctx, bx, by, bx + vr.x * scale, by + vr.y * scale, '#E8A24A', 3.5, "v");
+      }
+
+      drawBoatIcon(bx, by, boat.theta);
+    }
+
+    function drawBoatIcon(x, y, headingDeg) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate((90 - headingDeg) * Math.PI / 180);
+
+      ctx.fillStyle = 'rgba(45, 139, 111, 0.15)';
+      ctx.beginPath();
+      ctx.ellipse(0, 4, 25, 8, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const hullGrad = ctx.createLinearGradient(-24, 0, 24, 0);
+      hullGrad.addColorStop(0, '#5D4037');
+      hullGrad.addColorStop(0.5, '#795548');
+      hullGrad.addColorStop(1, '#5D4037');
+      ctx.fillStyle = hullGrad;
+
+      ctx.beginPath();
+      ctx.moveTo(-18, 7);
+      ctx.lineTo(18, 7);
+      ctx.quadraticCurveTo(26, 0, 26, -14);
+      ctx.quadraticCurveTo(0, -25, -26, -14);
+      ctx.quadraticCurveTo(-26, 0, -18, 7);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.strokeStyle = '#3CA57A';
+      ctx.lineWidth = 1.8;
+      ctx.beginPath();
+      ctx.moveTo(-20, 2);
+      ctx.quadraticCurveTo(0, -12, 20, 2);
+      ctx.stroke();
+
+      ctx.fillStyle = '#FFFFFF';
+      ctx.fillRect(-8, -12, 16, 10);
+      ctx.fillStyle = '#1A1A1A';
+      ctx.fillRect(-5, -10, 4, 3);
+      ctx.fillRect(1, -10, 4, 3);
+
+      ctx.strokeStyle = '#3E2723';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath(); ctx.moveTo(0, -8); ctx.lineTo(0, -35); ctx.stroke();
+
+      const sailGrad = ctx.createLinearGradient(0, -32, 14, -12);
+      sailGrad.addColorStop(0, '#FFFDF9');
+      sailGrad.addColorStop(1, '#E6ECF0');
+      ctx.fillStyle = sailGrad;
+
+      ctx.beginPath();
+      ctx.moveTo(0, -33);
+      ctx.quadraticCurveTo(14, -22, 16, -11);
+      ctx.lineTo(0, -11);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#E53935';
+      ctx.beginPath();
+      ctx.moveTo(0, -35);
+      ctx.lineTo(-8, -32);
+      ctx.lineTo(0, -29);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function renderPlaneScene(showV1, showV2, showRes, showPara) {
+      const scale = 1.2;
+      const px = plane.x;
+      const py = plane.y;
+
+      const planeRad = plane.theta * Math.PI / 180;
+      const vmb = { x: plane.vmb * Math.cos(planeRad), y: -plane.vmb * Math.sin(planeRad) };
+      const windRad = plane.thetaWind * Math.PI / 180;
+      const vwind = { x: plane.vwind * Math.cos(windRad), y: -plane.vwind * Math.sin(windRad) };
+      const vr = Vec2.add(vmb, vwind);
+
+      ctx.save();
+      planeClouds.forEach(c => {
+        if (!c.isVapor) return;
+        ctx.fillStyle = `rgba(240, 248, 255, ${c.alpha})`;
+        ctx.beginPath();
+        ctx.arc(c.x, c.y, c.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+
+      if (activeWalkthroughStep !== null) {
+        ctx.save();
+        if (activeWalkthroughStep === 1) {
+          drawArrow(ctx, px, py, px + vmb.x * scale, py + vmb.y * scale, '#3CA57A', 3.5, "v_mb");
+          drawArrow(ctx, 400, 200, 400 + vwind.x * scale, 200 + vwind.y * scale, '#4E7F92', 3.5, "v_g");
+        } else if (activeWalkthroughStep === 2) {
+          drawArrow(ctx, px, py, px + vmb.x * scale, py + vmb.y * scale, '#3CA57A', 3.5, "v_mb");
+          drawArrow(ctx, px, py, px + vwind.x * scale, py + vwind.y * scale, '#4E7F92', 3.5, "v_g");
+        } else if (activeWalkthroughStep === 3) {
+          drawArrow(ctx, px, py, px + vmb.x * scale, py + vmb.y * scale, '#3CA57A', 1.5, "v_mb");
+          drawArrow(ctx, px, py, px + vwind.x * scale, py + vwind.y * scale, '#4E7F92', 1.5, "v_g");
+          ctx.strokeStyle = '#666'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(px + vmb.x * scale, py + vmb.y * scale);
+          ctx.lineTo(px + vr.x * scale, py + vr.y * scale);
+          ctx.lineTo(px + vwind.x * scale, py + vwind.y * scale);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        } else if (activeWalkthroughStep === 4) {
+          drawArrow(ctx, px, py, px + vmb.x * scale, py + vmb.y * scale, 'rgba(60, 165, 122,0.35)', 1.5);
+          drawArrow(ctx, px, py, px + vwind.x * scale, py + vwind.y * scale, 'rgba(78, 127, 146,0.35)', 1.5);
+          ctx.strokeStyle = 'rgba(100,100,100,0.2)'; ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(px + vmb.x * scale, py + vmb.y * scale);
+          ctx.lineTo(px + vr.x * scale, py + vr.y * scale);
+          ctx.lineTo(px + vwind.x * scale, py + vwind.y * scale);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          drawArrow(ctx, px, py, px + vr.x * scale, py + vr.y * scale, '#E8A24A', 4, "v");
+        }
+        ctx.restore();
+        drawAirplaneIcon(px, py, plane.theta);
+        return;
+      }
+
+      if (plane.path.length > 1) {
+        ctx.strokeStyle = 'rgba(232, 162, 74,0.5)';
+        ctx.lineWidth = 2.5;
+        ctx.setLineDash([2, 4]);
+        ctx.beginPath();
+        ctx.moveTo(plane.path[0].x, plane.path[0].y);
+        for (let i = 1; i < plane.path.length; i++) {
+          ctx.lineTo(plane.path[i].x, plane.path[i].y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      if (!plane.animate) {
+        ctx.strokeStyle = 'rgba(232, 162, 74,0.3)';
+        ctx.lineWidth = 2;
+        ctx.setLineDash([3, 4]);
+        ctx.beginPath();
+        ctx.moveTo(s2Start.x, s2Start.y);
+        const stepCount = 50;
+        let tX = s2Start.x, tY = s2Start.y;
+        for (let i = 0; i < stepCount; i++) {
+          tX += vr.x * 0.08;
+          tY += vr.y * 0.08;
+          if (tX < 0 || tX > CW || tY < 0 || tY > CH) break;
+        }
+        ctx.lineTo(tX, tY);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      if (showPara) {
+        ctx.strokeStyle = 'rgba(45, 139, 111,0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(px + vmb.x * scale, py + vmb.y * scale);
+        ctx.lineTo(px + vr.x * scale, py + vr.y * scale);
+        ctx.lineTo(px + vwind.x * scale, py + vwind.y * scale);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      if (showV1) {
+        drawArrow(ctx, px, py, px + vmb.x * scale, py + vmb.y * scale, '#2D8B6F', 3, "v_mb");
+      }
+      if (showV2) {
+        drawArrow(ctx, px, py, px + vwind.x * scale, py + vwind.y * scale, '#4E7F92', 3, "v_g");
+      }
+      if (showRes) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(232, 162, 74,0.3)';
+        ctx.lineWidth = 9;
+        ctx.lineCap = 'round';
+        ctx.beginPath(); ctx.moveTo(px, py); ctx.lineTo(px + vr.x * scale, py + vr.y * scale); ctx.stroke();
+        ctx.restore();
+        drawArrow(ctx, px, py, px + vr.x * scale, py + vr.y * scale, '#E8A24A', 3.5, "v");
+      }
+
+      drawAirplaneIcon(px, py, plane.theta);
+    }
+
+    function drawAirplaneIcon(x, y, headingDeg) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(-headingDeg * Math.PI / 180);
+
+      ctx.fillStyle = 'rgba(15, 27, 53, 0.08)';
+      ctx.beginPath();
+      ctx.ellipse(-12, 18, 22, 6, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#37474F';
+      ctx.fillRect(-6, -12, 8, 3);
+      ctx.fillRect(-6, 9, 8, 3);
+
+      const wingGrad = ctx.createLinearGradient(0, -24, 0, 24);
+      wingGrad.addColorStop(0, '#B0BEC5');
+      wingGrad.addColorStop(0.5, '#ECEFF1');
+      wingGrad.addColorStop(1, '#B0BEC5');
+      ctx.fillStyle = wingGrad;
+
+      ctx.beginPath();
+      ctx.moveTo(-5, 0);
+      ctx.lineTo(-14, -24);
+      ctx.lineTo(-7, -24);
+      ctx.lineTo(6, 0);
+      ctx.lineTo(-7, 24);
+      ctx.lineTo(-14, 24);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#E53935';
+      ctx.beginPath(); ctx.arc(-10.5, -24, 2, 0, Math.PI * 2); ctx.fill();
+      ctx.fillStyle = '#4CAF50';
+      ctx.beginPath(); ctx.arc(-10.5, 24, 2, 0, Math.PI * 2); ctx.fill();
+
+      const fuseGrad = ctx.createLinearGradient(0, -5, 0, 5);
+      fuseGrad.addColorStop(0, '#FFFFFF');
+      fuseGrad.addColorStop(0.7, '#ECEFF1');
+      fuseGrad.addColorStop(1, '#CFD8DC');
+      ctx.fillStyle = fuseGrad;
+
+      ctx.beginPath();
+      ctx.arc(8, 0, 5, -Math.PI / 2, Math.PI / 2);
+      ctx.lineTo(-24, 5);
+      ctx.lineTo(-24, -5);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#0288D1';
+      ctx.beginPath();
+      ctx.moveTo(6, -3);
+      ctx.quadraticCurveTo(10, 0, 6, 3);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.fillStyle = '#4E7F92';
+      ctx.fillRect(-12, -1.2, 14, 2.4);
+
+      ctx.fillStyle = '#78909C';
+      ctx.beginPath();
+      ctx.moveTo(-20, 0);
+      ctx.lineTo(-27, -10);
+      ctx.lineTo(-22, -10);
+      ctx.lineTo(-16, 0);
+      ctx.closePath();
+      ctx.fill();
+
+      ctx.restore();
+    }
+
+    function renderCrateScene(showV1, showV2, showRes, showPara) {
+      const scale = 2.0;
+      const cx = crate.x;
+      const cy = crate.y;
+
+      const alphaRad = crate.alpha * Math.PI / 180;
+      const a1 = Math.PI / 2 + alphaRad / 2;
+      const a2 = Math.PI / 2 - alphaRad / 2;
+
+      const f1 = { x: crate.f1 * Math.cos(a1), y: -crate.f1 * Math.sin(a1) };
+      const f2 = { x: crate.f2 * Math.cos(a2), y: -crate.f2 * Math.sin(a2) };
+      const fr = Vec2.add(f1, f2);
+
+      // Draw friction dust particles
+      ctx.save();
+      crateDustParticles.forEach(p => {
+        ctx.fillStyle = `rgba(180, 160, 140, ${p.alpha})`;
+        ctx.beginPath();
+        ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+        ctx.fill();
+      });
+      ctx.restore();
+
+      drawTexturedRope(ctx, cx, cy, cx - 220, cy - 130, '#C15F3C', crate.f1);
+      drawTexturedRope(ctx, cx, cy, cx + 220, cy - 130, '#4E7F92', crate.f2);
+
+      drawStickFigure(cx - 220, cy - 130, 'A', '#C15F3C');
+      drawStickFigure(cx + 220, cy - 130, 'B', '#4E7F92');
+
+      if (activeWalkthroughStep !== null) {
+        ctx.save();
+        if (activeWalkthroughStep === 1) {
+          drawArrow(ctx, cx - 220, cy - 130, cx - 220 - f1.x * scale, cy - 130 - f1.y * scale, '#C15F3C', 3.5, "F₁");
+          drawArrow(ctx, cx + 220, cy - 130, cx + 220 - f2.x * scale, cy - 130 - f2.y * scale, '#4E7F92', 3.5, "F₂");
+        } else if (activeWalkthroughStep === 2) {
+          drawArrow(ctx, cx, cy, cx + f1.x * scale, cy + f1.y * scale, '#C15F3C', 3.5, "F₁");
+          drawArrow(ctx, cx, cy, cx + f2.x * scale, cy + f2.y * scale, '#4E7F92', 3.5, "F₂");
+        } else if (activeWalkthroughStep === 3) {
+          drawArrow(ctx, cx, cy, cx + f1.x * scale, cy + f1.y * scale, '#C15F3C', 1.5, "F₁");
+          drawArrow(ctx, cx, cy, cx + f2.x * scale, cy + f2.y * scale, '#4E7F92', 1.5, "F₂");
+          ctx.strokeStyle = '#666'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(cx + f1.x * scale, cy + f1.y * scale);
+          ctx.lineTo(cx + fr.x * scale, cy + fr.y * scale);
+          ctx.lineTo(cx + f2.x * scale, cy + f2.y * scale);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        } else if (activeWalkthroughStep === 4) {
+          drawArrow(ctx, cx, cy, cx + f1.x * scale, cy + f1.y * scale, 'rgba(193, 95, 60,0.3)', 1.5);
+          drawArrow(ctx, cx, cy, cx + f2.x * scale, cy + f2.y * scale, 'rgba(78, 127, 146,0.3)', 1.5);
+          ctx.strokeStyle = 'rgba(100,100,100,0.2)'; ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(cx + f1.x * scale, cy + f1.y * scale);
+          ctx.lineTo(cx + fr.x * scale, cy + fr.y * scale);
+          ctx.lineTo(cx + f2.x * scale, cy + f2.y * scale);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          drawArrow(ctx, cx, cy, cx + fr.x * scale, cy + fr.y * scale, '#E8A24A', 4, "R");
+        }
+        ctx.restore();
+        drawCrateIcon(cx, cy, 0);
+        return;
+      }
+
+      if (crate.path.length > 1) {
+        ctx.strokeStyle = 'rgba(0, 0, 0, 0.12)';
+        ctx.lineWidth = 1.2;
+        ctx.setLineDash([3, 4]);
+        ctx.beginPath();
+        ctx.moveTo(crate.path[0].x, crate.path[0].y);
+        for (let i = 1; i < crate.path.length; i++) {
+          ctx.lineTo(crate.path[i].x, crate.path[i].y);
+        }
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      if (showPara) {
+        ctx.strokeStyle = 'rgba(45, 139, 111,0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(cx + f1.x * scale, cy + f1.y * scale);
+        ctx.lineTo(cx + fr.x * scale, cy + fr.y * scale);
+        ctx.lineTo(cx + f2.x * scale, cy + f2.y * scale);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      if (showV1) {
+        drawArrow(ctx, cx, cy, cx + f1.x * scale, cy + f1.y * scale, '#C15F3C', 3, "F₁");
+        ctx.beginPath(); ctx.arc(cx + f1.x * scale, cy + f1.y * scale, 7, 0, Math.PI * 2);
+        ctx.fillStyle = '#E57373'; ctx.strokeStyle = '#C15F3C'; ctx.lineWidth = 1.5; ctx.fill(); ctx.stroke();
+      }
+      if (showV2) {
+        drawArrow(ctx, cx, cy, cx + f2.x * scale, cy + f2.y * scale, '#4E7F92', 3, "F₂");
+        ctx.beginPath(); ctx.arc(cx + f2.x * scale, cy + f2.y * scale, 7, 0, Math.PI * 2);
+        ctx.fillStyle = '#64B5F6'; ctx.strokeStyle = '#4E7F92'; ctx.lineWidth = 1.5; ctx.fill(); ctx.stroke();
+      }
+      if (showRes) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(232, 162, 74,0.3)';
+        ctx.lineWidth = 9;
+        ctx.beginPath(); ctx.moveTo(cx, cy); ctx.lineTo(cx + fr.x * scale, cy + fr.y * scale); ctx.stroke();
+        ctx.restore();
+        drawArrow(ctx, cx, cy, cx + fr.x * scale, cy + fr.y * scale, '#E8A24A', 3.5, "R");
+      }
+
+      ctx.beginPath();
+      ctx.arc(cx, cy, 6, 0, Math.PI * 2);
+      ctx.fillStyle = '#FF9800';
+      ctx.strokeStyle = '#FFF'; ctx.lineWidth = 1.5;
+      ctx.fill(); ctx.stroke();
+
+      let targetTilt = 0;
+      if (fr.x !== 0 && !crate.animate) {
+        targetTilt = -fr.x * 0.0018;
+      }
+      crate.tilt = crate.tilt * 0.9 + targetTilt * 0.1;
+
+      drawCrateIcon(cx, cy, crate.tilt);
+    }
+
+    function drawStickFigure(x, y, label, color) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.12)';
+      ctx.beginPath();
+      ctx.ellipse(0, 12, 12, 4, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      const forceMag = label === 'A' ? crate.f1 : crate.f2;
+      const leanAngle = (forceMag / 100) * 15 * (label === 'A' ? -1 : 1) * Math.PI / 180;
+      ctx.rotate(leanAngle);
+
+      ctx.beginPath(); ctx.arc(0, -24, 7, 0, Math.PI * 2);
+      ctx.fillStyle = '#3E2723';
+      ctx.fill();
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 8;
+      ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(0, -17);
+      ctx.lineTo(0, -2);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#212121';
+      ctx.lineWidth = 4;
+
+      ctx.beginPath();
+      ctx.moveTo(-2, -2);
+      ctx.lineTo(label === 'A' ? 6 : -10, 5);
+      ctx.lineTo(label === 'A' ? 2 : -12, 12);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(2, -2);
+      ctx.lineTo(label === 'A' ? -8 : 8, 4);
+      ctx.lineTo(label === 'A' ? -10 : 10, 12);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#3E2723';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(0, -12);
+      ctx.lineTo(label === 'A' ? 14 : -14, -6);
+      ctx.stroke();
+
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.85)';
+      ctx.fillRect(-10, -42, 20, 13);
+      ctx.strokeStyle = color;
+      ctx.lineWidth = 1;
+      ctx.strokeRect(-10, -42, 20, 13);
+
+      ctx.fillStyle = color;
+      ctx.font = 'bold 9px Be Vietnam Pro';
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, 0, -35);
+
+      ctx.restore();
+    }
+
+    function drawCrateIcon(x, y, tiltRad) {
+      ctx.save();
+      ctx.translate(x, y);
+      ctx.rotate(tiltRad);
+
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+      ctx.fillRect(-24, 22, 48, 5);
+
+      const boxGrad = ctx.createLinearGradient(-22, -22, 22, 22);
+      boxGrad.addColorStop(0, '#D7CCC8');
+      boxGrad.addColorStop(0.5, '#A1887F');
+      boxGrad.addColorStop(1, '#8D6E63');
+      ctx.fillStyle = boxGrad;
+      ctx.fillRect(-22, -22, 44, 44);
+
+      ctx.strokeStyle = 'rgba(93, 64, 55, 0.35)';
+      ctx.lineWidth = 1.5;
+      for (let py = -14; py <= 14; py += 7) {
+        ctx.beginPath(); ctx.moveTo(-22, py); ctx.lineTo(22, py); ctx.stroke();
+      }
+
+      ctx.strokeStyle = '#5D4037';
+      ctx.lineWidth = 3;
+      ctx.strokeRect(-22, -22, 44, 44);
+
+      ctx.strokeStyle = '#5D4037';
+      ctx.lineWidth = 4.5;
+      ctx.beginPath();
+      ctx.moveTo(-20, -20); ctx.lineTo(20, 20);
+      ctx.moveTo(20, -20); ctx.lineTo(-20, 20);
+      ctx.stroke();
+
+      ctx.fillStyle = '#37474F';
+      ctx.fillRect(-23, -23, 6, 6);
+      ctx.fillRect(17, -23, 6, 6);
+      ctx.fillRect(-23, 17, 6, 6);
+      ctx.fillRect(17, 17, 6, 6);
+
+      ctx.fillStyle = 'rgba(193, 95, 60, 0.65)';
+      ctx.font = 'bold 8px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText("▲", 0, -1);
+      ctx.font = '5px Arial';
+      ctx.fillText("FRAGILE", 0, 7);
+
+      ctx.restore();
+    }
+
+    function renderAnchorScene(showV1, showV2, showRes, showPara) {
+      const scale = 2.0;
+      const ax = anchor.x;
+      const ay = anchor.y + anchor.yOffset;
+
+      const a1 = Math.PI / 2 + (anchor.theta1 * Math.PI / 180);
+      const a2 = Math.PI / 2 - (anchor.theta2 * Math.PI / 180);
+
+      const t1 = { x: anchor.t1 * Math.cos(a1), y: -anchor.t1 * Math.sin(a1) };
+      const t2 = { x: anchor.t2 * Math.cos(a2), y: -anchor.t2 * Math.sin(a2) };
+      const tr = Vec2.add(t1, t2);
+      const g_vec = { x: 0, y: 80 };
+
+      const docY = 106;
+      const dockLeftX = ax - 160 * Math.tan(anchor.theta1 * Math.PI / 180);
+      const dockRightX = ax + 160 * Math.tan(anchor.theta2 * Math.PI / 180);
+
+      // Hawsepipes on the ship hull bottom
+      ctx.fillStyle = '#1A237E';
+      ctx.strokeStyle = '#CFD8DC';
+      ctx.lineWidth = 2.0;
+
+      ctx.beginPath();
+      ctx.arc(dockLeftX, docY + 4, 7, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#051124';
+      ctx.beginPath();
+      ctx.arc(dockLeftX, docY + 4, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.fillStyle = '#1A237E';
+      ctx.beginPath();
+      ctx.arc(dockRightX, docY + 4, 7, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+      ctx.fillStyle = '#051124';
+      ctx.beginPath();
+      ctx.arc(dockRightX, docY + 4, 3.5, 0, Math.PI * 2);
+      ctx.fill();
+
+      const ropeColor = (anchor.state === 'success') ? '#2D8B6F' : '#C58A2E';
+      drawTexturedRope(ctx, dockLeftX, docY + 4, ax, ay, ropeColor, anchor.t1);
+      drawTexturedRope(ctx, dockRightX, docY + 4, ax, ay, ropeColor, anchor.t2);
+
+      if (activeWalkthroughStep !== null) {
+        ctx.save();
+        if (activeWalkthroughStep === 1) {
+          drawArrow(ctx, ax, ay, ax + t1.x * scale, ay + t1.y * scale, '#C15F3C', 3.5, "T₁");
+          drawArrow(ctx, ax, ay, ax + t2.x * scale, ay + t2.y * scale, '#4E7F92', 3.5, "T₂");
+        } else if (activeWalkthroughStep === 2) {
+          drawArrow(ctx, ax, ay, ax + t1.x * scale, ay + t1.y * scale, '#C15F3C', 3.5, "T₁");
+          drawArrow(ctx, ax, ay, ax + t2.x * scale, ay + t2.y * scale, '#4E7F92', 3.5, "T₂");
+        } else if (activeWalkthroughStep === 3) {
+          drawArrow(ctx, ax, ay, ax + t1.x * scale, ay + t1.y * scale, '#C15F3C', 1.5, "T₁");
+          drawArrow(ctx, ax, ay, ax + t2.x * scale, ay + t2.y * scale, '#4E7F92', 1.5, "T₂");
+          ctx.strokeStyle = '#666'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(ax + t1.x * scale, ay + t1.y * scale);
+          ctx.lineTo(ax + tr.x * scale, ay + tr.y * scale);
+          ctx.lineTo(ax + t2.x * scale, ay + t2.y * scale);
+          ctx.stroke();
+          ctx.setLineDash([]);
+        } else if (activeWalkthroughStep === 4) {
+          drawArrow(ctx, ax, ay, ax + t1.x * scale, ay + t1.y * scale, 'rgba(193, 95, 60,0.3)', 1.5);
+          drawArrow(ctx, ax, ay, ax + t2.x * scale, ay + t2.y * scale, 'rgba(78, 127, 146,0.3)', 1.5);
+          ctx.strokeStyle = 'rgba(100,100,100,0.2)'; ctx.setLineDash([4, 4]);
+          ctx.beginPath();
+          ctx.moveTo(ax + t1.x * scale, ay + t1.y * scale);
+          ctx.lineTo(ax + tr.x * scale, ay + tr.y * scale);
+          ctx.lineTo(ax + t2.x * scale, ay + t2.y * scale);
+          ctx.stroke();
+          ctx.setLineDash([]);
+          drawArrow(ctx, ax, ay, ax, ay + tr.y * scale, '#E8A24A', 4, "R");
+        }
+        ctx.restore();
+
+        drawArrow(ctx, ax, ay, ax + g_vec.x * scale, ay + g_vec.y * scale, '#555', 2.5, "P");
+        drawAnchorIcon(ax, ay);
+        return;
+      }
+
+      drawArrow(ctx, ax, ay, ax + g_vec.x * scale, ay + g_vec.y * scale, '#555', 2.5, "P");
+
+      if (showPara) {
+        ctx.strokeStyle = 'rgba(45, 139, 111,0.3)';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(ax + t1.x * scale, ay + t1.y * scale);
+        ctx.lineTo(ax + tr.x * scale, ay + tr.y * scale);
+        ctx.lineTo(ax + t2.x * scale, ay + t2.y * scale);
+        ctx.stroke();
+        ctx.setLineDash([]);
+      }
+
+      if (showV1) {
+        drawArrow(ctx, ax, ay, ax + t1.x * scale, ay + t1.y * scale, '#C15F3C', 3, "T₁");
+      }
+      if (showV2) {
+        drawArrow(ctx, ax, ay, ax + t2.x * scale, ay + t2.y * scale, '#4E7F92', 3, "T₂");
+      }
+      if (showRes) {
+        ctx.save();
+        ctx.strokeStyle = 'rgba(232, 162, 74,0.3)';
+        ctx.lineWidth = 9;
+        ctx.beginPath(); ctx.moveTo(ax, ay); ctx.lineTo(ax, ay + tr.y * scale); ctx.stroke();
+        ctx.restore();
+        drawArrow(ctx, ax, ay, ax, ay + tr.y * scale, '#E8A24A', 3.5, "R");
+      }
+
+      drawAnchorIcon(ax, ay);
+    }
+
+    function drawAnchorIcon(x, y) {
+      ctx.save();
+      ctx.translate(x, y);
+
+      const metalGrad = ctx.createLinearGradient(-15, -15, 15, 15);
+      metalGrad.addColorStop(0, '#78909C');
+      metalGrad.addColorStop(0.5, '#455A64');
+      metalGrad.addColorStop(1, '#263238');
+      ctx.strokeStyle = metalGrad;
+      ctx.fillStyle = metalGrad;
+      ctx.lineWidth = 4.5;
+      ctx.lineCap = 'round';
+      ctx.lineJoin = 'round';
+
+      ctx.fillStyle = 'rgba(5, 15, 30, 0.3)';
+      ctx.beginPath();
+      ctx.ellipse(0, 24, 18, 5, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      ctx.strokeStyle = metalGrad;
+      ctx.beginPath(); ctx.arc(0, -22, 6, 0, Math.PI * 2); ctx.stroke();
+      ctx.fillStyle = 'rgba(8, 102, 163, 0.4)';
+      ctx.beginPath(); ctx.arc(0, -22, 2.5, 0, Math.PI * 2); ctx.fill();
+
+      ctx.beginPath(); ctx.moveTo(0, -16); ctx.lineTo(0, 18); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(-15, -9); ctx.lineTo(15, -9); ctx.stroke();
+      ctx.fillStyle = metalGrad;
+      ctx.beginPath(); ctx.arc(-15, -9, 3.5, 0, Math.PI * 2); ctx.fill();
+      ctx.beginPath(); ctx.arc(15, -9, 3.5, 0, Math.PI * 2); ctx.fill();
+
+      ctx.strokeStyle = metalGrad;
+      ctx.beginPath();
+      ctx.arc(0, 12, 20, 0.08 * Math.PI, 0.92 * Math.PI);
+      ctx.stroke();
+
+      ctx.beginPath();
+      ctx.moveTo(-19, 7); ctx.lineTo(-24, 13); ctx.lineTo(-15, 13); ctx.closePath(); ctx.fill();
+      ctx.beginPath();
+      ctx.moveTo(19, 7); ctx.lineTo(15, 13); ctx.lineTo(24, 13); ctx.closePath(); ctx.fill();
+
+      ctx.strokeStyle = 'rgba(255, 255, 255, 0.35)';
+      ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.moveTo(-1.5, -14); ctx.lineTo(-1.5, 15); ctx.stroke();
+
+      ctx.restore();
+    }
+
+    // --- Interaction event handlers for Canvas dragging ---
+
+    function getCanvasMousePos(e) {
+      const rect = canvas.getBoundingClientRect();
+      const clientX = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
+      const clientY = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top;
+      // Map to CW/CH coordinates due to canvas scaling bounding
+      return {
+        x: clientX * (CW / rect.width),
+        y: clientY * (CH / rect.height)
+      };
+    }
+
+    function setupEvents() {
+      // Mouse & Touch events on canvas
+      const startDrag = (e) => {
+        if (currentSkin !== 3 || crate.animate || activeWalkthroughStep !== null) return;
+        const m = getCanvasMousePos(e);
+
+        const scale = 2.0; // 1N = 2px
+        const cx = crate.x;
+        const cy = crate.y;
+
+        const alphaRad = crate.alpha * Math.PI / 180;
+        const a1 = Math.PI / 2 + alphaRad / 2;
+        const a2 = Math.PI / 2 - alphaRad / 2;
+
+        const f1_end = { x: cx + crate.f1 * Math.cos(a1) * scale, y: cy - crate.f1 * Math.sin(a1) * scale };
+        const f2_end = { x: cx + crate.f2 * Math.cos(a2) * scale, y: cy - crate.f2 * Math.sin(a2) * scale };
+
+        // Check touch tolerance radius
+        if (Vec2.dist(m, f1_end) < 14) {
+          dragMode = 'f1_end';
+          canvas.style.cursor = 'grabbing';
+        } else if (Vec2.dist(m, f2_end) < 14) {
+          dragMode = 'f2_end';
+          canvas.style.cursor = 'grabbing';
+        }
+      };
+
+      const moveDrag = (e) => {
+        if (!dragMode) {
+          // hover check cursor
+          if (currentSkin === 3 && !crate.animate && activeWalkthroughStep === null) {
+            const m = getCanvasMousePos(e);
+            const scale = 2.0;
+            const cx = crate.x;
+            const cy = crate.y;
+            const alphaRad = crate.alpha * Math.PI / 180;
+            const a1 = Math.PI / 2 + alphaRad / 2;
+            const a2 = Math.PI / 2 - alphaRad / 2;
+
+            const f1_end = { x: cx + crate.f1 * Math.cos(a1) * scale, y: cy - crate.f1 * Math.sin(a1) * scale };
+            const f2_end = { x: cx + crate.f2 * Math.cos(a2) * scale, y: cy - crate.f2 * Math.sin(a2) * scale };
+
+            if (Vec2.dist(m, f1_end) < 14 || Vec2.dist(m, f2_end) < 14) {
+              canvas.style.cursor = 'grab';
+            } else {
+              canvas.style.cursor = 'default';
+            }
+          }
+          return;
+        }
+
+        const m = getCanvasMousePos(e);
+        const cx = crate.x;
+        const cy = crate.y;
+
+        // Calculate new force vector from center
+        const dx = m.x - cx;
+        const dy = -(m.y - cy); // invert canvas Y coordinates
+
+        let newMag = Math.round(Vec2.len({ x: dx, y: dy }) / 2.0); // 1N = 2px
+        if (newMag > 100) newMag = 100;
+        if (newMag < 0) newMag = 0;
+
+        // Angle in math coords (0..360)
+        let angRad = Math.atan2(dy, dx);
+        let angDeg = angRad * 180 / Math.PI;
+        if (angDeg < 0) angDeg += 360;
+
+        if (dragMode === 'f1_end') {
+          // Adjust F1. Angle should be in second quadrant (>90)
+          // If we drag, let's update magnitude, and keep the angle symmetric
+          crate.f1 = newMag;
+          document.getElementById('slider-f1').value = newMag;
+
+          // Symmetrical angle adjustment: angle of F1 relative to vertical axis (90 deg)
+          let delta = Math.abs(angDeg - 90);
+          if (delta > 90) delta = 90;
+          crate.alpha = Math.round(delta * 2);
+          document.getElementById('slider-alpha').value = crate.alpha;
+        } else if (dragMode === 'f2_end') {
+          // Adjust F2. Angle should be in first quadrant (<90)
+          crate.f2 = newMag;
+          document.getElementById('slider-f2').value = newMag;
+
+          let delta = Math.abs(90 - angDeg);
+          if (delta > 90) delta = 90;
+          crate.alpha = Math.round(delta * 2);
+          document.getElementById('slider-alpha').value = crate.alpha;
+        }
+
+        onSliderChange();
+        draw();
+      };
+
+      const endDrag = () => {
+        if (dragMode) {
+          dragMode = null;
+          canvas.style.cursor = 'default';
+        }
+      };
+
+      canvas.addEventListener('mousedown', startDrag);
+      canvas.addEventListener('mousemove', moveDrag);
+      canvas.addEventListener('mouseup', endDrag);
+      canvas.addEventListener('mouseleave', endDrag);
+
+      canvas.addEventListener('touchstart', startDrag, { passive: true });
+      canvas.addEventListener('touchmove', moveDrag, { passive: true });
+      canvas.addEventListener('touchend', endDrag);
+    }
+
+    // --- Action triggering simulation ---
+    function runSimulation() {
+      if (boat.animate || plane.animate || crate.animate || anchor.animate) return;
+
+      const actBtn = document.getElementById('btn-action');
+      actBtn.disabled = true;
+
+      if (currentSkin === 1) {
+        // Boat simulation
+        boat.x = s1Start.x;
+        boat.y = s1Start.y;
+        boat.path = [{ x: boat.x, y: boat.y }];
+        boat.animate = true;
+        boat.t = 0;
+
+        // Disable inputs
+        toggleControlsInputs(true);
+        animateBoat();
+
+      } else if (currentSkin === 2) {
+        // Plane simulation
+        plane.x = s2Start.x;
+        plane.y = s2Start.y;
+        plane.path = [{ x: plane.x, y: plane.y }];
+        plane.animate = true;
+        plane.t = 0;
+
+        toggleControlsInputs(true);
+        animatePlane();
+
+      } else if (currentSkin === 3) {
+        // Crate simulation
+        crate.x = 400;
+        crate.y = 390;
+        crate.path = [{ x: crate.x, y: crate.y }];
+        crate.animate = true;
+        crate.t = 0;
+
+        toggleControlsInputs(true);
+        animateCrate();
+
+      } else if (currentSkin === 4) {
+        // Anchor simulation
+        anchor.animate = true;
+        anchor.t = 0;
+        anchor.yOffset = 0;
+
+        toggleControlsInputs(true);
+        animateAnchor();
+      }
+    }
+
+    function toggleControlsInputs(disable) {
+      document.querySelectorAll('input[type="range"]').forEach(input => input.disabled = disable);
+    }
+
+    // --- Animation Loops ---
+
+    function animateBoat() {
+      if (!boat.animate) return;
+
+      const boatRad = boat.theta * Math.PI / 180;
+      const vt_vec = { x: boat.vt * Math.cos(boatRad), y: -boat.vt * Math.sin(boatRad) };
+      const vd_vec = { x: boat.vd, y: 0 };
+      const vr_vec = Vec2.add(vt_vec, vd_vec);
+
+      // Advance coordinates
+      // Multiply with dt factor
+      const dt = 0.15;
+      boat.x += vr_vec.x * dt;
+      boat.y += vr_vec.y * dt;
+      boat.path.push({ x: boat.x, y: boat.y });
+
+      updateEnvironment();
+      draw();
+
+      // Terminate check when boat reaches bank
+      if (boat.y <= s1RiverTop) {
+        boat.animate = false;
+        toggleControlsInputs(false);
+
+        // Evaluate success
+        const distToB = Math.abs(boat.x - s1Start.x);
+        const infoBar = document.getElementById('info-bar');
+
+        if (distToB <= 15) {
+          // Success!
+          infoBar.className = "info-bar success";
+          document.getElementById('info-val-3').textContent = "Cập bến đúng đích! 🎉";
+          updateCoachText(COACH_SPEECHES[1].success);
+          triggerSuccess("Chúc mừng! Thuyền đã chếch ngược dòng và về đúng bến B an toàn.");
+          challengeCompleted[1] = true;
+          checkUnlockQuiz();
+
+          totalScore += 25;
+          scoresBySkin[1] = 25;
+          document.getElementById('stat-total-score').textContent = totalScore;
+        } else {
+          // Failed
+          infoBar.className = "info-bar error";
+          document.getElementById('info-val-3').textContent = `Lệch hạ lưu ${distToB.toFixed(0)}m`;
+          updateCoachText(COACH_SPEECHES[1].failed);
+          shakeCanvas(canvas);
+
+          document.getElementById('btn-action').disabled = false;
+        }
+        return;
+      }
+
+      requestAnimationFrame(animateBoat);
+    }
+
+    function animatePlane() {
+      if (!plane.animate) return;
+
+      const planeRad = plane.theta * Math.PI / 180;
+      const mb_vec = { x: plane.vmb * Math.cos(planeRad), y: -plane.vmb * Math.sin(planeRad) };
+      const windRad = plane.thetaWind * Math.PI / 180;
+      const wind_vec = { x: plane.vwind * Math.cos(windRad), y: -plane.vwind * Math.sin(windRad) };
+      const vr_vec = Vec2.add(mb_vec, wind_vec);
+
+      // Speed multiplier
+      const speedFac = 0.0025;
+      plane.x += vr_vec.x * speedFac;
+      plane.y += vr_vec.y * speedFac;
+      plane.path.push({ x: plane.x, y: plane.y });
+
+      updateEnvironment();
+      draw();
+
+      // Reached target area or boundary
+      const distToB = Vec2.dist({ x: plane.x, y: plane.y }, s2TargetReal);
+
+      if (distToB < 15) {
+        // Success
+        plane.animate = false;
+        toggleControlsInputs(false);
+
+        const infoBar = document.getElementById('info-bar');
+        infoBar.className = "info-bar success";
+        document.getElementById('info-val-3').textContent = "Hạ cánh thành công! ✈️";
+        updateCoachText(COACH_SPEECHES[2].success);
+        triggerSuccess("Máy bay đã hạ cánh thành công xuống sân bay B nhờ điều hướng bù gió.");
+        challengeCompleted[2] = true;
+        checkUnlockQuiz();
+
+        totalScore += 25;
+        scoresBySkin[2] = 25;
+        document.getElementById('stat-total-score').textContent = totalScore;
+        return;
+      }
+
+      if (plane.x < -30 || plane.x > CW + 30 || plane.y < -30 || plane.y > CH + 30) {
+        // Flew off screen (Failed)
+        plane.animate = false;
+        toggleControlsInputs(false);
+
+        const infoBar = document.getElementById('info-bar');
+        document.getElementById('info-val-3').textContent = "Lệch mục tiêu! ❌";
+        updateCoachText(COACH_SPEECHES[2].failed);
+        shakeCanvas(canvas);
+
+        document.getElementById('btn-action').disabled = false;
+        return;
+      }
+
+      requestAnimationFrame(animatePlane);
+    }
+
+    function animateCrate() {
+      if (!crate.animate) return;
+
+      const alphaRad = crate.alpha * Math.PI / 180;
+      const a1 = Math.PI / 2 + alphaRad / 2;
+      const a2 = Math.PI / 2 - alphaRad / 2;
+
+      const f1_vec = { x: crate.f1 * Math.cos(a1), y: -crate.f1 * Math.sin(a1) };
+      const f2_vec = { x: crate.f2 * Math.cos(a2), y: -crate.f2 * Math.sin(a2) };
+      const fr_vec = Vec2.add(f1_vec, f2_vec);
+
+      // Slide crate
+      const dt = 0.015;
+      crate.x += fr_vec.x * dt;
+      crate.y += fr_vec.y * dt;
+      crate.path.push({ x: crate.x, y: crate.y });
+
+      draw();
+
+      // Distance limits
+      const pathDist = Vec2.dist({ x: crate.x, y: crate.y }, { x: 400, y: 390 });
+
+      if (pathDist >= 200 || crate.x < 100 || crate.x > CW - 100 || crate.y < 100 || crate.y > CH - 100) {
+        crate.animate = false;
+        toggleControlsInputs(false);
+
+        // Evaluate challenge success:
+        // Resultant R must point north (R_x ~ 0, within tolerance), magnitude ~ 80N
+        const r_mag = Vec2.len(fr_vec);
+        const r_dir = Math.atan2(-fr_vec.y, fr_vec.x) * 180 / Math.PI;
+
+        const isNorth = Math.abs(fr_vec.x) < 4; // very small horizontal component
+        const isCorrectForce = Math.abs(r_mag - 80) <= 3; // within 3N tolerance
+
+        const infoBar = document.getElementById('info-bar');
+
+        if (isNorth && isCorrectForce) {
+          infoBar.className = "info-bar success";
+          document.getElementById('info-val-3').textContent = "Hộp đi đúng hướng Bắc 80N! 📦";
+          updateCoachText(COACH_SPEECHES[3].success);
+          triggerSuccess("Kéo hộp thành công! Hai lực bằng nhau góc đối xứng tạo thành hợp lực hướng thẳng về phương Bắc.");
+          challengeCompleted[3] = true;
+          checkUnlockQuiz();
+
+          totalScore += 25;
+          scoresBySkin[3] = 25;
+          document.getElementById('stat-total-score').textContent = totalScore;
+        } else {
+          document.getElementById('info-val-3').textContent = "Chệch hướng / Lực sai ❌";
+          updateCoachText(COACH_SPEECHES[3].failed);
+          shakeCanvas(canvas);
+          document.getElementById('btn-action').disabled = false;
+        }
+        return;
+      }
+
+      requestAnimationFrame(animateCrate);
+    }
+
+    function animateAnchor() {
+      if (!anchor.animate) return;
+
+      const a1 = Math.PI / 2 + (anchor.theta1 * Math.PI / 180);
+      const a2 = Math.PI / 2 - (anchor.theta2 * Math.PI / 180);
+
+      const t1_vec = { x: anchor.t1 * Math.cos(a1), y: -anchor.t1 * Math.sin(a1) };
+      const t2_vec = { x: anchor.t2 * Math.cos(a2), y: -anchor.t2 * Math.sin(a2) };
+      const r_vec = Vec2.add(t1_vec, t2_vec);
+      const r_mag = Vec2.len(r_vec);
+
+      // Target gravity weight
+      const P = 80.0;
+
+      anchor.t += 1;
+
+      // Calculate net vertical force: resultant_Y - P
+      // In canvas coordinates, R points UP (negative Y), P points DOWN (positive Y)
+      // So vertical acceleration is proportional to P - R_mag
+      const f_net_y = r_vec.y + P; // Wait, r_vec.y is negative, P is positive.
+      // Net vertical force is (P - R_mag) downward
+      // If R_mag > P, f_net_y is negative (accelerates up). If R_mag < P, positive (accelerates down)
+
+      // Horizontal imbalance
+      const f_net_x = r_vec.x;
+
+      // Move anchor proportionally
+      anchor.yOffset += f_net_y * 0.015;
+      anchor.x += f_net_x * 0.015;
+
+      // Clamping limits
+      if (anchor.yOffset < -120) anchor.yOffset = -120;
+      if (anchor.yOffset > 150) anchor.yOffset = 150;
+      if (anchor.x < 150) anchor.x = 150;
+      if (anchor.x > CW - 150) anchor.x = CW - 150;
+
+      draw();
+
+      if (anchor.t >= 150) {
+        anchor.animate = false;
+        toggleControlsInputs(false);
+
+        const isVerticallyBalanced = Math.abs(r_mag - P) <= 1.5;
+        const isHorizontallyBalanced = Math.abs(r_vec.x) <= 1.5;
+
+        const infoBar = document.getElementById('info-bar');
+
+        if (isVerticallyBalanced && isHorizontallyBalanced) {
+          anchor.state = 'success';
+          infoBar.className = "info-bar success";
+          document.getElementById('info-val-3').textContent = "Đã cân bằng! ⚓";
+          updateCoachText(COACH_SPEECHES[4].success);
+          triggerSuccess("Neo tàu cân bằng tuyệt đối! Hợp lực căng dây R bằng đúng trọng lực neo P và hướng thẳng lên.");
+          challengeCompleted[4] = true;
+          checkUnlockQuiz();
+
+          totalScore += 25;
+          scoresBySkin[4] = 25;
+          document.getElementById('stat-total-score').textContent = totalScore;
+        } else {
+          anchor.state = 'failed';
+          document.getElementById('info-val-3').textContent = "Mất cân bằng ❌";
+          updateCoachText(COACH_SPEECHES[4].failed);
+          shakeCanvas(canvas);
+          document.getElementById('btn-action').disabled = false;
+        }
+        draw();
+        return;
+      }
+
+      requestAnimationFrame(animateAnchor);
+    }
+
+    // --- Shake canvas UI elements on failure feedback ---
+    function shakeCanvas(targetEl) {
+      targetEl.classList.add('shake');
+      setTimeout(() => targetEl.classList.remove('shake'), 400);
+    }
+
+    // --- Success notification dialog overlay ---
+    function triggerSuccess(descriptionText) {
+      makeConfetti();
+      document.getElementById('success-overlay-desc').textContent = descriptionText;
+      document.getElementById('success-overlay').classList.add('show');
+
+      // Display Next Mission button
+      if (currentSkin < 4) {
+        document.getElementById('btn-next-mission').style.display = 'block';
+      }
+    }
+
+    function closeSuccessOverlay() {
+      document.getElementById('success-overlay').classList.remove('show');
+    }
+
+    function nextMission() {
+      closeSuccessOverlay();
+      if (currentSkin < 4) {
+        switchSkin(currentSkin + 1);
+      }
+    }
+
+    // --- Environment animation loops ---
+    function loopEnvironment() {
+      updateEnvironment();
+      if (!boat.animate && !plane.animate && !crate.animate && !anchor.animate) {
+        draw(); // redraw background changes dynamically
+      }
+      requestAnimationFrame(loopEnvironment);
+    }
+
+    // --- Start up Initialization ---
+    window.addEventListener('load', () => {
+      setupEvents();
+      switchSkin(1); // Default to boat skin
+      loopEnvironment(); // Start waves/wind particles
+    });
+
+  
+    // ===== Báo chiều cao thật cho LMS (PHẦN 7.7) — tự thêm =====
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    const _athenaResizeObserver = new ResizeObserver(() => {
+      clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+    });
+    _athenaResizeObserver.observe(document.body);
+</script>
+</body>
+
+</html>
