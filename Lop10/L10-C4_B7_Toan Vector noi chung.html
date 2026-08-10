@@ -106,8 +106,9 @@
       font-family: 'Be Vietnam Pro', system-ui, sans-serif;
       background: var(--bg);
       color: var(--text);
-font-size: 15px;
-      line-height: 1.6
+      font-size: 18px;
+      line-height: 1.7;
+      overflow-x: hidden
     }
 
     .app {
@@ -454,14 +455,14 @@ font-size: 15px;
     }
 
     .p5-col-observe {
-      background: #FCF9FB;
-      border: 1px solid #FFABC7;
+      background: var(--accent-pale);
+      border: 1px solid var(--accent);
       border-radius: var(--radius-lg) 0 0 var(--radius-lg)
     }
 
     .p5-col-guide {
-      background: #EAF6FC;
-      border: 1px solid #7BB9E5;
+      background: var(--jade-pale);
+      border: 1px solid var(--jade-soft);
       border-radius: 0 var(--radius-lg) var(--radius-lg) 0;
       border-left: none
     }
@@ -609,13 +610,18 @@ font-size: 15px;
     /* ─── CANVAS ─── */
     .sim-canvas-wrap {
       position: relative;
-      background: #e8f4fd;
-      overflow: hidden
+      background: #FDFBF7;
+      overflow: hidden;
+      width: 100%;
+      height: auto !important;
+      aspect-ratio: 16 / 9;
+      min-width: 0;
     }
 
     canvas.sim-canvas {
       display: block;
       width: 100%;
+      height: 100%;
       cursor: crosshair
     }
 
@@ -1201,7 +1207,7 @@ font-size: 15px;
   
     /* Pass 2 (mục E) — vùng chạm tối thiểu 44px cho nút bấm thật trên mobile.
        Không đụng desktop, không thu nhỏ phần tử nào — chỉ nới ra nếu đang < 44px. */
-    @media (max-width: 767px) {
+    @media (max-width: 1024px) {
       button, .btn, a.btn, input[type="button"], input[type="submit"] {
         min-height: 44px;
       }
@@ -1224,8 +1230,8 @@ font-size: 15px;
     .collapsible-panel.collapsed .cp-body { max-height: 0; opacity: 0; margin-top: 0; }
     .collapsible-panel.collapsed .cp-chevron { transform: rotate(180deg); }
 
-    /* 3 Breakpoints Tuning: 375px (Mobile Portrait), 768px - 1024px (iPad/Tablet), 1280px+ (Desktop) */
-    @media (max-width: 480px) {
+    /* Mobile: không tràn ngang, canvas nằm sớm trong màn hình đầu. */
+    @media (max-width: 640px) {
       .main { padding: 0.75rem 0.5rem; }
       .sb-top { padding: 0.75rem 0.75rem 0.5rem; }
       .sb-logo-sub { display: none; }
@@ -1244,18 +1250,22 @@ font-size: 15px;
       .situ-tab { flex: 1 0 auto; min-width: 90px; white-space: nowrap; }
       .stab { padding: 4px 8px; font-size: 10px; flex: 0 0 auto; white-space: nowrap; }
       .p5-info-panel { flex-direction: column; }
-      .p5-col-observe { border-radius: var(--radius-lg) var(--radius-lg) 0 0; border-right: 1px solid #FFABC7; border-bottom: none; }
-      .p5-col-guide { border-radius: 0 0 var(--radius-lg) var(--radius-lg); border-left: 1px solid #7BB9E5; }
+      .p5-col-observe { border-radius: var(--radius-lg) var(--radius-lg) 0 0; border-right: 1px solid var(--accent); border-bottom: none; }
+      .p5-col-guide { border-radius: 0 0 var(--radius-lg) var(--radius-lg); border-left: 1px solid var(--jade-soft); }
       #s4-summary-modal .modal-box div[style*="repeat(3, 1fr)"] { grid-template-columns: 1fr !important; }
+      .sim-wrap { min-height: 0; }
+      .sim-canvas-wrap { aspect-ratio: 4 / 3; }
+      .p5-explain { padding: 0.8rem 0.9rem; }
+      .p5-controls { overflow-x: hidden; }
+      .modal-box { width: calc(100% - 16px); max-height: calc(100svh - 16px); }
     }
 
-    /* iPad & iPad Pro (768px - 1279px): mở rộng tràn viền đẹp mắt, không thừa lề */
+    /* iPad/tablet: tận dụng chiều ngang nhưng không khóa chiều cao canvas. */
     @media (min-width: 768px) and (max-width: 1279px) {
-      .main { max-width: 100%; width: 100%; padding: 1.5rem 2rem; }
-      .sb-group, .sb-dict { max-width: 100%; width: 100%; padding: 0.6rem 2rem; }
+      .main { max-width: 1024px; width: 100%; padding: 1.25rem 1.5rem; }
+      .sb-group, .sb-dict { max-width: 1024px; width: 100%; padding: 0.6rem 1.5rem; }
       .mod-item { flex: 1; }
-      .sim-wrap { min-height: 520px; }
-      .sim-canvas-wrap { height: 420px !important; }
+      .sim-wrap { min-height: 0; }
     }
 
     /* Desktop (≥ 1280px) */
@@ -1387,7 +1397,7 @@ font-size: 15px;
             <span style="color:rgba(255,255,255,.4);font-size:12px;margin-left:8px" id="s1-level-label">Level 1/5</span>
           </div>
 
-          <div class="sim-canvas-wrap" style="height:360px">
+          <div class="sim-canvas-wrap">
             <canvas class="sim-canvas" id="canvas1"></canvas>
             <div class="tooltip-box" id="tip1"></div>
           </div>
@@ -1471,7 +1481,7 @@ font-size: 15px;
             <span style="color:rgba(255,255,255,.4);font-size:12px;margin-left:8px" id="s2-level-label">Level 1/5</span>
           </div>
 
-          <div class="sim-canvas-wrap" style="height:340px">
+          <div class="sim-canvas-wrap">
             <canvas class="sim-canvas" id="canvas2"></canvas>
             <div class="tooltip-box" id="tip2"></div>
           </div>
@@ -1591,7 +1601,7 @@ font-size: 15px;
             <span class="mission-score" id="s3-mscore">0/0</span>
           </div>
 
-          <div class="sim-canvas-wrap" style="height:360px">
+          <div class="sim-canvas-wrap">
             <canvas class="sim-canvas" id="canvas3"></canvas>
             <div class="tooltip-box" id="tip3"></div>
           </div>
@@ -1681,12 +1691,12 @@ font-size: 15px;
           </div>
 
           <div class="situ-tabs">
-            <div class="situ-tab active" id="st-1" onclick="setSitu(1)">⚖️ Cân bằng</div>
-            <div class="situ-tab" id="st-2" onclick="setSitu(2)">🚀 Bay lên</div>
-            <div class="situ-tab" id="st-3" onclick="setSitu(3)">🔬 Tự do</div>
+            <div class="situ-tab active" id="st-1" onclick="setSitu(1)"><i class="ti ti-scale"></i> Cân bằng</div>
+            <div class="situ-tab" id="st-2" onclick="setSitu(2)"><i class="ti ti-arrow-up"></i> Bay lên</div>
+            <div class="situ-tab" id="st-3" onclick="setSitu(3)"><i class="ti ti-adjustments"></i> Tự do</div>
           </div>
 
-          <div class="sim-canvas-wrap" style="height:360px">
+          <div class="sim-canvas-wrap">
             <canvas class="sim-canvas" id="canvas4"></canvas>
             <div class="tooltip-box" id="tip4"></div>
           </div>
@@ -1880,10 +1890,20 @@ font-size: 15px;
 
     // Pass 2 (mục C) — toggle thu gọn/mở rộng panel nội dung dài, mặc định thu gọn trên
     // mobile khi tải trang.
-    function toggleCollapsible(id) { document.getElementById(id).classList.toggle('collapsed'); }
+    function toggleCollapsible(id) {
+      const panel = document.getElementById(id);
+      if (!panel) return;
+      const collapsed = panel.classList.toggle('collapsed');
+      const button = panel.querySelector('.cp-toggle');
+      if (button) button.setAttribute('aria-expanded', String(!collapsed));
+      requestAnimationFrame(reportHeight);
+    }
     document.addEventListener('DOMContentLoaded', () => {
       document.querySelectorAll('.collapsible-panel').forEach(p => {
-        if (window.matchMedia('(max-width: 768px)').matches) p.classList.add('collapsed');
+        const collapsed = window.matchMedia('(max-width: 768px)').matches;
+        p.classList.toggle('collapsed', collapsed);
+        const button = p.querySelector('.cp-toggle');
+        if (button) button.setAttribute('aria-expanded', String(!collapsed));
       });
     });
 
@@ -3623,7 +3643,7 @@ font-size: 15px;
         ctx.fillStyle = 'rgba(193, 95, 60,0.1)'; ctx.beginPath(); ctx.arc(pkx, pky, 30, 0, Math.PI * 2); ctx.fill();
         ctx.strokeStyle = 'rgba(193, 95, 60,0.5)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(pkx, pky, 30, 0, Math.PI * 2); ctx.stroke();
         drawArrow(ctx, pkx, pky - 18, pkx, pky + 18, '#C15F3C', 3);
-        ctx.fillStyle = '#C15F3C'; ctx.font = 'bold 11px Courier New'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillStyle = '#C15F3C'; ctx.font = 'bold 11px "JetBrains Mono", monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
         drawVecLabel(ctx, pkx, pky + 22, 'P', ctx.fillStyle, 13);
         ctx.fillStyle = 'rgba(100,30,30,0.6)'; ctx.font = '9px Be Vietnam Pro';
         ctx.fillText('Trọng lực', pkx, pky + 34);
@@ -3638,7 +3658,7 @@ font-size: 15px;
         ctx.fillStyle = 'rgba(45, 139, 111,0.1)'; ctx.beginPath(); ctx.arc(fkx, fky, 30, 0, Math.PI * 2); ctx.fill();
         ctx.strokeStyle = 'rgba(45, 139, 111,0.5)'; ctx.lineWidth = 1.5; ctx.beginPath(); ctx.arc(fkx, fky, 30, 0, Math.PI * 2); ctx.stroke();
         drawArrow(ctx, fkx, fky + 18, fkx, fky - 18, '#2D8B6F', 3);
-        ctx.fillStyle = '#2D8B6F'; ctx.font = 'bold 11px Courier New'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
+        ctx.fillStyle = '#2D8B6F'; ctx.font = 'bold 11px "JetBrains Mono", monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'top';
         drawVecLabel(ctx, fkx, fky - 32, 'F', ctx.fillStyle, 13);
         ctx.fillStyle = 'rgba(20,80,50,0.6)'; ctx.font = '9px Be Vietnam Pro';
         ctx.fillText('Lực đẩy khí', fkx, fky + 22);
@@ -3884,10 +3904,26 @@ font-size: 15px;
       LMS().resize({ height: h });
     }
     window.addEventListener('load', reportHeight);
-    const _athenaResizeObserver = new ResizeObserver(() => {
-      clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
-    });
-    _athenaResizeObserver.observe(document.body);
+    if (typeof ResizeObserver !== 'undefined') {
+      const _athenaResizeObserver = new ResizeObserver(() => {
+        clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+      });
+      _athenaResizeObserver.observe(document.body);
+
+      let _canvasResizeTimer = null;
+      const _canvasResizeObserver = new ResizeObserver(() => {
+        clearTimeout(_canvasResizeTimer);
+        _canvasResizeTimer = setTimeout(() => {
+          if (currentStage === 1) resizeStage1();
+          if (currentStage === 2) resizeStage2();
+          if (currentStage === 3) resizeStage3();
+          if (currentStage === 4) resizeStage4();
+        }, 30);
+      });
+      document.querySelectorAll('.sim-canvas-wrap').forEach(wrap => _canvasResizeObserver.observe(wrap));
+    } else {
+      setInterval(reportHeight, 800);
+    }
 </script>
 </body>
 

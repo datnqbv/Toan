@@ -97,14 +97,26 @@
     }
 
     /* ── MAIN LAYOUT ── */
-    .app-body {
-      max-width: 1140px;
+    .intro-text {
       width: 100%;
-      margin: 16px auto;
-      padding: 0 16px 40px;
+      padding: 0.9rem 1.2rem;
+      background: var(--jade-pale);
+      border: 1px solid var(--jade-soft);
+      border-left: 4px solid var(--jade-deep);
+      border-radius: var(--radius-lg);
+      font-size: 14px;
+      color: var(--ink-2);
+      line-height: 1.65;
+    }
+
+    .app-body {
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 1rem 1rem 30px;
       display: flex;
       flex-direction: column;
-      gap: 16px;
+      gap: 14px;
       flex: 1;
     }
 
@@ -116,7 +128,8 @@
       box-shadow: var(--shadow);
       display: flex;
       flex-direction: column;
-      min-height: 600px;
+      min-height: 560px;
+      flex: 1;
     }
 
     .sim-body {
@@ -129,6 +142,7 @@
     /* ── LEFT CANVAS PANEL ── */
     .sim-left {
       flex: 1;
+      min-width: 0;
       padding: 16px;
       display: flex;
       flex-direction: column;
@@ -139,6 +153,8 @@
 
     .canvas-wrap {
       flex: 1;
+      min-width: 0;
+      aspect-ratio: 10 / 7;
       position: relative;
       border: 1.5px solid var(--border);
       border-radius: var(--radius-sm);
@@ -205,6 +221,7 @@
     /* ── RIGHT CONTROL SIDEBAR ── */
     .sim-right {
       width: 350px;
+      min-width: 0;
       flex-shrink: 0;
       border-left: 1.5px solid var(--border-teal);
       padding: 20px;
@@ -296,6 +313,8 @@
       border-radius: var(--radius);
       padding: 12px;
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.02);
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
     }
 
     .vector-table {
@@ -354,9 +373,9 @@
     }
 
     .math-font {
-      font-family: 'Courier New', monospace;
+      font-family: 'JetBrains Mono', monospace;
       font-weight: 700;
-      font-size: 13px;
+      font-size: 12px;
     }
 
     /* Controls Group */
@@ -502,24 +521,40 @@
       display: none !important;
     }
 
-    /* 3 Breakpoints Tuning: 375px (Mobile Portrait), 768px (Tablet), 1280px (Desktop) */
-    @media (max-width: 1023px) {
-      .app-body { padding: 0 12px 30px; }
-      .sim-body { flex-direction: column; }
-      .sim-left { order: 1; padding: 12px; }
-      .canvas-wrap { min-height: 380px; }
-      .sim-right { order: 2; width: 100%; border-left: none; border-top: 1.5px solid var(--paper-line); padding: 14px; }
-      .sim-card { min-height: 480px; }
+    /* Tablet/mobile: canvas trước, bảng điều khiển sau (Design 3.6). */
+    @media (max-width: 1024px) {
+      .app-body { max-width: 100%; padding: 12px 12px 28px; }
+      .sim-card { min-height: 0; overflow: visible; }
+      .sim-body { flex-direction: column; overflow: visible; }
+      .sim-left { order: 1; flex: none; width: 100%; padding: 12px; }
+      .canvas-wrap { flex: none; width: 100%; min-height: 0; }
+      .sim-right {
+        order: 2; width: 100%;
+        border-left: 0; border-top: 1.5px solid var(--border-teal);
+        padding: 14px; overflow: visible;
+      }
+      .btn-action, .btn-toggle-op { min-height: 44px; }
+      .btn-canvas-zoom { width: 44px; height: 44px; }
     }
 
-    @media (max-width: 480px) {
-      .app-body { padding: 0 6px 20px; }
+    /* Điện thoại: giữ canvas trong màn hình đầu và không tràn ngang ở 375px. */
+    @media (max-width: 640px) {
+      .app-body { padding: 8px 6px 20px; gap: 10px; }
+      .intro-text { padding: 10px 12px; font-size: 13px; }
       .sim-left { padding: 8px; }
-      .canvas-wrap { min-height: 320px; }
       .sim-right { padding: 10px; gap: 12px; }
-      .btn-action, .btn-toggle-op { min-height: 44px; }
+      .canvas-zoom-controls { top: 8px; right: 8px; }
+      .coord-bar { max-width: calc(100% - 12px); overflow: hidden; }
       .progress-wrap { padding: 6px 8px; }
       .prog-step-light { font-size: 8.5px; }
+      .vector-card { padding: 10px; }
+      .vector-table { min-width: 360px; }
+    }
+
+    /* Tablet ngang rộng hơn iPad 1024 vẫn dùng hai cột, nhưng ưu tiên không gian canvas. */
+    @media (min-width: 1025px) and (max-width: 1279px) {
+      .app-body { max-width: 100%; padding: 16px 20px 30px; }
+      .sim-right { width: 320px; padding: 16px; }
     }
   </style>
 </head>
@@ -528,6 +563,9 @@
 
   <!-- APP BODY -->
   <div class="app-body">
+    <div class="intro-text">
+      Bạn sẽ khám phá trực quan quy tắc cộng đầu-đuôi, quy tắc hiệu cùng gốc và kiểm tra dự đoán kết quả tổng/hiệu 2 vectơ trên mặt phẳng toạ độ.
+    </div>
     <div class="sim-card">
 
       <!-- HEADER -->
@@ -671,7 +709,7 @@
       const rect = canvasWrap.getBoundingClientRect();
       CW = rect.width;
       CH = rect.height;
-      if (CW === 0 || CH === 0) return;
+      if (CW < 2 || CH < 2) return;
 
       const dpr = window.devicePixelRatio || 1;
       PW = Math.round(CW * dpr);
@@ -793,7 +831,7 @@
       }
 
       // Axis ticks and numbers
-      ctx.font = 'bold 11px Courier New';
+      ctx.font = 'bold 11px "JetBrains Mono", monospace';
       ctx.fillStyle = 'rgba(13, 59, 46, 0.6)';
       ctx.textAlign = 'center'; ctx.textBaseline = 'top';
       for (let x = Math.ceil(state.vXMin / step) * step; x <= state.vXMax; x += step) {
@@ -821,7 +859,7 @@
       }
 
       // Axis labels
-      ctx.font = 'bold 12px Courier New';
+      ctx.font = 'bold 12px "JetBrains Mono", monospace';
       if (y0 >= 0 && y0 <= CH) {
         ctx.textAlign = 'center'; ctx.textBaseline = 'top';
         ctx.fillText('x', CW - 10, y0 + 8);
@@ -877,8 +915,8 @@
 
       ctx.save();
       ctx.fillStyle = color;
-      ctx.font = "bold 13px Courier New";
-      ctx.textAlign = "center";
+      ctx.font = 'bold 13px "JetBrains Mono", monospace';
+      ctx.textAlign = 'center';
       ctx.textBaseline = "middle";
 
       // Background outline box
@@ -1721,6 +1759,10 @@
     window.addEventListener('resize', () => {
       clearTimeout(roTimer);
       roTimer = setTimeout(resizeCanvas, 30);
+    });
+
+    window.addEventListener('orientationchange', () => {
+      requestAnimationFrame(() => requestAnimationFrame(resizeCanvas));
     });
   </script>
 </body>
