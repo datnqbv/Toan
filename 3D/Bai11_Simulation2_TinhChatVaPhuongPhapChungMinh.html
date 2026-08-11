@@ -1,0 +1,1912 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bài 11 · Tính chất hai đường thẳng song song</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+<style>
+:root {
+  --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC;
+  --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
+  --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+  --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F;
+  --jade-text:#1B5E48; --jade-soft:#A9D0BE; --jade-pale:#DCEAE1;
+  --sage:#A8C9B8; --sage-deep:#7CA792; --sage-text:#46685A; --sage-pale:#E1ECE4;
+  --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+  --correct:#2D8B6F; --correct-bg:#DCEAE1;
+  --wrong:#C15F3C; --wrong-bg:#F3E2D6;
+  --warning:#C58A2E; --warning-bg:#F5E7CB;
+  --info:#4E7F92; --info-bg:#DCE7EB;
+  --white:#FFFFFF;
+  --green:var(--correct); --green-light:var(--correct-bg);
+  --red:var(--wrong); --red-light:var(--wrong-bg);
+  --amber:var(--warning); --amber-light:var(--warning-bg);
+  --blue:var(--info); --blue-light:var(--info-bg);
+  --surface:var(--white); --border:var(--paper-line);
+  --text:var(--ink); --text-2:var(--ink-2); --sub:var(--ink-3);
+  --radius:12px;
+  --navy:var(--jade-dark); --teal:var(--jade-deep); --bg:var(--cream);
+  --canvas-bg:#0a1628;
+}
+* { box-sizing: border-box; }
+html, body { margin: 0; padding: 0; }
+body {
+  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.6;
+  color: var(--text);
+  background: var(--bg);
+  display: flex;
+  flex-direction: column;
+}
+
+/* ---------- HEADER ---------- */
+header {
+  background: linear-gradient(135deg, var(--jade-dark) 0%, var(--jade-deep) 100%);
+  color: var(--white);
+  padding: 14px 24px 13px;
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  flex-shrink: 0;
+}
+.header-badge {
+  background: rgba(255,255,255,0.15);
+  border: 1px solid rgba(255,255,255,0.25);
+  border-radius: 20px;
+  padding: 4px 12px;
+  font-size: 11px; font-weight: 600;
+  letter-spacing: .06em;
+  text-transform: uppercase;
+  white-space: nowrap;
+}
+.header-progress { display: flex; gap: 5px; margin-left: auto; }
+.hp-dot {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: rgba(255,255,255,0.15); border: 1px solid rgba(255,255,255,0.25);
+  display: flex; align-items: center; justify-content: center;
+  font-size: 10.5px; font-weight: 700; color: rgba(255,255,255,.6);
+}
+.hp-dot.done { background: var(--teal); border-color: var(--teal); color: var(--white); }
+.hp-dot.active { background: var(--white); border-color: var(--white); color: var(--navy); }
+
+/* ---------- MAIN LAYOUT ---------- */
+.main { display: flex; min-height: 0; height: calc(100vh - 59px); }
+.canvas-wrap {
+  flex: 1;
+  position: relative;
+  background: var(--canvas-bg);
+  min-height: 400px;
+}
+#three-canvas-container { position: absolute; inset: 0; }
+.canvas-hint {
+  position: absolute; bottom: 14px; left: 50%;
+  transform: translateX(-50%);
+  background: rgba(255,255,255,0.10);
+  color: rgba(255,255,255,0.75);
+  border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 20px;
+  padding: 5px 14px;
+  font-size: 11.5px;
+  pointer-events: none; white-space: nowrap;
+  z-index: 5;
+}
+#label-layer {
+  position: absolute; top: 0; left: 0;
+  width: 100%; height: 100%;
+  pointer-events: none; overflow: hidden;
+  z-index: 4;
+}
+.pt-label {
+  position: absolute; top: 0; left: 0;
+  font-size: 16px; font-weight: 700; color: var(--white);
+  text-shadow: 0 1px 3px rgba(0,0,0,0.8), 0 0 8px rgba(0,0,0,0.5);
+  white-space: nowrap; will-change: transform;
+}
+.pt-label.small { font-size: 12px; }
+.pt-label.hidden-mark { color: #fbbf24; font-size: 15px; letter-spacing: 2px; }
+
+/* ---------- HUD ---------- */
+#hud {
+  position: absolute; top: 14px; left: 50%; transform: translateX(-50%);
+  background: rgba(10,22,40,0.88); color: var(--white);
+  padding: 8px 18px; border-radius: 20px;
+  font-size: 13px; font-weight: 600;
+  z-index: 6; display: none; white-space: nowrap;
+  border: 1px solid rgba(255,255,255,0.12);
+}
+#hud.analyzing { color: rgba(255,255,255,0.6); font-style: italic; font-weight: 500; }
+#hud.ok { background: rgba(27,140,90,0.92); }
+#hud.no { background: rgba(198,40,40,0.85); }
+
+/* ---------- NOTEBOOK (Sổ tay chiến lược) ---------- */
+#notebook {
+  position: absolute; top: 14px; right: 14px; z-index: 20;
+  display: flex; flex-direction: column; align-items: flex-end;
+}
+#notebook-pill {
+  background: rgba(10,22,40,0.9); color: var(--white); border: 1px solid rgba(255,255,255,0.2);
+  border-radius: 20px; padding: 7px 14px; font-size: 12px; font-weight: 700;
+  cursor: pointer; display: flex; align-items: center; gap: 6px;
+  transition: transform .2s;
+}
+#notebook-pill.pulse { animation: pillPulse 1.4s ease-in-out 2; }
+@keyframes pillPulse { 0%,100%{ transform: scale(1); } 50%{ transform: scale(1.08); box-shadow: 0 0 0 6px rgba(14,122,110,.35);} }
+#notebook-panel {
+  margin-top: 8px; width: 250px; max-height: 60vh; overflow-y: auto;
+  background: rgba(13,23,40,0.97); border: 1px solid rgba(255,255,255,0.15);
+  border-radius: 12px; padding: 10px; display: none; gap: 8px; flex-direction: column;
+}
+#notebook-panel.open { display: flex; }
+.nb-card {
+  background: rgba(255,255,255,0.06); border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 9px; padding: 9px 10px; color: #e6edf3;
+}
+.nb-card .nb-icon { font-size: 15px; margin-right: 4px; }
+.nb-card .nb-l1 { font-size: 11.5px; font-weight: 600; color: #9fc9ff; margin-bottom: 3px; }
+.nb-card .nb-l2 { font-size: 11.5px; font-weight: 700; color: #fde68a; margin-bottom: 3px; }
+.nb-card .nb-l3 { font-size: 11px; color: rgba(255,255,255,.65); font-family: 'Consolas', monospace; }
+.nb-card.draggable { cursor: grab; touch-action: none; user-select: none; }
+.nb-card.draggable:active { cursor: grabbing; }
+.nb-card.tap-select { cursor: pointer; touch-action: manipulation; }
+.nb-card.selected { border-color: var(--jade-soft); background: rgba(45,139,111,.22); box-shadow: 0 0 0 2px rgba(45,139,111,.2); }
+.nb-card.used { opacity: .35; }
+.nb-empty { color: rgba(255,255,255,.5); font-size: 12px; text-align: center; padding: 10px 0; }
+
+.card-drag-clone {
+  position: fixed; z-index: 999; pointer-events: none;
+  width: 220px; opacity: .95; transform: translate(-50%,-50%) scale(1.03);
+}
+
+/* ---------- DROP ZONE (Module 4) ---------- */
+#drop-zone {
+  position: absolute; left: 50%; bottom: 50px; transform: translateX(-50%);
+  width: 78%; max-width: 460px; min-height: 70px;
+  border: 2px dashed rgba(255,255,255,0.3); border-radius: 14px;
+  display: none; align-items: center; justify-content: center;
+  color: rgba(255,255,255,0.55); font-size: 12.5px; font-weight: 600;
+  z-index: 8; text-align: center; padding: 10px; pointer-events: none;
+}
+#drop-zone.show { display: flex; }
+#drop-zone.hover { border-color: var(--jade-soft); background: rgba(45,139,111,0.15); color: var(--white); }
+#drop-zone.reject { border-color: var(--wrong); background: rgba(193,95,60,0.15); }
+#drop-zone.ready { border-color: var(--jade-soft); background: rgba(45,139,111,0.2); color: var(--white); }
+
+/* ---------- SIDEBAR ---------- */
+.sidebar {
+  width: 310px; flex-shrink: 0;
+  background: var(--surface);
+  border-left: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow-y: auto;
+}
+.step-tabs { display: flex; border-bottom: 1px solid var(--border); flex-shrink: 0; }
+.step-tab {
+  flex: 1; padding: 10px 3px;
+  font-size: 10.5px; font-weight: 600;
+  text-align: center; cursor: pointer;
+  color: var(--sub);
+  border-bottom: 2.5px solid transparent;
+  transition: all .2s;
+  letter-spacing: .03em; text-transform: uppercase;
+}
+.step-tab.active { color: var(--navy); border-bottom-color: var(--teal); background: var(--cream-2); }
+.step-tab.locked { color: var(--ink-faint); cursor: not-allowed; }
+.step-body { padding: 16px 16px 12px; flex: 1; }
+.step-panel { display: none; }
+.step-panel.active { display: block; }
+
+.step-title { font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 10px; display: flex; align-items: center; gap: 8px; }
+.step-num {
+  width: 22px; height: 22px; border-radius: 50%;
+  background: var(--teal); color: var(--white); font-size: 11px; font-weight: 700;
+  display: flex; align-items: center; justify-content: center; flex-shrink: 0;
+}
+.step-desc { font-size: 12.5px; line-height: 1.65; color: var(--text-2); margin-bottom: 12px; }
+.step-desc b { color: var(--navy); }
+
+.info-box { border-radius: var(--radius); padding: 11px 12px; display: flex; gap: 9px; margin-bottom: 10px; font-size: 12px; line-height: 1.6; }
+.info-box .ib-icon { font-size: 15px; flex-shrink: 0; margin-top: 1px; }
+.info-box .ib-title { font-weight: 700; font-size: 11.5px; margin-bottom: 3px; }
+.ib-blue  { background: var(--info-bg); border: 1px solid var(--info); color: var(--info); }
+.ib-teal  { background: var(--jade-pale); border: 1px solid var(--jade-soft); color: var(--jade-text); }
+.ib-gold  { background: var(--warning-bg); border: 1px solid var(--warning); color: var(--accent-text); }
+.ib-red   { background: var(--wrong-bg); border: 1px solid var(--wrong); color: var(--wrong); }
+.ib-green { background: var(--correct-bg); border: 1px solid var(--correct); color: var(--jade-text); }
+
+.conclusion { background: linear-gradient(135deg, var(--jade-dark), var(--jade-deep)); color: var(--white); border-radius: var(--radius); padding: 13px 14px; font-size: 12.5px; line-height: 1.65; margin-top: 4px; }
+.conclusion strong { color: var(--jade-pale); }
+
+.btn { width: 100%; padding: 10px; background: var(--navy); color: var(--white); border: none; border-radius: 8px; font-size: 13px; font-weight: 600; cursor: pointer; margin-top: 8px; font-family: inherit; transition: background .2s, opacity .2s; }
+.btn:hover { background: var(--jade-deep); }
+.btn:disabled { opacity: .4; cursor: not-allowed; }
+.btn.secondary { background: var(--cream-2); color: var(--navy); }
+.btn.secondary:hover { background: var(--cream-3); }
+.btn.teal { background: var(--teal); }
+.btn.teal:hover { background: var(--jade-dark); }
+
+.opt-btn {
+  width: 100%; text-align: left; padding: 10px 12px; margin-bottom: 7px;
+  border: 1.5px solid var(--border); border-radius: 9px; background: var(--surface);
+  font-size: 12.5px; font-weight: 600; color: var(--text-2); cursor: pointer;
+  font-family: inherit; transition: all .15s;
+}
+.opt-btn:hover { border-color: var(--teal); background: var(--jade-pale); }
+.opt-btn.correct { border-color: var(--green); background: var(--green-light); color: var(--jade-text); }
+.opt-btn.wrong { border-color: var(--red); background: var(--red-light); color: var(--wrong); animation: shake .3s; }
+.opt-btn:disabled { cursor: default; }
+@keyframes shake { 0%,100%{transform:translateX(0);} 25%{transform:translateX(-4px);} 75%{transform:translateX(4px);} }
+
+.hint-box { font-size: 12px; background: var(--warning-bg); border: 1px solid var(--warning); color: var(--accent-text); border-radius: 9px; padding: 9px 11px; margin-top: 6px; display: none; }
+.hint-box.show { display: block; }
+
+.attempt-bar-wrap { margin: 10px 0; }
+.attempt-bar-track { height: 6px; border-radius: 4px; background: var(--paper-line-2); overflow: hidden; }
+.attempt-bar-fill { height: 100%; width: 0%; background: linear-gradient(90deg,var(--accent),var(--jade)); transition: width .25s; }
+.attempt-bar-label { font-size: 10.5px; color: var(--sub); margin-top: 4px; text-transform: uppercase; letter-spacing: .04em; }
+
+.reflect-box { background: var(--cream-2); border: 1px dashed var(--paper-line-2); border-radius: 9px; padding: 10px 11px; font-size: 12px; color: var(--text-2); margin: 10px 0; display: none; }
+.reflect-box.show { display: block; }
+.reflect-box b { color: var(--navy); }
+
+.round-progress { display: flex; gap: 5px; margin-bottom: 10px; }
+.round-dot { flex: 1; height: 5px; border-radius: 3px; background: var(--paper-line-2); }
+.round-dot.done { background: var(--teal); }
+.round-dot.current { background: var(--accent); }
+
+.mcq-source { font-size: 12.5px; background: var(--cream-2); border-radius: 9px; padding: 10px 11px; margin-bottom: 10px; color: var(--text-2); border-left: 3px solid var(--teal); }
+
+.hint-touch, .sticky-indicator { display: none; }
+.sticky-indicator {
+  position: absolute; top: 10px; right: 10px; z-index: 30;
+  padding: 5px 9px; border-radius: 999px;
+  background: rgba(45,139,111,.92); color: var(--white);
+  font-size: 10.5px; font-weight: 700; pointer-events: none;
+  box-shadow: 0 3px 10px rgba(10,22,40,.25);
+}
+
+@media (min-width: 769px) and (max-width: 1024px) {
+  body { display: block; overflow-y: auto; }
+  .main { flex-direction: column; height: auto; overflow: visible; }
+  .canvas-wrap {
+    position: sticky; top: 0; z-index: 20; flex: none;
+    height: clamp(380px,46vh,460px); min-height: 380px;
+    box-shadow: 0 8px 22px rgba(10,22,40,.18);
+    transition: height .25s ease, min-height .25s ease, box-shadow .25s ease;
+  }
+  body.canvas-is-sticky .canvas-wrap { height: 320px; min-height: 320px; box-shadow: 0 10px 28px rgba(10,22,40,.3); }
+  body.canvas-is-sticky .sticky-indicator { display: block; }
+  #drop-zone { pointer-events: auto; cursor: pointer; touch-action: manipulation; }
+  .sidebar { width: 100%; height: auto; overflow: visible; border-left: none; border-top: 1px solid var(--border); }
+}
+
+@media (any-pointer: coarse) and (max-width: 1400px) {
+  .canvas-hint { width: max-content; max-width: calc(100% - 24px); white-space: normal; text-align: center; }
+  .hint-desktop { display: none; }
+  .hint-touch { display: inline; }
+  .btn, .opt-btn, .step-tab, #notebook-pill { min-height: 44px; }
+  #drop-zone { pointer-events: auto; cursor: pointer; touch-action: manipulation; }
+}
+
+@media (max-width: 768px) {
+  body { display: block; overflow-y: auto; }
+  .main { flex-direction: column; height: auto; overflow: visible; }
+  .canvas-wrap {
+    position: sticky; top: 0; z-index: 20; flex: none;
+    height: clamp(260px,42vh,320px); min-height: 260px;
+    box-shadow: 0 8px 22px rgba(10,22,40,.18);
+    transition: height .25s ease, min-height .25s ease, box-shadow .25s ease;
+  }
+  body.canvas-is-sticky .canvas-wrap { height: 220px; min-height: 220px; box-shadow: 0 10px 28px rgba(10,22,40,.3); }
+  body.canvas-is-sticky .sticky-indicator { display: block; }
+  .sidebar { width: 100%; height: auto; overflow: visible; border-left: none; border-top: 1px solid var(--border); }
+  #notebook { left: 10px; right: 10px; top: 10px; }
+  #notebook-pill { min-height: 44px; padding: 9px 14px; }
+  #notebook-panel { width: 100%; max-height: min(170px, 48vh); }
+  #drop-zone { bottom: 14px; width: calc(100% - 28px); min-height: 58px; pointer-events: auto; cursor: pointer; touch-action: manipulation; }
+  #hud { max-width: calc(100% - 28px); white-space: normal; text-align: center; }
+}
+/* ---------- BOSS MODAL ---------- */
+#boss-overlay {
+  position: fixed; inset: 0; background: rgba(4,10,20,0.75); z-index: 100;
+  display: none; align-items: center; justify-content: center; padding: 20px;
+}
+#boss-overlay.show { display: flex; }
+#boss-modal {
+  background: var(--surface); border-radius: 16px; padding: 26px 26px 22px; max-width: 440px; width: 100%;
+  box-shadow: 0 20px 60px rgba(0,0,0,.4);
+}
+#boss-modal .boss-badge { display: inline-block; background: var(--navy); color: var(--white); font-size: 11px; font-weight: 700; padding: 4px 11px; border-radius: 14px; letter-spacing: .05em; text-transform: uppercase; margin-bottom: 12px; }
+#boss-modal h2 { font-size: 16px; color: var(--navy); margin: 0 0 14px; line-height: 1.5; }
+#boss-final { display: none; }
+#boss-final.show { display: block; }
+</style>
+</head>
+<body>
+
+<header>
+  <div class="header-badge">🧊 Hình học không gian</div>
+  <div class="header-progress" id="header-progress"></div>
+</header>
+
+<div class="main">
+  <div class="canvas-wrap" id="canvas-wrap">
+    <div id="three-canvas-container"></div>
+    <div id="label-layer"></div>
+    <div id="hud"></div>
+
+    <div id="notebook">
+      <div id="notebook-pill" onclick="toggleNotebook()">📖 Sổ tay chiến lược <span id="nb-count">(0)</span></div>
+      <div id="notebook-panel"></div>
+    </div>
+
+    <div id="drop-zone" role="button" tabindex="0" onclick="m4SubmitSelectedCard()" onkeydown="if(event.key==='Enter'||event.key===' '){event.preventDefault();m4SubmitSelectedCard();}">Kéo 1 thẻ chiến lược từ Sổ tay rồi thả vào đây</div>
+
+    <div class="canvas-hint">
+      <span class="hint-desktop">🖱 Kéo để xoay · Cuộn để zoom</span>
+      <span class="hint-touch">👆 Một ngón để xoay · Chụm/mở để zoom</span>
+    </div>
+    <div class="sticky-indicator">📌 Hình 3D đang theo dõi</div>
+  </div>
+
+  <div class="sidebar">
+    <div class="step-tabs" id="step-tabs">
+      <div class="step-tab active" data-step="1">Module 1</div>
+      <div class="step-tab locked" data-step="2">Module 2</div>
+      <div class="step-tab locked" data-step="3">Module 3</div>
+      <div class="step-tab locked" data-step="4">Module 4</div>
+    </div>
+    <div class="step-body">
+
+      <!-- ============ MODULE 1 ============ -->
+      <div class="step-panel active" id="panel-1">
+        <div class="step-title"><div class="step-num">1</div>Dựng đường song song qua 1 điểm</div>
+        <div class="step-desc" id="m1-context">Một điểm <b>M</b> nằm ngoài đường thẳng <b>d = AB</b>. Hãy thử dựng một đường thẳng qua M, song song với d — kéo tự do đầu còn lại của đường màu cam.</div>
+
+        <div class="attempt-bar-wrap" id="m1-attemptwrap">
+          <div class="attempt-bar-track"><div class="attempt-bar-fill" id="m1-bar"></div></div>
+          <div class="attempt-bar-label" id="m1-bar-label">Thử: 0/4 · Thời gian: 0/17s</div>
+        </div>
+
+        <button class="btn teal" id="m1-tool-btn" style="display:none" onclick="m1UseTool()">📐 Công cụ dựng</button>
+
+        <div class="info-box ib-teal" id="m1-phase2-box" style="display:none">
+          <div class="ib-icon">🤔</div>
+          <div>Bạn có chắc đây là đường <b>DUY NHẤT</b> song song với d qua M không? Hãy thử kéo đường màu đỏ để tạo ra <b>một đường khác</b> qua M.</div>
+        </div>
+
+        <div class="conclusion" id="m1-done-box" style="display:none">
+          Dù thử theo hướng nào, đường thẳng qua M song song với d <strong>luôn chỉ có một</strong>.
+        </div>
+
+        <button class="btn" id="m1-next-btn" style="display:none" onclick="goToModule(2)">Tiếp tục sang Module 2 →</button>
+      </div>
+
+      <!-- ============ MODULE 2 ============ -->
+      <div class="step-panel" id="panel-2">
+        <div class="step-title"><div class="step-num">2</div>Tính chất bắc cầu</div>
+        <div class="step-desc">Ba người thợ dựng ba thanh dầm khác nhau trên cùng một công trình. Làm sao biết thanh nào chắc chắn song song với thanh nào, mà không cần đo lại từ đầu?</div>
+        <div class="round-progress" id="m2-progress"></div>
+        <div class="mcq-source" id="m2-question"></div>
+        <div id="m2-options"></div>
+        <div class="hint-box" id="m2-hint"></div>
+        <div class="reflect-box" id="m2-reflect"><b>Vì sao?</b> → Có đường trung gian chung cho cả 2 mối quan hệ chưa?</div>
+        <button class="btn" id="m2-next-round-btn" style="display:none" onclick="m2NextRound()">Vòng tiếp theo →</button>
+        <button class="btn" id="m2-next-module-btn" style="display:none" onclick="goToModule(3)">Tiếp tục sang Module 3 →</button>
+      </div>
+
+      <!-- ============ MODULE 3 ============ -->
+      <div class="step-panel" id="panel-3">
+        <div class="step-title"><div class="step-num">3</div>Định lý ba giao tuyến</div>
+        <div class="step-desc">Một thanh dầm trong công trình bị che khuất, chỉ còn nhìn thấy hai thanh còn lại. Có thể suy ra được thanh bị che nằm ở đâu không?</div>
+        <div class="round-progress" id="m3-progress"></div>
+        <div class="mcq-source" id="m3-guidance" style="display:none"></div>
+        <div class="mcq-source" id="m3-question"></div>
+        <button class="btn secondary" id="m3-vision-btn" onclick="m3ToggleVision()">👁 Bật Vision</button>
+        <div id="m3-options" style="margin-top:8px"></div>
+        <div class="hint-box" id="m3-hint"></div>
+        <div class="info-box ib-gold" id="m3-explain" style="display:none"></div>
+        <button class="btn" id="m3-next-round-btn" style="display:none" onclick="m3NextTurn()">Lượt tiếp theo →</button>
+        <button class="btn" id="m3-next-module-btn" style="display:none" onclick="goToModule(4)">Tiếp tục sang Module 4 →</button>
+      </div>
+
+      <!-- ============ MODULE 4 ============ -->
+      <div class="step-panel" id="panel-4">
+        <div class="step-title"><div class="step-num">4</div>Chọn chiến lược</div>
+        <div class="step-desc" id="m4-intro">Nếu gặp một bài toán chứng minh song song mới, bạn sẽ bắt đầu từ đâu?</div>
+        <button class="btn teal" id="m4-open-notebook-btn" onclick="m4OpenNotebook()">📖 Mở sổ tay chiến lược</button>
+
+        <div id="m4-problem-area" style="display:none">
+          <div class="round-progress" id="m4-progress"></div>
+          <div class="mcq-source" id="m4-question"></div>
+          <div class="step-desc" id="m4-instruction" style="margin-top:8px">Nếu chỉ được mang theo <b>MỘT phương pháp</b> vào bài này, bạn chọn phương pháp nào? Kéo 1 thẻ trong Sổ tay (góc phải) thả vào vùng bài toán.</div>
+          <div class="hint-box" id="m4-hint"></div>
+          <div class="info-box ib-green" id="m4-explain" style="display:none"></div>
+          <button class="btn" id="m4-next-btn" style="display:none" onclick="m4NextProblem()">Bài tiếp theo →</button>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</div>
+
+<!-- ============ BOSS QUESTION MODAL ============ -->
+<div id="boss-overlay">
+  <div id="boss-modal">
+    <div class="boss-badge">🏆 Câu hỏi khoá Simulation</div>
+    <h2 id="boss-question-text">Nếu gặp một bài toán chứng minh song song hoàn toàn mới, điều ĐẦU TIÊN bạn sẽ làm là gì?</h2>
+    <div id="boss-options"></div>
+    <div class="hint-box" id="boss-hint"></div>
+    <div class="conclusion" id="boss-final">
+      Không phải học thuộc ba phương pháp, mà là <strong>nhận ra dấu hiệu</strong> để biết nên dùng phương pháp nào — đó là kỹ năng bạn vừa luyện được.
+      <button class="btn" style="background:var(--surface);color:var(--navy);margin-top:14px" onclick="document.getElementById('boss-overlay').classList.remove('show')">Hoàn thành Simulation 2 ✓</button>
+    </div>
+  </div>
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+function LMS() {
+  return window.AiducationLMS || {
+    ready: function () {}, progress: function () {}, event: function () {},
+    state: function () {}, complete: function () {}, resize: function () {}
+  };
+}
+
+/* ============================================================
+   HẰNG SỐ MÀU (04_design_toan_3d.md PHẦN 1.3)
+   ============================================================ */
+const COLOR_EDGE_SOLID  = 0xe6edf3;
+const COLOR_EDGE_DIM    = 0x2d3748;
+const COLOR_POINT_FREE  = 0x378ADD;
+const COLOR_POINT_ON_LINE = 0xFAC775;
+const COLOR_RESULT      = 0xFAC775;
+const COLOR_LINE_A      = 0xf59e0b;
+const COLOR_LINE_B      = 0xef4444;
+const COLOR_LINE_C      = 0x34d399;
+const COLOR_LINE_D      = 0xfb923c;
+const COLOR_PLANE_1     = 0x3b82f6;
+const COLOR_PLANE_3     = 0x34d399;
+const COLOR_PLANE_4     = 0xfb923c;
+const COLOR_PLANE_5     = 0xe879f9;
+const COLOR_CONNECTOR   = 0x94a3b8;
+const CAM_DRAG          = 0xD85A30;
+
+function hexToCSS(hex) { return '#' + hex.toString(16).padStart(6, '0'); }
+
+/* ============================================================
+   TOẠ ĐỘ: quy ước toán (x,y ngang, z cao) -> Three.js (x, z, y)
+   ============================================================ */
+function P(x, y, z) { return new THREE.Vector3(x, z, y); }
+
+/* ============================================================
+   HÀM TOÁN THUẦN (06_geometry_math.md)
+   ============================================================ */
+function definePlaneFromPoints(p1, p2, p3) {
+  const v1 = new THREE.Vector3().subVectors(p2, p1);
+  const v2 = new THREE.Vector3().subVectors(p3, p1);
+  const normal = new THREE.Vector3().crossVectors(v1, v2);
+  if (normal.lengthSq() < 1e-6) return null;
+  normal.normalize();
+  return { normal, pointOnPlane: p1.clone() };
+}
+function intersectionOfTwoPlanes(plane1, plane2) {
+  const dir = new THREE.Vector3().crossVectors(plane1.normal, plane2.normal);
+  if (dir.lengthSq() < 1e-6) return null;
+  dir.normalize();
+  const n1 = plane1.normal, n2 = plane2.normal;
+  const d1 = n1.dot(plane1.pointOnPlane);
+  const d2 = n2.dot(plane2.pointOnPlane);
+  const n1n2 = n1.dot(n2);
+  const denom = 1 - n1n2 * n1n2; // LƯU Ý: 06_geometry_math.md ghi "n1n2*n1n2 - 1" (đã verify sai
+                                  // dấu — kiểm chứng bằng số cụ thể thấy n2·P = -d2 thay vì d2).
+                                  // Công thức đúng phải dùng 1 - (n1·n2)², không phải (n1·n2)² - 1.
+  if (Math.abs(denom) < 1e-8) return null;
+  const c1 = (d1 - d2 * n1n2) / denom;
+  const c2 = (d2 - d1 * n1n2) / denom;
+  const point = new THREE.Vector3().addScaledVector(n1, c1).addScaledVector(n2, c2);
+  return { point, dir };
+}
+function isParallelDir(dir1, dir2, tolDeg) {
+  const d1 = dir1.clone().normalize();
+  const d2 = dir2.clone().normalize();
+  const cosTol = Math.cos(tolDeg * Math.PI / 180);
+  return Math.abs(d1.dot(d2)) >= cosTol;
+}
+
+/* ============================================================
+   SETUP THREE.JS CƠ BẢN (05_threejs_engine.md PHẦN 0)
+   ============================================================ */
+const wrap = document.getElementById('canvas-wrap');
+const container = document.getElementById('three-canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0a1628);
+
+const camera = new THREE.PerspectiveCamera(50, wrap.clientWidth / wrap.clientHeight, 0.1, 1000);
+camera.position.set(7, 6, 8);
+camera.lookAt(2, 1.5, 1.5);
+
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+container.appendChild(renderer.domElement);
+
+function resizeRendererToWrap() {
+  if (!wrap.clientWidth || !wrap.clientHeight) return;
+  camera.aspect = wrap.clientWidth / wrap.clientHeight;
+  camera.updateProjectionMatrix();
+  renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+}
+if (typeof ResizeObserver !== 'undefined') {
+  const canvasResizeObserver = new ResizeObserver(resizeRendererToWrap);
+  canvasResizeObserver.observe(wrap);
+} else {
+  window.addEventListener('resize', resizeRendererToWrap);
+}
+
+scene.add(new THREE.AmbientLight(0xffffff, 0.8));
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+dirLight.position.set(5, 10, 7);
+scene.add(dirLight);
+
+const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+orbitControls.target.set(2, 1.5, 1.5);
+orbitControls.enableDamping = true;
+orbitControls.dampingFactor = 0.08;
+orbitControls.update();
+
+const raycaster = new THREE.Raycaster();
+const mouseNDC = new THREE.Vector2();
+function updateMouseNDC(event) {
+  const rect = renderer.domElement.getBoundingClientRect();
+  mouseNDC.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+  mouseNDC.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+}
+
+/* ============================================================
+   LABEL SYSTEM (PHẦN 3.2) — HTML overlay
+   ============================================================ */
+const labelLayer = document.getElementById('label-layer');
+let activeLabels = []; // { el, getPos: () => Vector3 }
+
+function addLabel(text, colorHex, opts) {
+  opts = opts || {};
+  const el = document.createElement('div');
+  el.className = 'pt-label' + (opts.small ? ' small' : '') + (opts.hiddenMark ? ' hidden-mark' : '');
+  el.textContent = text;
+  el.style.color = hexToCSS(colorHex);
+  labelLayer.appendChild(el);
+  const entry = { el, getPos: opts.getPos, offsetY: opts.offsetY !== undefined ? opts.offsetY : 0.22 };
+  activeLabels.push(entry);
+  return entry;
+}
+function removeLabel(entry) {
+  if (!entry) return;
+  entry.el.remove();
+  activeLabels = activeLabels.filter(l => l !== entry);
+}
+function syncAllLabels() {
+  const rect = renderer.domElement.getBoundingClientRect();
+  activeLabels.forEach(l => {
+    const pos = l.getPos();
+    if (!pos) { l.el.style.display = 'none'; return; }
+    const worldPos = pos.clone().add(new THREE.Vector3(0, l.offsetY, 0));
+    const screenPos = worldPos.project(camera);
+    const behind = screenPos.z > 1;
+    l.el.style.display = behind ? 'none' : 'block';
+    if (!behind) {
+      const x = (screenPos.x * 0.5 + 0.5) * rect.width;
+      const y = (-screenPos.y * 0.5 + 0.5) * rect.height;
+      l.el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -100%)`;
+    }
+  });
+}
+
+/* ============================================================
+   TRANSIENT OBJECT MANAGEMENT — dispose khi đổi module/round
+   (04 PHẦN 3.4-BIS / 3.6)
+   ============================================================ */
+let transient = { meshes: [], labels: [] };
+function trackMesh(mesh) { transient.meshes.push(mesh); return mesh; }
+function trackLabel(entry) { transient.labels.push(entry); return entry; }
+function clearTransient() {
+  transient.meshes.forEach(m => {
+    scene.remove(m);
+    if (m.geometry) m.geometry.dispose();
+    if (m.material) { if (Array.isArray(m.material)) m.material.forEach(mm => mm.dispose()); else m.material.dispose(); }
+  });
+  transient.meshes = [];
+  transient.labels.forEach(l => removeLabel(l));
+  transient.labels = [];
+}
+
+function disposeTrackedMesh(mesh) {
+  if (!mesh) return;
+  const index = transient.meshes.indexOf(mesh);
+  if (index !== -1) transient.meshes.splice(index, 1);
+  scene.remove(mesh);
+  if (mesh.geometry) mesh.geometry.dispose();
+  if (mesh.material) {
+    if (Array.isArray(mesh.material)) mesh.material.forEach(material => material.dispose());
+    else mesh.material.dispose();
+  }
+}
+
+function makeLine(p1, p2, color, opts) {
+  opts = opts || {};
+  const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+  const mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: opts.opacity !== undefined ? opts.opacity : 1, linewidth: 2 });
+  const line = new THREE.Line(geo, mat);
+  scene.add(line);
+  return line;
+}
+function makeExtendedLine(p1, p2, color, ext, opacity) {
+  ext = ext || 0.8;
+  const dir = new THREE.Vector3().subVectors(p2, p1).normalize();
+  const s = p1.clone().sub(dir.clone().multiplyScalar(ext));
+  const e = p2.clone().add(dir.clone().multiplyScalar(ext));
+  return makeLine(s, e, color, { opacity });
+}
+function makeMarker(pos, color, radius) {
+  const geo = new THREE.SphereGeometry(radius || 0.07, 16, 16);
+  const mat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3 });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.copy(pos);
+  scene.add(mesh);
+  return mesh;
+}
+function makePlane(centroid, normal, color, opacity, size) {
+  const geo = new THREE.PlaneGeometry(size || 5, size || 5);
+  const mat = new THREE.MeshStandardMaterial({ color, transparent: true, opacity: opacity !== undefined ? opacity : 0.2, side: THREE.DoubleSide, depthWrite: false });
+  const mesh = new THREE.Mesh(geo, mat);
+  mesh.position.copy(centroid);
+  mesh.lookAt(centroid.clone().add(normal));
+  scene.add(mesh);
+  return mesh;
+}
+
+/* ============================================================
+   HÌNH CHÓP S.ABCD — vật thể xuyên suốt Module 1-3
+   Toạ độ toán: A(0,0,0) B(4,0,0) C(5,3,0) D(1,3,0) S(1,1,4)
+   ============================================================ */
+const PYR = {
+  A: P(0, 0, 0), B: P(4, 0, 0), C: P(5, 3, 0), D: P(1, 3, 0), S: P(1, 1, 4)
+};
+PYR.E = new THREE.Vector3().addVectors(PYR.S, PYR.D).multiplyScalar(0.5); // trung điểm SD
+PYR.F = new THREE.Vector3().addVectors(PYR.S, PYR.C).multiplyScalar(0.5); // trung điểm SC
+
+const PYR_EDGE_DEFS = [
+  ['A','B'], ['B','C'], ['C','D'], ['D','A'],
+  ['S','A'], ['S','B'], ['S','C'], ['S','D']
+];
+let pyramidEdges = {}; // name(e.g. 'AB') -> { line, mat, p1, p2 }
+let pyramidGroup = [];
+let pyramidVertexLabels = [];
+let pyramidVisible = false;
+
+function buildPyramid() {
+  PYR_EDGE_DEFS.forEach(([a, b]) => {
+    const p1 = PYR[a], p2 = PYR[b];
+    const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+    const mat = new THREE.LineBasicMaterial({ color: COLOR_EDGE_SOLID, transparent: true, opacity: 0.85 });
+    const line = new THREE.Line(geo, mat);
+    scene.add(line);
+    pyramidGroup.push(line);
+    pyramidEdges[a + b] = { line, mat, p1, p2, baseColor: COLOR_EDGE_SOLID };
+  });
+  ['A','B','C','D','S'].forEach(name => {
+    pyramidVertexLabels.push(addLabel(name, 0xffffff, { getPos: () => pyramidVisible ? PYR[name] : null }));
+  });
+}
+function setPyramidVisible(v) {
+  pyramidVisible = v;
+  pyramidGroup.forEach(l => l.visible = v);
+}
+function setPyramidEmphasis(highlightMap, dimOpacity) {
+  // highlightMap: { 'AB': colorHex, ... } — mọi cạnh khác bị làm mờ
+  dimOpacity = dimOpacity !== undefined ? dimOpacity : 0.18;
+  Object.keys(pyramidEdges).forEach(name => {
+    const e = pyramidEdges[name];
+    if (highlightMap && highlightMap[name] !== undefined) {
+      e.mat.color.set(highlightMap[name]);
+      e.mat.opacity = 1;
+    } else {
+      e.mat.color.set(e.baseColor);
+      e.mat.opacity = dimOpacity;
+    }
+  });
+}
+function resetPyramidEmphasis() {
+  Object.keys(pyramidEdges).forEach(name => {
+    const e = pyramidEdges[name];
+    e.mat.color.set(e.baseColor);
+    e.mat.opacity = 0.85;
+  });
+}
+buildPyramid();
+setPyramidVisible(false);
+
+/* ============================================================
+   HÌNH HỘP (dùng ở Module 4, bài 3-4) — tái dùng toạ độ Simulation 1
+   A(0,0,0) B(4,0,0) C(4,3,0) D(0,3,0), A'..D' cao thêm 2
+   ============================================================ */
+const BOX = {
+  A: P(0,0,0), B: P(4,0,0), C: P(4,3,0), D: P(0,3,0),
+  A2: P(0,0,2), B2: P(4,0,2), C2: P(4,3,2), D2: P(0,3,2)
+};
+const BOX_EDGE_DEFS = [
+  ['A','B'],['B','C'],['C','D'],['D','A'],
+  ['A2','B2'],['B2','C2'],['C2','D2'],['D2','A2'],
+  ['A','A2'],['B','B2'],['C','C2'],['D','D2']
+];
+let boxEdges = {};
+let boxGroup = [];
+let boxVertexLabels = [];
+let boxVisible = false;
+const BOX_LABEL_TEXT = { A:'A', B:'B', C:'C', D:'D', A2:"A'", B2:"B'", C2:"C'", D2:"D'" };
+
+function buildBox() {
+  BOX_EDGE_DEFS.forEach(([a, b]) => {
+    const p1 = BOX[a], p2 = BOX[b];
+    const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+    const mat = new THREE.LineBasicMaterial({ color: COLOR_EDGE_SOLID, transparent: true, opacity: 0.85 });
+    const line = new THREE.Line(geo, mat);
+    line.visible = false;
+    scene.add(line);
+    boxGroup.push(line);
+    boxEdges[a + b] = { line, mat, p1, p2, baseColor: COLOR_EDGE_SOLID };
+  });
+  Object.keys(BOX).forEach(name => {
+    boxVertexLabels.push(addLabel(BOX_LABEL_TEXT[name], 0xffffff, { getPos: () => boxVisible ? BOX[name] : null }));
+  });
+}
+function setBoxVisible(v) {
+  boxVisible = v;
+  boxGroup.forEach(l => l.visible = v);
+}
+function setBoxEmphasis(highlightMap, dimOpacity) {
+  dimOpacity = dimOpacity !== undefined ? dimOpacity : 0.18;
+  Object.keys(boxEdges).forEach(name => {
+    const e = boxEdges[name];
+    if (highlightMap && highlightMap[name] !== undefined) {
+      e.mat.color.set(highlightMap[name]);
+      e.mat.opacity = 1;
+    } else {
+      e.mat.color.set(e.baseColor);
+      e.mat.opacity = dimOpacity;
+    }
+  });
+}
+buildBox();
+
+/* ============================================================
+   HUD (debounce chuẩn theo CLAUDE.md)
+   ============================================================ */
+const hudEl = document.getElementById('hud');
+let hudDebounceTimer = null;
+function setHud(text, cls) {
+  hudEl.textContent = text;
+  hudEl.className = cls || '';
+  hudEl.style.display = text ? 'block' : 'none';
+}
+function hudAnalyzeThenShow(finalFn, delay) {
+  setHud('Đang phân tích...', 'analyzing');
+  clearTimeout(hudDebounceTimer);
+  hudDebounceTimer = setTimeout(finalFn, delay || 400);
+}
+
+/* ============================================================
+   SỔ TAY CHIẾN LƯỢC (notebook)
+   ============================================================ */
+const NOTEBOOK_CARDS = [
+  { id: 'unique', icon: '📐',
+    l1: 'Khi thấy cần dựng một đường song song đi qua một điểm cho trước',
+    l2: '→ Dùng định lý: qua 1 điểm, có đúng 1 đường thẳng song song với đường đã cho.',
+    l3: 'VD: qua M, dựng d′ // d.' },
+  { id: 'transitive', icon: '🔗',
+    l1: 'Khi thấy có một đường trung gian (thứ ba, khác 2 đường cần chứng minh) cùng song song với cả hai',
+    l2: '→ Dùng tính chất bắc cầu.',
+    l3: 'VD: AB // CD, CD // EF ⇒ AB // EF.' },
+  { id: 'threeplanes', icon: '🧭',
+    l1: 'Khi đề bài xuất hiện ba mặt phẳng cắt nhau theo ba giao tuyến',
+    l2: '→ Dùng định lý ba giao tuyến (kiểm tra 2 giao tuyến đã biết song song hay cắt nhau).',
+    l3: '(P)∩(Q)=a, (Q)∩(R)=b, (P)∩(R)=c — đồng quy hoặc đôi một song song.' },
+  { id: 'definition', icon: '📏',
+    l1: 'Khi thấy có thể kiểm tra trực tiếp đồng phẳng và không cắt nhau',
+    l2: '→ Dùng định nghĩa hai đường thẳng song song.',
+    l3: 'VD: kiểm tra a, b không cắt + đồng phẳng.' }
+];
+let unlockedCardIds = [];
+const notebookPanel = document.getElementById('notebook-panel');
+const notebookPill = document.getElementById('notebook-pill');
+const nbCountEl = document.getElementById('nb-count');
+
+function unlockCard(id) {
+  if (unlockedCardIds.includes(id)) return;
+  unlockedCardIds.push(id);
+  renderNotebook();
+  nbCountEl.textContent = `(${unlockedCardIds.length})`;
+  notebookPill.classList.add('pulse');
+  notebookPanel.classList.add('open');
+  setTimeout(() => notebookPill.classList.remove('pulse'), 3000);
+}
+function toggleNotebook() { notebookPanel.classList.toggle('open'); }
+function renderNotebook() {
+  notebookPanel.innerHTML = '';
+  if (unlockedCardIds.length === 0) {
+    notebookPanel.innerHTML = '<div class="nb-empty">Sổ tay đang trống. Hoàn thành module để mở thẻ mới.</div>';
+    return;
+  }
+  NOTEBOOK_CARDS.filter(c => unlockedCardIds.includes(c.id)).forEach(c => {
+    const div = document.createElement('div');
+    const tapMode = m4DragEnabled && m4UsesTapInteraction();
+    div.className = 'nb-card' + (m4DragEnabled ? (tapMode ? ' tap-select' : ' draggable') : '') + (m4SelectedCard && m4SelectedCard.id === c.id ? ' selected' : '');
+    div.dataset.cardId = c.id;
+    div.innerHTML = `<div class="nb-l1"><span class="nb-icon">${c.icon}</span>${c.l1}</div><div class="nb-l2">${c.l2}</div><div class="nb-l3">${c.l3}</div>`;
+    if (m4DragEnabled) {
+      if (tapMode) div.addEventListener('click', () => m4SelectCard(c));
+      else div.addEventListener('pointerdown', (e) => m4StartCardDrag(e, c, div));
+    }
+    notebookPanel.appendChild(div);
+  });
+}
+
+/* ============================================================
+   BUỚC HỌC / TABS
+   ============================================================ */
+let currentModule = 1;
+let unlockedModule = 1;
+function updateHeaderProgress() {
+  const el = document.getElementById('header-progress');
+  el.innerHTML = '';
+  for (let i = 1; i <= 4; i++) {
+    const d = document.createElement('div');
+    d.className = 'hp-dot' + (i < currentModule ? ' done' : '') + (i === currentModule ? ' active' : '');
+    d.textContent = i < currentModule ? '✓' : i;
+    el.appendChild(d);
+  }
+}
+function goToModule(n) {
+  if (n > unlockedModule) unlockedModule = n;
+  currentModule = n;
+  document.querySelectorAll('.step-tab').forEach(t => {
+    const s = parseInt(t.dataset.step);
+    t.classList.toggle('active', s === n);
+    t.classList.toggle('locked', s > unlockedModule);
+  });
+  document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+  document.getElementById('panel-' + n).classList.add('active');
+  updateHeaderProgress();
+  setHud('', '');
+  clearTransient();
+  if (n === 1) setupModule1();
+  else if (n === 2) setupModule2();
+  else if (n === 3) setupModule3();
+  else if (n === 4) setupModule4();
+}
+document.querySelectorAll('.step-tab').forEach(tab => {
+  tab.addEventListener('click', () => {
+    const s = parseInt(tab.dataset.step);
+    if (s <= unlockedModule) goToModule(s);
+  });
+});
+
+/* ============================================================
+   MODULE 1 — DỰNG ĐƯỜNG SONG SONG QUA 1 ĐIỂM
+   ============================================================ */
+const M1_N_REQUIRED = 4;
+const M1_T_REQUIRED = 17000; // ms
+let m1 = null;
+
+class M1DraggablePoint {
+  constructor(position, color) {
+    const geo = new THREE.SphereGeometry(0.1, 24, 24);
+    const mat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3 });
+    this.mesh = new THREE.Mesh(geo, mat);
+    this.mesh.position.copy(position);
+    scene.add(this.mesh);
+    trackMesh(this.mesh);
+
+    const hitGeo = new THREE.SphereGeometry(0.3, 8, 8);
+    const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+    this.hitMesh = new THREE.Mesh(hitGeo, hitMat);
+    this.hitMesh.position.copy(position);
+    this.hitMesh.userData.m1point = this;
+    scene.add(this.hitMesh);
+    trackMesh(this.hitMesh);
+
+    const ringGeo = new THREE.RingGeometry(0.16, 0.2, 32);
+    const ringMat = new THREE.MeshBasicMaterial({ color, transparent: true, opacity: 0, side: THREE.DoubleSide });
+    this.ring = new THREE.Mesh(ringGeo, ringMat);
+    scene.add(this.ring);
+    trackMesh(this.ring);
+  }
+  get position() { return this.mesh.position; }
+  setDragging(active) {
+    this.ring.material.opacity = active ? 0.8 : 0;
+    this.mesh.material.emissiveIntensity = active ? 0.65 : 0.3;
+  }
+  syncRing() {
+    this.ring.position.copy(this.mesh.position);
+    this.ring.lookAt(camera.position);
+    this.hitMesh.position.copy(this.mesh.position);
+  }
+  flashRed(durationMs) {
+    const originalColor = this.mesh.material.color.getHex();
+    this.mesh.material.color.set(0xff3b3b);
+    this.mesh.material.emissiveIntensity = 0.9;
+    setTimeout(() => {
+      this.mesh.material.color.set(originalColor);
+      this.mesh.material.emissiveIntensity = 0.3;
+    }, durationMs || 200);
+  }
+}
+
+function setupModule1() {
+  document.getElementById('m1-tool-btn').style.display = 'none';
+  document.getElementById('m1-phase2-box').style.display = 'none';
+  document.getElementById('m1-done-box').style.display = 'none';
+  document.getElementById('m1-next-btn').style.display = 'none';
+  document.getElementById('m1-attemptwrap').style.display = 'block';
+  document.getElementById('m1-bar').style.width = '0%';
+
+  setPyramidVisible(true);
+  resetPyramidEmphasis();
+  setPyramidEmphasis({ AB: COLOR_LINE_A }, 0.35);
+  trackLabel(addLabel('d = AB', COLOR_LINE_A, { getPos: () => new THREE.Vector3().addVectors(PYR.A, PYR.B).multiplyScalar(0.5), offsetY: -0.05 }));
+
+  camera.position.set(6.5, 4.5, 7.5);
+  orbitControls.target.copy(new THREE.Vector3().addVectors(PYR.A, PYR.B).multiplyScalar(0.5));
+  orbitControls.update();
+
+  m1 = {
+    phase: 1,
+    attempts: 0,
+    startTime: performance.now(),
+    unlockedTool: false,
+    achieved: false,
+    M: PYR.E.clone(), // trung điểm SD — điểm ngoài AB
+    freePoint: null,
+    lineMesh: null,
+    secondPoint: null,
+    secondLineMesh: null,
+    pendingSnapTimeout: null,
+    secondAttemptConfirmed: false
+  };
+
+  trackMesh(makeMarker(m1.M, COLOR_POINT_ON_LINE, 0.09));
+  trackLabel(addLabel('M', COLOR_POINT_ON_LINE, { getPos: () => m1.M }));
+
+  const startOffset = new THREE.Vector3(1.1, 1.3, -0.7);
+  m1.freePoint = new M1DraggablePoint(m1.M.clone().add(startOffset), CAM_DRAG);
+  m1.lineMesh = trackMesh(makeLine(m1.M, m1.freePoint.position, CAM_DRAG));
+
+  updateM1Bar();
+  document.getElementById('m1-context').innerHTML = 'Một điểm <b>M</b> nằm ngoài đường thẳng <b>d = AB</b>. Hãy thử dựng một đường thẳng qua M, song song với d — kéo tự do đầu còn lại của đường màu cam.';
+
+  m1Interval = setInterval(() => { if (currentModule === 1 && m1 && m1.phase === 1) updateM1Bar(); }, 500);
+}
+let m1Interval = null;
+
+function updateM1Bar() {
+  if (!m1) return;
+  const elapsed = performance.now() - m1.startTime;
+  const pctAttempt = Math.min(1, m1.attempts / M1_N_REQUIRED);
+  const pctTime = Math.min(1, elapsed / M1_T_REQUIRED);
+  const pct = Math.min(pctAttempt, pctTime);
+  document.getElementById('m1-bar').style.width = (pct * 100) + '%';
+  document.getElementById('m1-bar-label').textContent =
+    `Thử: ${m1.attempts}/${M1_N_REQUIRED} · Thời gian: ${Math.floor(Math.min(elapsed, M1_T_REQUIRED) / 1000)}/${M1_T_REQUIRED/1000}s`;
+  if (!m1.unlockedTool && m1.attempts >= M1_N_REQUIRED && elapsed >= M1_T_REQUIRED && !m1.achieved) {
+    m1.unlockedTool = true;
+    const btn = document.getElementById('m1-tool-btn');
+    btn.style.display = 'block';
+    setHud('Trong hình học, người ta không ước lượng bằng mắt. Người ta dùng phép dựng.', '');
+  }
+}
+
+function m1RebuildLine() {
+  m1.lineMesh.geometry.dispose();
+  m1.lineMesh.geometry = new THREE.BufferGeometry().setFromPoints([m1.M, m1.freePoint.position]);
+}
+function m1CheckParallel() {
+  const dirFree = new THREE.Vector3().subVectors(m1.freePoint.position, m1.M);
+  const dirAB = new THREE.Vector3().subVectors(PYR.B, PYR.A);
+  // Tăng góc sai số lên 35 độ vì mặt phẳng kéo của camera tạo góc nghiêng ~27 độ với đường AB trong không gian 3D.
+  // Khi học sinh nhìn thấy song song trên màn hình (2D), góc 3D thực tế đạt mức nhỏ nhất là ~27 độ.
+  return isParallelDir(dirFree, dirAB, 35.0);
+}
+function m1OnReleasePhase1() {
+  m1.attempts++;
+  updateM1Bar();
+  hudAnalyzeThenShow(() => {
+    if (!m1 || m1.phase !== 1) return;
+    const ok = m1CheckParallel();
+    if (ok) {
+      setHud('Song song với d.', 'ok');
+      if (!m1.achieved) {
+        m1.achieved = true;
+        setTimeout(() => { setHud('Chính xác! Bạn vừa tự tạo ra được đường song song.', 'ok'); m1EnterPhase2(); }, 900);
+      }
+    } else {
+      setHud('Chưa song song với d.', 'no');
+    }
+  }, 400);
+}
+
+function m1UseTool() {
+  document.getElementById('m1-tool-btn').disabled = true;
+  const dirAB = new THREE.Vector3().subVectors(PYR.B, PYR.A).normalize();
+  const len = 2.6;
+  const targetEnd = m1.M.clone().add(dirAB.multiplyScalar(len));
+  const targetStart = m1.M.clone();
+  animateBuildLine(m1.M, targetStart, targetEnd, () => {
+    m1.freePoint.mesh.position.copy(targetEnd);
+    m1.freePoint.hitMesh.position.copy(targetEnd);
+    m1RebuildLine();
+    m1.achieved = true;
+    setHud('Song song với d.', 'ok');
+    setTimeout(() => m1EnterPhase2(), 700);
+  });
+}
+
+function animateBuildLine(originPoint, targetStart, targetEnd, onComplete) {
+  const material = new THREE.LineBasicMaterial({ color: COLOR_RESULT, linewidth: 2 });
+  const geometry = new THREE.BufferGeometry().setFromPoints([originPoint.clone(), originPoint.clone()]);
+  const line = new THREE.Line(geometry, material);
+  scene.add(line);
+  trackMesh(line);
+  const duration = 900;
+  const startTime = performance.now();
+  function step() {
+    const progress = Math.min(1, (performance.now() - startTime) / duration);
+    const eased = 1 - Math.pow(1 - progress, 3);
+    const cs = new THREE.Vector3().lerpVectors(originPoint, targetStart, eased);
+    const ce = new THREE.Vector3().lerpVectors(originPoint, targetEnd, eased);
+    line.geometry.setFromPoints([cs, ce]);
+    if (progress < 1) requestAnimationFrame(step);
+    else { disposeTrackedMesh(line); onComplete(); }
+  }
+  requestAnimationFrame(step);
+}
+
+function m1EnterPhase2() {
+  m1.phase = 2;
+  document.getElementById('m1-attemptwrap').style.display = 'none';
+  document.getElementById('m1-tool-btn').style.display = 'none';
+  document.getElementById('m1-phase2-box').style.display = 'flex';
+  setHud('', '');
+
+  const startOffset2 = new THREE.Vector3(-1.2, -0.9, 1.0);
+  m1.secondPoint = new M1DraggablePoint(m1.M.clone().add(startOffset2), 0xef4444);
+  m1.secondLineMesh = trackMesh(makeLine(m1.M, m1.secondPoint.position, 0xef4444));
+}
+
+function m1RebuildSecondLine() {
+  m1.secondLineMesh.geometry.dispose();
+  m1.secondLineMesh.geometry = new THREE.BufferGeometry().setFromPoints([m1.M, m1.secondPoint.position]);
+}
+function m1OnReleasePhase2() {
+  const dirSecond = new THREE.Vector3().subVectors(m1.secondPoint.position, m1.M);
+  const dirAB = new THREE.Vector3().subVectors(PYR.B, PYR.A);
+  // Tăng góc sai số lên 35 độ để dễ kích hoạt cơ chế snap chứng minh tính duy nhất khi kéo song song trên giao diện 3D
+  const near = isParallelDir(dirSecond, dirAB, 35.0);
+  if (!near) return;
+  if (m1.pendingSnapTimeout) clearTimeout(m1.pendingSnapTimeout);
+  m1.pendingSnapTimeout = setTimeout(() => {
+    m1.pendingSnapTimeout = null;
+    m1.secondPoint.flashRed(220);
+    setTimeout(() => {
+      const dirABn = dirAB.clone().normalize();
+      const len = m1.secondPoint.position.distanceTo(m1.M) || 2;
+      const targetEnd = m1.M.clone().add(dirABn.multiplyScalar(len));
+      const startPos = m1.secondPoint.position.clone();
+      const dur = 260;
+      const t0 = performance.now();
+      function snapStep() {
+        const p = Math.min(1, (performance.now() - t0) / dur);
+        const pos = new THREE.Vector3().lerpVectors(startPos, targetEnd, p);
+        m1.secondPoint.mesh.position.copy(pos);
+        m1.secondPoint.hitMesh.position.copy(pos);
+        m1RebuildSecondLine();
+        if (p < 1) requestAnimationFrame(snapStep);
+        else m1ConfirmUnique();
+      }
+      requestAnimationFrame(snapStep);
+    }, 220);
+  }, 500);
+}
+function m1ConfirmUnique() {
+  if (m1.secondAttemptConfirmed) return;
+  m1.secondAttemptConfirmed = true;
+  document.getElementById('m1-phase2-box').style.display = 'none';
+  document.getElementById('m1-done-box').style.display = 'block';
+  document.getElementById('m1-next-btn').style.display = 'block';
+  unlockCard('unique');
+}
+
+/* Drag input dùng chung cho Module 1 (mô-đun DUY NHẤT có kéo vật thể 3D) */
+let m1DragState = { active: false, point: null, plane: null, which: null };
+renderer.domElement.addEventListener('pointerdown', (event) => {
+  if (currentModule !== 1 || !m1) return;
+  updateMouseNDC(event);
+  raycaster.setFromCamera(mouseNDC, camera);
+  const candidates = [];
+  if (m1.freePoint) candidates.push(m1.freePoint.hitMesh);
+  if (m1.secondPoint) candidates.push(m1.secondPoint.hitMesh);
+  const hits = raycaster.intersectObjects(candidates);
+  if (hits.length === 0) return;
+  const point = hits[0].object.userData.m1point;
+  if (point === m1.secondPoint && m1.pendingSnapTimeout) {
+    clearTimeout(m1.pendingSnapTimeout);
+    m1.pendingSnapTimeout = null;
+  }
+  m1DragState.active = true;
+  m1DragState.point = point;
+  m1DragState.which = point === m1.freePoint ? 'free' : 'second';
+  const camDir = new THREE.Vector3();
+  camera.getWorldDirection(camDir);
+  m1DragState.plane = new THREE.Plane().setFromNormalAndCoplanarPoint(camDir, point.position);
+  point.setDragging(true);
+  orbitControls.enabled = false;
+});
+renderer.domElement.addEventListener('pointermove', (event) => {
+  if (currentModule !== 1) return;
+  updateMouseNDC(event);
+  if (!m1 || !m1DragState.active) {
+    if (m1 && (m1.freePoint || m1.secondPoint)) {
+      raycaster.setFromCamera(mouseNDC, camera);
+      const candidates = [];
+      if (m1.freePoint) candidates.push(m1.freePoint.hitMesh);
+      if (m1.secondPoint) candidates.push(m1.secondPoint.hitMesh);
+      const hits = raycaster.intersectObjects(candidates);
+      renderer.domElement.style.cursor = hits.length > 0 ? 'grab' : 'default';
+    }
+    return;
+  }
+  raycaster.setFromCamera(mouseNDC, camera);
+  const intersection = new THREE.Vector3();
+  const hit = raycaster.ray.intersectPlane(m1DragState.plane, intersection);
+  if (hit) {
+    m1DragState.point.mesh.position.copy(intersection);
+    m1DragState.point.hitMesh.position.copy(intersection);
+    if (m1DragState.which === 'free') m1RebuildLine();
+    else m1RebuildSecondLine();
+  }
+});
+function m1EndDrag() {
+  if (!m1DragState.active) return;
+  m1DragState.point.setDragging(false);
+  const which = m1DragState.which;
+  m1DragState.active = false;
+  m1DragState.point = null;
+  m1DragState.plane = null;
+  m1DragState.which = null;
+  orbitControls.enabled = true;
+  if (!m1) return;
+  if (which === 'free' && m1.phase === 1) m1OnReleasePhase1();
+  else if (which === 'second' && m1.phase === 2) m1OnReleasePhase2();
+}
+renderer.domElement.addEventListener('pointerup', m1EndDrag);
+renderer.domElement.addEventListener('pointerleave', m1EndDrag);
+
+/* ============================================================
+   MODULE 2 — TÍNH CHẤT BẮC CẦU (4 vòng)
+   ============================================================ */
+const DIR1 = new THREE.Vector3(1, 0.35, 0.2).normalize();
+const DIR2 = new THREE.Vector3(-0.25, 1, 0.35).normalize();
+function segFromDir(origin, dir, length) { return [origin.clone(), origin.clone().add(dir.clone().multiplyScalar(length))]; }
+
+const M2_ROUNDS = [
+  {
+    label: 'Vòng 1 · Áp dụng chuẩn',
+    question: 'Biết a // b và b // c (3 thanh dầm phân biệt). Vậy a và c có quan hệ gì?',
+    options: ['a // c', 'Không xác định được', 'a cắt c'],
+    correct: 'a // c',
+    hint: 'Bắc cầu cần một đường CHUNG nối cả 2 mối quan hệ. Hãy nhìn lại: a và c có đường nào chung với cả hai không?',
+    build: () => {
+      const segs = {
+        a: segFromDir(new THREE.Vector3(6, 0.3, 0), DIR1, 2.4),
+        b: segFromDir(new THREE.Vector3(6, 1.6, 1.0), DIR1, 2.4),
+        c: segFromDir(new THREE.Vector3(6, 0.2, 2.4), DIR1, 2.4)
+      };
+      return segs;
+    }
+  },
+  {
+    label: 'Vòng 2 · Không có cầu nối chung',
+    question: 'Biết a // b, và RIÊNG BIỆT c // d (2 cặp hoàn toàn không liên quan). Vậy a và c có song song không?',
+    options: ['a // c', 'Không xác định được', 'a cắt c'],
+    correct: 'Không xác định được',
+    hint: 'Bắc cầu cần một đường CHUNG nối cả 2 mối quan hệ. a//b và c//d là hai cặp tách biệt — không có đường nào vừa thuộc cặp này vừa thuộc cặp kia.',
+    build: () => {
+      const segs = {
+        a: segFromDir(new THREE.Vector3(6, 0.3, 0), DIR1, 2.4),
+        b: segFromDir(new THREE.Vector3(6, 1.6, 1.0), DIR1, 2.4),
+        c: segFromDir(new THREE.Vector3(9, 0.3, 0), DIR2, 2.2),
+        d: segFromDir(new THREE.Vector3(9, 1.8, 1.1), DIR2, 2.2)
+      };
+      return segs;
+    }
+  },
+  {
+    label: 'Vòng 3 · Nhiều cầu nối liên tiếp',
+    question: 'Biết a // b, b // c, c // d (chuỗi 4 thanh dầm liên tiếp). Vậy a và d có song song không?',
+    options: ['a // d', 'Không xác định được', 'a cắt d'],
+    correct: 'a // d',
+    hint: 'Bắc cầu áp dụng được nhiều lần liên tiếp: a//b//c ⇒ a//c, rồi a//c và c//d ⇒ a//d.',
+    build: () => {
+      const segs = {
+        a: segFromDir(new THREE.Vector3(6, 0.3, 0), DIR1, 2.4),
+        b: segFromDir(new THREE.Vector3(6, 1.6, 1.0), DIR1, 2.4),
+        c: segFromDir(new THREE.Vector3(6, 0.2, 2.4), DIR1, 2.4),
+        d: segFromDir(new THREE.Vector3(6, 2.9, 3.6), DIR1, 2.4)
+      };
+      return segs;
+    }
+  }
+];
+
+let m2State = { round: 0, phase: 'answer', bridgeChosen: null, segMeshes: {}, segLabels: [] };
+
+function m2BuildRoundVisual(round) {
+  const segs = round.build();
+  m2State.segMeshes = {};
+  const colors = { a: COLOR_LINE_A, b: COLOR_LINE_B, c: COLOR_LINE_C, d: COLOR_LINE_D };
+  Object.keys(segs).forEach(name => {
+    const [p1, p2] = segs[name];
+    const mesh = trackMesh(makeLine(p1, p2, colors[name]));
+    m2State.segMeshes[name] = { mesh, p1, p2 };
+    trackLabel(addLabel(name, colors[name], { getPos: () => new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5), offsetY: 0.18 }));
+  });
+}
+
+function m2Render() {
+  const idx = m2State.round;
+  if (idx < 3) {
+    m2RenderMcqRound(M2_ROUNDS[idx], idx);
+  } else {
+    m2RenderRound4();
+  }
+}
+
+function m2RenderMcqRound(round, idx) {
+  clearTransient();
+  setPyramidVisible(false);
+  m2BuildRoundVisual(round);
+  camera.position.set(9, 4, 5);
+  orbitControls.target.set(7.5, 1.2, 1.2);
+  orbitControls.update();
+
+  document.getElementById('m2-question').textContent = round.question;
+  const optWrap = document.getElementById('m2-options');
+  optWrap.innerHTML = '';
+  document.getElementById('m2-hint').classList.remove('show');
+  document.getElementById('m2-reflect').classList.remove('show');
+  document.getElementById('m2-next-round-btn').style.display = 'none';
+  document.getElementById('m2-next-module-btn').style.display = 'none';
+
+  round.options.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt;
+    btn.onclick = () => m2AnswerMcq(opt, round, btn, optWrap);
+    optWrap.appendChild(btn);
+  });
+  m2RenderProgress();
+}
+
+function m2AnswerMcq(chosen, round, btn, wrap) {
+  if (chosen === round.correct) {
+    btn.classList.add('correct');
+    Array.from(wrap.children).forEach(b => b.disabled = true);
+    document.getElementById('m2-reflect').classList.add('show');
+    document.getElementById('m2-next-round-btn').style.display = 'block';
+  } else {
+    btn.classList.add('wrong');
+    document.getElementById('m2-hint').textContent = round.hint;
+    document.getElementById('m2-hint').classList.add('show');
+    setTimeout(() => btn.classList.remove('wrong'), 350);
+  }
+}
+
+const M2_BRIDGE_OPTIONS = [
+  { name: 'CD', correct: true },
+  { name: 'SA', correct: false, hint: 'SA có song song với AB hoặc EF không? Đường trung gian phải song song với cả hai đường đang cần chứng minh.' },
+  { name: 'BA', correct: false, hint: 'Đường trung gian phải là một đường THỨ BA, khác với cả 2 đường đang cần chứng minh — BA chính là AB (chỉ đổi tên), không phải đường độc lập.' }
+];
+function m2RenderRound4() {
+  clearTransient();
+  setPyramidVisible(true);
+  resetPyramidEmphasis();
+  setPyramidEmphasis({ AB: COLOR_LINE_A, CD: COLOR_LINE_B }, 0.15);
+  trackMesh(makeLine(PYR.E, PYR.F, COLOR_LINE_C));
+  trackLabel(addLabel('AB', COLOR_LINE_A, { getPos: () => new THREE.Vector3().addVectors(PYR.A, PYR.B).multiplyScalar(0.5), offsetY: -0.1 }));
+  trackLabel(addLabel('CD', COLOR_LINE_B, { getPos: () => new THREE.Vector3().addVectors(PYR.C, PYR.D).multiplyScalar(0.5), offsetY: -0.1 }));
+  trackLabel(addLabel('EF', COLOR_LINE_C, { getPos: () => new THREE.Vector3().addVectors(PYR.E, PYR.F).multiplyScalar(0.5), offsetY: 0.18 }));
+  trackLabel(addLabel('E', COLOR_POINT_ON_LINE, { getPos: () => PYR.E, small: true }));
+  trackLabel(addLabel('F', COLOR_POINT_ON_LINE, { getPos: () => PYR.F, small: true }));
+
+  camera.position.set(7, 5.5, 8);
+  orbitControls.target.set(2, 1.5, 1.5);
+  orbitControls.update();
+
+  document.getElementById('m2-question').innerHTML = 'Cho biết <b>AB // CD</b> (tính chất đáy hình bình hành). Yêu cầu: Chứng minh <b>AB // EF</b> (E, F là trung điểm SD, SC). Chọn đường trung gian đúng:';
+  const optWrap = document.getElementById('m2-options');
+  optWrap.innerHTML = '';
+  document.getElementById('m2-hint').classList.remove('show');
+  document.getElementById('m2-reflect').classList.remove('show');
+  document.getElementById('m2-next-round-btn').style.display = 'none';
+  document.getElementById('m2-next-module-btn').style.display = 'none';
+
+  M2_BRIDGE_OPTIONS.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt.name;
+    btn.onclick = () => {
+      if (opt.correct) {
+        btn.classList.add('correct');
+        Array.from(optWrap.children).forEach(b => b.disabled = true);
+        document.getElementById('m2-reflect').classList.add('show');
+        document.getElementById('m2-next-module-btn').style.display = 'block';
+        unlockCard('transitive');
+      } else {
+        btn.classList.add('wrong');
+        document.getElementById('m2-hint').textContent = opt.hint;
+        document.getElementById('m2-hint').classList.add('show');
+        setTimeout(() => btn.classList.remove('wrong'), 350);
+      }
+    };
+    optWrap.appendChild(btn);
+  });
+  m2RenderProgress();
+}
+function m2RenderProgress() {
+  const wrap = document.getElementById('m2-progress');
+  wrap.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const d = document.createElement('div');
+    d.className = 'round-dot' + (i < m2State.round ? ' done' : '') + (i === m2State.round ? ' current' : '');
+    wrap.appendChild(d);
+  }
+}
+function m2NextRound() {
+  m2State.round++;
+  m2Render();
+}
+function setupModule2() {
+  m2State = { round: 0, phase: 'answer', bridgeChosen: null, segMeshes: {}, segLabels: [] };
+  m2Render();
+}
+
+/* ============================================================
+   MODULE 3 — ĐỊNH LÝ BA GIAO TUYẾN
+   ============================================================ */
+const M3_CONFIGS = {
+  parallel: {
+    label: 'Ba mặt phẳng (ABCD), (SAB), (SDC)',
+    planes: () => {
+      const planeBase = definePlaneFromPoints(PYR.A, PYR.B, PYR.C);
+      const planeSAB = definePlaneFromPoints(PYR.S, PYR.A, PYR.B);
+      const planeSDC = definePlaneFromPoints(PYR.S, PYR.D, PYR.C);
+      return { planeBase, planeSAB, planeSDC };
+    },
+    knownEdges: ['AB', 'CD'],
+    knownColors: { AB: COLOR_LINE_A, CD: COLOR_LINE_B },
+    hiddenLabel: 'giao tuyến qua S // AB',
+    computeHidden: (planes) => intersectionOfTwoPlanes(planes.planeSAB, planes.planeSDC),
+    answer: 'song song',
+    planeMeshDefs: (planes) => ([
+      { centroid: new THREE.Vector3().addVectors(PYR.A, PYR.C).multiplyScalar(0.5), normal: planes.planeBase.normal, color: COLOR_PLANE_1, size: 6.5 },
+      { centroid: new THREE.Vector3().addVectors(PYR.S, new THREE.Vector3().addVectors(PYR.A, PYR.B).multiplyScalar(0.5)).multiplyScalar(0.5), normal: planes.planeSAB.normal, color: COLOR_PLANE_3, size: 5.5 },
+      { centroid: new THREE.Vector3().addVectors(PYR.S, new THREE.Vector3().addVectors(PYR.D, PYR.C).multiplyScalar(0.5)).multiplyScalar(0.5), normal: planes.planeSDC.normal, color: COLOR_PLANE_4, size: 5.5 }
+    ])
+  },
+  concurrent: {
+    label: 'Ba mặt phẳng (SAB), (SBC), (SDC)',
+    planes: () => {
+      const planeSAB = definePlaneFromPoints(PYR.S, PYR.A, PYR.B);
+      const planeSBC = definePlaneFromPoints(PYR.S, PYR.B, PYR.C);
+      const planeSDC = definePlaneFromPoints(PYR.S, PYR.D, PYR.C);
+      return { planeSAB, planeSBC, planeSDC };
+    },
+    knownEdges: ['SB', 'SC'],
+    knownColors: { SB: COLOR_LINE_A, SC: COLOR_LINE_B },
+    hiddenLabel: 'giao tuyến qua S (mp SAB ∩ mp SDC)',
+    computeHidden: (planes) => intersectionOfTwoPlanes(planes.planeSAB, planes.planeSDC),
+    answer: 'đồng quy',
+    concurrencyPoint: () => PYR.S,
+    planeMeshDefs: (planes) => ([
+      { centroid: new THREE.Vector3().addVectors(PYR.S, new THREE.Vector3().addVectors(PYR.A, PYR.B).multiplyScalar(0.5)).multiplyScalar(0.5), normal: planes.planeSAB.normal, color: COLOR_PLANE_3, size: 5.5 },
+      { centroid: new THREE.Vector3().addVectors(PYR.S, new THREE.Vector3().addVectors(PYR.B, PYR.C).multiplyScalar(0.5)).multiplyScalar(0.5), normal: planes.planeSBC.normal, color: COLOR_PLANE_1, size: 5.5 },
+      { centroid: new THREE.Vector3().addVectors(PYR.S, new THREE.Vector3().addVectors(PYR.D, PYR.C).multiplyScalar(0.5)).multiplyScalar(0.5), normal: planes.planeSDC.normal, color: COLOR_PLANE_4, size: 5.5 }
+    ])
+  }
+};
+
+let m3State = { turn: 0, turns: [], visionOn: false, answered: false, hiddenLine: null, hiddenPoint: null, planeMeshes: [] };
+
+function m3BuildTurnSequence() {
+  const bag = ['parallel', 'concurrent'];
+  for (let i = bag.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [bag[i], bag[j]] = [bag[j], bag[i]];
+  }
+  return [
+    { type: 'parallel', guided: true },
+    { type: 'concurrent', guided: true },
+    { type: bag[0], guided: false },
+    { type: bag[1], guided: false }
+  ];
+}
+
+function m3Render() {
+  clearTransient();
+  // Các mặt phẳng Vision đã được đăng ký trong transient và dọn ở trên.
+  m3State.planeMeshes = [];
+  setPyramidVisible(true);
+  resetPyramidEmphasis();
+  m3State.visionOn = false;
+  m3State.answered = false;
+  document.getElementById('m3-vision-btn').textContent = '👁 Bật Vision';
+  document.getElementById('m3-hint').classList.remove('show');
+  document.getElementById('m3-explain').style.display = 'none';
+  document.getElementById('m3-next-round-btn').style.display = 'none';
+  document.getElementById('m3-next-module-btn').style.display = 'none';
+
+  const turn = m3State.turns[m3State.turn];
+  const cfg = M3_CONFIGS[turn.type];
+  const planes = cfg.planes();
+  m3State.currentCfg = cfg;
+  m3State.currentPlanes = planes;
+  m3State.hidden = cfg.computeHidden(planes);
+
+  const highlight = {};
+  cfg.knownEdges.forEach(e => highlight[e] = cfg.knownColors[e]);
+  setPyramidEmphasis(highlight, 0.15);
+
+  cfg.knownEdges.forEach(e => {
+    const edge = pyramidEdges[e];
+    trackLabel(addLabel(e, cfg.knownColors[e], { getPos: () => new THREE.Vector3().addVectors(edge.p1, edge.p2).multiplyScalar(0.5), offsetY: 0.15 }));
+  });
+
+  // vùng "???" tại vị trí giao tuyến ẩn
+  const hiddenMid = m3State.hidden ? m3State.hidden.point.clone().add(m3State.hidden.dir.clone().multiplyScalar(0.6)) : PYR.S.clone();
+  trackLabel(addLabel('???', 0xfbbf24, { getPos: () => hiddenMid, hiddenMark: true, offsetY: 0.2 }));
+
+  camera.position.set(7, 5.5, 8.5);
+  orbitControls.target.set(2, 1.5, 1.5);
+  orbitControls.update();
+
+  const guidanceEl = document.getElementById('m3-guidance');
+  if (turn.guided) {
+    guidanceEl.style.display = 'block';
+    if (turn.type === 'parallel') {
+      guidanceEl.innerHTML = 'Quan sát 2 giao tuyến đã biết (AB, CD) — chúng song song. Theo định lý ba giao tuyến, khi 2 giao tuyến song song, giao tuyến còn lại cũng phải song song với cả hai.';
+    } else {
+      guidanceEl.innerHTML = 'Quan sát 2 giao tuyến đã biết (SB, SC) — chúng cắt nhau tại S. Theo định lý, giao tuyến còn lại phải đi qua đúng điểm đó.';
+    }
+  } else {
+    guidanceEl.style.display = 'none';
+  }
+  document.getElementById('m3-question').textContent = turn.guided
+    ? 'Bạn có chắc thanh bị che nằm ở đâu không?'
+    : 'Có chắc thanh bị che nằm ở đâu không? Hãy tự bật Vision và xác định.';
+
+  const optWrap = document.getElementById('m3-options');
+  optWrap.innerHTML = '';
+  ['song song với 2 giao tuyến kia', 'đi qua đúng điểm cắt của 2 giao tuyến kia'].forEach((label, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = label;
+    btn.disabled = true; // chỉ mở sau khi bật Vision
+    btn.onclick = () => m3Answer(i === 0 ? 'song song' : 'đồng quy', btn, optWrap);
+    optWrap.appendChild(btn);
+  });
+  m3RenderProgress();
+}
+
+function m3ToggleVision() {
+  m3State.visionOn = !m3State.visionOn;
+  document.getElementById('m3-vision-btn').textContent = m3State.visionOn ? '👁 Tắt Vision' : '👁 Bật Vision';
+  document.querySelectorAll('#m3-options .opt-btn').forEach(b => { if (!m3State.answered) b.disabled = !m3State.visionOn; });
+
+  m3State.planeMeshes.forEach(disposeTrackedMesh);
+  m3State.planeMeshes = [];
+  if (m3State.visionOn) {
+    const defs = m3State.currentCfg.planeMeshDefs(m3State.currentPlanes);
+    defs.forEach(d => {
+      const mesh = makePlane(d.centroid, d.normal, d.color, 0.001, d.size);
+      m3State.planeMeshes.push(mesh);
+      // Đăng ký thêm vào transient — nếu học sinh rời Module 3 khi Vision
+      // đang bật (VD bấm thẳng "Tiếp tục sang Module 4"), clearTransient()
+      // ở goToModule() vẫn dọn được mesh này dù m3ToggleVision() không chạy lại.
+      trackMesh(mesh);
+      const t0 = performance.now();
+      const dur = 700;
+      function grow() {
+        const p = Math.min(1, (performance.now() - t0) / dur);
+        mesh.material.opacity = 0.2 * p;
+        mesh.scale.set(p, p, 1);
+        if (p < 1) requestAnimationFrame(grow);
+      }
+      grow();
+    });
+  }
+}
+
+function m3Answer(chosen, btn, wrap) {
+  if (m3State.answered) return;
+  const turn = m3State.turns[m3State.turn];
+  const cfg = m3State.currentCfg;
+  const correct = chosen === cfg.answer;
+  if (!correct) {
+    btn.classList.add('wrong');
+    document.getElementById('m3-hint').textContent = 'Hãy quan sát kỹ lại 2 giao tuyến đã biết bằng Vision — chúng song song hay cắt nhau?';
+    document.getElementById('m3-hint').classList.add('show');
+    setTimeout(() => btn.classList.remove('wrong'), 350);
+    return;
+  }
+  m3State.answered = true;
+  btn.classList.add('correct');
+  Array.from(wrap.children).forEach(b => b.disabled = true);
+
+  // hiện giao tuyến thật để đối chiếu
+  if (m3State.hidden) {
+    const hp = m3State.hidden.point, hd = m3State.hidden.dir;
+    trackMesh(makeExtendedLine(hp.clone().sub(hd.clone().multiplyScalar(1.2)), hp.clone().add(hd.clone().multiplyScalar(1.2)), COLOR_RESULT, 0.4));
+  }
+  if (cfg.answer === 'đồng quy' && cfg.concurrencyPoint) {
+    trackMesh(makeMarker(cfg.concurrencyPoint(), COLOR_RESULT, 0.11));
+  }
+
+  const explainEl = document.getElementById('m3-explain');
+  explainEl.style.display = 'flex';
+  explainEl.innerHTML = `<div class="ib-icon">✅</div><div>${cfg.answer === 'song song' ? 'Đúng — 2 giao tuyến đã biết song song nhau, nên giao tuyến còn lại cũng song song với cả hai.' : 'Đúng — 2 giao tuyến đã biết cắt nhau, nên giao tuyến còn lại phải đi qua đúng điểm đó.'}</div>`;
+
+  if (m3State.turn < 3) document.getElementById('m3-next-round-btn').style.display = 'block';
+  else {
+    document.getElementById('m3-next-module-btn').style.display = 'block';
+    unlockCard('threeplanes');
+  }
+}
+function m3RenderProgress() {
+  const wrap = document.getElementById('m3-progress');
+  wrap.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const d = document.createElement('div');
+    d.className = 'round-dot' + (i < m3State.turn ? ' done' : '') + (i === m3State.turn ? ' current' : '');
+    wrap.appendChild(d);
+  }
+}
+function m3NextTurn() {
+  m3State.turn++;
+  m3Render();
+}
+function setupModule3() {
+  m3State = { turn: 0, turns: m3BuildTurnSequence(), visionOn: false, answered: false, hiddenLine: null, hiddenPoint: null, planeMeshes: [] };
+  m3Render();
+}
+
+/* ============================================================
+   MODULE 4 — CHỌN CHIẾN LƯỢC (kéo thẻ thả vào bài)
+   ============================================================ */
+let m4DragEnabled = false;
+let m4SelectedCard = null;
+const DROP_ZONE_PLACEHOLDER = 'Kéo 1 thẻ chiến lược từ Sổ tay rồi thả vào đây';
+function m4UsesTapInteraction() {
+  return window.matchMedia('(max-width: 1024px), (any-pointer: coarse)').matches;
+}
+function m4DropPlaceholder() {
+  return m4UsesTapInteraction()
+    ? 'Chọn một thẻ trong Sổ tay, sau đó chạm vào đây'
+    : DROP_ZONE_PLACEHOLDER;
+}
+function m4UpdateInstructions() {
+  const tapMode = m4UsesTapInteraction();
+  document.getElementById('m4-intro').textContent = tapMode
+    ? 'Sổ tay chiến lược đã mở — chạm chọn một thẻ, rồi chạm vùng bài toán trên hình.'
+    : 'Sổ tay chiến lược đã mở ở góc phải — kéo thẻ phù hợp thả vào vùng bài toán.';
+  document.getElementById('m4-instruction').innerHTML = tapMode
+    ? 'Nếu chỉ được mang theo <b>MỘT phương pháp</b> vào bài này, bạn chọn phương pháp nào? Chạm một thẻ trong Sổ tay, rồi chạm vùng bài toán.'
+    : 'Nếu chỉ được mang theo <b>MỘT phương pháp</b> vào bài này, bạn chọn phương pháp nào? Kéo 1 thẻ trong Sổ tay (góc phải) thả vào vùng bài toán.';
+}
+function m4SelectCard(card) {
+  if (!m4DragEnabled || m4State.solved) return;
+  m4SelectedCard = card;
+  renderNotebook();
+  const zone = document.getElementById('drop-zone');
+  zone.classList.remove('reject');
+  zone.classList.add('ready');
+  zone.textContent = 'Chạm để dùng: ' + card.l1;
+  notebookPanel.classList.remove('open');
+}
+function m4SubmitSelectedCard() {
+  if (!m4UsesTapInteraction() || !m4SelectedCard || m4State.solved) return;
+  const card = m4SelectedCard;
+  m4SelectedCard = null;
+  m4EvaluateDrop(card);
+}
+const M4_PROBLEMS = [
+  {
+    id: 'p1', solid: 'pyramid', correctMethod: 'transitive',
+    question: 'Bài 1 · Cho AB // CD (đáy hình bình hành ABCD). E, F là trung điểm SD, SC. Cần chứng minh AB // EF.',
+    hint: 'Bài này có đường trung gian nào cùng song song với cả AB và EF không?',
+    explain: 'Đúng — CD vừa song song AB (đáy hbh), vừa song song EF (đường trung bình). Đây là dấu hiệu của tính chất bắc cầu.',
+    setup: () => {
+      resetPyramidEmphasis();
+      setPyramidEmphasis({ AB: COLOR_LINE_A, CD: COLOR_LINE_B }, 0.15);
+      trackMesh(makeLine(PYR.E, PYR.F, COLOR_LINE_C));
+      trackLabel(addLabel('AB', COLOR_LINE_A, { getPos: () => new THREE.Vector3().addVectors(PYR.A, PYR.B).multiplyScalar(0.5), offsetY: -0.1 }));
+      trackLabel(addLabel('CD', COLOR_LINE_B, { getPos: () => new THREE.Vector3().addVectors(PYR.C, PYR.D).multiplyScalar(0.5), offsetY: -0.1 }));
+      trackLabel(addLabel('EF', COLOR_LINE_C, { getPos: () => new THREE.Vector3().addVectors(PYR.E, PYR.F).multiplyScalar(0.5), offsetY: 0.18 }));
+      camera.position.set(7, 5.5, 8);
+      orbitControls.target.set(2, 1.5, 1.5);
+      orbitControls.update();
+    }
+  },
+  {
+    id: 'p2', solid: 'pyramid', correctMethod: 'threeplanes',
+    question: 'Bài 2 · Ba mặt phẳng (SAB), (SBC), (SDC) cắt nhau theo ba giao tuyến SB, SC và một giao tuyến còn lại bị che.',
+    hint: 'Bài này có 3 mặt phẳng cắt nhau theo 3 giao tuyến — quen thuộc từ Module 3 chứ?',
+    explain: 'Đúng — dấu hiệu "ba mặt phẳng cắt nhau theo ba giao tuyến" gọi đúng định lý ba giao tuyến.',
+    setup: () => {
+      resetPyramidEmphasis();
+      setPyramidEmphasis({ SB: COLOR_LINE_A, SC: COLOR_LINE_B }, 0.15);
+      trackLabel(addLabel('SB', COLOR_LINE_A, { getPos: () => new THREE.Vector3().addVectors(PYR.S, PYR.B).multiplyScalar(0.5), offsetY: 0.15 }));
+      trackLabel(addLabel('SC', COLOR_LINE_B, { getPos: () => new THREE.Vector3().addVectors(PYR.S, PYR.C).multiplyScalar(0.5), offsetY: 0.15 }));
+      trackLabel(addLabel('???', 0xfbbf24, { getPos: () => PYR.S.clone().add(new THREE.Vector3(-0.3,0.5,-0.3)), hiddenMark: true }));
+      camera.position.set(7, 5.5, 8.5);
+      orbitControls.target.set(2, 1.5, 1.5);
+      orbitControls.update();
+    }
+  },
+  {
+    id: 'p3', solid: 'box', correctMethod: 'unique',
+    question: "Bài 3 · M là trung điểm cạnh AA'. Cần dựng một đường thẳng qua M, song song với AB.",
+    hint: 'Bài này chỉ cho 1 điểm và yêu cầu dựng đường qua điểm đó — không có đường trung gian hay 3 mặt phẳng nào cả.',
+    explain: 'Đúng — chỉ có 1 điểm cho trước và yêu cầu dựng đường song song qua đó, đúng dấu hiệu của định lý duy nhất.',
+    setup: () => {
+      setBoxEmphasis({ AB: COLOR_LINE_A }, 0.2);
+      const M = new THREE.Vector3().addVectors(BOX.A, BOX.A2).multiplyScalar(0.5);
+      trackMesh(makeMarker(M, COLOR_POINT_ON_LINE, 0.09));
+      trackLabel(addLabel('M', COLOR_POINT_ON_LINE, { getPos: () => M }));
+      trackLabel(addLabel('AB', COLOR_LINE_A, { getPos: () => new THREE.Vector3().addVectors(BOX.A, BOX.B).multiplyScalar(0.5), offsetY: -0.1 }));
+      camera.position.set(6, 4.5, 7);
+      orbitControls.target.set(2, 1, 1.5);
+      orbitControls.update();
+    }
+  },
+  {
+    id: 'p4', solid: 'box', correctMethod: 'definition',
+    question: "Bài 4 · Xét hai đường thẳng AB và C'D'. Chúng có song song không?",
+    hint: 'Bài này không có đường trung gian, không có 3 mặt phẳng — chỉ có 2 đường. Có thể kiểm tra trực tiếp điều gì?',
+    explain: "Đúng — không có gì để bắc cầu hay dùng ba giao tuyến, chỉ cần kiểm tra trực tiếp AB và C'D' đồng phẳng + không cắt nhau theo định nghĩa.",
+    setup: () => {
+      setBoxEmphasis({ AB: COLOR_LINE_A, C2D2: COLOR_LINE_B }, 0.2);
+      trackLabel(addLabel('AB', COLOR_LINE_A, { getPos: () => new THREE.Vector3().addVectors(BOX.A, BOX.B).multiplyScalar(0.5), offsetY: -0.1 }));
+      trackLabel(addLabel("C'D'", COLOR_LINE_B, { getPos: () => new THREE.Vector3().addVectors(BOX.C2, BOX.D2).multiplyScalar(0.5), offsetY: 0.15 }));
+      camera.position.set(6, 4.5, 7);
+      orbitControls.target.set(2, 1, 1.5);
+      orbitControls.update();
+    }
+  }
+];
+let m4State = { idx: 0, solved: false };
+
+function m4OpenNotebook() {
+  m4DragEnabled = true;
+  document.getElementById('m4-open-notebook-btn').style.display = 'none';
+  document.getElementById('m4-problem-area').style.display = 'block';
+  m4UpdateInstructions();
+  unlockCard('definition');
+  renderNotebook();
+  notebookPanel.classList.add('open');
+  m4Render();
+}
+function setupModule4() {
+  m4DragEnabled = false;
+  m4SelectedCard = null;
+  m4State = { idx: 0, solved: false };
+  clearTransient();
+  setPyramidVisible(true);
+  resetPyramidEmphasis();
+  setBoxVisible(false);
+  document.getElementById('m4-open-notebook-btn').style.display = 'block';
+  document.getElementById('m4-problem-area').style.display = 'none';
+  camera.position.set(7, 6, 8);
+  orbitControls.target.set(2, 1.5, 1.5);
+  orbitControls.update();
+}
+function m4Render() {
+  clearTransient();
+  const prob = M4_PROBLEMS[m4State.idx];
+  m4State.solved = false;
+  m4SelectedCard = null;
+  const isBox = prob.solid === 'box';
+  setPyramidVisible(!isBox);
+  setBoxVisible(isBox);
+  if (!isBox) resetPyramidEmphasis();
+  const zoneEl = document.getElementById('drop-zone');
+  zoneEl.classList.add('show');
+  zoneEl.classList.remove('hover', 'reject', 'ready');
+  zoneEl.textContent = m4DropPlaceholder();
+  m4UpdateInstructions();
+  document.getElementById('m4-question').textContent = prob.question;
+  document.getElementById('m4-hint').classList.remove('show');
+  document.getElementById('m4-explain').style.display = 'none';
+  document.getElementById('m4-next-btn').style.display = 'none';
+  prob.setup();
+  m4RenderProgress();
+  renderNotebook();
+}
+function m4RenderProgress() {
+  const wrap = document.getElementById('m4-progress');
+  wrap.innerHTML = '';
+  for (let i = 0; i < 4; i++) {
+    const d = document.createElement('div');
+    d.className = 'round-dot' + (i < m4State.idx ? ' done' : '') + (i === m4State.idx ? ' current' : '');
+    wrap.appendChild(d);
+  }
+}
+function m4NextProblem() {
+  document.getElementById('drop-zone').classList.remove('show');
+  m4State.idx++;
+  if (m4State.idx >= M4_PROBLEMS.length) {
+    document.getElementById('m4-problem-area').style.display = 'none';
+    showBossQuestion();
+    return;
+  }
+  m4Render();
+}
+
+/* ---- Kéo thẻ (pointer-based, hỗ trợ cả chuột & cảm ứng) ---- */
+let m4Drag = null; // { card, cloneEl, originEl }
+function m4StartCardDrag(event, card, originEl) {
+  if (m4State.solved) return;
+  event.preventDefault();
+  const clone = originEl.cloneNode(true);
+  clone.className = 'card-drag-clone';
+  document.body.appendChild(clone);
+  m4Drag = { card, clone, originEl };
+  m4MoveCardClone(event);
+  window.addEventListener('pointermove', m4OnCardMove);
+  window.addEventListener('pointerup', m4OnCardDrop);
+}
+function m4MoveCardClone(event) {
+  if (!m4Drag) return;
+  m4Drag.clone.style.left = event.clientX + 'px';
+  m4Drag.clone.style.top = event.clientY + 'px';
+}
+function m4OnCardMove(event) {
+  if (!m4Drag) return;
+  m4MoveCardClone(event);
+  const zone = document.getElementById('drop-zone');
+  const r = zone.getBoundingClientRect();
+  const inside = event.clientX >= r.left && event.clientX <= r.right && event.clientY >= r.top && event.clientY <= r.bottom;
+  zone.classList.toggle('hover', inside);
+}
+function m4OnCardDrop(event) {
+  window.removeEventListener('pointermove', m4OnCardMove);
+  window.removeEventListener('pointerup', m4OnCardDrop);
+  if (!m4Drag) return;
+  const zone = document.getElementById('drop-zone');
+  const r = zone.getBoundingClientRect();
+  const inside = event.clientX >= r.left && event.clientX <= r.right && event.clientY >= r.top && event.clientY <= r.bottom;
+  const card = m4Drag.card;
+  m4Drag.clone.remove();
+  m4Drag = null;
+  zone.classList.remove('hover');
+  if (!inside) return;
+  m4EvaluateDrop(card);
+}
+function m4EvaluateDrop(card) {
+  const prob = M4_PROBLEMS[m4State.idx];
+  const zone = document.getElementById('drop-zone');
+  if (card.id === prob.correctMethod) {
+    m4State.solved = true;
+    zone.classList.remove('reject', 'ready');
+    zone.textContent = '✓ ' + card.l1;
+    const explainEl = document.getElementById('m4-explain');
+    explainEl.style.display = 'flex';
+    explainEl.innerHTML = `<div class="ib-icon">✅</div><div>${prob.explain}</div>`;
+    document.getElementById('m4-next-btn').style.display = 'block';
+  } else {
+    zone.classList.remove('ready');
+    zone.classList.add('reject');
+    zone.textContent = m4DropPlaceholder();
+    setTimeout(() => zone.classList.remove('reject'), 350);
+    document.getElementById('m4-hint').textContent = prob.hint;
+    document.getElementById('m4-hint').classList.add('show');
+    renderNotebook();
+    if (m4UsesTapInteraction()) notebookPanel.classList.add('open');
+  }
+}
+
+/* ============================================================
+   BOSS QUESTION
+   ============================================================ */
+function showBossQuestion() {
+  const overlay = document.getElementById('boss-overlay');
+  const optWrap = document.getElementById('boss-options');
+  const finalEl = document.getElementById('boss-final');
+  const hintEl = document.getElementById('boss-hint');
+  finalEl.classList.remove('show');
+  hintEl.classList.remove('show');
+  optWrap.innerHTML = '';
+  optWrap.style.display = 'block';
+  document.getElementById('boss-question-text').style.display = 'block';
+  const opts = ['Đọc giả thiết', 'Tìm dấu hiệu', 'Bắt đầu chứng minh ngay'];
+  opts.forEach(opt => {
+    const btn = document.createElement('button');
+    btn.className = 'opt-btn';
+    btn.textContent = opt;
+    btn.onclick = () => {
+      if (opt === 'Tìm dấu hiệu') {
+        optWrap.style.display = 'none';
+        document.getElementById('boss-question-text').style.display = 'none';
+        hintEl.classList.remove('show');
+        finalEl.classList.add('show');
+      } else {
+        btn.classList.add('wrong');
+        hintEl.textContent = 'Trước khi chứng minh, làm sao biết nên dùng phương pháp nào?';
+        hintEl.classList.add('show');
+        setTimeout(() => btn.classList.remove('wrong'), 350);
+      }
+    };
+    optWrap.appendChild(btn);
+  });
+  overlay.classList.add('show');
+}
+
+/* ============================================================
+   RENDER LOOP
+   ============================================================ */
+function animate() {
+  requestAnimationFrame(animate);
+  orbitControls.update();
+  if (m1 && m1.freePoint) m1.freePoint.syncRing();
+  if (m1 && m1.secondPoint) m1.secondPoint.syncRing();
+  syncAllLabels();
+  renderer.render(scene, camera);
+}
+
+/* ============================================================
+   INIT
+   ============================================================ */
+updateHeaderProgress();
+setupModule1();
+animate();
+
+function reportHeight() {
+  const height = document.documentElement.scrollHeight;
+  LMS().resize({ height });
+}
+window.addEventListener('load', reportHeight);
+if (typeof ResizeObserver !== 'undefined') {
+  const pageResizeObserver = new ResizeObserver(() => {
+    clearTimeout(window._rz);
+    window._rz = setTimeout(reportHeight, 100);
+  });
+  pageResizeObserver.observe(document.body);
+} else {
+  setInterval(reportHeight, 800);
+}
+
+function syncStickyCanvasState() {
+  if (window.innerWidth > 1024) {
+    document.body.classList.remove('canvas-is-sticky');
+    return;
+  }
+  const header = document.querySelector('header');
+  document.body.classList.toggle('canvas-is-sticky', header.getBoundingClientRect().bottom <= 0);
+}
+window.addEventListener('scroll', syncStickyCanvasState, { passive: true });
+window.addEventListener('resize', syncStickyCanvasState);
+syncStickyCanvasState();
+</script>
+</body>
+</html>
