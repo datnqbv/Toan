@@ -6,10 +6,13 @@ Sách: Kết nối tri thức với cuộc sống — Toán THPT
 TỔNG QUAN
 ---------
 Bài: Tích của một vectơ với một số (Bài 9)
-Layout: Sidebar + Main (3 module, học tuần tự, có thể vào thẳng từng module)
+Layout: Tab ngang (3 module, học tuần tự — Module 2 khoá cho tới khi
+  hoàn thành Module 1, Module 3 khoá cho tới khi hoàn thành Module 2)
 Mô hình sư phạm: Observe → Explain → Generalize
 Mỗi tương tác đều có giải thích ngay sau hành động của học sinh.
 Mỗi module kết thúc bằng hộp "Hiểu bản chất".
+Sổ tay kiến thức: Không cần cho cả 3 module (đều là dạy khái niệm
+  mới qua khám phá, chưa có gì để tổng hợp trước).
 
 MỤC TIÊU TỔNG THỂ
 ------------------
@@ -27,7 +30,7 @@ SAI LẦM CẦN GIẢI QUYẾT
 
 
 ====================================================================
-MODULE 1 — VECTOR STRETCH
+MODULE 1 — VECTOR CO GIÃN
 ====================================================================
 
 Mục tiêu:
@@ -62,6 +65,29 @@ HỌC SINH TƯƠNG TÁC BẰNG CÁCH
 4. Kéo slider sang vùng k âm → vector cam lật ngược hướng,
    hộp so sánh highlight đỏ: k|a| ≠ |k||a|
 5. Thử k=-2 → thấy vector dài gấp đôi nhưng ngược hướng
+
+--------------------------------------------------------------------
+BỐ CỤC GIAO DIỆN — DESKTOP & MOBILE
+--------------------------------------------------------------------
+Desktop: Canvas bên trái (chiếm ~60% chiều rộng), panel số liệu +
+  hộp so sánh bên phải. Slider nằm ngang dưới canvas.
+Mobile: Xếp dọc — Canvas lên trên cùng (full-width), panel số liệu
+  ngay dưới canvas (2 cột thay vì hàng ngang), slider dưới cùng,
+  to bản dễ kéo bằng ngón tay.
+
+Ánh xạ tương tác:
+| Thao tác      | Desktop                          | Mobile                                  |
+|---------------|-----------------------------------|------------------------------------------|
+| Kéo slider k  | Click-drag chuột trên thanh trượt | Chạm + vuốt ngón tay (input range gốc,   |
+|               |                                   | tự tương thích cảm ứng, không cần code   |
+|               |                                   | thêm; đảm bảo track cao ≥44px)           |
+
+--------------------------------------------------------------------
+TRƯỚC MỖI BƯỚC TƯƠNG TÁC
+--------------------------------------------------------------------
+| Bước                | Hướng dẫn thao tác                      | Kiến thức áp dụng                          |
+|----------------------|------------------------------------------|----------------------------------------------|
+| Trước khi kéo lần đầu | Kéo thanh trượt k từ -3 đến 3 và quan sát vector cam. | Vector cam là kết quả của phép nhân vector a với số k. |
 
 --------------------------------------------------------------------
 KỊCH BẢN DẪN DẮT HỌC SINH GẶP SAI LẦM VÀ TỰ SỬA
@@ -133,7 +159,7 @@ NÚT VÀ ĐIỀU KHIỂN
 
 
 ====================================================================
-MODULE 2 — CLONE THE VECTOR
+MODULE 2 — TẠO VECTOR
 ====================================================================
 
 Mục tiêu:
@@ -172,6 +198,42 @@ Level 3 — Tạo -a:
 
 Level 4 — Tạo -3/2 a:
   Kéo ngược hướng, độ dài 1.5 lần |a| — level khó nhất.
+
+--------------------------------------------------------------------
+BỐ CỤC GIAO DIỆN — DESKTOP & MOBILE
+--------------------------------------------------------------------
+Desktop: Canvas chiếm phần lớn màn hình, panel nhiệm vụ + progress
+  bar cố định góc trên. Nút Thử lại / Gợi ý / Tổng kết xếp ngang
+  dưới canvas.
+Mobile: Canvas full-width lên đầu, panel nhiệm vụ thu gọn thành 1
+  dòng ngay trên canvas (không chiếm góc che tầm nhìn), nút Thử lại
+  / Gợi ý / Tổng kết xếp dọc thành cột full-width dưới canvas, mỗi
+  nút cao ≥44px.
+
+Ánh xạ tương tác:
+| Thao tác                  | Desktop                              | Mobile                                                          |
+|-----------------------------|-----------------------------------------|--------------------------------------------------------------------|
+| Kéo đầu mũi tên xanh        | Click-drag chuột vào đúng đầu mũi tên   | Chạm-kéo bằng ngón tay — CHỈ hit-test trong bán kính ~24-30px      |
+|                              |                                          | quanh đầu mũi tên, KHÔNG bắt toàn bộ canvas làm vùng kéo (để       |
+|                              |                                          | không chặn học sinh cuộn trang qua canvas)                        |
+| Vòng tròn snap ±8%          | Hiện khi con trỏ chuột đủ gần            | Sai số tăng lên ±12-15% — ngón tay che khuất điểm chính xác hơn   |
+|                              |                                          | con trỏ chuột, cần vùng snap rộng hơn                              |
+| Nút Thử lại / Gợi ý         | Click nút                                | Chạm nút (button chuẩn, tự ổn định trên mọi thiết bị)              |
+
+Quyết định cho Rủi ro 2 (đã tự nêu ở phần Critical Review): giữ auto-snap khi
+đủ gần (mượt hơn cho thao tác chính), NHƯNG thêm 1 nút "Kiểm tra" dự phòng —
+dành cho trường hợp học sinh nghĩ đã đúng nhưng lệch nhẹ ngoài vùng snap,
+đặc biệt hữu ích trên mobile khi ngón tay khó căn chỉnh chính xác.
+
+--------------------------------------------------------------------
+TRƯỚC MỖI BƯỚC TƯƠNG TÁC
+--------------------------------------------------------------------
+| Bước    | Hướng dẫn thao tác                                        | Kiến thức áp dụng                                              |
+|-----------|--------------------------------------------------------------|---------------------------------------------------------------------|
+| Level 1   | Kéo đầu mũi tên xanh đến vị trí gấp đôi độ dài a, cùng hướng, rồi thả tay. | k > 1 giữ nguyên hướng, độ dài nhân lên k lần.                    |
+| Level 2   | Kéo đầu mũi tên xanh đến vị trí nửa độ dài a, cùng hướng, rồi thả tay.    | 0 < k < 1 giữ nguyên hướng, độ dài co lại còn k lần.               |
+| Level 3   | Kéo đầu mũi tên xanh ngược hướng a, đúng độ dài |a|, rồi thả tay.        | k < 0 luôn đổi hướng — dấu âm không chỉ ảnh hưởng độ lớn.          |
+| Level 4   | Kéo đầu mũi tên xanh ngược hướng a, độ dài gấp 1.5 lần |a|, rồi thả tay. | Cần kiểm tra CẢ hướng (theo dấu k) VÀ độ dài (theo |k|) cùng lúc.  |
 
 --------------------------------------------------------------------
 KỊCH BẢN DẪN DẮT HỌC SINH GẶP SAI LẦM VÀ TỰ SỬA
@@ -258,7 +320,7 @@ NÚT VÀ ĐIỀU KHIỂN
 
 
 ====================================================================
-MODULE 3 — BUILD THE VECTOR
+MODULE 3 — GHÉP VECTOR
 ====================================================================
 
 Mục tiêu:
@@ -303,6 +365,37 @@ Bước 3 — Kiểm tra:
 Reveal (sau khi snap):
   Animation vẽ hình bình hành — đường kẻ song song với a và b
   qua đầu u — minh họa cách dựng hình.
+
+--------------------------------------------------------------------
+BỐ CỤC GIAO DIỆN — DESKTOP & MOBILE
+--------------------------------------------------------------------
+Desktop: Canvas bên phải (lớn hơn, vì đây là module phức tạp nhất),
+  2 slider ×a/×b xếp dọc bên trái cùng panel "Bước hiện tại" và kết
+  quả ghép realtime.
+Mobile: Canvas full-width lên đầu (ưu tiên không gian vì cần nhìn rõ
+  hình bình hành), 2 slider xếp dọc ngay dưới canvas, panel "Bước
+  hiện tại" thu gọn 1 dòng trên canvas, kết quả ghép realtime hiện
+  ngay dưới 2 slider (không phải cuối trang).
+
+Ánh xạ tương tác:
+| Thao tác                | Desktop                             | Mobile                                                        |
+|----------------------------|------------------------------------------|--------------------------------------------------------------------|
+| Kéo slider ×a, ×b           | Click-drag chuột trên từng thanh trượt   | Chạm-vuốt từng thanh trượt (input range gốc, ổn định)              |
+| Nút Gợi ý (2 đường song song) | Click nút                              | Chạm nút (button chuẩn)                                            |
+| Kiểm tra khớp chuỗi ghép     | Tự động theo vị trí trong lúc kéo slider | Tự động — giữ nguyên cơ chế, không cần thao tác thêm cho mobile   |
+| Animation 4 bước sau snap   | Tự chạy liên tục                        | Tự chạy, nhưng MỖI BƯỚC dừng đủ lâu để đọc caption trên màn hình  |
+|                              |                                          | nhỏ — không chạy nhanh như trên desktop (màn hình rộng đọc nhanh   |
+|                              |                                          | hơn); đề xuất: thêm nút "Tiếp" thủ công thay vì auto-advance nếu   |
+|                              |                                          | học sinh đọc chưa kịp                                              |
+
+--------------------------------------------------------------------
+TRƯỚC MỖI BƯỚC TƯƠNG TÁC
+--------------------------------------------------------------------
+| Bước    | Hướng dẫn thao tác                                         | Kiến thức áp dụng                                                |
+|-----------|-----------------------------------------------------------------|------------------------------------------------------------------------|
+| Bước 1    | Kéo slider ×a để chọn hệ số x, quan sát vector xa xuất hiện từ O. | Vector xa là vector a được nhân với số x — cùng hướng nếu x>0, ngược hướng nếu x<0. |
+| Bước 2    | Kéo slider ×b để chọn hệ số y — vector yb sẽ nối vào đầu xa.       | Khi ghép nối tiếp 2 vector, điểm cuối vector trước là điểm đầu vector sau. |
+| Bước 3    | Quan sát đầu mũi tên chuỗi ghép — có khớp với đầu u không? Chỉnh lại slider nếu chưa khớp. | u = xa + yb — bộ (x,y) đúng khi và chỉ khi đầu chuỗi ghép trùng đầu u. |
 
 --------------------------------------------------------------------
 KỊCH BẢN DẪN DẮT HỌC SINH GẶP SAI LẦM VÀ TỰ SỬA
@@ -423,6 +516,40 @@ CRITICAL REVIEW — TỰ PHẢN BIỆN
   • Module 2 đang có 4 level (2a, ½a, -a, -3/2 a) — cần thêm/bớt?
   • Module 3 có cần nhiều bài toán phân tích khác nhau (u thay đổi
     mỗi lần) hay chỉ cần 1-2 ví dụ điển hình?
+
+
+====================================================================
+TỔNG KẾT TOÀN BÀI (hiện sau khi hoàn thành cả 3 module)
+====================================================================
+Khác với hộp "Hiểu bản chất" cuối mỗi module (chỉ chốt riêng kiến
+thức của module đó), phần này chốt lại MỐI LIÊN HỆ giữa cả 3 module
+— vì bài học có 3 kỹ năng riêng biệt (quy tắc hướng+độ dài, luyện
+tay tạo vector, phân tích hình học), cần 1 chỗ ghép chúng lại thành
+bức tranh chung trước khi kết thúc bài.
+
+Nội dung tổng kết:
+  "Ba module bạn vừa hoàn thành thực chất chỉ xoay quanh một câu hỏi
+  duy nhất: nhân vector a với số k thì được gì?
+    • Module 1 cho bạn thấy QUY TẮC: hướng theo dấu k, độ dài theo |k|.
+    • Module 2 để bạn tự tay ÁP DỤNG quy tắc đó — tạo ra đúng vector
+      ka khi biết trước k.
+    • Module 3 lật ngược vấn đề: cho trước vector u, tìm xem u được
+      ghép từ bao nhiêu lần a và bao nhiêu lần b — đây chính là nền
+      tảng để sau này phân tích mọi vector theo 2 vector cơ sở."
+
+Mini-challenge chốt bài (gộp từ Gợi ý thêm ở Critical Review):
+  Cho sẵn u = 2a - b. Hỏi: "Dấu âm trước b trong biểu thức này nghĩa
+  là gì về mặt hình học?"
+  → Đáp đúng: thành phần theo b của u ngược hướng với b.
+  → Đây là lượt kiểm tra cuối cho sai lầm số 4 (xác định sai dấu x,y
+    khi vector thành phần ngược hướng gốc) trước khi học sinh rời bài.
+
+Bố cục Desktop & Mobile:
+  Desktop: Hộp tổng kết full-width, mini-challenge dạng 2-3 lựa chọn
+    xếp ngang bên dưới.
+  Mobile: Giữ nguyên bố cục (không có canvas/hình vẽ phức tạp ở phần
+    này), chỉ đổi lựa chọn mini-challenge xếp ngang → xếp dọc full-
+    width, mỗi lựa chọn cao ≥44px.
 
 
 ====================================================================

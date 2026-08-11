@@ -106,16 +106,23 @@
       font-size: 18px;
       line-height: 1.7;
       min-width: 0;
+      max-width: 100%;
+      overflow-x: clip;
     }
 
+    html { width: 100%; max-width: 100%; overflow-x: hidden; }
+
     .page {
+      width: 100%;
       max-width: 1120px;
       margin: 0 auto;
-      padding: 20px 16px 56px;
+      padding: 14px 16px 36px;
       display: flex;
       flex-direction: column;
-      gap: 14px
+      gap: 10px
     }
+
+    .page > * { min-width: 0; max-width: 100%; }
 
     .intro-text {
       padding: .85rem 1.1rem;
@@ -185,8 +192,78 @@
       font-size: .76rem;
       font-weight: 600;
       color: var(--jade-deep);
-      margin: 0 0 10px;
+      margin: 0;
       width: fit-content
+    }
+
+    .stage-nav-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+    }
+
+    .interaction-guide {
+      width: 100%;
+      min-width: 0;
+      border: 1px solid var(--jade-soft);
+      border-radius: var(--radius);
+      background: var(--surface);
+      overflow: hidden;
+    }
+
+    .guide-toggle {
+      width: 100%;
+      border: 0;
+      background: transparent;
+      min-height: 44px;
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      color: var(--jade-deep);
+      font-size: .82rem;
+      font-weight: 700;
+      cursor: pointer;
+      font-family: var(--font);
+      text-align: left;
+    }
+
+    .guide-toggle::after {
+      content: "⌄";
+      margin-left: auto;
+      font-size: 1rem;
+      transition: transform .2s ease;
+    }
+    .interaction-guide.is-open .guide-toggle::after { transform: rotate(180deg); }
+    .guide-title-mobile { display: none; }
+
+    .guide-body {
+      display: none;
+      padding: 0 12px 10px 34px;
+      border-top: 1px solid var(--border);
+    }
+    .interaction-guide.is-open .guide-body { display: block; }
+
+    .guide-body ol { padding-top: 8px; }
+    .guide-body li {
+      margin: 3px 0;
+      padding-left: 3px;
+      color: var(--ink-2);
+      font-size: .76rem;
+      line-height: 1.55;
+      overflow-wrap: anywhere;
+    }
+
+    .guide-now {
+      margin-top: 7px;
+      padding: 7px 9px;
+      border-left: 3px solid var(--accent);
+      border-radius: 6px;
+      background: var(--cream);
+      color: var(--jade-deep);
+      font-size: .76rem;
+      font-weight: 600;
     }
 
     .stage-dot {
@@ -223,17 +300,18 @@
     /* GRID */
     .main-grid {
       display: grid;
-      grid-template-columns: 226px 1fr;
-      gap: 14px
+      grid-template-columns: 226px minmax(0, 1fr);
+      gap: 12px;
+      align-items: start
     }
-    .main-grid > *, .canvas-col { min-width: 0; }
+    .main-grid, .main-grid > *, .canvas-col { min-width: 0; width: 100%; }
 
     /* CARD */
     .card {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius-lg);
-      padding: 1.1rem 1.15rem;
+      padding: .85rem .95rem;
       box-shadow: 0 2px 10px rgba(45, 139, 111, .07)
     }
 
@@ -243,7 +321,7 @@
       text-transform: uppercase;
       letter-spacing: .06em;
       color: var(--text-3);
-      margin-bottom: 12px;
+      margin-bottom: 8px;
       display: flex;
       align-items: center;
       gap: 6px
@@ -256,14 +334,14 @@
 
     /* SLIDERS */
     .slider-group {
-      margin-bottom: 13px
+      margin-bottom: 8px
     }
 
     .slider-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
-      margin-bottom: 5px
+      margin-bottom: 2px
     }
 
     .slider-label {
@@ -394,12 +472,12 @@
 
     /* FIX: dùng visibility thay display để tránh conflict */
     #btnReveal {
-      visibility: hidden;
+      display: none;
       animation: none
     }
 
     #btnReveal.show {
-      visibility: visible;
+      display: inline-flex;
       animation: pulse 2s infinite
     }
 
@@ -448,7 +526,7 @@
     .canvas-col {
       display: flex;
       flex-direction: column;
-      gap: 10px
+      gap: 8px
     }
 
     .drag-hint {
@@ -458,8 +536,11 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      gap: 5px
+      gap: 5px;
+      flex-wrap: wrap;
+      overflow-wrap: anywhere
     }
+    .drag-hint-mobile { display: none; }
 
     .canvas-wrap {
       position: relative;
@@ -468,8 +549,9 @@
       border: 1px solid var(--border);
       background: #EBF6F0;
       box-shadow: 0 2px 12px rgba(45, 139, 111, .1);
-      height: clamp(320px, 38vw, 440px);
-      touch-action: none
+      height: clamp(300px, 30vw, 360px);
+      touch-action: none;
+      width: 100%
     }
 
     #simCanvas {
@@ -949,18 +1031,49 @@
        Không đụng desktop, không thu nhỏ phần tử nào — chỉ nới ra nếu đang < 44px. */
     @media (max-width: 1024px) {
       .main-grid { display: flex; flex-direction: column; }
+      .main-grid > div:first-child { width: 100%; }
       .canvas-col { order: -1; width: 100%; }
-      .canvas-wrap { height: 390px; }
+      .canvas-wrap { height: 360px; }
       .results-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
     }
 
     @media (max-width: 640px) {
-      .page { padding: 8px 6px 28px; }
-      .intro-text { padding: 10px 12px; }
-      .canvas-wrap { height: 320px; }
+      .page {
+        width: calc(100% - 12px);
+        max-width: calc(100% - 12px);
+        margin-inline: 6px;
+        padding: 6px 0 24px;
+        gap: 8px;
+      }
+      .main-grid, .main-grid > div, .canvas-col, .canvas-wrap, .card, .p5-explain {
+        width: 100%;
+        max-width: 100%;
+      }
+      input[type="range"] { max-width: 100%; }
+      .intro-text { padding: 8px 10px; font-size: .78rem; line-height: 1.5; }
+      .canvas-wrap { height: 280px; }
       .results-row { grid-template-columns: 1fr; }
       .conclusion-grid { grid-template-columns: 1fr; }
-      .stage-pill { max-width: 100%; }
+      .stage-pill { max-width: 100%; padding: 3px 9px; font-size: .7rem; }
+      .stage-nav-row { align-items: center; }
+      .sdots { gap: 6px; flex-shrink: 0; }
+      .sdot { width: 7px; height: 7px; }
+      .stage-nav-row .sdots { display: none; }
+      .drag-hint { padding-inline: 6px; font-size: .68rem; line-height: 1.4; }
+      .drag-hint-desktop { display: none; }
+      .drag-hint-mobile { display: inline; }
+      .guide-toggle { padding: 6px 10px; font-size: .76rem; }
+      .guide-title-desktop { display: none; }
+      .guide-title-mobile { display: inline; }
+      .guide-body { padding: 0 9px 8px 27px; }
+      .guide-body li { margin: 2px 0; font-size: .71rem; line-height: 1.45; }
+      .guide-now { margin-top: 6px; padding: 6px 8px; font-size: .71rem; }
+      .guide-body, .guide-body ol, .guide-body li, .guide-now {
+        min-width: 0;
+        max-width: 100%;
+        overflow-wrap: anywhere;
+        word-break: normal;
+      }
       .prompt-opts { display: grid; grid-template-columns: 1fr; }
       .tbl-wrap { overflow-x: auto; }
       button, .btn, a.btn, input[type="button"], input[type="submit"] {
@@ -984,14 +1097,29 @@
 
     <!-- Pass 2 (mục A, Loại B) — tách khỏi .p5-header (đang bị ẩn) vì có id="stageBadge"
          được JS cập nhật động (Giai đoạn 1/2/3), giữ hiển thị cho học sinh. -->
-    <div class="stage-pill"><span class="stage-dot"></span><span id="stageBadge">Giai đoạn 1 / 3 — Quan sát hiện
-        tượng</span></div>
-
-    <div class="sdots">
-      <div class="sdot active" id="dot1"></div>
-      <div class="sdot" id="dot2"></div>
-      <div class="sdot" id="dot3"></div>
+    <div class="stage-nav-row">
+      <div class="stage-pill"><span class="stage-dot"></span><span id="stageBadge">Giai đoạn 1 / 3 — Quan sát hiện
+          tượng</span></div>
+      <div class="sdots" aria-label="Tiến trình bài học">
+        <div class="sdot active" id="dot1"></div>
+        <div class="sdot" id="dot2"></div>
+        <div class="sdot" id="dot3"></div>
+      </div>
     </div>
+
+    <section class="interaction-guide is-open" id="interactionGuide" aria-label="Hướng dẫn thao tác">
+      <button class="guide-toggle" id="guideToggle" type="button" aria-expanded="true" aria-controls="guideBody" onclick="toggleInteractionGuide()"><i class="ti ti-hand-click"></i><span class="guide-title-desktop">Cách thao tác từng bước</span><span class="guide-title-mobile">Chạm để xem hướng dẫn thao tác</span></button>
+      <div class="guide-body" id="guideBody">
+        <ol>
+          <li><strong>Chọn lực và quãng đường:</strong> kéo thanh “Độ lớn lực F” và “Quãng đường s”.</li>
+          <li><strong>Thử góc kéo:</strong> kéo chấm vàng trên canvas hoặc thanh “Góc kéo θ”. Hãy lần lượt thử gần 0°, 45°, 90° và lớn hơn 90°.</li>
+          <li><strong>Chạy mô phỏng:</strong> sau mỗi lần chọn góc, nhấn <strong>“Kéo!”</strong> rồi quan sát xe và hai ô “Công cơ học”, “Xe di chuyển”.</li>
+          <li><strong>Trả lời câu hỏi:</strong> khi câu hỏi xuất hiện dưới canvas, chọn một đáp án dựa trên kết quả vừa quan sát.</li>
+          <li><strong>Đi tiếp:</strong> thử ít nhất bốn góc, trong đó có một góc lớn hơn 90°. Sau đó nhấn <strong>“Xem phân tích lực”</strong> và tiếp tục quan sát bảng quy luật.</li>
+        </ol>
+        <div class="guide-now" id="guideNow" role="status">Bắt đầu: chọn một góc, nhấn “Kéo!”, rồi đổi góc và thử lại.</div>
+      </div>
+    </section>
 
     <div class="main-grid">
       <div style="display:flex;flex-direction:column;gap:10px">
@@ -1007,7 +1135,7 @@
                   id="thetaVal">40</span>°</span></div>
             <input type="range" id="sliderTheta" min="0" max="180" value="40" oninput="onTheta(this.value)">
           </div>
-          <div class="slider-group" style="margin-bottom:16px">
+          <div class="slider-group" style="margin-bottom:10px">
             <div class="slider-header"><span class="slider-label">Quãng đường s</span><span class="slider-val"><span
                   id="sVal">5.0</span> m</span></div>
             <input type="range" id="sliderS" min="1" max="10" value="5" step="0.5" oninput="onS(this.value)">
@@ -1027,8 +1155,7 @@
       </div>
 
       <div class="canvas-col">
-        <div class="drag-hint"><i class="ti ti-hand-move"></i> Kéo chấm vàng ở đầu vectơ <span class="vec">F</span> để
-          thay đổi góc — hoặc dùng slider</div>
+        <div class="drag-hint"><i class="ti ti-hand-move"></i><span class="drag-hint-desktop">Kéo chấm vàng ở đầu vectơ <span class="vec">F</span> để thay đổi góc — hoặc dùng slider</span><span class="drag-hint-mobile">Kéo chấm vàng để đổi góc θ</span></div>
         <div class="canvas-wrap" id="canvasWrap"><canvas id="simCanvas"></canvas></div>
         <div class="p5-explain" id="captionBox">
           <i class="ti ti-info-circle" id="captionIcon"></i>
@@ -1792,6 +1919,7 @@
       anglesVisited.add(Math.round(a / 10) * 10);
       if (anglesVisited.size >= 4 && [...anglesVisited].some(x => x > 90) && stage === 1)
         document.getElementById('btnReveal').classList.add('show');
+      updateGuide();
     }
     function ans(n, v) {
       const btns = document.querySelectorAll('#prompt' + n + ' .opt-btn');
@@ -1847,6 +1975,27 @@
       ['dot1', 'dot2', 'dot3'].forEach((id, i) => {
         document.getElementById(id).className = 'sdot' + (i < stage - 1 ? ' done' : i === stage - 1 ? ' active' : '');
       });
+      updateGuide();
+    }
+
+    function updateGuide() {
+      const guide = document.getElementById('guideNow');
+      if (!guide) return;
+      if (stage === 1) {
+        const tried = anglesVisited.size;
+        const hasWideAngle = [...anglesVisited].some(x => x > 90);
+        if (tried < 4) {
+          guide.textContent = `Việc cần làm: thử thêm ${4 - tried} góc, nhấn “Kéo!” sau mỗi góc và quan sát kết quả.`;
+        } else if (!hasWideAngle) {
+          guide.textContent = 'Việc cần làm: thử một góc lớn hơn 90° để quan sát công âm.';
+        } else {
+          guide.textContent = 'Đã đủ dữ liệu. Hãy nhấn “Xem phân tích lực” trong thẻ Điều khiển.';
+        }
+      } else if (stage === 2) {
+        guide.textContent = 'Việc cần làm: bật/tắt F∥ và F⊥, đổi góc rồi so sánh bảng. Sau đó nhấn nút xem kết luận bên dưới bảng.';
+      } else {
+        guide.textContent = 'Hoàn tất: đọc công thức tổng kết và đối chiếu với các trường hợp θ < 90°, θ = 90° và θ > 90°.';
+      }
     }
     function updateTable() {
       document.getElementById('tblS').textContent = s.toFixed(1);
@@ -1935,6 +2084,24 @@
     /* ═══════════════════════════════
        INIT
     ═══════════════════════════════ */
+    const mobileGuideQuery = window.matchMedia('(max-width: 640px)');
+    function setGuideOpen(isOpen) {
+      const guide = document.getElementById('interactionGuide');
+      const button = document.getElementById('guideToggle');
+      if (!guide || !button) return;
+      guide.classList.toggle('is-open', isOpen);
+      button.setAttribute('aria-expanded', String(isOpen));
+    }
+    function toggleInteractionGuide() {
+      const guide = document.getElementById('interactionGuide');
+      setGuideOpen(!guide?.classList.contains('is-open'));
+    }
+    function optimizeGuideForViewport(event) {
+      if (event.matches) setGuideOpen(false);
+    }
+    optimizeGuideForViewport(mobileGuideQuery);
+    mobileGuideQuery.addEventListener?.('change', optimizeGuideForViewport);
+
     window.addEventListener('load', () => setTimeout(() => { resizeCanvas(); refresh(); LMS().ready({version:1}); LMS().progress({id:'stage-1',value:1/3}); }, 60));
     window.addEventListener('resize', () => resizeCanvas());
   

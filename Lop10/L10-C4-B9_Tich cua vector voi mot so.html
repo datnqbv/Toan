@@ -14,9 +14,9 @@
       "Biểu thị một vectơ theo hai vectơ không cùng phương bằng hình bình hành"
     ],
     "structure":[
-      {"id":"module-1","title":"Vector Stretch — khám phá quy luật bằng slider k"},
-      {"id":"module-2","title":"Clone the Vector — dựng ka qua 4 level"},
-      {"id":"module-3","title":"Build the Vector — ghép u = xa + yb"}
+      {"id":"module-1","title":"Vector co giãn — khám phá quy luật bằng slider k"},
+      {"id":"module-2","title":"Tạo vectơ — dựng ka qua 4 level"},
+      {"id":"module-3","title":"Ghép vectơ — ghép u = xa + yb"}
     ],
     "athenaGuidance":"Hướng dẫn bằng câu hỏi gợi mở, không nói trước vị trí kéo hoặc hệ số đúng. Nhấn mạnh: độ dài |ka|=|k||a|; k âm bắt buộc đổi hướng; khi phân tích u=xa+yb, dấu âm nghĩa là dùng vectơ gốc theo hướng ngược. Module 2 có bốn level 2a, 1/2a, -a, -3/2a. Module 3 khóa đến khi hoàn thành Module 2."
   }
@@ -57,7 +57,9 @@
     .card-title{font-size:.9rem;font-weight:700;color:var(--jade-deep);display:flex;align-items:center;gap:7px;padding-bottom:8px;margin-bottom:10px;border-bottom:1px solid var(--paper)}
     .slider-head{display:flex;align-items:center;justify-content:space-between;gap:8px;font-size:.82rem;font-weight:600;margin-bottom:7px}
     .value{font:700 .85rem 'JetBrains Mono',monospace;color:var(--jade-deep);background:var(--jade-pale);border:1px solid var(--jade-soft);padding:2px 7px;border-radius:5px}
-    input[type=range]{appearance:none;-webkit-appearance:none;width:100%;height:6px;background:var(--cream-2);border-radius:3px;outline:none}
+    input[type=range]{appearance:none;-webkit-appearance:none;width:100%;height:44px;background:transparent;outline:none;cursor:pointer}
+    input[type=range]::-webkit-slider-runnable-track{height:6px;background:var(--cream-2);border-radius:3px}
+    input[type=range]::-moz-range-track{height:6px;background:var(--cream-2);border-radius:3px}
     input[type=range]::-webkit-slider-thumb{appearance:none;-webkit-appearance:none;width:22px;height:22px;border-radius:50%;background:var(--jade);border:2px solid #fff;box-shadow:0 2px 6px #0003;cursor:pointer}
     input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--jade);border:2px solid #fff;cursor:pointer}
     .data-grid{display:grid;grid-template-columns:repeat(2,1fr);gap:7px}
@@ -71,6 +73,7 @@
     .btn-primary{background:var(--jade-deep);border-color:var(--jade-deep);color:#fff}.btn-accent{background:var(--accent);border-color:var(--accent-deep);color:var(--jade-dark)}
     .btn:disabled{opacity:.45;cursor:not-allowed}
     .canvas-wrap{position:relative;width:100%;aspect-ratio:16/9;background:#FDFBF7;border:1px solid var(--paper);border-radius:var(--radius-lg);overflow:hidden;touch-action:none}
+    .canvas-wrap.m2-canvas,#canvas2{touch-action:pan-y}
     canvas{display:block;width:100%;height:100%}
     .canvas-label{position:absolute;top:10px;left:10px;background:#ffffffe8;border:1px solid var(--paper);border-radius:8px;padding:5px 9px;font-size:.75rem;font-weight:700;color:var(--ink-2);pointer-events:none}
     .caption{padding:11px 13px;background:var(--jade-pale);border:1px solid var(--jade-soft);border-left:4px solid var(--jade-deep);border-radius:var(--radius);font-size:.82rem;color:var(--ink-2);display:flex;gap:8px;align-items:flex-start}
@@ -80,16 +83,26 @@
     .hidden{display:none!important}@keyframes shake{0%,100%{transform:translateX(0)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}.shake{animation:shake .35s ease}
     .step-list{display:flex;flex-direction:column;gap:6px}.step{padding:8px 10px;border-radius:8px;border:1px solid var(--paper);background:var(--cream);font-size:.78rem;color:var(--ink-3)}.step.active{background:var(--jade-pale);border-color:var(--jade);color:var(--jade-dark);font-weight:700}.step.done{color:var(--correct)}
     .formula-live{text-align:center;font:700 .95rem 'JetBrains Mono',monospace;background:var(--cream-2);padding:9px;border-radius:8px;color:var(--u)}
+    .learning-note{margin-top:8px;padding:8px 10px;border-radius:8px;background:var(--info-bg);color:var(--ink-2);font-size:.76rem;line-height:1.55}.learning-note strong{color:var(--info)}
     .mobile-hint{display:none;text-align:center;font-size:.7rem;color:var(--ink-3);padding:5px}
+    .mobile-task{display:none;padding:8px 10px;background:var(--jade-pale);border:1px solid var(--jade-soft);border-radius:var(--radius);font-size:.78rem;font-weight:700;color:var(--jade-dark)}
+    #module-1 .workspace{grid-template-columns:minmax(0,3fr) minmax(280px,2fr)}#module-1 .visual{grid-column:1;grid-row:1}#module-1 .controls{grid-column:2;grid-row:1}
+    .final-summary{display:none;margin-top:12px;background:var(--white);border:1px solid var(--jade-soft);border-radius:var(--radius-lg);padding:16px;box-shadow:var(--shadow)}
+    .final-summary.show{display:block}.final-summary h2{font-size:1rem;color:var(--jade-dark);margin-bottom:8px}.final-summary ul{padding-left:20px;color:var(--ink-2);font-size:.82rem}.final-summary li{margin:5px 0}
+    .mini-challenge{margin-top:12px;padding:12px;background:var(--accent-pale);border:1px solid var(--accent);border-radius:var(--radius)}
+    .mini-challenge h3{font-size:.88rem;color:var(--accent-deep);margin-bottom:8px}.challenge-feedback{display:none;margin-top:8px;padding:8px 10px;border-radius:8px;font-size:.78rem}.challenge-feedback.show{display:block}.challenge-feedback.correct{background:var(--correct-bg);color:var(--jade-dark)}.challenge-feedback.warning{background:var(--wrong-bg);color:var(--wrong)}
     @media(max-width:1024px){
       .workspace{display:flex;flex-direction:column}.visual{order:-1;width:100%}.controls{width:100%}
       .slider-row-mobile{display:grid;grid-template-columns:1fr 1fr;gap:12px}
       input[type=range]::-webkit-slider-thumb{width:26px;height:26px}input[type=range]::-moz-range-thumb{width:26px;height:26px}
     }
     @media(max-width:640px){
-      body{font-size:17px}.app{padding:8px 6px 20px}.intro{padding:10px 12px}.module-head{align-items:flex-start}.module-title{font-size:1rem}
+      body{font-size:17px}.app{width:calc(100% - 12px);max-width:calc(100% - 12px);margin-inline:6px;padding:8px 0 20px}.intro{padding:10px 12px}.module-head{align-items:center;flex-wrap:wrap}.module-title{font-size:1rem}.progress-chip{margin-left:auto;max-width:100%}
       .nav-btn{flex-basis:78vw}.canvas-wrap{aspect-ratio:4/3}.card{padding:11px}.slider-row-mobile{grid-template-columns:1fr}
       .data-grid{grid-template-columns:repeat(2,minmax(0,1fr))}.mobile-hint{display:block}.compare{grid-template-columns:1fr}.btn{min-height:44px}
+      .btn-row{flex-direction:column}.btn{width:100%;flex:none}.mini-challenge .btn-row{display:grid;grid-template-columns:1fr}
+      #module-1 .m1-data-card{order:1}#module-1 .m1-slider-card{order:2}#module-1 .controls>.btn-row{order:3}
+      .mobile-task{display:block}.desktop-task{display:none}
     }
   </style>
 </head>
@@ -97,22 +110,22 @@
 <main class="app">
   <div class="intro">Khám phá phép nhân một vectơ với một số qua ba hoạt động: co giãn vectơ, tự dựng vectơ đích và ghép hai vectơ cơ sở thành một vectơ mới.</div>
   <nav class="module-nav" aria-label="Các module">
-    <button class="nav-btn active" id="nav1" onclick="showModule(1)"><i class="ti ti-arrows-resize"></i> 1. Vector Stretch</button>
-    <button class="nav-btn" id="nav2" onclick="showModule(2)"><i class="ti ti-copy"></i> 2. Clone the Vector</button>
-    <button class="nav-btn locked" id="nav3" onclick="showModule(3)"><i class="ti ti-blocks"></i> 3. Build the Vector</button>
+    <button class="nav-btn active" id="nav1" onclick="showModule(1)"><i class="ti ti-arrows-resize"></i> 1. Vector co giãn</button>
+    <button class="nav-btn locked" id="nav2" onclick="showModule(2)" aria-disabled="true"><i class="ti ti-lock"></i> 2. Tạo vectơ</button>
+    <button class="nav-btn locked" id="nav3" onclick="showModule(3)" aria-disabled="true"><i class="ti ti-blocks"></i> 3. Ghép vectơ</button>
   </nav>
   <div class="mobile-hint">← Vuốt ngang để chuyển module →</div>
 
   <section class="module active" id="module-1">
-    <div class="module-head"><h1 class="module-title"><i class="ti ti-arrows-resize"></i> Vector Stretch</h1><span class="progress-chip" id="m1Progress">Đã khám phá 1/3 vùng</span></div>
+    <div class="module-head"><h1 class="module-title"><i class="ti ti-arrows-resize"></i> Vector co giãn</h1><span class="progress-chip" id="m1Progress">Đã khám phá 1/3 vùng</span></div>
     <div class="workspace">
       <div class="controls">
-        <div class="card">
+        <div class="card m1-slider-card">
           <div class="card-title"><i class="ti ti-adjustments-horizontal"></i> Điều chỉnh hệ số</div>
           <div class="slider-head"><span>Hệ số k</span><span class="value" id="kValue">1</span></div>
           <input id="kSlider" type="range" min="-3" max="3" step="0.5" value="1" aria-label="Hệ số k">
         </div>
-        <div class="card">
+        <div class="card m1-data-card">
           <div class="card-title"><i class="ti ti-chart-dots"></i> Số liệu realtime</div>
           <div class="data-grid">
             <div class="data-item"><div class="data-label">k</div><div class="data-val" id="dK">1</div></div>
@@ -122,35 +135,36 @@
           </div>
           <div class="compare" id="compareBox"><div class="compare-item">k|a| = <span id="wrongLen">1</span></div><div class="compare-item">|k||a| = <span id="rightLen">1</span></div></div>
         </div>
-        <div class="btn-row"><button class="btn" onclick="resetM1()"><i class="ti ti-refresh"></i> Reset</button><button class="btn btn-accent" id="m1SummaryBtn" onclick="toggleSummary('m1Summary')" disabled><i class="ti ti-brain"></i> Tổng kết</button></div>
+        <div class="btn-row"><button class="btn" onclick="resetM1()"><i class="ti ti-refresh"></i> Reset</button><button class="btn btn-accent" id="m1SummaryBtn" onclick="completeM1()" disabled><i class="ti ti-brain"></i> Tổng kết</button></div>
       </div>
       <div class="visual">
         <div class="canvas-wrap"><canvas id="canvas1"></canvas><div class="canvas-label">Vectơ xám: a · vectơ cam: ka</div></div>
         <div class="caption" id="cap1"><i class="ti ti-info-circle"></i><span>Hãy kéo thanh trượt k và quan sát vectơ thay đổi như thế nào.</span></div>
       </div>
     </div>
-    <div class="summary" id="m1Summary"><h3><i class="ti ti-brain"></i> Hiểu bản chất</h3>Nhân với số dương làm mũi tên dài hoặc ngắn đi nhưng giữ hướng. Nhân với số âm quay mũi tên 180°, rồi co giãn theo giá trị tuyệt đối. Vì vậy <strong>|ka| = |k|·|a|</strong>, không bao giờ là k·|a|.</div>
+    <div class="summary" id="m1Summary"><h3><i class="ti ti-brain"></i> Hiểu bản chất</h3>Hãy tưởng tượng vectơ là một mũi tên. Nhân với số dương giống như kéo dài hoặc thu ngắn chiếc mũi tên nhưng vẫn giữ nguyên hướng. Nhân với số âm giống như quay chiếc mũi tên lại 180° — rồi mới kéo dài hoặc thu ngắn theo giá trị tuyệt đối. Vì vậy độ dài của ka luôn là <strong>|ka| = |k|·|a|</strong>, không bao giờ là k·|a|.</div>
   </section>
 
   <section class="module" id="module-2">
-    <div class="module-head"><h1 class="module-title"><i class="ti ti-copy"></i> Clone the Vector</h1><span class="progress-chip" id="m2Progress">Level 1/4</span></div>
+    <div class="module-head"><h1 class="module-title"><i class="ti ti-copy"></i> Tạo vectơ</h1><span class="progress-chip" id="m2Progress">Level 1/4</span></div>
     <div class="workspace">
       <div class="controls">
-        <div class="card"><div class="card-title"><i class="ti ti-target-arrow"></i> Nhiệm vụ</div><div id="m2Task" class="formula-live">Tạo vectơ 2a</div></div>
+        <div class="card desktop-task"><div class="card-title"><i class="ti ti-target-arrow"></i> Nhiệm vụ</div><div id="m2Task" class="formula-live">Tạo vectơ 2a</div><div class="learning-note"><strong>Thao tác:</strong> <span id="m2Instruction">Kéo đầu mũi tên xanh đến vị trí gấp đôi độ dài a, cùng hướng, rồi thả tay.</span><br><strong>Kiến thức:</strong> <span id="m2Knowledge">k &gt; 1 giữ nguyên hướng, độ dài nhân lên k lần.</span></div></div>
         <div class="card"><div class="card-title"><i class="ti ti-list-check"></i> Tiến trình</div><div class="step-list" id="levelSteps"></div></div>
         <div class="btn-row"><button class="btn" onclick="resetM2Vector()"><i class="ti ti-refresh"></i> Thử lại</button><button class="btn" onclick="hintM2()"><i class="ti ti-bulb"></i> Gợi ý</button><button class="btn btn-primary" onclick="checkM2()"><i class="ti ti-check"></i> Kiểm tra</button></div>
         <div class="btn-row"><button class="btn btn-accent hidden" id="m2Next" onclick="nextM2()"><i class="ti ti-arrow-right"></i> Level tiếp theo</button><button class="btn btn-accent hidden" id="m2SummaryBtn" onclick="toggleSummary('m2Summary')"><i class="ti ti-brain"></i> Tổng kết</button></div>
       </div>
       <div class="visual">
-        <div class="canvas-wrap"><canvas id="canvas2"></canvas><div class="canvas-label">Kéo đầu mũi tên xanh đến đích đứt nét</div></div>
+        <div class="mobile-task" id="m2TaskMobile">Nhiệm vụ: Tạo vectơ 2a</div>
+        <div class="canvas-wrap m2-canvas"><canvas id="canvas2"></canvas><div class="canvas-label">Kéo đầu mũi tên xanh đến đích đứt nét</div></div>
         <div class="caption" id="cap2"><i class="ti ti-hand-move"></i><span>Hãy kéo đầu mũi tên xanh để tạo vectơ 2a. Thả tay khi bạn nghĩ đã đúng.</span></div>
       </div>
     </div>
-    <div class="summary" id="m2Summary"><h3><i class="ti ti-brain"></i> Hiểu bản chất</h3>Khi nhìn thấy ka, hãy hỏi: vectơ cùng hay ngược hướng a — nhìn dấu của k; độ dài gấp bao nhiêu lần — nhìn |k|. Phải đúng cả hướng và độ dài.</div>
+    <div class="summary" id="m2Summary"><h3><i class="ti ti-brain"></i> Hiểu bản chất</h3>Khi nhìn thấy ka, hãy tự hỏi hai câu: <strong>① Vectơ có cùng hay ngược hướng a?</strong> — nhìn vào dấu của k. <strong>② Độ dài gấp bao nhiêu lần?</strong> — nhìn vào |k|. Nếu trả lời được hai câu này thì bạn đã hiểu phép nhân vectơ với số thực sự là gì.</div>
   </section>
 
   <section class="module" id="module-3">
-    <div class="module-head"><h1 class="module-title"><i class="ti ti-blocks"></i> Build the Vector</h1><span class="progress-chip" id="m3Progress">Bước 1/3</span></div>
+    <div class="module-head"><h1 class="module-title"><i class="ti ti-blocks"></i> Ghép vectơ</h1><span class="progress-chip" id="m3Progress">Bước 1/3</span></div>
     <div class="workspace">
       <div class="controls">
         <div class="card">
@@ -159,26 +173,46 @@
             <div><div class="slider-head"><span>Hệ số ×a</span><span class="value" id="xValue">0</span></div><input id="xSlider" type="range" min="-3" max="3" step="1" value="0"></div>
             <div><div class="slider-head"><span>Hệ số ×b</span><span class="value" id="yValue">0</span></div><input id="ySlider" type="range" min="-3" max="3" step="1" value="0" disabled></div>
           </div>
+          <div class="learning-note" id="m3Learning"><strong>Thao tác bước 1:</strong> Kéo slider ×a để chọn hệ số x, quan sát vectơ xa xuất hiện từ O.<br><strong>Kiến thức:</strong> xa cùng hướng a nếu x &gt; 0 và ngược hướng a nếu x &lt; 0.</div>
         </div>
         <div class="card"><div class="card-title"><i class="ti ti-route"></i> Các bước</div><div class="step-list"><div class="step active" id="m3s1">1. Chọn hệ số cho a</div><div class="step" id="m3s2">2. Ghép yb vào đầu xa</div><div class="step" id="m3s3">3. Kiểm tra điểm cuối</div></div></div>
         <div class="formula-live">u = <span id="fx">0</span>a + <span id="fy">0</span>b</div>
         <div class="btn-row"><button class="btn" onclick="resetM3()"><i class="ti ti-refresh"></i> Reset</button><button class="btn" id="m3HintBtn" onclick="hintM3()"><i class="ti ti-bulb"></i> Gợi ý (2)</button><button class="btn btn-primary" onclick="checkM3()"><i class="ti ti-check"></i> Kiểm tra</button></div>
-        <div class="btn-row"><button class="btn btn-accent hidden" id="m3SummaryBtn" onclick="toggleSummary('m3Summary')"><i class="ti ti-brain"></i> Tổng kết</button></div>
+        <div class="btn-row"><button class="btn btn-primary hidden" id="m3RevealNext" onclick="runM3Reveal()"><i class="ti ti-arrow-right"></i> Tiếp tục giải thích</button><button class="btn btn-accent hidden" id="m3SummaryBtn" onclick="finishM3()"><i class="ti ti-brain"></i> Tổng kết</button></div>
       </div>
       <div class="visual">
         <div class="canvas-wrap"><canvas id="canvas3"></canvas><div class="canvas-label">Đích: u tím đứt nét · ghép xa rồi yb</div></div>
         <div class="caption" id="cap3"><i class="ti ti-info-circle"></i><span>Hãy dùng slider để chọn bao nhiêu lần a cần dùng. Kéo thử và quan sát.</span></div>
       </div>
     </div>
-    <div class="summary" id="m3Summary"><h3><i class="ti ti-brain"></i> Hiểu bản chất</h3>u = xa + yb là quá trình ghép hai mảnh chuyển động: đi xa theo hướng a, rồi đi yb theo hướng b. Dấu của x, y cho biết đi xuôi hay ngược hướng vectơ gốc. Hình bình hành là hình ảnh hình học của phép ghép này.</div>
+    <div class="summary" id="m3Summary"><h3><i class="ti ti-brain"></i> Hiểu bản chất</h3>Một vectơ có thể được tạo ra từ nhiều vectơ khác. Khi viết u = xa + yb, đó không phải là “biến đổi công thức” — đó là quá trình ghép hai mảnh chuyển động: đi xa theo hướng a, rồi đi yb theo hướng b để đến đúng điểm đích. Dấu của x và y cho biết mảnh đó đi xuôi hay ngược hướng vectơ gốc. Hình bình hành chính là hình ảnh hình học của phép ghép này.</div>
+  </section>
+
+  <section class="final-summary" id="finalSummary">
+    <h2><i class="ti ti-rosette-discount-check"></i> Tổng kết toàn bài</h2>
+    <ul>
+      <li><strong>Module 1 cho bạn thấy QUY TẮC:</strong> hướng theo dấu k, độ dài theo |k|.</li>
+      <li><strong>Module 2 để bạn tự tay ÁP DỤNG quy tắc:</strong> tạo đúng vectơ ka khi biết trước k.</li>
+      <li><strong>Module 3 lật ngược vấn đề:</strong> cho trước vectơ u, tìm xem u được ghép từ bao nhiêu lần a và bao nhiêu lần b — nền tảng để phân tích vectơ theo hai vectơ cơ sở.</li>
+    </ul>
+    <div class="mini-challenge">
+      <h3>Thử thách cuối: Với u = 2a − b, dấu âm trước b có ý nghĩa hình học gì?</h3>
+      <div class="btn-row">
+        <button class="btn" onclick="answerFinal(false,this)">Độ dài thành phần b bị âm</button>
+        <button class="btn" onclick="answerFinal(true,this)">Thành phần theo b ngược hướng b</button>
+        <button class="btn" onclick="answerFinal(false,this)">Không sử dụng vectơ b</button>
+      </div>
+      <div class="challenge-feedback" id="finalFeedback" role="status"></div>
+    </div>
   </section>
 </main>
 <script>
   function LMS(){return window.AiducationLMS||{ready(){},progress(){},event(){},state(){},complete(){},resize(){}}}
   const $=id=>document.getElementById(id);
-  let activeModule=1,m3Unlocked=false;
-  function showModule(n){if(n===3&&!m3Unlocked)return;activeModule=n;document.querySelectorAll('.module').forEach((e,i)=>e.classList.toggle('active',i===n-1));document.querySelectorAll('.nav-btn').forEach((e,i)=>e.classList.toggle('active',i===n-1));requestAnimationFrame(()=>{resizeAll();reportHeight()})}
+  let activeModule=1,m2Unlocked=false,m3Unlocked=false;
+  function showModule(n){if((n===2&&!m2Unlocked)||(n===3&&!m3Unlocked))return;activeModule=n;document.querySelectorAll('.module').forEach((e,i)=>e.classList.toggle('active',i===n-1));document.querySelectorAll('.nav-btn').forEach((e,i)=>e.classList.toggle('active',i===n-1));requestAnimationFrame(()=>{resizeAll();reportHeight()})}
   function toggleSummary(id){$(id).classList.toggle('show');reportHeight()}
+  function completeM1(){if(!visited.neg)return;$('m1Summary').classList.add('show');m2Unlocked=true;$('nav2').classList.remove('locked');$('nav2').removeAttribute('aria-disabled');$('nav2').innerHTML='<i class="ti ti-copy"></i> 2. Tạo vectơ';LMS().progress({completed:1,total:3});reportHeight()}
   function setCaption(id,icon,text,type=''){const el=$(id);el.className='caption'+(type?' '+type:'');el.innerHTML=`<i class="ti ${icon}"></i><span>${text}</span>`}
   function fmt(n){return Number.isInteger(n)?String(n):String(n).replace('.5','½')}
 
@@ -195,10 +229,10 @@
   function resetM1(){k=1;$('kSlider').value=1;updateM1()}
 
   const levels=[
-    {k:2,name:'2a',ex:'Bạn không tạo ra vectơ mới. Bạn chỉ kéo dài vectơ cũ lên gấp đôi. Đây chính là ý nghĩa của phép nhân vectơ với số 2.'},
-    {k:.5,name:'½a',ex:'Nhân với ½ làm vectơ co lại còn một nửa — cùng hướng, ngắn hơn. Số k nằm giữa 0 và 1 luôn làm vectơ co.'},
-    {k:-1,name:'−a',ex:'Bạn vừa thực hiện hai thao tác cùng lúc: đổi hướng 180° và giữ nguyên độ dài. Đây chính là vectơ đối của a: (−1)a = −a.'},
-    {k:-1.5,name:'−3/2 a',ex:'Lần này bạn phải thực hiện hai thay đổi: đổi hướng VÀ kéo dài gấp 3/2. Chỉ khi đủ cả hai điều kiện mới đúng.'}
+    {k:2,name:'2a',instruction:'Kéo đầu mũi tên xanh đến vị trí gấp đôi độ dài a, cùng hướng, rồi thả tay.',knowledge:'k > 1 giữ nguyên hướng, độ dài nhân lên k lần.',ex:'Bạn không tạo ra vectơ mới. Bạn chỉ kéo dài vectơ cũ lên gấp đôi. Đây chính là ý nghĩa của phép nhân vectơ với số 2.'},
+    {k:.5,name:'½a',instruction:'Kéo đầu mũi tên xanh đến vị trí bằng một nửa độ dài a, cùng hướng, rồi thả tay.',knowledge:'0 < k < 1 giữ nguyên hướng, độ dài co lại còn k lần.',ex:'Nhân với ½ làm vectơ co lại còn một nửa — cùng hướng, ngắn hơn. Số k nằm giữa 0 và 1 luôn làm vectơ co.'},
+    {k:-1,name:'−a',instruction:'Kéo đầu mũi tên xanh ngược hướng a, đúng độ dài |a|, rồi thả tay.',knowledge:'k < 0 bắt buộc đổi hướng — dấu âm không chỉ ảnh hưởng độ lớn.',ex:'Bạn vừa thực hiện hai thao tác cùng lúc: đổi hướng 180° và giữ nguyên độ dài. Đây chính là vectơ đối của a: (−1)a = −a.'},
+    {k:-1.5,name:'−3/2 a',instruction:'Kéo đầu mũi tên xanh ngược hướng a, với độ dài gấp 1,5 lần |a|, rồi thả tay.',knowledge:'Phải kiểm tra CẢ hướng theo dấu k VÀ độ dài theo |k|.',ex:'Lần này bạn phải thực hiện hai thay đổi: đổi hướng VÀ kéo dài gấp 3/2. Chỉ khi đủ cả hai điều kiện mới đúng.'}
   ];
   let level=0,student={x:0,y:0},hint2=false,drag2=false,m2LevelDone=false,m2CompareUntil=0,m2CompareRaf=null;
   function renderLevelSteps(){ $('levelSteps').innerHTML=levels.map((l,i)=>`<div class="step ${i===level?'active':''} ${i<level?'done':''}">${i<level?'<i class="ti ti-check"></i> ':''}Level ${i+1}: ${l.name}</div>`).join('') }
@@ -207,7 +241,7 @@
   function m2Geom(){const c=canvases[1],ox=c.w/2,oy=c.h/2,base=Math.min(c.w*.15,80),target=base*levels[level].k;return{ox,oy,base,target}}
   function draw2(){
     const c=canvases[1];if(!setupCanvas(c))return;grid(c);
-    const g=m2Geom(),err=Math.hypot(student.x-g.target,student.y),tol=Math.max(8,Math.abs(g.target)*.08);
+    const g=m2Geom(),err=Math.hypot(student.x-g.target,student.y),tol=Math.max(8,Math.abs(g.target)*(matchMedia('(pointer:coarse)').matches?0.14:0.08));
     arrow(c.ctx,g.ox,g.oy,g.ox+g.base,g.oy,'#7C756A',4);label(c.ctx,'a',g.ox+g.base+7,g.oy-8,'#514C44');
     arrow(c.ctx,g.ox,g.oy,g.ox+g.target,g.oy,'#CE8A33',3,true);label(c.ctx,levels[level].name,g.ox+g.target+(g.target>=0?7:-38),g.oy-20,'#8A551A');
     if(hint2){c.ctx.save();c.ctx.strokeStyle='#A9D0BE';c.ctx.lineWidth=2;c.ctx.setLineDash([4,5]);c.ctx.beginPath();c.ctx.moveTo(g.ox-g.base*2.2,g.oy);c.ctx.lineTo(g.ox+g.base*2.2,g.oy);c.ctx.stroke();c.ctx.restore()}
@@ -218,22 +252,24 @@
   function drawM2Comparison(c,g){const y=c.h-42,maxLen=Math.min(72,c.w*.14),scale=maxLen/Math.max(Math.abs(g.target),Math.hypot(student.x,student.y),1),x1=c.w*.25,x2=c.w*.68;c.ctx.save();c.ctx.fillStyle='#FAF7F0EE';c.ctx.fillRect(8,c.h-82,c.w-16,74);arrow(c.ctx,x1,y,x1+student.x*scale,y+student.y*scale,'#2D8B6F',4);arrow(c.ctx,x2,y,x2+g.target*scale,y,'#CE8A33',4,true);label(c.ctx,'Vectơ của bạn',x1-35,y-24,'#1B5E48');label(c.ctx,'Vectơ đích',x2-30,y-24,'#8A551A');c.ctx.restore()}
   function animateM2Comparison(){cancelAnimationFrame(m2CompareRaf);m2CompareUntil=performance.now()+900;const tick=()=>{draw2();if(performance.now()<m2CompareUntil)m2CompareRaf=requestAnimationFrame(tick)};tick()}
   function pointerPos(e,c){const r=c.canvas.getBoundingClientRect();return{x:(e.clientX-r.left)*c.w/r.width,y:(e.clientY-r.top)*c.h/r.height}}
-  canvases[1].canvas.addEventListener('pointerdown',e=>{if(activeModule!==2)return;const c=canvases[1],p=pointerPos(e,c),g=m2Geom();if(Math.hypot(p.x-(g.ox+student.x),p.y-(g.oy+student.y))<24){drag2=true;c.canvas.setPointerCapture(e.pointerId)}});
-  canvases[1].canvas.addEventListener('pointermove',e=>{if(!drag2)return;const c=canvases[1],p=pointerPos(e,c),g=m2Geom();student={x:p.x-g.ox,y:p.y-g.oy};draw2()});
+  canvases[1].canvas.addEventListener('pointerdown',e=>{if(activeModule!==2)return;const c=canvases[1],p=pointerPos(e,c),g=m2Geom(),hit=matchMedia('(pointer:coarse)').matches?30:24;if(Math.hypot(p.x-(g.ox+student.x),p.y-(g.oy+student.y))<hit){drag2=true;e.preventDefault();c.canvas.setPointerCapture(e.pointerId)}});
+  canvases[1].canvas.addEventListener('pointermove',e=>{if(!drag2)return;e.preventDefault();const c=canvases[1],p=pointerPos(e,c),g=m2Geom();student={x:p.x-g.ox,y:p.y-g.oy};draw2()});
   canvases[1].canvas.addEventListener('pointerup',e=>{if(!drag2)return;drag2=false;if(canvases[1].canvas.hasPointerCapture(e.pointerId))canvases[1].canvas.releasePointerCapture(e.pointerId);checkM2()});
   canvases[1].canvas.addEventListener('pointercancel',()=>drag2=false);
-  function checkM2(){if(m2LevelDone)return;const g=m2Geom(),err=Math.hypot(student.x-g.target,student.y),tol=Math.max(8,Math.abs(g.target)*.08);if(err<=tol){student={x:g.target,y:0};m2LevelDone=true;setCaption('cap2','ti ti-circle-check',`Vectơ khớp! ${levels[level].ex}`,'correct');draw2();if(level<3){$('m2Next').classList.remove('hidden')}else{m3Unlocked=true;$('nav3').classList.remove('locked');$('m2SummaryBtn').classList.remove('hidden');LMS().progress({completed:2,total:3})}reportHeight();return}const dot=student.x*g.target,angleWrong=dot<0||Math.abs(student.y)>Math.max(8,Math.abs(student.x)*.2);canvases[1].canvas.classList.remove('shake');void canvases[1].canvas.offsetWidth;canvases[1].canvas.classList.add('shake');animateM2Comparison();if(angleWrong){const directionText=levels[level].k<0?'Khi k < 0, vectơ phải quay ngược 180° so với a.':'Khi k > 0, vectơ phải cùng hướng với a.';setCaption('cap2','ti ti-alert-triangle',`Hướng chưa đúng. ${directionText} Hãy so sánh hai vectơ trong khung minh họa.`,'warning')}else{const detail=level===3?'|-3/2| = 3/2 — vectơ cần dài hơn a một chút.':`Độ dài của ka = |k|·|a| = ${fmt(Math.abs(levels[level].k))}|a|.`;setCaption('cap2','ti ti-bulb',`Hướng đúng rồi! Nhưng độ dài chưa đúng. ${detail}`,'warning')}}
-  function nextM2(){if(!m2LevelDone||level>=3)return;level++;$('m2Progress').textContent=`Level ${level+1}/4`;$('m2Task').textContent=`Tạo vectơ ${levels[level].name}`;renderLevelSteps();resetM2Vector()}
+  function checkM2(){if(m2LevelDone)return;const g=m2Geom(),err=Math.hypot(student.x-g.target,student.y),coarse=matchMedia('(pointer:coarse)').matches,tol=Math.max(8,Math.abs(g.target)*(coarse?0.14:0.08));if(err<=tol){student={x:g.target,y:0};m2LevelDone=true;setCaption('cap2','ti ti-circle-check',`Vectơ khớp! ${levels[level].ex}`,'correct');draw2();if(level<3){$('m2Next').classList.remove('hidden')}else{m3Unlocked=true;$('nav3').classList.remove('locked');$('nav3').removeAttribute('aria-disabled');$('m2SummaryBtn').classList.remove('hidden');LMS().progress({completed:2,total:3})}reportHeight();return}const dot=student.x*g.target,angleWrong=dot<0||Math.abs(student.y)>Math.max(8,Math.abs(student.x)*.2);canvases[1].canvas.classList.remove('shake');void canvases[1].canvas.offsetWidth;canvases[1].canvas.classList.add('shake');animateM2Comparison();if(angleWrong){const directionText=levels[level].k<0?'Khi k < 0, vectơ phải quay ngược 180° so với a.':'Khi k > 0, vectơ phải cùng hướng với a.';setCaption('cap2','ti ti-alert-triangle',`Hướng chưa đúng. ${directionText} Hãy so sánh hai vectơ trong khung minh họa.`,'warning')}else{const detail=level===3?'|-3/2| = 3/2 — vectơ cần dài hơn a một chút.':`Độ dài của ka = |k|·|a| = ${fmt(Math.abs(levels[level].k))}|a|.`;setCaption('cap2','ti ti-bulb',`Hướng đúng rồi! Nhưng độ dài chưa đúng. ${detail}`,'warning')}}
+  function nextM2(){if(!m2LevelDone||level>=3)return;level++;$('m2Progress').textContent=`Level ${level+1}/4`;$('m2Task').textContent=`Tạo vectơ ${levels[level].name}`;$('m2TaskMobile').textContent=`Nhiệm vụ: Tạo vectơ ${levels[level].name}`;$('m2Instruction').textContent=levels[level].instruction;$('m2Knowledge').textContent=levels[level].knowledge;renderLevelSteps();resetM2Vector()}
 
   const targetCoef={x:-1,y:2};let xCoef=0,yCoef=0,hint3=false,m3Done=false,m3Hints=0,revealStage=0,revealTimer=null;
   $('xSlider').addEventListener('input',e=>{xCoef=+e.target.value;updateM3(1)});$('ySlider').addEventListener('input',e=>{yCoef=+e.target.value;updateM3(2)});
   function m3Vectors(c){const scale=Math.min(c.w/800,c.h/450),a={x:130*scale,y:-25*scale},b={x:45*scale,y:-105*scale},o={x:c.w*.48,y:c.h*.72};return{o,a,b,u:{x:a.x*targetCoef.x+b.x*targetCoef.y,y:a.y*targetCoef.x+b.y*targetCoef.y}}}
   function draw3(){const c=canvases[2];if(!setupCanvas(c))return;grid(c);const v=m3Vectors(c),p1={x:v.o.x+v.a.x*xCoef,y:v.o.y+v.a.y*xCoef},tip={x:p1.x+v.b.x*yCoef,y:p1.y+v.b.y*yCoef},ut={x:v.o.x+v.u.x,y:v.o.y+v.u.y};arrow(c.ctx,v.o.x,v.o.y,v.o.x+v.a.x,v.o.y+v.a.y,'#CE8A33',3);label(c.ctx,'a',v.o.x+v.a.x+5,v.o.y+v.a.y,'#8A551A');arrow(c.ctx,v.o.x,v.o.y,v.o.x+v.b.x,v.o.y+v.b.y,'#4E7F92',3);label(c.ctx,'b',v.o.x+v.b.x+5,v.o.y+v.b.y,'#4E7F92');arrow(c.ctx,v.o.x,v.o.y,ut.x,ut.y,'#7C5295',3,true);label(c.ctx,'u',ut.x+6,ut.y,'#7C5295');if(xCoef!==0&&(!m3Done||revealStage>=1))arrow(c.ctx,v.o.x,v.o.y,p1.x,p1.y,'#CE8A33',4);if(yCoef!==0&&(!m3Done||revealStage>=2))arrow(c.ctx,p1.x,p1.y,tip.x,tip.y,'#4E7F92',4);if(m3Done&&revealStage>=3)arrow(c.ctx,v.o.x,v.o.y,ut.x,ut.y,'#7C5295',4);if(hint3||(m3Done&&revealStage>=4)){c.ctx.save();c.ctx.setLineDash([6,5]);c.ctx.strokeStyle='#7C5295';c.ctx.globalAlpha=.45;c.ctx.beginPath();c.ctx.moveTo(ut.x-c.w,ut.y-c.w*v.a.y/v.a.x);c.ctx.lineTo(ut.x+c.w,ut.y+c.w*v.a.y/v.a.x);c.ctx.stroke();c.ctx.beginPath();c.ctx.moveTo(ut.x-c.w,ut.y-c.w*v.b.y/v.b.x);c.ctx.lineTo(ut.x+c.w,ut.y+c.w*v.b.y/v.b.x);c.ctx.stroke();c.ctx.restore()}c.ctx.fillStyle=Math.hypot(tip.x-ut.x,tip.y-ut.y)<18?'#2D8B6F':'#7C5295';c.ctx.beginPath();c.ctx.arc(ut.x,ut.y,8,0,Math.PI*2);c.ctx.fill()}
-  function updateM3(which){$('xValue').textContent=xCoef;$('yValue').textContent=yCoef;$('fx').textContent=xCoef;$('fy').textContent=yCoef;if(which===1){if(xCoef===targetCoef.x){$('ySlider').disabled=false;$('m3s1').className='step done';$('m3s2').className='step active';$('m3Progress').textContent='Bước 2/3';setCaption('cap3','ti ti-bulb','Vectơ xa vừa đặt xong — mảnh ghép thứ nhất. Bây giờ slider ×b đã mở.')}else{yCoef=0;$('ySlider').value=0;$('ySlider').disabled=true;setCaption('cap3','ti ti-alert-triangle','Thành phần theo a chưa đúng hướng. u cần x âm — hãy kéo ×a sang vùng âm.','warning')}}else{$('m3s2').className='step done';$('m3s3').className='step active';$('m3Progress').textContent='Bước 3/3';setCaption('cap3','ti ti-bulb','Vectơ yb đang nối tiếp xa. Bạn đang xây u từng mảnh một như ghép Lego.')}draw3()}
+  function updateM3(which){$('xValue').textContent=xCoef;$('yValue').textContent=yCoef;$('fx').textContent=xCoef;$('fy').textContent=yCoef;if(which===1){if(xCoef===targetCoef.x){$('ySlider').disabled=false;$('m3s1').className='step done';$('m3s2').className='step active';$('m3Progress').textContent='Bước 2/3';$('m3Learning').innerHTML='<strong>Thao tác bước 2:</strong> Kéo slider ×b để chọn hệ số y; vectơ yb sẽ nối vào đầu xa.<br><strong>Kiến thức:</strong> Khi ghép nối tiếp, điểm cuối vectơ trước là điểm đầu vectơ sau.';setCaption('cap3','ti ti-bulb','Vectơ xa vừa đặt xong. Đây là “mảnh ghép thứ nhất”. Tiếp theo hãy ghép yb vào đầu mũi tên này.')}else{yCoef=0;$('ySlider').value=0;$('ySlider').disabled=true;const wrongSign=Math.sign(xCoef)!==Math.sign(targetCoef.x);setCaption('cap3',wrongSign?'ti ti-alert-triangle':'ti ti-bulb',wrongSign?'Thành phần theo a chưa đúng hướng. Thử kéo slider sang vùng âm — khi x < 0, vectơ xa ngược chiều a.':'Hướng của xa đã đúng nhưng độ dài chưa phù hợp. Hãy chỉnh hệ số x để đầu xa nằm đúng vị trí.','warning')}}else{$('m3s2').className='step done';$('m3s3').className='step active';$('m3Progress').textContent='Bước 3/3';$('m3Learning').innerHTML='<strong>Thao tác bước 3:</strong> Quan sát đầu chuỗi ghép có khớp đầu u không; chỉnh lại slider rồi nhấn “Kiểm tra”.<br><strong>Kiến thức:</strong> u = xa + yb khi và chỉ khi đầu chuỗi ghép trùng đầu u.';setCaption('cap3','ti ti-bulb','Vectơ yb đang nối tiếp xa. Bạn đang xây u từng mảnh một — giống như ghép Lego.')}draw3()}
   function hintM3(){if(m3Hints>=2||m3Done)return;m3Hints++;hint3=true;$('m3HintBtn').innerHTML=`<i class="ti ti-bulb"></i> Gợi ý (${2-m3Hints})`;$('m3HintBtn').disabled=m3Hints>=2;draw3();setCaption('cap3','ti ti-bulb','Hai đường song song mờ qua đầu u cho thấy hình bình hành tiềm ẩn.','warning')}
-  function checkM3(){const c=canvases[2],v=m3Vectors(c),tip={x:v.o.x+v.a.x*xCoef+v.b.x*yCoef,y:v.o.y+v.a.y*xCoef+v.b.y*yCoef},ut={x:v.o.x+v.u.x,y:v.o.y+v.u.y},err=Math.hypot(tip.x-ut.x,tip.y-ut.y),tol=Math.max(8,Math.hypot(v.u.x,v.u.y)*.08);if(err<=tol){m3Done=true;revealStage=0;$('m3s3').className='step done';$('m3Progress').textContent='Đã khớp';setCaption('cap3','ti ti-circle-check','Khớp! Chuỗi vectơ đã đến đúng đầu u. Hãy quan sát phần giải thích từng bước.','correct');draw3();clearTimeout(revealTimer);revealTimer=setTimeout(runM3Reveal,650);return}const signWrong=Math.sign(xCoef)!==Math.sign(targetCoef.x)||Math.sign(yCoef)!==Math.sign(targetCoef.y);if(err<Math.hypot(v.u.x,v.u.y)*.1)setCaption('cap3','ti ti-bulb','Rất gần rồi! Chỉnh nhẹ một hệ số để đầu chuỗi trùng đầu u.','warning');else setCaption('cap3',signWrong?'ti ti-alert-triangle':'ti ti-bulb',signWrong?'Vectơ ghép đang lệch hướng. Thử kéo slider sang vùng âm — số âm nghĩa là dùng vectơ ngược chiều.':'Điểm cuối chưa khớp u. Hãy so sánh hai thành phần.','warning')}
-  function runM3Reveal(){clearTimeout(revealTimer);const texts=['Đây là xa — mảnh ghép theo hướng a.','Đây là yb — mảnh ghép theo hướng b. Bạn ghép nó vào đầu xa.','Kết quả: u = xa + yb. Bạn không tạo ra vectơ mới — bạn ghép các mảnh có sẵn để đến đúng điểm đích.','Đây chính là hình bình hành mà SGK đề cập. Hai đường kẻ song song với a và b gặp nhau đúng tại đầu u. Khi gặp bài phân tích vectơ, kẻ hai đường song song này là bước đầu tiên cần làm.',`Công thức hoàn chỉnh: u = ${xCoef}a + ${yCoef}b.`];const tick=()=>{revealStage++;$('m3Progress').textContent=`Giải thích ${revealStage}/5`;setCaption('cap3','ti ti-circle-check',texts[revealStage-1],'correct');draw3();if(revealStage<5)revealTimer=setTimeout(tick,1100);else{$('m3Progress').textContent='Hoàn thành';$('m3SummaryBtn').classList.remove('hidden');LMS().complete({score:100,results:{module1:true,module2:true,module3:true}});reportHeight()}};tick()}
-  function resetM3(){clearTimeout(revealTimer);xCoef=0;yCoef=0;hint3=false;m3Done=false;m3Hints=0;revealStage=0;$('xSlider').value=0;$('ySlider').value=0;$('ySlider').disabled=true;$('xValue').textContent=0;$('yValue').textContent=0;$('fx').textContent=0;$('fy').textContent=0;$('m3HintBtn').disabled=false;$('m3HintBtn').innerHTML='<i class="ti ti-bulb"></i> Gợi ý (2)';$('m3SummaryBtn').classList.add('hidden');['m3s1','m3s2','m3s3'].forEach((id,i)=>$(id).className='step'+(i===0?' active':''));$('m3Progress').textContent='Bước 1/3';setCaption('cap3','ti ti-info-circle','Hãy dùng slider để chọn bao nhiêu lần a cần dùng. Kéo thử và quan sát.');draw3()}
+  function checkM3(){const c=canvases[2],v=m3Vectors(c),tip={x:v.o.x+v.a.x*xCoef+v.b.x*yCoef,y:v.o.y+v.a.y*xCoef+v.b.y*yCoef},ut={x:v.o.x+v.u.x,y:v.o.y+v.u.y},err=Math.hypot(tip.x-ut.x,tip.y-ut.y),tol=Math.max(8,Math.hypot(v.u.x,v.u.y)*.08);if(err<=tol){m3Done=true;revealStage=0;$('m3s3').className='step done';$('m3Progress').textContent='Đã khớp';setCaption('cap3','ti ti-circle-check','Khớp! Chuỗi vectơ đã đến đúng đầu u. Nhấn “Bắt đầu giải thích” để xem chậm từng bước.','correct');$('m3RevealNext').classList.remove('hidden');$('m3RevealNext').innerHTML='<i class="ti ti-player-play"></i> Bắt đầu giải thích';draw3();reportHeight();return}const signWrong=Math.sign(xCoef)!==Math.sign(targetCoef.x)||Math.sign(yCoef)!==Math.sign(targetCoef.y);if(err<Math.hypot(v.u.x,v.u.y)*.1)setCaption('cap3','ti ti-bulb','Rất gần rồi! Chỉnh nhẹ một hệ số để đầu chuỗi trùng đầu u.','warning');else setCaption('cap3',signWrong?'ti ti-alert-triangle':'ti ti-bulb',signWrong?'Vectơ ghép đang lệch hướng. Thử kéo slider sang vùng âm — số âm nghĩa là dùng vectơ ngược chiều.':'Điểm cuối chưa khớp u. Hãy so sánh hai thành phần.','warning')}
+  function runM3Reveal(){if(!m3Done||revealStage>=5)return;const texts=['Đây là xa — mảnh ghép theo hướng a.','Đây là yb — mảnh ghép theo hướng b. Bạn ghép nó vào đầu xa.','Kết quả: u = xa + yb. Bạn không tạo ra vectơ mới — bạn ghép các mảnh có sẵn để đến đúng điểm đích.','Đây chính là hình bình hành mà SGK đề cập. Hai đường kẻ song song với a và b gặp nhau đúng tại đầu u. Khi gặp bài phân tích vectơ, kẻ hai đường song song này là bước đầu tiên cần làm.',`Công thức hoàn chỉnh: u = ${xCoef}a + ${yCoef}b.`];revealStage++;$('m3Progress').textContent=`Giải thích ${revealStage}/5`;setCaption('cap3','ti ti-circle-check',texts[revealStage-1],'correct');draw3();if(revealStage<5){$('m3RevealNext').innerHTML='<i class="ti ti-arrow-right"></i> Tiếp tục giải thích'}else{$('m3Progress').textContent='Hoàn thành';$('m3RevealNext').classList.add('hidden');$('m3SummaryBtn').classList.remove('hidden')}reportHeight()}
+  function finishM3(){$('m3Summary').classList.add('show');$('finalSummary').classList.add('show');LMS().complete({score:100,results:{module1:true,module2:true,module3:true}});reportHeight();setTimeout(()=>$('finalSummary').scrollIntoView({behavior:'smooth',block:'start'}),60)}
+  function answerFinal(correct,button){document.querySelectorAll('.mini-challenge .btn').forEach(btn=>btn.disabled=true);const fb=$('finalFeedback');fb.className='challenge-feedback show '+(correct?'correct':'warning');fb.textContent=correct?'Chính xác! Dấu âm nghĩa là thành phần −b đi ngược hướng với vectơ b.':'Chưa đúng. Độ dài vectơ không âm; dấu âm cho biết thành phần đang đi ngược hướng vectơ b.';if(correct)button.classList.add('btn-primary');LMS().event({type:'answer',id:'final-challenge',correct})}
+  function resetM3(){clearTimeout(revealTimer);xCoef=0;yCoef=0;hint3=false;m3Done=false;m3Hints=0;revealStage=0;$('xSlider').value=0;$('ySlider').value=0;$('ySlider').disabled=true;$('xValue').textContent=0;$('yValue').textContent=0;$('fx').textContent=0;$('fy').textContent=0;$('m3HintBtn').disabled=false;$('m3HintBtn').innerHTML='<i class="ti ti-bulb"></i> Gợi ý (2)';$('m3RevealNext').classList.add('hidden');$('m3SummaryBtn').classList.add('hidden');$('m3Summary').classList.remove('show');$('finalSummary').classList.remove('show');$('m3Learning').innerHTML='<strong>Thao tác bước 1:</strong> Kéo slider ×a để chọn hệ số x, quan sát vectơ xa xuất hiện từ O.<br><strong>Kiến thức:</strong> xa cùng hướng a nếu x > 0 và ngược hướng a nếu x < 0.';['m3s1','m3s2','m3s3'].forEach((id,i)=>$(id).className='step'+(i===0?' active':''));$('m3Progress').textContent='Bước 1/3';setCaption('cap3','ti ti-info-circle','Hãy dùng slider để chọn bao nhiêu lần a cần dùng. Kéo thử và quan sát.');draw3()}
   function resizeAll(){if(activeModule===1)draw1();if(activeModule===2)draw2();if(activeModule===3)draw3()}
   let rz=null;if(typeof ResizeObserver!=='undefined'){new ResizeObserver(()=>{clearTimeout(rz);rz=setTimeout(resizeAll,30)}).observe(document.querySelector('.app'));new ResizeObserver(()=>{clearTimeout(window._lmsRz);window._lmsRz=setTimeout(reportHeight,100)}).observe(document.body)}else setInterval(reportHeight,800)
   function reportHeight(){LMS().resize({height:document.documentElement.scrollHeight})}
