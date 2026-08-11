@@ -17,26 +17,66 @@
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
 
   <style>
-    /* DESIGN SYSTEM: NAVY & TEAL PRESET */
+    /* DESIGN SYSTEM: JADE / CREAM — canvas and geometry colors stay independent */
     :root {
-      --green: #1B8C5A;
-      --green-light: #E6F4EE;
-      --red: #C62828;
-      --red-light: #FFEBEE;
-      --amber: #EF9F27;
-      --amber-light: #FEF3E0;
-      --blue: #1565C0;
-      --blue-light: #EBF3FF;
-      --surface: #ffffff;
-      --border: #d1dce8;
-      --text: #1a2e44;
-      --text-2: #334155;
-      --sub: #64748b;
-      --radius: 12px;
+      /* Neutrals */
+      --cream: #FAF7F0;
+      --cream-2: #F0EADD;
+      --cream-3: #E7DECC;
+      --paper-line: #E5DECF;
+      --paper-line-2: #D6CCB6;
+      --ink: #1A1A1A;
+      --ink-2: #514C44;
+      --ink-3: #7C756A;
+      --ink-faint: #ABA396;
 
-      --navy: #0d2b4e;
-      --teal: #0e7a6e;
-      --bg: #f0f4f8;
+      /* Jade / Sage / Accent */
+      --jade: #3CA57A;
+      --jade-deep: #2D8B6F;
+      --jade-dark: #14432F;
+      --jade-text: #1B5E48;
+      --jade-soft: #A9D0BE;
+      --jade-pale: #DCEAE1;
+      --sage: #A8C9B8;
+      --sage-deep: #7CA792;
+      --sage-text: #46685A;
+      --sage-pale: #E1ECE4;
+      --accent: #E8A24A;
+      --accent-deep: #CE8A33;
+      --accent-text: #8A551A;
+      --accent-pale: #F7E7CD;
+
+      /* Semantic */
+      --correct: #2D8B6F;
+      --correct-bg: #DCEAE1;
+      --wrong: #C15F3C;
+      --wrong-bg: #F3E2D6;
+      --warning: #C58A2E;
+      --warning-bg: #F5E7CB;
+      --info: #4E7F92;
+      --info-bg: #DCE7EB;
+      --white: #FFFFFF;
+
+      /* Compatibility aliases for the existing UI */
+      --green: var(--correct);
+      --green-light: var(--correct-bg);
+      --red: var(--wrong);
+      --red-light: var(--wrong-bg);
+      --amber: var(--warning);
+      --amber-light: var(--warning-bg);
+      --blue: var(--info);
+      --blue-light: var(--info-bg);
+      --surface: var(--white);
+      --border: var(--paper-line);
+      --text: var(--ink);
+      --text-2: var(--ink-2);
+      --sub: var(--ink-3);
+      --radius: 12px;
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+
+      /* Canvas exception: retain the dark 3D background */
       --canvas-bg: #0a1628;
     }
 
@@ -52,16 +92,15 @@
       line-height: 1.6;
       color: var(--text);
       background: var(--bg);
-      height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     /* HEADER */
     header {
-      background: linear-gradient(135deg, var(--navy) 0%, #1a4a7a 100%);
-      color: #fff;
+      background: linear-gradient(135deg, var(--jade-dark) 0%, var(--jade-deep) 100%);
+      color: var(--white);
       padding: 14px 24px;
       display: flex;
       align-items: center;
@@ -82,13 +121,6 @@
       letter-spacing: .06em;
       text-transform: uppercase;
       white-space: nowrap;
-    }
-
-    header h1 {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: .01em;
-      flex: 1;
     }
 
     /* APP BODY LAYOUT */
@@ -132,6 +164,10 @@
       z-index: 5;
     }
 
+    .hint-touch {
+      display: none;
+    }
+
     /* HTML LABEL OVERLAY */
     #label-layer {
       position: absolute;
@@ -146,7 +182,7 @@
 
     .pt-label {
       position: absolute;
-      font-size: 13px;
+      font-size: 16px;
       font-weight: 700;
       pointer-events: none;
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.6);
@@ -155,10 +191,14 @@
       user-select: none;
     }
 
+    .line-label {
+      font-size: 13px;
+    }
+
     /* SIDEBAR */
     .sidebar {
-      width: 330px;
-      background: #ffffff;
+      width: 310px;
+      background: var(--surface);
       border-left: 1px solid var(--border);
       display: flex;
       flex-direction: column;
@@ -173,7 +213,7 @@
     .step-tabs {
       display: flex;
       border-bottom: 1px solid var(--border);
-      background: #f8fafc;
+      background: var(--cream-2);
       flex-shrink: 0;
       overflow-x: auto;
     }
@@ -195,13 +235,13 @@
 
     .step-tab:hover {
       color: var(--navy);
-      background: rgba(0, 0, 0, 0.02);
+      background: rgba(45, 139, 111, 0.06);
     }
 
     .step-tab.active {
       color: var(--navy);
       border-bottom-color: var(--teal);
-      background: #ffffff;
+      background: var(--surface);
     }
 
     /* STEP BODY CONTENT */
@@ -232,7 +272,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      border-bottom: 1px solid #edf2f7;
+      border-bottom: 1px solid var(--paper-line);
       padding-bottom: 10px;
     }
 
@@ -241,7 +281,7 @@
       height: 24px;
       border-radius: 50%;
       background: var(--teal);
-      color: #fff;
+      color: var(--white);
       font-size: 11px;
       font-weight: 700;
       display: flex;
@@ -281,30 +321,30 @@
     .ib-blue {
       background: var(--blue-light);
       border-left-color: var(--blue);
-      color: #0d47a1;
+      color: var(--info);
     }
 
     .ib-teal {
-      background: #e6f7f4;
+      background: var(--jade-pale);
       border-left-color: var(--teal);
-      color: #064e40;
+      color: var(--jade-text);
     }
 
     .ib-gold {
       background: var(--amber-light);
       border-left-color: var(--amber);
-      color: #7e5109;
+      color: var(--accent-text);
     }
 
     .ib-red {
       background: var(--red-light);
       border-left-color: var(--red);
-      color: #b71c1c;
+      color: var(--wrong);
     }
 
     /* HUD WIDGETS AND LISTS */
     .hud-card {
-      background: #f8fafc;
+      background: var(--cream);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 12px;
@@ -332,21 +372,21 @@
       justify-content: space-between;
       padding: 6px 10px;
       border-radius: 6px;
-      background: #ffffff;
-      border: 1px solid #e2e8f0;
+      background: var(--surface);
+      border: 1px solid var(--paper-line);
       font-weight: 500;
     }
 
     .hud-item.valid {
-      border-color: #22c55e;
-      background: #f0fdf4;
-      color: #15803d;
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: var(--jade-text);
     }
 
     .hud-item.invalid {
-      border-color: #f59e0b;
-      background: #fffbeb;
-      color: #b45309;
+      border-color: var(--warning);
+      background: var(--warning-bg);
+      color: var(--accent-text);
     }
 
     .badge-relation {
@@ -358,20 +398,20 @@
     }
 
     .badge-relation.in {
-      background: #22c55e;
-      color: #fff;
+      background: var(--correct);
+      color: var(--white);
     }
 
     .badge-relation.out {
-      background: #f59e0b;
-      color: #fff;
+      background: var(--warning);
+      color: var(--white);
     }
 
     /* CONTROLS AREA */
     .controls {
       padding: 16px 20px;
       border-top: 1px solid var(--border);
-      background: #f8fafc;
+      background: var(--cream-2);
       display: flex;
       flex-direction: column;
       gap: 10px;
@@ -395,27 +435,27 @@
 
     .btn-primary {
       background: var(--teal);
-      color: white;
+      color: var(--white);
     }
 
     .btn-primary:hover {
-      background: #0b6157;
+      background: var(--jade-dark);
     }
 
     .btn-primary:disabled {
-      background: #cbd5e1;
-      color: #94a3b8;
+      background: var(--cream-3);
+      color: var(--ink-faint);
       cursor: not-allowed;
     }
 
     .btn-secondary {
-      background: #ffffff;
+      background: var(--surface);
       border: 1px solid var(--border);
       color: var(--text-2);
     }
 
     .btn-secondary:hover {
-      background: #f1f5f9;
+      background: var(--cream-2);
     }
 
     .btn-danger {
@@ -425,7 +465,7 @@
     }
 
     .btn-danger:hover {
-      background: #ffd6d6;
+      background: var(--wrong-bg);
     }
 
     /* SUB-NAVIGATION INSIDE STEPS */
@@ -434,7 +474,7 @@
       align-items: center;
       justify-content: space-between;
       gap: 6px;
-      background: #edf2f7;
+      background: var(--cream-2);
       padding: 4px;
       border-radius: 8px;
       margin-bottom: 12px;
@@ -455,7 +495,7 @@
     }
 
     .sub-tab-pill.active {
-      background: #ffffff;
+      background: var(--surface);
       color: var(--navy);
       box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     }
@@ -473,7 +513,7 @@
       width: 8px;
       height: 8px;
       border-radius: 50%;
-      background: #cbd5e1;
+      background: var(--paper-line-2);
       transition: all 0.3s;
     }
 
@@ -495,8 +535,8 @@
 
     /* PREDICTION BLOCK (COGNITIVE CONFLICT) */
     .prediction-box {
-      background: #fffbeb;
-      border: 1px solid #fef3c7;
+      background: var(--warning-bg);
+      border: 1px solid var(--warning);
       border-radius: var(--radius);
       padding: 16px;
       display: flex;
@@ -506,7 +546,7 @@
 
     .prediction-title {
       font-weight: 700;
-      color: #92400e;
+      color: var(--accent-text);
       font-size: 13px;
     }
 
@@ -522,20 +562,20 @@
       font-weight: 600;
       border-radius: 6px;
       cursor: pointer;
-      border: 1px solid #d97706;
-      background: #ffffff;
-      color: #b45309;
+      border: 1px solid var(--warning);
+      background: var(--surface);
+      color: var(--accent-text);
       transition: all 0.2s;
     }
 
     .btn-predict:hover {
-      background: #fffbeb;
+      background: var(--accent-pale);
       transform: translateY(-1px);
     }
 
     .btn-predict.selected {
-      background: #b45309;
-      color: #ffffff;
+      background: var(--accent-deep);
+      color: var(--white);
     }
 
     /* COMPLETION STATUS BADGES */
@@ -547,7 +587,7 @@
       font-weight: 700;
       padding: 4px 8px;
       border-radius: 20px;
-      background: #e6f4ee;
+      background: var(--correct-bg);
       color: var(--green);
       align-self: flex-start;
       margin-top: 4px;
@@ -562,7 +602,7 @@
     }
 
     .conclusion-card {
-      background: #ffffff;
+      background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 8px;
       padding: 12px 14px;
@@ -597,20 +637,100 @@
       color: var(--sub);
     }
 
-    /* RESPONSIVE LAYOUT */
-    @media (max-width: 768px) {
+    /* TABLET LAYOUT — iPad mini/Air/Pro in portrait and classic 1024px landscape */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      body {
+        display: block;
+        overflow-y: auto;
+      }
+
       .app-body {
         flex-direction: column;
+        height: auto;
+        min-height: 0;
+        overflow: visible;
       }
 
       .canvas-container {
-        height: 50%;
-        min-height: 320px;
+        height: 460px;
+        min-height: 420px;
+        flex: none;
       }
 
       .sidebar {
         width: 100%;
-        height: 50%;
+        height: auto;
+        overflow: visible;
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+
+      .step-body {
+        overflow-y: visible;
+      }
+    }
+
+    /* Touch targets and touch-specific help for every iPad orientation. */
+    @media (any-pointer: coarse) and (max-width: 1400px) {
+      .canvas-hint {
+        width: max-content;
+        max-width: calc(100% - 24px);
+        white-space: normal;
+        text-align: center;
+      }
+
+      .hint-desktop {
+        display: none;
+      }
+
+      .hint-touch {
+        display: inline;
+      }
+
+      .btn,
+      .btn-predict,
+      .step-tab,
+      .sub-tab-pill {
+        min-height: 44px;
+      }
+
+      .btn-delete-pt {
+        min-width: 44px;
+        min-height: 44px;
+        justify-content: center;
+      }
+    }
+
+    /* PHONE LAYOUT */
+    @media (max-width: 768px) {
+      body {
+        display: block;
+        overflow-y: auto;
+      }
+
+      .app-body {
+        flex-direction: column;
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+      }
+
+      .canvas-container {
+        height: 320px;
+        min-height: 320px;
+        flex: none;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        overflow: visible;
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+
+      .step-body {
+        overflow-y: visible;
       }
     }
   </style>
@@ -621,7 +741,6 @@
   <!-- HEADER -->
   <header>
     <div class="header-badge">🧊 Hình học không gian</div>
-    <h1>Bài 10: Đường thẳng và Mặt phẳng trong Không gian — Bài 1</h1>
   </header>
 
   <!-- APP BODY LAYOUT -->
@@ -631,7 +750,10 @@
     <div class="canvas-container" id="canvas-wrap">
       <canvas id="three-canvas"></canvas>
       <div id="label-layer"></div>
-      <div class="canvas-hint" id="canvas-hint">🖱 Kéo để xoay · Cuộn để zoom · Nhấn giữa để dịch chuyển</div>
+      <div class="canvas-hint" id="canvas-hint">
+        <span class="hint-desktop">🖱 Kéo để xoay · Cuộn để zoom · Nhấn giữa để dịch chuyển</span>
+        <span class="hint-touch">👆 Một ngón để xoay · Chụm/mở để zoom · Hai ngón để dịch chuyển</span>
+      </div>
     </div>
 
     <!-- SIDEBAR -->
@@ -717,7 +839,7 @@
               <div style="color: var(--sub); font-style: italic; text-align: center; padding: 10px 0;">Hãy click chuột
                 lên màn hình tối để đặt điểm...</div>
             </div>
-            <div class="status-badge" id="step1-status" style="display: block; background: #fee2e2; color: #ef4444;">
+            <div class="status-badge" id="step1-status" style="display: block; background: var(--wrong-bg); color: var(--wrong);">
               <i class="ti ti-alert-triangle"></i> Cần đặt ít nhất 1 điểm ∈ (P) và 1 điểm ∉ (P)
             </div>
           </div>
@@ -999,6 +1121,17 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
   <script>
+    function LMS() {
+      return window.AiducationLMS || {
+        ready: function () {},
+        progress: function () {},
+        event: function () {},
+        state: function () {},
+        complete: function () {},
+        resize: function () {}
+      };
+    }
+
     // ==========================================
     // 📐 GEOMETRY MATH (FROM 06_geometry_math.md)
     // ==========================================
@@ -1319,13 +1452,13 @@
         this.mesh = new THREE.Mesh(this.geometry, this.material);
         scene.add(this.mesh);
 
-        const edges = new THREE.EdgesGeometry(this.geometry);
+        this.edgesGeometry = new THREE.EdgesGeometry(this.geometry);
         this.borderMaterial = new THREE.LineBasicMaterial({ color, linewidth: 1.5, transparent: true, opacity: 0.6 });
-        this.border = new THREE.LineSegments(edges, this.borderMaterial);
+        this.border = new THREE.LineSegments(this.edgesGeometry, this.borderMaterial);
         scene.add(this.border);
 
         this.glowMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 3, transparent: true, opacity: 0 });
-        this.glowBorder = new THREE.LineSegments(edges, this.glowMaterial);
+        this.glowBorder = new THREE.LineSegments(this.edgesGeometry, this.glowMaterial);
         scene.add(this.glowBorder);
 
         // Store initial distance if p1 and p2 are valid points
@@ -1424,6 +1557,7 @@
         scene.remove(this.border);
         scene.remove(this.glowBorder);
         this.geometry.dispose();
+        this.edgesGeometry.dispose();
         this.material.dispose();
         this.borderMaterial.dispose();
         this.glowBorder.material.dispose();
@@ -1445,16 +1579,24 @@
 
     const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), antialias: true });
     renderer.setSize(wrap.clientWidth, wrap.clientHeight);
-    renderer.setPixelRatio(window.devicePixelRatio);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
 
-    window.addEventListener('resize', () => {
+    function resizeRendererToWrap() {
+      if (!wrap.clientWidth || !wrap.clientHeight) return;
       camera.aspect = wrap.clientWidth / wrap.clientHeight;
       camera.updateProjectionMatrix();
       renderer.setSize(wrap.clientWidth, wrap.clientHeight);
-    });
+    }
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const canvasResizeObserver = new ResizeObserver(resizeRendererToWrap);
+      canvasResizeObserver.observe(wrap);
+    } else {
+      window.addEventListener('resize', resizeRendererToWrap);
+    }
 
     // Lights
-    scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.55);
     dirLight.position.set(6, 12, 8);
     scene.add(dirLight);
@@ -1746,12 +1888,25 @@
     // 🎚️ SCENE DISPOSAL & REBUILD
     // ==========================================
 
+    function disposeLooseObject(object) {
+      if (!object) return;
+      scene.remove(object);
+      if (object.geometry) object.geometry.dispose();
+      if (object.material) {
+        if (Array.isArray(object.material)) {
+          object.material.forEach(material => material.dispose());
+        } else {
+          object.material.dispose();
+        }
+      }
+    }
+
     function clearScene() {
       // Stop ongoing dragging or animations
       stopDragging();
       animationRunning = false;
       if (animObject) {
-        scene.remove(animObject);
+        disposeLooseObject(animObject);
         animObject = null;
       }
       if (cameraAnim) {
@@ -1780,7 +1935,7 @@
 
       // Extra cleaning variables
       if (tc4ResultLine) {
-        scene.remove(tc4ResultLine);
+        disposeLooseObject(tc4ResultLine);
         tc4ResultLine = null;
       }
 
@@ -1951,7 +2106,7 @@
         item.className = `hud-item ${inPlane ? 'valid' : 'invalid'}`;
         item.innerHTML = `
           <div style="display: flex; align-items: center; gap: 8px;">
-            <button class="btn-delete-pt" onclick="deleteM1Point(${idx})" style="background: none; border: none; color: #ef4444; cursor: pointer; display: flex; align-items: center; padding: 2px;" title="Xóa điểm">
+            <button class="btn-delete-pt" onclick="deleteM1Point(${idx})" style="background: none; border: none; color: var(--wrong); cursor: pointer; display: flex; align-items: center; padding: 2px;" title="Xóa điểm">
               <i class="ti ti-trash" style="font-size: 14px;"></i>
             </button>
             <span>Điểm <strong>${p.label}</strong></span>
@@ -2101,7 +2256,7 @@
           requestAnimationFrame(animateRotation);
         } else {
           // Completed
-          scene.remove(animObject);
+          disposeLooseObject(animObject);
           animObject = null;
           animationRunning = false;
           orbitControls.enabled = true;
@@ -2371,6 +2526,13 @@
       const inter = intersectionOfTwoPlanes(tc4PlaneP, tc4PlaneQ);
       if (!inter) return;
 
+      if (tc4ResultLine) {
+        disposeLooseObject(tc4ResultLine);
+        tc4ResultLine = null;
+      }
+      const oldLabel = document.getElementById('tc4-result-label');
+      if (oldLabel) oldLabel.remove();
+
       const pGeom = new THREE.BufferGeometry();
       const pMat = new THREE.LineBasicMaterial({ color: 0xef4444, linewidth: 3.5 });
       tc4ResultLine = new THREE.Line(pGeom, pMat);
@@ -2378,6 +2540,7 @@
 
       // Text label for intersection line
       const lineLabel = document.createElement('div');
+      lineLabel.id = 'tc4-result-label';
       lineLabel.className = 'pt-label line-label';
       lineLabel.textContent = 'd = (P) ∩ (Q)';
       lineLabel.style.color = '#ef4444';
@@ -2852,6 +3015,22 @@
     // BẮT ĐẦU CHẠY APP
     setupStep(0);
     animate();
+
+    function reportHeight() {
+      const height = document.documentElement.scrollHeight;
+      LMS().resize({ height });
+    }
+
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      const pageResizeObserver = new ResizeObserver(() => {
+        clearTimeout(window._rz);
+        window._rz = setTimeout(reportHeight, 100);
+      });
+      pageResizeObserver.observe(document.body);
+    } else {
+      setInterval(reportHeight, 800);
+    }
 
 
 

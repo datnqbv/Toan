@@ -21,26 +21,66 @@
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
 
   <style>
-    /* DESIGN SYSTEM: NAVY & TEAL PRESET */
+    /* DESIGN SYSTEM: JADE / CREAM — canvas and geometry colors stay independent */
     :root {
-      --green: #1B8C5A;
-      --green-light: #E6F4EE;
-      --red: #C62828;
-      --red-light: #FFEBEE;
-      --amber: #EF9F27;
-      --amber-light: #FEF3E0;
-      --blue: #1565C0;
-      --blue-light: #EBF3FF;
-      --surface: #ffffff;
-      --border: #d1dce8;
-      --text: #1a2e44;
-      --text-2: #334155;
-      --sub: #64748b;
-      --radius: 12px;
+      /* Neutrals */
+      --cream: #FAF7F0;
+      --cream-2: #F0EADD;
+      --cream-3: #E7DECC;
+      --paper-line: #E5DECF;
+      --paper-line-2: #D6CCB6;
+      --ink: #1A1A1A;
+      --ink-2: #514C44;
+      --ink-3: #7C756A;
+      --ink-faint: #ABA396;
 
-      --navy: #0d2b4e;
-      --teal: #0e7a6e;
-      --bg: #f0f4f8;
+      /* Jade / Sage / Accent */
+      --jade: #3CA57A;
+      --jade-deep: #2D8B6F;
+      --jade-dark: #14432F;
+      --jade-text: #1B5E48;
+      --jade-soft: #A9D0BE;
+      --jade-pale: #DCEAE1;
+      --sage: #A8C9B8;
+      --sage-deep: #7CA792;
+      --sage-text: #46685A;
+      --sage-pale: #E1ECE4;
+      --accent: #E8A24A;
+      --accent-deep: #CE8A33;
+      --accent-text: #8A551A;
+      --accent-pale: #F7E7CD;
+
+      /* Semantic */
+      --correct: #2D8B6F;
+      --correct-bg: #DCEAE1;
+      --wrong: #C15F3C;
+      --wrong-bg: #F3E2D6;
+      --warning: #C58A2E;
+      --warning-bg: #F5E7CB;
+      --info: #4E7F92;
+      --info-bg: #DCE7EB;
+      --white: #FFFFFF;
+
+      /* Compatibility aliases for the existing UI */
+      --green: var(--correct);
+      --green-light: var(--correct-bg);
+      --red: var(--wrong);
+      --red-light: var(--wrong-bg);
+      --amber: var(--warning);
+      --amber-light: var(--warning-bg);
+      --blue: var(--info);
+      --blue-light: var(--info-bg);
+      --surface: var(--white);
+      --border: var(--paper-line);
+      --text: var(--ink);
+      --text-2: var(--ink-2);
+      --sub: var(--ink-3);
+      --radius: 12px;
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+
+      /* Canvas exception */
       --canvas-bg: #0a1628;
     }
 
@@ -56,16 +96,15 @@
       line-height: 1.6;
       color: var(--text);
       background: var(--bg);
-      height: 100vh;
       display: flex;
       flex-direction: column;
-      overflow: hidden;
+      overflow-x: hidden;
     }
 
     /* HEADER */
     header {
-      background: linear-gradient(135deg, var(--navy) 0%, #1a4a7a 100%);
-      color: #fff;
+      background: linear-gradient(135deg, var(--jade-dark) 0%, var(--jade-deep) 100%);
+      color: var(--white);
       padding: 14px 24px;
       display: flex;
       align-items: center;
@@ -86,13 +125,6 @@
       letter-spacing: .06em;
       text-transform: uppercase;
       white-space: nowrap;
-    }
-
-    header h1 {
-      font-size: 16px;
-      font-weight: 700;
-      letter-spacing: .01em;
-      flex: 1;
     }
 
     /* APP BODY LAYOUT */
@@ -136,6 +168,10 @@
       z-index: 5;
     }
 
+    .hint-touch {
+      display: none;
+    }
+
     /* HTML LABEL OVERLAY */
     #label-layer {
       position: absolute;
@@ -150,7 +186,7 @@
 
     .pt-label {
       position: absolute;
-      font-size: 13.5px;
+      font-size: 16px;
       font-weight: 700;
       pointer-events: none;
       text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.6);
@@ -161,8 +197,8 @@
 
     /* SIDEBAR */
     .sidebar {
-      width: 330px;
-      background: #ffffff;
+      width: 310px;
+      background: var(--surface);
       border-left: 1px solid var(--border);
       display: flex;
       flex-direction: column;
@@ -177,7 +213,7 @@
     .step-tabs {
       display: flex;
       border-bottom: 1px solid var(--border);
-      background: #f8fafc;
+      background: var(--cream-2);
       flex-shrink: 0;
       overflow-x: auto;
       scrollbar-width: none;
@@ -204,13 +240,13 @@
 
     .step-tab:hover {
       color: var(--navy);
-      background: rgba(0, 0, 0, 0.02);
+      background: rgba(45, 139, 111, 0.06);
     }
 
     .step-tab.active {
       color: var(--navy);
       border-bottom-color: var(--teal);
-      background: #ffffff;
+      background: var(--surface);
     }
 
     /* SUB PILLS TOOLBAR */
@@ -218,7 +254,7 @@
       display: flex;
       gap: 6px;
       padding: 8px 12px;
-      background: #f8fafc;
+      background: var(--cream-2);
       border-bottom: 1px solid var(--border);
       flex-shrink: 0;
     }
@@ -231,19 +267,19 @@
       text-align: center;
       border-radius: 6px;
       border: 1px solid var(--border);
-      background: #fff;
+      background: var(--surface);
       color: var(--text-2);
       cursor: pointer;
       transition: all .15s;
     }
 
     .sub-pill:hover {
-      background: #f0f4f8;
+      background: var(--cream);
     }
 
     .sub-pill.active {
       background: var(--teal);
-      color: #fff;
+      color: var(--white);
       border-color: var(--teal);
     }
 
@@ -274,7 +310,7 @@
       display: flex;
       align-items: center;
       gap: 8px;
-      border-bottom: 1px solid #edf2f7;
+      border-bottom: 1px solid var(--paper-line);
       padding-bottom: 8px;
     }
 
@@ -283,7 +319,7 @@
       height: 22px;
       border-radius: 50%;
       background: var(--teal);
-      color: #fff;
+      color: var(--white);
       font-size: 11px;
       font-weight: 700;
       display: flex;
@@ -324,25 +360,25 @@
     .ib-blue {
       background: var(--blue-light);
       border-left-color: var(--blue);
-      color: #0d47a1;
+      color: var(--info);
     }
 
     .ib-teal {
-      background: #e6f7f4;
+      background: var(--jade-pale);
       border-left-color: var(--teal);
-      color: #064e40;
+      color: var(--jade-text);
     }
 
     .ib-gold {
       background: var(--amber-light);
       border-left-color: var(--amber);
-      color: #7e5109;
+      color: var(--accent-text);
     }
 
     .ib-red {
       background: var(--red-light);
       border-left-color: var(--red);
-      color: #b71c1c;
+      color: var(--wrong);
     }
 
     /* BUTTONS & CHOICES */
@@ -363,31 +399,31 @@
 
     .btn-primary {
       background: var(--navy);
-      color: #fff;
+      color: var(--white);
     }
 
     .btn-primary:hover {
-      background: #153e6e;
+      background: var(--jade-deep);
     }
 
     .btn-teal {
       background: var(--teal);
-      color: #fff;
+      color: var(--white);
     }
 
     .btn-teal:hover {
-      background: #0b6158;
+      background: var(--jade-dark);
     }
 
     .btn-outline {
-      background: #fff;
+      background: var(--surface);
       border-color: var(--border);
       color: var(--text-2);
     }
 
     .btn-outline:hover {
-      background: #f8fafc;
-      border-color: #b0c2d4;
+      background: var(--cream-2);
+      border-color: var(--paper-line-2);
     }
 
     .btn:disabled {
@@ -405,7 +441,7 @@
       padding: 8px;
       border: 1px solid var(--border);
       border-radius: 8px;
-      background: #fff;
+      background: var(--surface);
       font-size: 12px;
       font-weight: 600;
       cursor: pointer;
@@ -415,13 +451,13 @@
 
     .choice-btn:hover {
       border-color: var(--teal);
-      background: #f0fdfa;
+      background: var(--jade-pale);
     }
 
     .choice-btn.selected {
       border-color: var(--teal);
       background: var(--teal);
-      color: #fff;
+      color: var(--white);
     }
 
     /* CHECKLISTS & EDGE LISTS */
@@ -439,7 +475,7 @@
       gap: 10px;
       padding: 9px 12px;
       border-radius: 8px;
-      background: #f8fafc;
+      background: var(--cream);
       font-size: 12.5px;
       border: 1px solid var(--border);
       line-height: 1.45;
@@ -447,8 +483,8 @@
 
     .check-item.done {
       background: var(--green-light);
-      border-color: #a8e0c7;
-      color: #0e5c38;
+      border-color: var(--jade-soft);
+      color: var(--jade-text);
     }
 
     .edge-select-list {
@@ -464,7 +500,7 @@
       align-items: center;
       justify-content: space-between;
       padding: 8px 12px;
-      background: #f8fafc;
+      background: var(--cream);
       border-radius: 8px;
       border: 1px solid var(--border);
       font-size: 12.5px;
@@ -481,19 +517,19 @@
       font-weight: 600;
       border-radius: 4px;
       border: 1px solid var(--border);
-      background: #fff;
+      background: var(--surface);
       cursor: pointer;
     }
 
     .mini-btn.active-solid {
       background: var(--navy);
-      color: #fff;
+      color: var(--white);
       border-color: var(--navy);
     }
 
     .mini-btn.active-dashed {
       background: var(--sub);
-      color: #fff;
+      color: var(--white);
       border-color: var(--sub);
     }
 
@@ -520,7 +556,7 @@
     .controls-footer {
       padding: 12px 18px;
       border-top: 1px solid var(--border);
-      background: #f8fafc;
+      background: var(--cream-2);
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -554,7 +590,7 @@
       left: 0;
       right: 0;
       bottom: 0;
-      background-color: #cbd5e1;
+      background-color: var(--paper-line-2);
       transition: .2s;
       border-radius: 20px;
     }
@@ -566,7 +602,7 @@
       width: 14px;
       left: 3px;
       bottom: 3px;
-      background-color: white;
+      background-color: var(--white);
       transition: .2s;
       border-radius: 50%;
     }
@@ -579,18 +615,109 @@
       transform: translateX(16px);
     }
 
-    @media (max-width: 768px) {
+    /* TABLET LAYOUT — iPad mini/Air/Pro in portrait and classic 1024px landscape */
+    @media (min-width: 769px) and (max-width: 1024px) {
+      body {
+        display: block;
+        overflow-y: auto;
+      }
+
       .app-body {
         flex-direction: column;
+        height: auto;
+        min-height: 0;
+        overflow: visible;
       }
 
       .sidebar {
         width: 100%;
-        height: 50%;
+        height: auto;
+        overflow: visible;
+        border-left: none;
+        border-top: 1px solid var(--border);
       }
 
       .canvas-container {
-        height: 50%;
+        height: 460px;
+        min-height: 420px;
+        flex: none;
+      }
+
+      .step-body {
+        overflow-y: visible;
+      }
+    }
+
+    /* Touch targets and touch-specific help for every iPad orientation. */
+    @media (any-pointer: coarse) and (max-width: 1400px) {
+      .canvas-hint {
+        width: max-content;
+        max-width: calc(100% - 24px);
+        white-space: normal;
+        text-align: center;
+      }
+
+      .hint-desktop {
+        display: none;
+      }
+
+      .hint-touch {
+        display: inline;
+      }
+
+      .btn,
+      .choice-btn,
+      .step-tab,
+      .sub-pill,
+      .mini-btn,
+      .toggle-switch {
+        min-height: 44px;
+      }
+
+      .toggle-switch {
+        width: 44px;
+        height: 44px;
+        min-width: 44px;
+      }
+
+      .toggle-switch .slider {
+        top: 12px;
+        right: 4px;
+        bottom: 12px;
+        left: 4px;
+      }
+    }
+
+    /* PHONE LAYOUT */
+    @media (max-width: 768px) {
+      body {
+        display: block;
+        overflow-y: auto;
+      }
+
+      .app-body {
+        flex-direction: column;
+        height: auto;
+        min-height: 0;
+        overflow: visible;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: auto;
+        overflow: visible;
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+
+      .canvas-container {
+        height: 320px;
+        min-height: 320px;
+        flex: none;
+      }
+
+      .step-body {
+        overflow-y: visible;
       }
     }
   </style>
@@ -600,18 +727,20 @@
 
   <!-- Header -->
   <header>
-    <div class="header-badge">🧊 HÌNH HỌC KHÔNG GIAN 11</div>
-    <h1>Bài 10: Giao tuyến & Thiết diện hình chóp</h1>
+    <div class="header-badge">🧊 Hình học không gian</div>
   </header>
 
   <!-- App Body Layout -->
   <div class="app-body">
 
     <!-- 3D Canvas Area -->
-    <div class="canvas-container">
+    <div class="canvas-container" id="canvas-wrap">
       <div id="label-layer"></div>
       <canvas id="three-canvas"></canvas>
-      <div class="canvas-hint">🖱️ Kéo để xoay · Cuộn để zoom · Nhấp chọn điểm/giao điểm</div>
+      <div class="canvas-hint">
+        <span class="hint-desktop">🖱️ Kéo để xoay · Cuộn để zoom · Nhấp chọn điểm/giao điểm</span>
+        <span class="hint-touch">👆 Một ngón để xoay · Chụm/mở để zoom · Chạm để chọn điểm/giao điểm</span>
+      </div>
     </div>
 
     <!-- Right Sidebar -->
@@ -767,19 +896,19 @@
 
             <!-- Naming Modal / Card -->
             <div id="t2-name-modal"
-              style="display:none; margin-top: 8px; padding: 12px; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+              style="display:none; margin-top: 8px; padding: 12px; background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
               <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;">
                 🏷️ Đặt tên cho giao điểm mới:
               </div>
               <div style="display: flex; gap: 8px; align-items: center;">
                 <input type="text" id="t2-name-input" value="K" maxlength="3"
-                  style="width: 70px; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 700; text-align: center; text-transform: uppercase;">
+                  style="width: 70px; padding: 6px 10px; border: 1px solid var(--paper-line-2); border-radius: 6px; font-weight: 700; text-align: center; text-transform: uppercase;">
                 <button class="btn btn-primary" onclick="t2ConfirmPointName()" style="padding: 6px 14px;">
                   <i class="ti ti-check"></i> Xác nhận
                 </button>
               </div>
               <div id="t2-name-error"
-                style="display:none; font-size: 11.5px; color: #dc2626; margin-top: 6px; font-weight: 600;"></div>
+                style="display:none; font-size: 11.5px; color: var(--wrong); margin-top: 6px; font-weight: 600;"></div>
             </div>
 
             <div id="t2-conclusion" style="display:none; margin-top: 8px;" class="info-box ib-teal">
@@ -821,7 +950,7 @@
 
             <!-- Edge Counting Section (unlocked after 5/5 explored) -->
             <div id="t3-count-box"
-              style="display:none; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
+              style="display:none; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--paper-line-2);">
               <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">
                 🔢 Đếm số cạnh hình chóp S.ABCD:
               </div>
@@ -905,7 +1034,7 @@
 
             <!-- Step 4A.2: Intersection BF ∩ (SAC) -->
             <div id="t4-inter-section"
-              style="display:none; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
+              style="display:none; margin-top: 12px; padding-top: 10px; border-top: 1px dashed var(--paper-line-2);">
               <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;">
                 🎯 Tìm giao điểm của BF với mặt phẳng (SAC):
               </div>
@@ -1082,6 +1211,17 @@
 
   <!-- JavaScript Application Engine -->
   <script>
+    function LMS() {
+      return window.AiducationLMS || {
+        ready: function () {},
+        progress: function () {},
+        event: function () {},
+        state: function () {},
+        complete: function () {},
+        resize: function () {}
+      };
+    }
+
     /* ========================================================================
        1. THREE.JS ENGINE SETUP & DESIGN SYSTEM TOKENS
        ======================================================================== */
@@ -1116,7 +1256,7 @@
     orbitControls.target.set(0, 0.8, 0);
 
     // Lights
-    scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+    scene.add(new THREE.AmbientLight(0xffffff, 0.8));
     const dirLight = new THREE.DirectionalLight(0xffffff, 0.65);
     dirLight.position.set(6, 12, 8);
     scene.add(dirLight);
@@ -1126,14 +1266,20 @@
     gridHelper.position.y = 0;
     scene.add(gridHelper);
 
-    // Window Resize Handler
-    window.addEventListener('resize', () => {
+    function resizeRendererToContainer() {
       const w = container.clientWidth || 800;
       const h = container.clientHeight || 600;
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
       renderer.setSize(w, h);
-    });
+    }
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const canvasResizeObserver = new ResizeObserver(resizeRendererToContainer);
+      canvasResizeObserver.observe(container);
+    } else {
+      window.addEventListener('resize', resizeRendererToContainer);
+    }
 
     /* ========================================================================
        2. GEOMETRY MATH UTILITIES (06_geometry_math.md)
@@ -1201,6 +1347,18 @@
         if (currentSolidMesh.geometry) currentSolidMesh.geometry.dispose();
         if (currentSolidMesh.material) currentSolidMesh.material.dispose();
         currentSolidMesh = null;
+      }
+    }
+
+    function removeTrackedSceneObject(obj) {
+      if (!obj) return;
+      scene.remove(obj);
+      const index = sceneObjects.indexOf(obj);
+      if (index !== -1) sceneObjects.splice(index, 1);
+      if (obj.geometry) obj.geometry.dispose();
+      if (obj.material) {
+        if (Array.isArray(obj.material)) obj.material.forEach(material => material.dispose());
+        else obj.material.dispose();
       }
     }
 
@@ -1466,6 +1624,7 @@
       t3EdgeCount = 0;
       t3EdgesCounted.clear();
       t3ExploredItems.clear();
+      clearT3Highlights();
       const t3ExpTxt = document.getElementById('t3-explore-count-text');
       if (t3ExpTxt) t3ExpTxt.textContent = 'Đã khám phá: 0 / 5 mục';
       const t3EdgeTxt = document.getElementById('t3-edge-count-text');
@@ -2046,7 +2205,7 @@
 
     function clearT3Highlights() {
       if (t3HighlightMesh) {
-        scene.remove(t3HighlightMesh);
+        removeTrackedSceneObject(t3HighlightMesh);
         t3HighlightMesh = null;
       }
     }
@@ -2811,6 +2970,22 @@
     // Init first scene
     loadTabScene();
     animate();
+
+    function reportHeight() {
+      const height = document.documentElement.scrollHeight;
+      LMS().resize({ height });
+    }
+
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      const pageResizeObserver = new ResizeObserver(() => {
+        clearTimeout(window._rz);
+        window._rz = setTimeout(reportHeight, 100);
+      });
+      pageResizeObserver.observe(document.body);
+    } else {
+      setInterval(reportHeight, 800);
+    }
 
   </script>
 </body>
