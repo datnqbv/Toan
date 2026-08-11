@@ -1,0 +1,1520 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Simulation 2 — Hai Vectơ Cùng Hướng Đến Mức Nào?</title>
+  <script type="application/json" id="athena-context">
+{
+  "title": "Simulation 2: Hai vectơ cùng hướng đến mức nào?",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Hiểu công thức tích vô hướng u·v = |u||v|cosθ qua thao tác kéo/chỉnh trực quan",
+    "Hiểu ý nghĩa hình học của phép chiếu (projection): độ dài phép chiếu của u lên v bằng |u|cosθ",
+    "Nhận biết dấu và độ lớn của tích vô hướng phản ánh mức độ 'cùng hướng' của hai vectơ: dương khi 0°<θ<90° (cùng hướng), bằng 0 khi θ=90° (vuông góc), âm khi θ>90° (ngược hướng)"
+  ],
+  "structure": [
+    { "id": "row-visuals", "title": "Canvas Oxy + bảng điều khiển: 3 slider chỉnh độ lớn |u|, |v| và góc θ giữa hai vectơ" },
+    { "id": "row-metrics", "title": "4 thẻ chỉ số trực tiếp: góc θ, cosθ, tích vô hướng u·v = |u||v|cosθ, độ dài phép chiếu |u|cosθ" },
+    { "id": "proj-steps", "title": "4 bước minh họa phép chiếu hình học: 2 vectơ xuất phát từ O → hạ vuông góc từ đầu u xuống giá của v → đoạn chiếu màu vàng → công thức độ dài phép chiếu và tích vô hướng" },
+    { "id": "scale", "title": "Thang đo trực quan ý nghĩa giá trị tích vô hướng: ngược hướng (θ>90°, âm) — vuông góc (θ=90°, bằng 0) — cùng hướng (0°<θ<90°, dương)" }
+  ],
+  "athenaGuidance": "Đây là bài mô phỏng KHÁM PHÁ TỰ DO (free-exploration), KHÔNG có câu hỏi trắc nghiệm hay bài tập chấm điểm nào — học sinh chỉ kéo 3 slider (độ lớn |u|, độ lớn |v|, góc θ) và quan sát 4 chỉ số (θ, cosθ, u·v, độ dài phép chiếu) cùng thang đo màu thay đổi theo thời gian thực. Vì không có câu hỏi/đáp án cụ thể, Athena chỉ nên hướng dẫn học sinh CÁCH khám phá: gợi ý thử kéo θ về gần 0°, 90°, và 180° để tự quan sát sự thay đổi dấu và độ lớn của tích vô hướng; giải thích ý nghĩa công thức u·v = |u||v|cosθ và phép chiếu |u|cosθ khi được hỏi; không có đáp án đúng/sai để tiết lộ hay che giấu."
+}
+  </script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <style>
+    :root {
+  /* Neutrals · giấy & mực */
+  --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC;
+  --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
+  --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+
+  /* Jade · hành động chính */
+  --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F;
+  --jade-text:#1B5E48; --jade-soft:#A9D0BE; --jade-pale:#DCEAE1;
+
+  /* Sage · phụ trợ */
+  --sage:#A8C9B8; --sage-deep:#7CA792; --sage-text:#46685A; --sage-pale:#E1ECE4;
+
+  /* Accent · điểm nhấn ấm */
+  --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+
+  /* Semantic · đúng/sai/cảnh báo/info */
+  --correct:#2D8B6F; --correct-bg:#DCEAE1;
+  --wrong:#C15F3C;   --wrong-bg:#F3E2D6;
+  --warning:#C58A2E; --warning-bg:#F5E7CB;
+  --info:#4E7F92;    --info-bg:#DCE7EB;
+
+  --white:#FFFFFF;
+  --radius:10px; --radius-lg:14px; --radius-sm:6px;
+  --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+  --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+  --shadow-lg: 0 14px 38px rgba(20, 67, 47, 0.12);
+
+  /* Illustration only · fill phẳng cho minh hoạ (KHÔNG dùng cho UI/text) */
+  --il-terracotta:#C1704B; --il-brick:#9E4A2E; --il-ochre:#C99A3C; --il-olive:#8A9A5B;
+  --il-forest:#2E6B52; --il-dusty-blue:#6E93A6; --il-slate:#4E6E7E; --il-mauve:#8A6A7E; --il-sand:#D8C4A0;
+
+  /* Vector màu canvas Vật lý/Toán (cộng lực, cộng vận tốc...) — PHẦN 1.1 file design Toán */
+  --color-v1: var(--jade); --color-v2: var(--info);
+  --color-resultant: var(--accent); --color-force-red: var(--wrong); --color-gravity: var(--ink-3);
+
+  /* --- alias cho code cũ (giữ để var(--ten-cu) phía dưới vẫn chạy đúng màu mới) --- */
+  --primary: var(--jade-deep);
+  --primary-mid: var(--jade);
+  --primary-light: var(--jade-pale);
+  --accent-dark: var(--accent-deep);
+  --accent-light: var(--accent-pale);
+  --teal-mid: var(--jade-text);
+  --green: var(--correct);
+  --green-light: var(--correct-bg);
+  --red: var(--wrong);
+  --red-light: var(--wrong-bg);
+  --amber: var(--warning);
+  --amber-light: var(--warning-bg);
+  --blue: var(--info);
+  --blue-light: var(--info-bg);
+  --bg: var(--cream);
+  --surface: var(--white);
+  --border: var(--paper-line);
+  --text: var(--ink);
+  --text-2: var(--ink-2);
+  --text-3: var(--ink-3);
+  --font-main: 'Be Vietnam Pro', system-ui, sans-serif;
+}
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      background: var(--bg);
+      color: var(--text);
+      font-family: var(--font-main);
+      font-size: 18px;
+      line-height: 1.7;
+      padding: 16px;
+      min-width: 0;
+    }
+
+    .main-container {
+      max-width: 1100px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 1.2rem;
+      min-width: 0;
+    }
+
+    .intro-text {
+      padding: .85rem 1.1rem; background: var(--jade-pale);
+      border: 1px solid var(--jade-soft); border-left: 4px solid var(--jade-deep);
+      border-radius: var(--radius-lg); color: var(--ink-2);
+      font-size: .85rem; line-height: 1.65; overflow-wrap: anywhere;
+    }
+
+    /* ── BANNER HEADER ── */
+    .sim-banner {
+      background: linear-gradient(135deg, #5C4DB1 0%, #403294 100%);
+      /* Purple gradient to match screenshot */
+      border-radius: 12px;
+      padding: 1.2rem 2rem;
+      text-align: center;
+      color: #FFFFFF;
+      box-shadow: 0 4px 15px rgba(64, 50, 148, 0.2);
+      display: none !important;
+    }
+
+    .sim-banner h1 {
+      font-size: 1.6rem;
+      font-weight: 800;
+      letter-spacing: 0.03em;
+      text-transform: uppercase;
+      margin-bottom: 4px;
+    }
+
+    .sim-banner p {
+      font-size: 0.95rem;
+      color: rgba(255, 255, 255, 0.9);
+      font-weight: 500;
+    }
+
+    /* ── CARD STYLING ── */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.2rem;
+      box-shadow: var(--shadow);
+    }
+
+    .card-title {
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 0.8rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+
+    /* ── ROW 1: CANVAS & CONTROLS ── */
+    .row-visuals {
+      display: grid;
+      grid-template-columns: 1.5fr 1fr;
+      gap: 1.2rem;
+    }
+
+    @media (max-width: 1024px) {
+      .row-visuals {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .canvas-wrapper {
+      position: relative;
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      aspect-ratio: 1.5/1;
+      width: 100%;
+      min-width: 0;
+      touch-action: none;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* Controls Panel */
+    .controls-panel {
+      display: flex;
+      flex-direction: column;
+      gap: 1rem;
+      justify-content: center;
+    }
+
+    .slider-group {
+      margin-bottom: 8px;
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--text-2);
+      margin-bottom: 4px;
+    }
+
+    .slider-value {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.85rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(45, 139, 111, 0.15);
+    }
+
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 44px;
+      background: transparent;
+      outline: none;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 6px; background: var(--cream-2); border: 1px solid var(--paper-line);
+      border-radius: 999px;
+    }
+
+    input[type="range"]::-moz-range-track {
+      height: 6px; background: var(--cream-2); border: 1px solid var(--paper-line);
+      border-radius: 999px;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--blue);
+      border: 2px solid #fff;
+      box-shadow: 0 2px 5px rgba(0, 0, 0, 0.2);
+      cursor: pointer;
+      margin-top: -9px;
+    }
+
+    input[type="range"]::-moz-range-thumb {
+      width: 22px; height: 22px; border-radius: 50%; background: var(--blue);
+      border: 2px solid #fff; box-shadow: 0 2px 5px rgba(0,0,0,.2); cursor: pointer;
+    }
+
+    /* ── ROW 2: 4 METRICS CARDS & AI BOX ── */
+    .row-metrics {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1.2fr 1fr 1.3fr;
+      gap: 0.8rem;
+    }
+
+    @media (max-width: 900px) {
+      .row-metrics {
+        grid-template-columns: repeat(2, 1fr);
+      }
+
+      .athena-box {
+        grid-column: span 2;
+      }
+    }
+
+    .metric-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      box-shadow: var(--shadow);
+    }
+
+    .metric-label {
+      font-size: 0.75rem;
+      font-weight: 700;
+      color: var(--text-2);
+      margin-bottom: 6px;
+    }
+
+    .metric-value {
+      font-size: 1.3rem;
+      font-weight: 800;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .metric-card.m-theta {
+      border-top: 3px solid var(--blue);
+    }
+
+    .metric-card.m-theta .metric-value {
+      color: var(--blue);
+    }
+
+    .metric-card.m-cos {
+      border-top: 3px solid var(--amber);
+    }
+
+    .metric-card.m-cos .metric-value {
+      color: var(--amber);
+    }
+
+    .metric-card.m-dot {
+      border-top: 3px solid var(--green);
+    }
+
+    .metric-card.m-dot .metric-value {
+      color: var(--green);
+    }
+
+    .metric-card.m-proj {
+      border-top: 3px solid #7C3AED;
+    }
+
+    .metric-card.m-proj .metric-value {
+      color: #7C3AED;
+    }
+
+    /* Athena Box style matching design system (PHẦN 3.9 & 7.9) */
+    .athena-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 0.8rem 1rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: var(--shadow);
+    }
+
+    .athena-avatar {
+      flex-shrink: 0;
+      width: 44px;
+      height: 44px;
+      border-radius: 50%;
+      overflow: hidden;
+      background: var(--jade-pale);
+      border: 2px solid var(--jade-soft);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      display: block;
+    }
+
+    .athena-text {
+      font-size: 0.82rem;
+      color: var(--text-2);
+      font-weight: 500;
+      line-height: 1.45;
+    }
+
+    .athena-text strong {
+      color: var(--jade-deep);
+      font-weight: 700;
+    }
+
+    /* Mobile hint cho khối lướt ngang (PHẦN 3.6b) */
+    .mobile-hint {
+      display: none;
+    }
+
+    /* ── ROW 3: PROJECTION STEPS ── */
+    .proj-steps-container {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 0.8rem;
+      margin-top: 0.4rem;
+    }
+
+    @media (max-width: 700px) {
+      .mobile-hint {
+        display: block;
+        text-align: center;
+        font-size: 0.76rem;
+        color: var(--ink-3);
+        padding: 2px 0 6px;
+        font-weight: 500;
+      }
+      .proj-steps-container {
+        display: flex; overflow-x: auto; scroll-snap-type: x mandatory;
+        overscroll-behavior-inline: contain; padding-bottom: 6px;
+      }
+      .proj-step-card { flex: 0 0 84vw; scroll-snap-align: center; }
+    }
+
+    .proj-step-card {
+      background: #FAF9F6;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 8px;
+      text-align: center;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .proj-step-canvas-wrap {
+      width: 100%;
+      aspect-ratio: 1.5/1;
+      background: #FFFFFF;
+      border: 1px solid rgba(0, 0, 0, 0.08);
+      border-radius: var(--radius-sm);
+      overflow: hidden;
+    }
+
+    .proj-step-desc {
+      font-size: 0.78rem;
+      font-weight: 600;
+      color: var(--text-2);
+      line-height: 1.35;
+      text-align: left;
+      width: 100%;
+      padding: 4px;
+    }
+
+    /* ── ROW 4: MEANING SCALE ── */
+    .scale-container {
+      position: relative;
+      margin-top: 10px;
+      margin-bottom: 5px;
+    }
+
+    .scale-line {
+      height: 4px;
+      background: #A09D95;
+      position: relative;
+      margin: 1.5rem 1rem;
+    }
+
+    /* Arrowheads on ends */
+    .scale-line::before,
+    .scale-line::after {
+      content: '';
+      position: absolute;
+      top: -4px;
+      width: 0;
+      height: 0;
+      border-style: solid;
+    }
+
+    .scale-line::before {
+      left: -8px;
+      border-width: 6px 8px 6px 0;
+      border-color: transparent #A09D95 transparent transparent;
+    }
+
+    .scale-line::after {
+      right: -8px;
+      border-width: 6px 0 6px 8px;
+      border-color: transparent transparent transparent #A09D95;
+    }
+
+    .scale-ticks {
+      position: absolute;
+      top: -6px;
+      width: 100%;
+      left: 0;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .scale-tick {
+      width: 2px;
+      height: 16px;
+      background: #4A4A4A;
+      position: relative;
+    }
+
+    .tick-label {
+      position: absolute;
+      top: 20px;
+      transform: translateX(-50%);
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+      text-align: center;
+      color: var(--text);
+    }
+
+    .tick-desc {
+      position: absolute;
+      bottom: 20px;
+      transform: translateX(-50%);
+      font-size: 0.72rem;
+      font-weight: 700;
+      white-space: nowrap;
+      text-align: center;
+    }
+
+    .scale-pointer {
+      position: absolute;
+      top: -5px;
+      width: 14px;
+      height: 14px;
+      border-radius: 50%;
+      background: #2D8B6F;
+      border: 2px solid #FFFFFF;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3);
+      transform: translateX(-50%);
+      transition: left 0.1s ease-out;
+      z-index: 5;
+    }
+
+    /* ── ROW 5: GENERAL COMMENTS & FORMULA ── */
+    .row-conclusion {
+      display: grid;
+      grid-template-columns: 1.1fr 1fr;
+      gap: 1.2rem;
+    }
+
+    @media (max-width: 800px) {
+      .row-conclusion {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .comments-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      justify-content: center;
+    }
+
+    .comment-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: 0.85rem;
+      font-weight: 600;
+    }
+
+    .comment-item i {
+      color: var(--green);
+      font-size: 1.1rem;
+    }
+
+    .formula-showcase {
+      background: var(--accent-light);
+      border: 1px solid rgba(160, 120, 32, 0.2);
+      border-radius: var(--radius-lg);
+      padding: 1rem;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      position: relative;
+    }
+
+    .formula-board {
+      flex: 1;
+    }
+
+    .formula-text {
+      background: #FFFFFF;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 10px;
+      text-align: center;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 1rem;
+      font-weight: 800;
+      color: var(--primary);
+      margin-bottom: 8px;
+      box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .formula-subtext {
+      font-size: 0.76rem;
+      color: var(--text-2);
+      font-weight: 600;
+    }
+
+    .robot-img {
+      width: 64px;
+      height: auto;
+      flex-shrink: 0;
+    }
+
+    /* ── ROW 6: EXTENDED CHALLENGE ── */
+    .challenge-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 1.5rem;
+    }
+
+    @media (max-width: 600px) {
+      .challenge-row {
+        flex-direction: column;
+        align-items: flex-start;
+      }
+
+      .challenge-row button {
+        width: 100%;
+      }
+    }
+
+    .challenge-text {
+      font-size: 0.85rem;
+      color: var(--text-2);
+      font-weight: 600;
+      line-height: 1.45;
+    }
+
+    .challenge-text i {
+      color: var(--blue);
+      margin-right: 4px;
+    }
+
+    .btn-practice {
+      background: #4E7F92;
+      color: #FFFFFF;
+      border: none;
+      border-radius: 8px;
+      padding: 10px 20px;
+      font-weight: 700;
+      font-size: 0.88rem;
+      cursor: pointer;
+      white-space: nowrap;
+      transition: background 0.2s;
+    }
+
+    .btn-practice:hover {
+      background: #0d47a1;
+    }
+  
+  /* ── [fix_vectors.js] Vector label: mũi tên kéo dài đúng độ rộng chữ ── */
+  .vec {
+    display: inline-block;
+    position: relative;
+    font-style: italic;
+    font-weight: 700;
+    margin-top: 0.45em;
+  }
+  .vec::after {
+    content: '';
+    position: absolute;
+    top: -0.28em;
+    left: 0;
+    width: 100%;
+    border-top: 1.5px solid currentColor;
+  }
+  .vec::before {
+    content: '';
+    position: absolute;
+    top: -0.45em;
+    right: -0.15em;
+    border-width: 0.2em 0 0.2em 0.28em;
+    border-style: solid;
+    border-color: transparent transparent transparent currentColor;
+  }
+
+  /* ── [fix_vectors.js] Giá trị trung bình: gạch ngang trên ── */
+  .mean {
+    display: inline-block;
+    position: relative;
+    font-style: italic;
+    margin-top: 0.3em;
+  }
+  .mean::after {
+    content: '';
+    position: absolute;
+    top: -0.15em;
+    left: -5%;
+    width: 110%;
+    border-top: 1.5px solid currentColor;
+  }
+  
+    /* Pass 2 (mục E) — vùng chạm tối thiểu 44px cho nút bấm thật trên mobile.
+       Không đụng desktop, không thu nhỏ phần tử nào — chỉ nới ra nếu đang < 44px. */
+    .practice-panel { display:none; margin-top:12px; padding:14px; background:var(--jade-pale); border:1px solid var(--jade-soft); border-radius:var(--radius); color:var(--ink-2); }
+    .practice-panel.show { display:block; }
+
+    @media (max-width: 640px) {
+      body { padding:0; }
+      .main-container { padding:8px 6px 24px; gap:12px; }
+      .intro-text { padding:10px 12px; }
+      .row-metrics { grid-template-columns:repeat(2,minmax(0,1fr)); }
+      .athena-box { grid-column:1/-1; }
+      .row-conclusion { grid-template-columns:1fr; }
+      .scale-container { overflow-x:auto; }
+      button, .btn, a.btn, input[type="button"], input[type="submit"] {
+        min-height: 44px;
+      }
+      input[type="range"] { min-height:44px; }
+    }
+</style>
+</head>
+
+<body>
+
+  <div class="main-container">
+
+    <!-- BANNER HEADER -->
+    <div class="sim-banner">
+      <h1>Simulation 2: Hai vectơ cùng hướng đến mức nào?</h1>
+      <p>Khám phá: Tích vô hướng đo mức độ "cùng hướng" của hai vectơ.</p>
+    </div>
+
+    <p class="intro-text"><strong>Nhiệm vụ:</strong> Thay đổi độ dài và góc giữa hai vectơ để quan sát tích vô hướng, phép chiếu và mức độ cùng hướng biến đổi theo thời gian thực.</p>
+
+    <!-- MAIN ROW: CANVAS & CONTROLS -->
+    <div class="row-visuals">
+      <div class="canvas-wrapper">
+        <div class="canvas-overlay-text">Mặt phẳng tọa độ Oxy</div>
+        <canvas id="mainCanvas"></canvas>
+      </div>
+
+      <div class="card controls-panel">
+        <div class="card-title">
+          <i class="ti ti-adjustments" style="font-size: 1.25rem; color: #4E7F92;"></i>
+          <span>Điều khiển</span>
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>Độ lớn |<span class="vec">u</span>|</span>
+            <span class="slider-value" id="valUText">5.0</span>
+          </div>
+          <input type="range" id="sliderU" min="0.5" max="8" step="0.1" value="5.0" oninput="updateValues()">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>Độ lớn |<span class="vec">v</span>|</span>
+            <span class="slider-value" id="valVText">4.0</span>
+          </div>
+          <input type="range" id="sliderV" min="0.5" max="8" step="0.1" value="4.0" oninput="updateValues()">
+        </div>
+
+        <div class="slider-group">
+          <div class="slider-header">
+            <span>Góc θ giữa <span class="vec">u</span> và <span class="vec">v</span></span>
+            <span class="slider-value" id="valThetaText">45°</span>
+          </div>
+          <input type="range" id="sliderTheta" min="0" max="180" step="1" value="45" oninput="updateValues()">
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 2: METRICS & AI CHIP -->
+    <div class="row-metrics">
+      <div class="metric-card m-theta">
+        <span class="metric-label">Góc θ</span>
+        <span class="metric-value" id="mThetaVal">45.0°</span>
+      </div>
+      <div class="metric-card m-cos">
+        <span class="metric-label">cosθ</span>
+        <span class="metric-value" id="mCosVal">0.707</span>
+      </div>
+      <div class="metric-card m-dot">
+        <span class="metric-label">Tích vô hướng<br><small style="font-family: monospace; font-size: 0.65rem;"><span class="vec">u</span> · <span class="vec">v</span> =
+            |<span class="vec">u</span>||<span class="vec">v</span>|cosθ</small></span>
+        <span class="metric-value" id="mDotVal">14.14</span>
+      </div>
+      <div class="metric-card m-proj">
+        <span class="metric-label">Độ dài phép chiếu<br><small
+            style="font-family: monospace; font-size: 0.65rem;">|<span class="vec">u</span>|cosθ</small></span>
+        <span class="metric-value" id="mProjVal">3.54</span>
+      </div>
+      <div class="athena-box">
+        <div class="athena-avatar"><img src="" alt="Athena"></div>
+        <div class="athena-text"><strong>Athena:</strong> Kéo các vectơ hoặc thay đổi góc để quan sát giá trị tích vô hướng thay đổi nhé!</div>
+      </div>
+    </div>
+
+    <!-- ROW 3: PROJECTION STEPS (STATIC INSTRUCTION CARD) -->
+    <div class="card">
+      <div class="card-title">
+        <i class="ti ti-map-2" style="font-size: 1.25rem; color: #C58A2E;"></i>
+        <span>Phép chiếu hình học (projection)</span>
+      </div>
+      <div class="mobile-hint">← vuốt ngang để xem các bước →</div>
+      <div class="proj-steps-container">
+        <!-- Step 1 -->
+        <div class="proj-step-card">
+          <div class="proj-step-canvas-wrap">
+            <canvas id="step1Canvas"></canvas>
+          </div>
+          <div class="proj-step-desc">1. Hai vectơ <span class="vec">u</span> và <span class="vec">v</span> xuất phát từ O.</div>
+        </div>
+        <!-- Step 2 -->
+        <div class="proj-step-card">
+          <div class="proj-step-canvas-wrap">
+            <canvas id="step2Canvas"></canvas>
+          </div>
+          <div class="proj-step-desc">2. Hạ vuông góc từ đầu của <span class="vec">u</span> xuống giá của <span class="vec">v</span>.</div>
+        </div>
+        <!-- Step 3 -->
+        <div class="proj-step-card">
+          <div class="proj-step-canvas-wrap">
+            <canvas id="step3Canvas"></canvas>
+          </div>
+          <div class="proj-step-desc">3. Đoạn vàng là phép chiếu của <span class="vec">u</span> lên <span class="vec">v</span>.</div>
+        </div>
+        <!-- Step 4 -->
+        <div class="proj-step-card">
+          <div class="proj-step-canvas-wrap">
+            <canvas id="step4Canvas"></canvas>
+          </div>
+          <div class="proj-step-desc">4. Độ dài phép chiếu = |<span class="vec">u</span>|cosθ và <span class="vec">u</span> · <span class="vec">v</span> = |<span class="vec">u</span>||<span class="vec">v</span>|cosθ.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 4: MEANING VALUE SCALE -->
+    <div class="card">
+      <div class="card-title">
+        <i class="ti ti-chart-bar" style="font-size: 1.25rem; color: #2D8B6F;"></i>
+        <span>Ý nghĩa giá trị tích vô hướng</span>
+      </div>
+      <div class="scale-container">
+        <!-- Horizontal axis -->
+        <div class="scale-line">
+          <!-- Pointer dot indicator placed inside the relative scale-line -->
+          <div class="scale-pointer" id="scalePointer"></div>
+          <div class="scale-ticks">
+            <div class="scale-tick" style="left: 0%;">
+              <span class="tick-desc" style="color: var(--red);">Ngược hướng<br>(θ > 90°)</span>
+              <span class="tick-label" id="lblScaleMin">-20.00</span>
+            </div>
+            <div class="scale-tick" style="left: 33.3%;">
+              <span class="tick-label" id="lblScaleMinMid">-10.00</span>
+            </div>
+            <div class="scale-tick" style="left: 50%;">
+              <span class="tick-desc" style="color: var(--text-3);">Vuông góc<br>(θ = 90°)</span>
+              <span class="tick-label">0</span>
+            </div>
+            <div class="scale-tick" style="left: 66.6%;">
+              <span class="tick-label" id="lblScaleMaxMid">10.00</span>
+            </div>
+            <div class="scale-tick" style="left: 100%;">
+              <span class="tick-desc" style="color: var(--green);">Cùng hướng<br>(0° &lt; θ &lt; 90°)</span>
+              <span class="tick-label" id="lblScaleMax">20.00</span>
+              <span class="tick-desc"
+                style="right: 0%; transform: translateX(50%); top: -45px; color: var(--green);">Cùng hướng tối đa<br>(θ
+                = 0°)</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 5: GENERAL COMMENTS & GENERAL FORMULA -->
+    <div class="row-conclusion">
+      <div class="card comments-list">
+        <div class="card-title">
+          <i class="ti ti-list-check" style="font-size: 1.25rem; color: #2E7D32;"></i>
+          <span>Nhận xét nhanh</span>
+        </div>
+        <div class="comment-item">
+          <i class="ti ti-checkbox"></i>
+          <span>θ = 0° &nbsp;=&gt; &nbsp;<span class="vec">u</span> · <span class="vec">v</span> = |<span class="vec">u</span>||<span class="vec">v</span>| (lớn nhất dương)</span>
+        </div>
+        <div class="comment-item">
+          <i class="ti ti-checkbox"></i>
+          <span>θ = 90° =&gt; &nbsp;<span class="vec">u</span> · <span class="vec">v</span> = 0 (hai vectơ vuông góc)</span>
+        </div>
+        <div class="comment-item">
+          <i class="ti ti-checkbox"></i>
+          <span>θ = 180° =&gt; <span class="vec">u</span> · <span class="vec">v</span> = -|<span class="vec">u</span>||<span class="vec">v</span>| (lớn nhất âm)</span>
+        </div>
+      </div>
+
+      <div class="formula-showcase">
+        <div class="formula-board">
+          <div class="card-title" style="margin-bottom: 0.5rem;">
+            <i class="ti ti-math-function" style="font-size: 1.2rem; color: var(--accent-dark);"></i>
+            <span>Công thức tổng quát</span>
+          </div>
+          <div class="formula-text"><span class="vec">u</span> · <span class="vec">v</span> = |<span class="vec">u</span>||<span class="vec">v</span>| cosθ = xx' + yy'</div>
+          <div class="formula-subtext">(x, y), (x', y') là tọa độ của <span class="vec">u</span>, <span class="vec">v</span> trong hệ trục Oxy.</div>
+        </div>
+        <!-- Athena Mascot Avatar (PHẦN 3.9 & 7.9) -->
+        <div class="athena-avatar" style="width: 52px; height: 52px; border-width: 2px;">
+          <img src="" alt="Athena">
+        </div>
+      </div>
+    </div>
+
+    <!-- ROW 6: EXTENDED CHALLENGE -->
+    <div class="card challenge-row">
+      <div class="challenge-text">
+        <i class="ti ti-help-circle"></i>
+        <strong>Thử thách mở rộng:</strong> Trong mặt phẳng Oxy, hai đường thẳng d₁ và d₂ vuông góc với nhau khi và chỉ
+        khi hai vectơ chỉ phương <span class="vec">u</span>, <span class="vec">v</span> của chúng thỏa mãn <span class="vec">u</span> · <span class="vec">v</span> = 0.
+      </div>
+      <button class="btn-practice" id="btnPractice" onclick="openPractice()" aria-expanded="false" aria-controls="practicePanel">Luyện tập thêm</button>
+    </div>
+    <div class="practice-panel" id="practicePanel">
+      <strong>Bài tập ôn luyện:</strong> Cho vectơ <span class="vec">u</span> = (3; 2) và <span class="vec">v</span> = (4; 1). Tính tích vô hướng bằng công thức tọa độ.
+      <details style="margin-top:8px"><summary style="cursor:pointer;font-weight:700">Xem lời giải</summary><p style="margin-top:6px;font-family:'JetBrains Mono',monospace">u · v = 3×4 + 2×1 = 14.</p></details>
+    </div>
+
+  </div>
+
+  <script>
+    // ===== LMS safe accessor (PHẦN 7.2 design Toán) — tự thêm, không đụng logic khác =====
+    function LMS(){return window.AiducationLMS||{ready:function(){},progress:function(){},event:function(){},state:function(){},complete:function(){},resize:function(){}};}
+
+    // ===== ATHENA AVATAR MASCOT (PHẦN 3.9 & 7.9 design Toán) =====
+    const ATHENA_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23DCEAE1' stroke='%232D8B6F' stroke-width='3'/><circle cx='23' cy='32' r='9' fill='%231A7A5E'/><circle cx='77' cy='32' r='9' fill='%231A7A5E'/><circle cx='50' cy='52' r='36' fill='%23F5EDD8' stroke='%232D8B6F' stroke-width='3'/><rect x='26' y='38' width='48' height='27' rx='9' fill='%23111820'/><ellipse cx='38' cy='51' rx='6.5' ry='8.5' fill='%234ECBA0'/><ellipse cx='62' cy='51' rx='6.5' ry='8.5' fill='%234ECBA0'/><circle cx='36' cy='48' r='2.2' fill='%23FFFFFF'/><circle cx='60' cy='48' r='2.2' fill='%23FFFFFF'/><path d='M43 59 Q50 63 57 59' stroke='%234ECBA0' stroke-width='2' stroke-linecap='round' fill='none'/><line x1='50' y1='16' x2='50' y2='8' stroke='%232D8B6F' stroke-width='3' stroke-linecap='round'/><circle cx='50' cy='6' r='4' fill='%234ECBA0'/></svg>";
+    document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.athena-avatar img').forEach(img => img.src = ATHENA_AVATAR);
+    });
+
+  /* ── [fix_vectors.js] Vẽ nhãn vector trong canvas ── */
+  function drawVecLabel(ctx, x, y, letter, color, fontSize) {
+    fontSize = fontSize || 13;
+    ctx.save();
+
+    // Reset TOÀN BỘ state nguy hiểm trước khi vẽ
+    // Tránh bị ảnh hưởng bởi lineWidth, lineDash, lineCap từ code vẽ mũi tên chính
+    ctx.setLineDash([]);
+    ctx.lineDashOffset = 0;
+    ctx.lineCap   = 'butt';
+    ctx.lineJoin  = 'miter';
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur  = 0;
+    ctx.shadowColor = 'transparent';
+
+    // Đo chiều rộng chữ
+    ctx.font = '700 italic ' + fontSize + 'px "JetBrains Mono", monospace';
+    const letterW = ctx.measureText(letter).width;
+
+    // Vẽ trục mũi tên (đường ngang, mỏng)
+    const arrowY = y - fontSize * 0.72;
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = 1.2;           // luôn mỏng, bất kể lineWidth bên ngoài
+    ctx.beginPath();
+    ctx.moveTo(x, arrowY);
+    ctx.lineTo(x + letterW, arrowY);
+    ctx.stroke();
+
+    // Vẽ đầu mũi tên (tam giác nhỏ — dùng fill, không dùng stroke)
+    const hs = fontSize * 0.22;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x + letterW + hs * 0.8, arrowY);
+    ctx.lineTo(x + letterW - hs * 0.3, arrowY - hs * 0.55);
+    ctx.lineTo(x + letterW - hs * 0.3, arrowY + hs * 0.55);
+    ctx.closePath();
+    ctx.fill();
+
+    // Vẽ chữ cái
+    ctx.font         = '700 italic ' + fontSize + 'px "JetBrains Mono", monospace';
+    ctx.fillStyle    = color;
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText(letter, x, y);
+
+    ctx.restore();
+  }
+
+    // ─── CANVAS CONFIGURATION ───
+    const canvas = document.getElementById('mainCanvas');
+    const ctx = canvas.getContext('2d');
+    const wrapper = canvas.parentElement;
+
+    let lenU = 5.0;
+    let lenV = 4.0;
+    let thetaDeg = 45;
+    const exploredZones = new Set();
+    let completionSent = false;
+
+    // Uniform viewport scaling factors
+    let CW = 0, CH = 0;
+    let scale = 30; // pixels per unit
+    let O = { px: 40, py: 0 }; // Origin in pixels
+
+    function m2c(mx, my) {
+      return {
+        px: O.px + mx * scale,
+        py: O.py - my * scale
+      };
+    }
+
+    function drawArrow(x1, y1, x2, y2, color, width, label) {
+      const p1 = m2c(x1, y1);
+      const p2 = m2c(x2, y2);
+
+      ctx.strokeStyle = color;
+      ctx.lineWidth = width;
+      ctx.beginPath();
+      ctx.moveTo(p1.px, p1.py);
+      ctx.lineTo(p2.px, p2.py);
+      ctx.stroke();
+
+      // Arrow tip
+      const angle = Math.atan2(p2.py - p1.py, p2.px - p1.px);
+      ctx.save();
+      ctx.translate(p2.px, p2.py);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-10, -4);
+      ctx.lineTo(-10, 4);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+
+      if (label) {
+        ctx.fillStyle = color;
+        ctx.font = 'bold 13px Be Vietnam Pro';
+        drawVecLabel(ctx, p2.px + 5 * Math.cos(angle - Math.PI / 4), p2.py + 5 * Math.sin(angle - Math.PI / 4), label, ctx.fillStyle, 13);
+      }
+    }
+
+    function drawMain() {
+      const dpr = Math.min(window.devicePixelRatio || 1, 2);
+      CW = wrapper.clientWidth;
+      CH = wrapper.clientHeight;
+      if (CW < 2 || CH < 2) return;
+      canvas.width = Math.round(CW * dpr);
+      canvas.height = Math.round(CH * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+
+      // Clear
+      ctx.clearRect(0, 0, CW, CH);
+
+      // Recalculate origin and uniform scale
+      O.px = 40;
+      O.py = CH - 40;
+      // Fit 9 units comfortably in both directions (taking padding into account)
+      scale = Math.min((CW - 60) / 9, (CH - 60) / 9);
+
+      // Grid Lines
+      ctx.strokeStyle = 'rgba(45, 139, 111, 0.05)';
+      ctx.lineWidth = 1;
+      for (let x = 1; x <= 9; x++) {
+        const px = O.px + x * scale;
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, CH); ctx.stroke();
+      }
+      for (let y = 1; y <= 9; y++) {
+        const py = O.py - y * scale;
+        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(CW, py); ctx.stroke();
+      }
+
+      // Coordinate axes
+      ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.lineWidth = 1.5;
+      // Ox
+      ctx.beginPath(); ctx.moveTo(0, O.py); ctx.lineTo(CW, O.py); ctx.stroke();
+      drawArrowTip(CW - 2, O.py, 0, 8, 'rgba(0,0,0,0.5)');
+      // Oy
+      ctx.beginPath(); ctx.moveTo(O.px, CH); ctx.lineTo(O.px, 0); ctx.stroke();
+      drawArrowTip(O.px, 2, -Math.PI / 2, 8, 'rgba(0,0,0,0.5)');
+
+      // Label axes
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
+      ctx.font = '700 11px "JetBrains Mono", monospace';
+      ctx.fillText('x', CW - 15, O.py + 15);
+      ctx.fillText('y', O.px - 15, 15);
+      ctx.fillText('O', O.px - 14, O.py + 14);
+
+      // Axis ticks and labels
+      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
+      ctx.font = '700 10px "JetBrains Mono", monospace';
+
+      // Ox ticks (1 to 8)
+      for (let x = 1; x <= 8; x++) {
+        const px = O.px + x * scale;
+        ctx.beginPath();
+        ctx.moveTo(px, O.py - 3);
+        ctx.lineTo(px, O.py + 3);
+        ctx.stroke();
+        ctx.fillText(x.toString(), px - 3, O.py + 14);
+      }
+
+      // Oy ticks (1 to 8)
+      for (let y = 1; y <= 8; y++) {
+        const py = O.py - y * scale;
+        ctx.beginPath();
+        ctx.moveTo(O.px - 3, py);
+        ctx.lineTo(O.px + 3, py);
+        ctx.stroke();
+        ctx.fillText(y.toString(), O.px - 16, py + 4);
+      }
+
+      const alpha = 15 * Math.PI / 180; // 15 degrees base angle to match screenshot
+      const thetaRad = thetaDeg * Math.PI / 180;
+
+      // Vector v coordinates
+      const vx = lenV * Math.cos(alpha);
+      const vy = lenV * Math.sin(alpha);
+
+      // Vector u coordinates (rotated by alpha + thetaRad)
+      const ux = lenU * Math.cos(alpha + thetaRad);
+      const uy = lenU * Math.sin(alpha + thetaRad);
+
+      const cVEnd = m2c(vx, vy);
+      const cUEnd = m2c(ux, uy);
+
+      // 1. Draw angle arc θ
+      if (thetaDeg > 0) {
+        ctx.strokeStyle = '#4E7F92';
+        ctx.fillStyle = 'rgba(78, 127, 146, 0.08)';
+        ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        // Since Y is inverted in canvas, drawing from -alpha to -(alpha+thetaRad) goes counter-clockwise
+        ctx.arc(O.px, O.py, 30, -alpha, -(alpha + thetaRad), true);
+        ctx.stroke();
+        ctx.fill();
+
+        const midAngle = -(alpha + thetaRad / 2);
+        ctx.fillStyle = '#4E7F92';
+        ctx.font = '700 11px "JetBrains Mono", monospace';
+        ctx.fillText('θ', O.px + 36 * Math.cos(midAngle) - 4, O.py + 36 * Math.sin(midAngle) + 4);
+      }
+
+      // 2. Draw Projection line & yellow projection segment
+      const projDist = lenU * Math.cos(thetaRad);
+      const projX = projDist * Math.cos(alpha);
+      const projY = projDist * Math.sin(alpha);
+      const cProj = m2c(projX, projY);
+
+      ctx.strokeStyle = 'rgba(78, 127, 146, 0.4)';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 4]);
+      ctx.beginPath();
+      ctx.moveTo(cUEnd.px, cUEnd.py);
+      ctx.lineTo(cProj.px, cProj.py);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Draw perpendicular mark at projection point
+      if (projDist !== 0) {
+        const pSize = 6;
+        const vDirX = Math.cos(alpha);
+        const vDirY = Math.sin(alpha);
+        const perpDirX = -vDirY;
+        const perpDirY = vDirX;
+
+        const sign = projDist >= 0 ? 1 : -1;
+        const sideSign = thetaDeg <= 90 ? 1 : -1;
+
+        const p1x = projX - sign * pSize / scale * vDirX;
+        const p1y = projY - sign * pSize / scale * vDirY;
+        const p2x = p1x + sideSign * pSize / scale * perpDirX;
+        const p2y = p1y + sideSign * pSize / scale * perpDirY;
+        const p3x = projX + sideSign * pSize / scale * perpDirX;
+        const p3y = projY + sideSign * pSize / scale * perpDirY;
+
+        const cp1 = m2c(p1x, p1y);
+        const cp2 = m2c(p2x, p2y);
+        const cp3 = m2c(p3x, p3y);
+
+        ctx.strokeStyle = 'rgba(78, 127, 146, 0.6)';
+        ctx.lineWidth = 1;
+        ctx.beginPath();
+        ctx.moveTo(cp1.px, cp1.py);
+        ctx.lineTo(cp2.px, cp2.py);
+        ctx.lineTo(cp3.px, cp3.py);
+        ctx.stroke();
+      }
+
+      // Gold projection highlight
+      ctx.strokeStyle = '#E8A24A';
+      ctx.lineWidth = 5;
+      ctx.beginPath();
+      ctx.moveTo(O.px, O.py);
+      ctx.lineTo(cProj.px, cProj.py);
+      ctx.stroke();
+
+      // Draw Vector v (green)
+      drawArrow(0, 0, vx, vy, '#3CA57A', 3.5, 'v');
+      // Draw Vector u (purple)
+      drawArrow(0, 0, ux, uy, '#7C3AED', 3.5, 'u');
+
+      // Drag handle indicators at the tips of vectors
+      ctx.fillStyle = '#FFFFFF';
+      ctx.strokeStyle = '#3CA57A';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cVEnd.px, cVEnd.py, 5, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+
+      ctx.strokeStyle = '#7C3AED';
+      ctx.beginPath();
+      ctx.arc(cUEnd.px, cUEnd.py, 5, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+    }
+
+    function drawArrowTip(px, py, angle, size, color) {
+      ctx.save();
+      ctx.translate(px, py);
+      ctx.rotate(angle);
+      ctx.beginPath();
+      ctx.moveTo(0, 0);
+      ctx.lineTo(-size, -size / 2.5);
+      ctx.lineTo(-size, size / 2.5);
+      ctx.closePath();
+      ctx.fillStyle = color;
+      ctx.fill();
+      ctx.restore();
+    }
+
+
+    // ─── DRAW STEP BY STEP THUMBNAILS ───
+    function drawSteps() {
+      const stepCanvases = ['step1Canvas', 'step2Canvas', 'step3Canvas', 'step4Canvas'];
+      stepCanvases.forEach((id, index) => {
+        const sc = document.getElementById(id);
+        const sctx = sc.getContext('2d');
+        const sw = sc.parentElement.clientWidth;
+        const sh = sc.parentElement.clientHeight;
+        const sdpr = Math.min(window.devicePixelRatio || 1, 2);
+        if (sw < 2 || sh < 2) return;
+
+        sc.width = Math.round(sw * sdpr);
+        sc.height = Math.round(sh * sdpr);
+        sctx.setTransform(sdpr, 0, 0, sdpr, 0, 0);
+
+        sctx.clearRect(0, 0, sw, sh);
+
+        // Origin in thumbnail
+        const oX = 20;
+        const oY = sh - 20;
+
+        // Base angle for V in thumbnails: 15 deg
+        const alpha = 15 * Math.PI / 180;
+        const theta = 45 * Math.PI / 180;
+
+        // Lengths of U and V in pixels
+        const uLenPix = 65;
+        const vLenPix = 75;
+
+        // Vector coordinates in pixels relative to origin
+        const ux = oX + uLenPix * Math.cos(alpha + theta);
+        const uy = oY - uLenPix * Math.sin(alpha + theta);
+        const vx = oX + vLenPix * Math.cos(alpha);
+        const vy = oY - vLenPix * Math.sin(alpha);
+
+        // Projection point coordinates in pixels
+        const projLen = uLenPix * Math.cos(theta);
+        const px = oX + projLen * Math.cos(alpha);
+        const py = oY - projLen * Math.sin(alpha);
+
+        // Draw Axis lines
+        sctx.strokeStyle = '#e0e0e0';
+        sctx.lineWidth = 1;
+        sctx.beginPath();
+        sctx.moveTo(oX, 0); sctx.lineTo(oX, sh);
+        sctx.moveTo(0, oY); sctx.lineTo(sw, oY);
+        sctx.stroke();
+
+        // Step 1: Draw vectors
+        if (index >= 0) {
+          drawStaticArrow(sctx, oX, oY, ux, uy, '#7C3AED', 'u');
+          drawStaticArrow(sctx, oX, oY, vx, vy, '#3CA57A', 'v');
+        }
+
+        // Step 2: Drop perpendicular
+        if (index >= 1) {
+          sctx.strokeStyle = '#4E7F92';
+          sctx.lineWidth = 1.2;
+          sctx.setLineDash([3, 2]);
+          sctx.beginPath();
+          sctx.moveTo(ux, uy);
+          sctx.lineTo(px, py);
+          sctx.stroke();
+          sctx.setLineDash([]);
+        }
+
+        // Step 3: Projection highlight
+        if (index >= 2) {
+          sctx.strokeStyle = '#E8A24A';
+          sctx.lineWidth = 4;
+          sctx.beginPath();
+          sctx.moveTo(oX, oY);
+          sctx.lineTo(px, py);
+          sctx.stroke();
+
+          sctx.fillStyle = '#CE8A33';
+          sctx.font = '700 8px "JetBrains Mono", monospace';
+          sctx.fillText('|u|cosθ', px - 25, py + 12);
+        }
+
+        // Step 4: Full formula label
+        if (index >= 3) {
+          sctx.fillStyle = '#4E7F92';
+          sctx.font = '700 8.5px "Be Vietnam Pro", sans-serif';
+          sctx.fillText('u·v = |u||v|cosθ', oX + 2, 12);
+        }
+      });
+    }
+
+    function drawStaticArrow(sctx, x1, y1, x2, y2, color, label) {
+      sctx.strokeStyle = color;
+      sctx.lineWidth = 2;
+      sctx.beginPath();
+      sctx.moveTo(x1, y1);
+      sctx.lineTo(x2, y2);
+      sctx.stroke();
+
+      const angle = Math.atan2(y2 - y1, x2 - x1);
+      sctx.save();
+      sctx.translate(x2, y2);
+      sctx.rotate(angle);
+      sctx.beginPath();
+      sctx.moveTo(0, 0);
+      sctx.lineTo(-6, -2.5);
+      sctx.lineTo(-6, 2.5);
+      sctx.closePath();
+      sctx.fillStyle = color;
+      sctx.fill();
+      sctx.restore();
+
+      if (label) {
+        sctx.fillStyle = color;
+        sctx.font = '700 10px "JetBrains Mono", monospace';
+        drawVecLabel(sctx, x2 - 5, y2 - 5, label, sctx.fillStyle, 13);
+      }
+    }
+
+    // ─── MATH UPDATE & VALUES SYNCHRONIZATION ───
+    function updateValues() {
+      lenU = parseFloat(document.getElementById('sliderU').value);
+      lenV = parseFloat(document.getElementById('sliderV').value);
+      thetaDeg = parseInt(document.getElementById('sliderTheta').value);
+
+      document.getElementById('valUText').innerText = lenU.toFixed(1);
+      document.getElementById('valVText').innerText = lenV.toFixed(1);
+      document.getElementById('valThetaText').innerText = thetaDeg + '°';
+
+      // Computations
+      const rad = thetaDeg * Math.PI / 180;
+      const cosVal = Math.cos(rad);
+      const dotVal = lenU * lenV * cosVal;
+      const projVal = lenU * cosVal;
+
+      // Update metrics
+      document.getElementById('mThetaVal').innerText = thetaDeg.toFixed(1) + '°';
+      document.getElementById('mCosVal').innerText = cosVal.toFixed(3);
+      document.getElementById('mDotVal').innerText = dotVal.toFixed(2);
+      document.getElementById('mProjVal').innerText = projVal.toFixed(2);
+
+      // Update Scale limits based on current lengths
+      const maxVal = lenU * lenV;
+      document.getElementById('lblScaleMin').innerText = (-maxVal).toFixed(2);
+      document.getElementById('lblScaleMinMid').innerText = (-maxVal / 2).toFixed(2);
+      document.getElementById('lblScaleMaxMid').innerText = (maxVal / 2).toFixed(2);
+      document.getElementById('lblScaleMax').innerText = (maxVal).toFixed(2);
+
+      // Position moving dot
+      const pointer = document.getElementById('scalePointer');
+      const percentage = 50 + (dotVal / (maxVal || 1)) * 50;
+      pointer.style.left = percentage + "%";
+
+      drawMain();
+      const zone = thetaDeg < 85 ? 'positive' : thetaDeg <= 95 ? 'zero' : 'negative';
+      exploredZones.add(zone);
+      LMS().state({ lenU, lenV, theta:thetaDeg, exploredZones:[...exploredZones] });
+      LMS().progress({ id:'row-visuals', value:exploredZones.size / 3 });
+      if (exploredZones.size === 3 && !completionSent) {
+        completionSent = true;
+        LMS().complete({ score:100, maxScore:100, results:{ exploredZones:[...exploredZones] } });
+      }
+    }
+
+    // ─── MOUSE & TOUCH DRAGGING LOGIC ───
+    let isDraggingU = false;
+    let isDraggingV = false;
+
+    function handleStart(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const mousePx = clientX - rect.left;
+      const mousePy = clientY - rect.top;
+
+      const rad = thetaDeg * Math.PI / 180;
+      const alpha = 15 * Math.PI / 180;
+      const vx = lenV * Math.cos(alpha);
+      const vy = lenV * Math.sin(alpha);
+      const ux = lenU * Math.cos(alpha + rad);
+      const uy = lenU * Math.sin(alpha + rad);
+
+      const uTip = m2c(ux, uy);
+      const vTip = m2c(vx, vy);
+
+      const distU = Math.hypot(mousePx - uTip.px, mousePy - uTip.py);
+      const distV = Math.hypot(mousePx - vTip.px, mousePy - vTip.py);
+
+      if (distU < 22) {
+        isDraggingU = true;
+      } else if (distV < 22) {
+        isDraggingV = true;
+      }
+    }
+
+    function handleMove(clientX, clientY) {
+      if (!isDraggingU && !isDraggingV) return;
+
+      const rect = canvas.getBoundingClientRect();
+      const mousePx = clientX - rect.left;
+      const mousePy = clientY - rect.top;
+
+      const dx = (mousePx - O.px) / scale;
+      const dy = (O.py - mousePy) / scale;
+      const alpha = 15 * Math.PI / 180;
+
+      if (isDraggingU) {
+        let newLen = Math.hypot(dx, dy);
+        newLen = Math.max(0.5, Math.min(8.0, newLen));
+
+        let newAngleRad = Math.atan2(dy, dx);
+        let diffAngleRad = newAngleRad - alpha;
+
+        // Normalize
+        while (diffAngleRad < -Math.PI) diffAngleRad += Math.PI * 2;
+        while (diffAngleRad > Math.PI) diffAngleRad -= Math.PI * 2;
+
+        let diffAngleDeg = Math.round(diffAngleRad * 180 / Math.PI);
+        diffAngleDeg = Math.max(0, Math.min(180, diffAngleDeg));
+
+        document.getElementById('sliderU').value = newLen.toFixed(1);
+        document.getElementById('sliderTheta').value = diffAngleDeg;
+      }
+      else if (isDraggingV) {
+        let newLen = dx * Math.cos(alpha) + dy * Math.sin(alpha);
+        newLen = Math.max(0.5, Math.min(8.0, newLen));
+        document.getElementById('sliderV').value = newLen.toFixed(1);
+      }
+
+      updateValues();
+    }
+
+    canvas.addEventListener('pointerdown', (e) => {
+      if (!e.isPrimary) return;
+      handleStart(e.clientX, e.clientY);
+      if (isDraggingU || isDraggingV) canvas.setPointerCapture(e.pointerId);
+    });
+    canvas.addEventListener('pointermove', (e) => {
+      if (!e.isPrimary) return;
+      handleMove(e.clientX, e.clientY);
+    });
+
+    function endVectorDrag(e) {
+      isDraggingU = false;
+      isDraggingV = false;
+      if (e && canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+    }
+    canvas.addEventListener('pointerup', endVectorDrag);
+    canvas.addEventListener('pointercancel', endVectorDrag);
+
+    function openPractice() {
+      const panel = document.getElementById('practicePanel');
+      const button = document.getElementById('btnPractice');
+      const open = panel.classList.toggle('show');
+      button.setAttribute('aria-expanded', String(open));
+      button.textContent = open ? 'Đóng bài luyện tập' : 'Luyện tập thêm';
+      reportHeight();
+    }
+
+    // Initial setup
+    window.addEventListener('resize', () => {
+      drawMain();
+      drawSteps();
+    });
+
+    // Trigger first draw
+    setTimeout(() => {
+      updateValues();
+      drawSteps();
+      LMS().ready({version:1});
+    }, 100);
+
+  
+    // ===== Báo chiều cao thật cho LMS (PHẦN 7.7) — tự thêm =====
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      const _layoutResizeObserver = new ResizeObserver(() => {
+        clearTimeout(window._canvasRz); window._canvasRz = setTimeout(() => { drawMain(); drawSteps(); }, 60);
+      });
+      _layoutResizeObserver.observe(document.querySelector('.main-container'));
+      const _athenaResizeObserver = new ResizeObserver(() => {
+        clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+      });
+      _athenaResizeObserver.observe(document.body);
+    } else {
+      window.setInterval(reportHeight, 1000);
+    }
+</script>
+</body>
+
+</html>

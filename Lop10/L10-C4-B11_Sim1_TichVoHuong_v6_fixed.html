@@ -1,0 +1,1958 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Sim 1 — Khi Nào Lực Thực Sự Sinh Công?</title>
+  <script type="application/json" id="athena-context">
+{
+  "title": "Simulation 1: Khi Nào Lực Thực Sự Sinh Công?",
+  "subject": "Toán",
+  "grade": "10",
+  "track": "",
+  "objectives": [
+    "Hiểu công thức công cơ học qua tích vô hướng: A = F·s·cosθ, với θ là góc giữa lực F và hướng chuyển động",
+    "Phân tích lực thành 2 thành phần: F∥ = F·cosθ (cùng hướng chuyển động, sinh công) và F⊥ = F·sinθ (vuông góc, không sinh công)",
+    "Nhận biết công dương/bằng 0/âm tương ứng với θ nhọn/vuông/tù, và ý nghĩa thực tế của công âm (lực cản)"
+  ],
+  "structure": [
+    { "id": "stage-1", "title": "Giai đoạn 1/3 — Quan sát hiện tượng: kéo slider lực F, góc θ, quãng đường s hoặc kéo trực tiếp vectơ F trên canvas, xem xe di chuyển và công thay đổi" },
+    { "id": "prompt-1", "title": "Câu hỏi 1 (xuất hiện khi θ>0°): Cùng kéo với lực 120N — góc nào làm xe đi xa nhất? (3 lựa chọn: θ=0°/45°/90°)" },
+    { "id": "prompt-2", "title": "Câu hỏi 2 (xuất hiện khi θ≈90°): Khi θ=90°, công A sẽ bằng bao nhiêu? (3 lựa chọn: Lớn nhất/Bằng 0/Vẫn dương)" },
+    { "id": "prompt-3", "title": "Câu hỏi 3 (xuất hiện khi θ>90°): Công âm có nghĩa là gì trong thực tế? (3 lựa chọn: Lực cản chuyển động/Xe đứng yên không tiêu hao năng lượng/Không có ý nghĩa thực tế)" },
+    { "id": "stage-2", "title": "Giai đoạn 2/3 — Xem phân tích lực: hiện/ẩn 2 thành phần F∥ (vàng) và F⊥ (xanh dương) qua checkbox, xem công thức F∥=F·cosθ" },
+    { "id": "stage-3", "title": "Giai đoạn 3/3 — tổng kết Simulation 1" }
+  ],
+  "athenaGuidance": "Bài có 3 câu hỏi trắc nghiệm 3-lựa-chọn xuất hiện tự động theo góc θ học sinh kéo tới (hàm ans(n,v)). Câu 1: 'Cùng kéo với lực 120N — góc nào làm xe đi xa nhất?' — đáp án đúng θ=0° (giải thích: cos0°=1, công lớn nhất). Câu 2: 'Khi θ=90°, công A sẽ bằng bao nhiêu?' — đáp án đúng 'Bằng 0' (cos90°=0 → A=0, kéo vuông góc không sinh công). Câu 3: 'Công âm có nghĩa là gì trong thực tế?' — đáp án đúng 'Lực cản chuyển động' (ví dụ ma sát, lực phanh). TUYỆT ĐỐI không được nói thẳng các đáp án này cho học sinh trước khi các em tự trả lời — chỉ được gợi ý học sinh thử kéo slider θ đến các giá trị tương ứng và quan sát công thức A=F·s·cosθ thay đổi ra sao. Hệ thống tự động hiện prompt tương ứng khi học sinh kéo θ qua các mốc 0°/90°/>90°, và tự sửa (fix) về đúng giá trị θ nếu trả lời sai để học sinh quan sát trực quan."
+}
+  </script>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <style>
+    /* ═══ PRESET 5 — CÁ CHÉP HOÁ RỒNG ═══ */
+    :root {
+  /* Neutrals · giấy & mực */
+  --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC;
+  --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
+  --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+
+  /* Jade · hành động chính */
+  --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F;
+  --jade-text:#1B5E48; --jade-soft:#A9D0BE; --jade-pale:#DCEAE1;
+
+  /* Sage · phụ trợ */
+  --sage:#A8C9B8; --sage-deep:#7CA792; --sage-text:#46685A; --sage-pale:#E1ECE4;
+
+  /* Accent · điểm nhấn ấm */
+  --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+
+  /* Semantic · đúng/sai/cảnh báo/info */
+  --correct:#2D8B6F; --correct-bg:#DCEAE1;
+  --wrong:#C15F3C;   --wrong-bg:#F3E2D6;
+  --warning:#C58A2E; --warning-bg:#F5E7CB;
+  --info:#4E7F92;    --info-bg:#DCE7EB;
+
+  --white:#FFFFFF;
+  --radius:10px; --radius-lg:14px; --radius-sm:6px;
+  --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
+  --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+  --shadow-lg: 0 14px 38px rgba(20, 67, 47, 0.12);
+
+  /* Illustration only · fill phẳng cho minh hoạ (KHÔNG dùng cho UI/text) */
+  --il-terracotta:#C1704B; --il-brick:#9E4A2E; --il-ochre:#C99A3C; --il-olive:#8A9A5B;
+  --il-forest:#2E6B52; --il-dusty-blue:#6E93A6; --il-slate:#4E6E7E; --il-mauve:#8A6A7E; --il-sand:#D8C4A0;
+
+  /* Vector màu canvas Vật lý/Toán (cộng lực, cộng vận tốc...) — PHẦN 1.1 file design Toán */
+  --color-v1: var(--jade); --color-v2: var(--info);
+  --color-resultant: var(--accent); --color-force-red: var(--wrong); --color-gravity: var(--ink-3);
+
+  /* --- alias cho code cũ (giữ để var(--ten-cu) phía dưới vẫn chạy đúng màu mới) --- */
+  --primary: var(--jade-deep);
+  --primary-mid: var(--jade);
+  --primary-light: var(--jade-pale);
+  --accent-dark: var(--accent-deep);
+  --accent-light: var(--accent-pale);
+  --teal-mid: var(--jade-text);
+  --green: var(--correct);
+  --green-light: var(--correct-bg);
+  --red: var(--wrong);
+  --red-light: var(--wrong-bg);
+  --blue: var(--info);
+  --blue-light: var(--info-bg);
+  --bg: var(--cream);
+  --surface: var(--white);
+  --border: var(--paper-line);
+  --text: var(--ink);
+  --text-2: var(--ink-2);
+  --text-3: var(--ink-3);
+  --font: 'Be Vietnam Pro', system-ui, sans-serif;
+}
+
+    *,
+    *::before,
+    *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0
+    }
+
+    body {
+      font-family: var(--font);
+      background: var(--bg);
+      color: var(--text);
+      font-size: 18px;
+      line-height: 1.7;
+      min-width: 0;
+    }
+
+    .page {
+      max-width: 1120px;
+      margin: 0 auto;
+      padding: 20px 16px 56px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px
+    }
+
+    .intro-text {
+      padding: .85rem 1.1rem;
+      background: var(--jade-pale);
+      border: 1px solid var(--jade-soft);
+      border-left: 4px solid var(--jade-deep);
+      border-radius: var(--radius-lg);
+      color: var(--ink-2);
+      font-size: .85rem;
+      line-height: 1.65;
+      overflow-wrap: anywhere;
+    }
+
+    /* HEADER */
+    /* Pass 2 (mục A, Loại B) — header hero trang trí; id="stageBadge" đã được TÁCH RA
+       khỏi header (xem .stage-pill ở HTML) trước khi ẩn -> an toàn để ẩn cả header. */
+    .p5-header { display: none !important; }
+    .p5-header {
+      background: linear-gradient(135deg, rgba(45, 139, 111, 0.86) 0%, rgba(45, 139, 111, 0.46) 100%),
+        url('https://www.aiducation.edu.vn/images/fifingfig_Modern_editorial_illustration_of_a_stylized_Vietnames_f0b08847-9f6d-48cf-90ac-b8ed2eb77baf.png') center 40%/cover no-repeat;
+      border-radius: 16px;
+      padding: 1.6rem 2rem 1.4rem;
+      box-shadow: 0 4px 24px rgba(45, 139, 111, 0.22);
+      min-height: 114px;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-end;
+    }
+
+    .p5-badge {
+      color: var(--accent);
+      font-size: .78rem;
+      font-weight: 700;
+      letter-spacing: .07em;
+      text-transform: uppercase;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .p5-header h1 {
+      color: #fff;
+      font-size: 1.5rem;
+      font-weight: 800;
+      text-shadow: 0 2px 8px rgba(0, 0, 0, .35);
+      line-height: 1.2
+    }
+
+    .p5-desc {
+      color: rgba(255, 255, 255, .75);
+      font-size: .875rem;
+      margin-top: 4px
+    }
+
+    /* Pass 2 (mục A, Loại B) — .stage-pill được TÁCH RA khỏi .p5-header (đang bị ẩn)
+       để giữ hiển thị "Giai đoạn x/3" cho học sinh. Đổi màu từ trắng-trên-nền-tối
+       sang tông sáng để đọc được trên nền trang thường. */
+    .stage-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 7px;
+      background: var(--jade-pale);
+      border: 1px solid var(--jade-soft);
+      border-radius: 20px;
+      padding: 3px 12px;
+      font-size: .76rem;
+      font-weight: 600;
+      color: var(--jade-deep);
+      margin: 0 0 10px;
+      width: fit-content
+    }
+
+    .stage-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--accent)
+    }
+     
+    /* sdots */
+    .sdots {
+      display: flex;
+      justify-content: center;
+      gap: 10px
+    }
+
+    .sdot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--border);
+      transition: all .35s
+    }
+
+    .sdot.active {
+      background: var(--primary-mid);
+      transform: scale(1.4)
+    }
+
+    .sdot.done {
+      background: var(--green)
+    }
+
+    /* GRID */
+    .main-grid {
+      display: grid;
+      grid-template-columns: 226px 1fr;
+      gap: 14px
+    }
+    .main-grid > *, .canvas-col { min-width: 0; }
+
+    /* CARD */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.1rem 1.15rem;
+      box-shadow: 0 2px 10px rgba(45, 139, 111, .07)
+    }
+
+    .card-title {
+      font-size: .75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .06em;
+      color: var(--text-3);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 6px
+    }
+
+    .card-title i {
+      color: var(--primary-mid);
+      font-size: 13px
+    }
+
+    /* SLIDERS */
+    .slider-group {
+      margin-bottom: 13px
+    }
+
+    .slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 5px
+    }
+
+    .slider-label {
+      font-size: .83rem;
+      font-weight: 600;
+      color: var(--text-2)
+    }
+
+    .slider-val {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: .8rem;
+      font-weight: 700;
+      color: var(--primary);
+      background: var(--primary-light);
+      padding: 2px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(45, 139, 111, .12);
+      min-width: 60px;
+      text-align: center
+    }
+
+    input[type=range] {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 100%;
+      height: 44px;
+      background: transparent;
+      outline: none;
+      cursor: pointer
+    }
+
+    input[type=range]::-webkit-slider-runnable-track {
+      height: 6px;
+      background: var(--cream-2);
+      border: 1px solid var(--paper-line);
+      border-radius: 999px
+    }
+
+    input[type=range]::-moz-range-track {
+      height: 6px;
+      background: var(--cream-2);
+      border: 1px solid var(--paper-line);
+      border-radius: 999px
+    }
+
+    input[type=range]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      cursor: pointer;
+      border: 2px solid #fff;
+      box-shadow: 0 2px 6px rgba(45, 139, 111, .25);
+      transition: transform .1s;
+      margin-top: -9px
+    }
+
+    input[type=range]::-moz-range-thumb {
+      width: 22px; height: 22px; border-radius: 50%; cursor: pointer;
+      border: 2px solid #fff; box-shadow: 0 2px 6px rgba(45,139,111,.25)
+    }
+
+    input[type=range]::-webkit-slider-thumb:hover {
+      transform: scale(1.2)
+    }
+
+    #sliderF::-webkit-slider-thumb {
+      background: var(--primary-mid)
+    }
+    #sliderF::-moz-range-thumb { background: var(--primary-mid) }
+
+    #sliderTheta::-webkit-slider-thumb {
+      background: var(--accent-dark)
+    }
+    #sliderTheta::-moz-range-thumb { background: var(--accent-dark) }
+
+    #sliderS::-webkit-slider-thumb {
+      background: var(--teal-mid)
+    }
+    #sliderS::-moz-range-thumb { background: var(--teal-mid) }
+
+    /* BUTTONS */
+    .p5-btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: .83rem;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1.5px solid var(--border);
+      background: #F8F6F0;
+      color: var(--text);
+      transition: all .2s;
+      font-family: var(--font);
+      width: 100%;
+      margin-bottom: 6px
+    }
+
+    .p5-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary)
+    }
+
+    .p5-btn.gold {
+      background: var(--accent);
+      color: var(--primary);
+      border-color: var(--accent-dark);
+      font-weight: 700
+    }
+
+    .p5-btn.gold:hover {
+      background: #e8bc62
+    }
+
+    .p5-btn.reset {
+      border-style: dashed;
+      color: var(--text-3)
+    }
+
+    .p5-btn.reset:hover {
+      border-color: var(--primary-mid);
+      color: var(--primary-mid);
+      background: var(--primary-light)
+    }
+
+    /* FIX: dùng visibility thay display để tránh conflict */
+    #btnReveal {
+      visibility: hidden;
+      animation: none
+    }
+
+    #btnReveal.show {
+      visibility: visible;
+      animation: pulse 2s infinite
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        box-shadow: 0 0 0 0 rgba(232, 162, 74, .45)
+      }
+
+      50% {
+        box-shadow: 0 0 0 9px rgba(232, 162, 74, 0)
+      }
+    }
+
+    /* toggles */
+    #toggleCard {
+      display: none
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: .83rem;
+      font-weight: 600;
+      cursor: pointer;
+      margin-bottom: 6px;
+      color: var(--text-2)
+    }
+
+    .toggle-row input {
+      accent-color: var(--accent-dark);
+      width: 15px;
+      height: 15px
+    }
+
+    .swatch {
+      width: 12px;
+      height: 12px;
+      border-radius: 3px;
+      flex-shrink: 0
+    }
+
+    /* CANVAS */
+    .canvas-col {
+      display: flex;
+      flex-direction: column;
+      gap: 10px
+    }
+
+    .drag-hint {
+      font-size: .74rem;
+      color: var(--text-3);
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px
+    }
+
+    .canvas-wrap {
+      position: relative;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      border: 1px solid var(--border);
+      background: #EBF6F0;
+      box-shadow: 0 2px 12px rgba(45, 139, 111, .1);
+      height: clamp(320px, 38vw, 440px);
+      touch-action: none
+    }
+
+    #simCanvas {
+      display: block;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%
+    }
+
+    /* CAPTION */
+    .p5-explain {
+      background: #F0FDF8;
+      border: 1px solid #6EE7B7;
+      border-left: 4px solid var(--primary-mid);
+      border-radius: var(--radius-lg);
+      padding: .9rem 1.1rem;
+      transition: border-color .4s, background .4s;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start
+    }
+
+    .p5-explain.warn {
+      border-left-color: var(--red);
+      background: var(--red-light)
+    }
+
+    .p5-explain.ok {
+      border-left-color: var(--green);
+      background: var(--green-light)
+    }
+
+    .p5-explain i {
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 2px;
+      color: var(--primary-mid)
+    }
+
+    .p5-explain.warn i {
+      color: var(--red)
+    }
+
+    .p5-explain.ok i {
+      color: var(--green)
+    }
+
+    .p5-explain span {
+      font-size: .84rem;
+      color: var(--text-2);
+      line-height: 1.55
+    }
+
+    /* INLINE PROMPT */
+    .inline-prompt {
+      background: var(--accent-light);
+      border: 1.5px solid var(--accent);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.2rem;
+      display: none;
+      animation: slideIn .3s ease
+    }
+
+    .inline-prompt.show {
+      display: block
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: translateY(-8px)
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0)
+      }
+    }
+
+    .prompt-q {
+      font-size: .9rem;
+      font-weight: 600;
+      color: var(--primary);
+      margin-bottom: 10px;
+      display: flex;
+      gap: 8px
+    }
+
+    .prompt-q::before {
+      content: '❓';
+      flex-shrink: 0
+    }
+
+    .prompt-opts {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px
+    }
+
+    .opt-btn {
+      padding: 6px 14px;
+      border-radius: 20px;
+      border: 1.5px solid var(--border);
+      background: var(--surface);
+      font-size: .82rem;
+      font-weight: 600;
+      cursor: pointer;
+      color: var(--text);
+      transition: all .2s;
+      font-family: var(--font)
+    }
+
+    .opt-btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary)
+    }
+
+    .opt-btn.correct {
+      background: var(--green-light);
+      border-color: var(--green);
+      color: var(--green)
+    }
+
+    .opt-btn.wrong {
+      background: var(--red-light);
+      border-color: var(--red);
+      color: var(--red)
+    }
+
+    .prompt-fb {
+      margin-top: 9px;
+      font-size: .83rem;
+      padding: 8px 12px;
+      border-radius: 8px;
+      display: none;
+      border-left: 3px solid
+    }
+
+    .prompt-fb.show {
+      display: block
+    }
+
+    .prompt-fb.ok {
+      background: var(--green-light);
+      border-color: var(--green);
+      color: var(--green)
+    }
+
+    .prompt-fb.no {
+      background: var(--red-light);
+      border-color: var(--red);
+      color: var(--red)
+    }
+
+    /* RESULTS */
+    .results-row {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px
+    }
+
+    .res-card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 11px 14px;
+      text-align: center;
+      transition: all .35s
+    }
+
+    .res-card.hidden {
+      opacity: .2;
+      filter: blur(2px);
+      pointer-events: none
+    }
+
+    .res-label {
+      font-size: .72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+      color: var(--text-3);
+      margin-bottom: 2px
+    }
+
+    .res-formula {
+      font-size: .75rem;
+      color: var(--text-2);
+      margin-bottom: 5px;
+      font-family: var(--font)
+    }
+
+    .res-val {
+      font-size: 1.55rem;
+      font-weight: 800;
+      transition: color .3s
+    }
+
+    .res-unit {
+      font-size: .72rem;
+      color: var(--text-3);
+      margin-top: 1px
+    }
+
+    .c-para {
+      color: var(--accent-dark)
+    }
+
+    .c-work {
+      color: var(--green)
+    }
+
+    .c-dist {
+      color: var(--primary-mid)
+    }
+
+    .c-neg {
+      color: var(--red) !important
+    }
+
+    /* RULE TABLE */
+    .rule-section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.15rem;
+      display: none;
+      animation: slideIn .4s ease
+    }
+
+    .rule-section.show {
+      display: block
+    }
+
+    .section-title {
+      font-size: .95rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 11px;
+      display: flex;
+      align-items: center;
+      gap: 8px
+    }
+
+    .tbl-wrap {
+      overflow-x: auto
+    }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: .83rem
+    }
+
+    th {
+      background: var(--primary-light);
+      font-weight: 700;
+      padding: 8px 10px;
+      color: var(--primary);
+      border: 1px solid var(--border)
+    }
+
+    td {
+      padding: 8px 10px;
+      border: 1px solid var(--border);
+      text-align: center;
+      font-weight: 600;
+      font-family: var(--font)
+    }
+
+    td.hc {
+      background: #F5F3EE;
+      font-family: var(--font);
+      text-align: left;
+      color: var(--text-2)
+    }
+
+    td.pos {
+      background: #E8F5EE;
+      color: var(--green)
+    }
+
+    td.zer {
+      background: #F5F3EE;
+      color: var(--text-3)
+    }
+
+    td.neg {
+      background: var(--red-light);
+      color: var(--red)
+    }
+
+    .tbl-actions {
+      display: flex;
+      justify-content: flex-end;
+      margin-top: 12px
+    }
+
+    /* CONCLUSION */
+    .conclusion-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px
+    }
+
+    .formula-box,
+    .understand-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius-lg);
+      padding: 1.15rem;
+      display: none;
+      animation: slideIn .4s ease
+    }
+
+    .formula-box.show,
+    .understand-box.show {
+      display: block
+    }
+
+    .formula-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px
+    }
+
+    .fstep {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      opacity: 0;
+      transform: translateX(-10px);
+      transition: all .45s ease
+    }
+
+    .fstep.show {
+      opacity: 1;
+      transform: none
+    }
+
+    .fstep-num {
+      width: 22px;
+      height: 22px;
+      background: var(--primary);
+      color: #fff;
+      border-radius: 50%;
+      font-size: .7rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 3px
+    }
+
+    .fstep-expr {
+      font-family: var(--font);
+      font-weight: 700;
+      font-size: 1rem;
+      color: var(--text);
+      padding: 6px 12px;
+      background: var(--primary-light);
+      border-radius: 6px;
+      border-left: 3px solid var(--primary-mid);
+      display: inline-block
+    }
+
+    .fstep-desc {
+      font-size: .78rem;
+      color: var(--text-3);
+      margin-top: 4px
+    }
+
+    .hl-tvh {
+      font-weight: 800;
+      font-size: 1rem;
+      color: var(--accent-dark);
+      background: var(--accent-light);
+      padding: 1px 6px;
+      border-radius: 4px
+    }
+
+    .u-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      margin-bottom: 7px;
+      font-size: .85rem;
+      color: var(--text-2)
+    }
+
+    .complete-box {
+      background: linear-gradient(135deg, var(--accent-light), #FFF8D6);
+      border: 2px solid var(--accent);
+      border-radius: var(--radius-lg);
+      padding: 1.3rem;
+      text-align: center;
+      display: none;
+      animation: slideIn .4s ease;
+      margin-top: 14px
+    }
+
+    .complete-box.show {
+      display: block
+    }
+
+    .trophy {
+      font-size: 2rem;
+      margin-bottom: 6px
+    }
+
+    .complete-box h3 {
+      color: var(--accent-dark);
+      font-weight: 800;
+      font-size: 1rem;
+      margin-bottom: 4px
+    }
+
+    .stars {
+      font-size: 1.6rem;
+      margin-top: 8px
+    }
+
+    .ib-green {
+      background: var(--green-light);
+      border: 1px solid #6EE7B7;
+      border-left: 4px solid var(--green);
+      border-radius: var(--radius-lg);
+      padding: 1rem 1.2rem;
+      display: none;
+      gap: 10px
+    }
+
+    .ib-green.show {
+      display: flex
+    }
+
+    .ib-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 2px
+    }
+
+    .ib-title {
+      font-size: .85rem;
+      font-weight: 700;
+      margin-bottom: 3px;
+      color: var(--text)
+    }
+
+    .ib-text {
+      font-size: .82rem;
+      color: var(--text-2);
+      line-height: 1.55
+    }
+
+    .vec {
+      position: relative;
+      display: inline-block;
+      padding-right: 0.05em
+    }
+
+    .vec::after {
+      content: "→";
+      position: absolute;
+      top: -0.45em;
+      left: 50%;
+      transform: translateX(-50%) scaleX(0.85);
+      font-size: 0.62em;
+      font-weight: normal;
+      line-height: 1
+    }
+  
+    /* Pass 2 (mục E) — vùng chạm tối thiểu 44px cho nút bấm thật trên mobile.
+       Không đụng desktop, không thu nhỏ phần tử nào — chỉ nới ra nếu đang < 44px. */
+    @media (max-width: 1024px) {
+      .main-grid { display: flex; flex-direction: column; }
+      .canvas-col { order: -1; width: 100%; }
+      .canvas-wrap { height: 390px; }
+      .results-row { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+    }
+
+    @media (max-width: 640px) {
+      .page { padding: 8px 6px 28px; }
+      .intro-text { padding: 10px 12px; }
+      .canvas-wrap { height: 320px; }
+      .results-row { grid-template-columns: 1fr; }
+      .conclusion-grid { grid-template-columns: 1fr; }
+      .stage-pill { max-width: 100%; }
+      .prompt-opts { display: grid; grid-template-columns: 1fr; }
+      .tbl-wrap { overflow-x: auto; }
+      button, .btn, a.btn, input[type="button"], input[type="submit"] {
+        min-height: 44px;
+      }
+      input[type="range"], .toggle-row { min-height: 44px; }
+    }
+</style>
+</head>
+
+<body>
+  <div class="page">
+
+    <header class="p5-header">
+      <div class="p5-badge"><i class="ti ti-bolt"></i> Toán 10 · Chương IV · Bài 11 — Kết nối tri thức</div>
+      <h1>KHI NÀO LỰC THỰC SỰ SINH CÔNG?</h1>
+      <div class="p5-desc">Khám phá: Chỉ thành phần lực cùng hướng với chuyển động mới sinh công.</div>
+    </header>
+
+    <p class="intro-text"><strong>Nhiệm vụ:</strong> Thay đổi độ lớn lực, góc kéo và quãng đường để khám phá vì sao chỉ thành phần lực cùng hướng chuyển động mới sinh công.</p>
+
+    <!-- Pass 2 (mục A, Loại B) — tách khỏi .p5-header (đang bị ẩn) vì có id="stageBadge"
+         được JS cập nhật động (Giai đoạn 1/2/3), giữ hiển thị cho học sinh. -->
+    <div class="stage-pill"><span class="stage-dot"></span><span id="stageBadge">Giai đoạn 1 / 3 — Quan sát hiện
+        tượng</span></div>
+
+    <div class="sdots">
+      <div class="sdot active" id="dot1"></div>
+      <div class="sdot" id="dot2"></div>
+      <div class="sdot" id="dot3"></div>
+    </div>
+
+    <div class="main-grid">
+      <div style="display:flex;flex-direction:column;gap:10px">
+        <div class="card">
+          <div class="card-title"><i class="ti ti-adjustments-horizontal"></i> Điều khiển</div>
+          <div class="slider-group">
+            <div class="slider-header"><span class="slider-label">Độ lớn lực F</span><span class="slider-val"><span
+                  id="fVal">120</span> N</span></div>
+            <input type="range" id="sliderF" min="20" max="200" value="120" oninput="onF(this.value)">
+          </div>
+          <div class="slider-group">
+            <div class="slider-header"><span class="slider-label">Góc kéo θ</span><span class="slider-val"><span
+                  id="thetaVal">40</span>°</span></div>
+            <input type="range" id="sliderTheta" min="0" max="180" value="40" oninput="onTheta(this.value)">
+          </div>
+          <div class="slider-group" style="margin-bottom:16px">
+            <div class="slider-header"><span class="slider-label">Quãng đường s</span><span class="slider-val"><span
+                  id="sVal">5.0</span> m</span></div>
+            <input type="range" id="sliderS" min="1" max="10" value="5" step="0.5" oninput="onS(this.value)">
+          </div>
+          <button class="p5-btn gold" onclick="doPull()"><i class="ti ti-player-play"></i> Kéo!</button>
+          <button class="p5-btn reset" onclick="doReset()"><i class="ti ti-refresh"></i> Đặt lại</button>
+          <button class="p5-btn gold" id="btnReveal" onclick="revealStage2()"><i class="ti ti-eye"></i> Xem phân tích
+            lực</button>
+        </div>
+        <div class="card" id="toggleCard">
+          <div class="card-title"><i class="ti ti-filter"></i> Hiển thị thành phần</div>
+          <label class="toggle-row"><input type="checkbox" id="chkPara" checked onchange="redraw()"><span class="swatch"
+              style="background:#E8A24A"></span> Hiện F∥ (vàng gold)</label>
+          <label class="toggle-row"><input type="checkbox" id="chkPerp" checked onchange="redraw()"><span class="swatch"
+              style="background:#4E7F92"></span> Hiện F⊥ (xanh dương)</label>
+        </div>
+      </div>
+
+      <div class="canvas-col">
+        <div class="drag-hint"><i class="ti ti-hand-move"></i> Kéo chấm vàng ở đầu vectơ <span class="vec">F</span> để
+          thay đổi góc — hoặc dùng slider</div>
+        <div class="canvas-wrap" id="canvasWrap"><canvas id="simCanvas"></canvas></div>
+        <div class="p5-explain" id="captionBox">
+          <i class="ti ti-info-circle" id="captionIcon"></i>
+          <span id="captionText">Thay đổi góc kéo θ để xem xe đi nhanh hay chậm và công thay đổi thế nào.</span>
+        </div>
+      </div>
+    </div>
+
+    <!-- INLINE PROMPTS -->
+    <div class="inline-prompt" id="prompt1">
+      <div class="prompt-q">Cùng kéo với lực 120 N — góc nào sẽ làm xe đi được xa nhất?</div>
+      <div class="prompt-opts">
+        <button class="opt-btn" onclick="ans(1,'0')">θ = 0°</button>
+        <button class="opt-btn" onclick="ans(1,'45')">θ = 45°</button>
+        <button class="opt-btn" onclick="ans(1,'90')">θ = 90°</button>
+      </div>
+      <div class="prompt-fb" id="fb1"></div>
+    </div>
+    <div class="inline-prompt" id="prompt2">
+      <div class="prompt-q">Khi θ = 90° (kéo thẳng đứng lên), công A sẽ bằng bao nhiêu?</div>
+      <div class="prompt-opts">
+        <button class="opt-btn" onclick="ans(2,'max')">Lớn nhất</button>
+        <button class="opt-btn" onclick="ans(2,'zero')">Bằng 0</button>
+        <button class="opt-btn" onclick="ans(2,'pos')">Vẫn dương</button>
+      </div>
+      <div class="prompt-fb" id="fb2"></div>
+    </div>
+    <div class="inline-prompt" id="prompt3">
+      <div class="prompt-q">Công âm có nghĩa là gì trong thực tế?</div>
+      <div class="prompt-opts">
+        <button class="opt-btn" onclick="ans(3,'resist')">Lực cản chuyển động</button>
+        <button class="opt-btn" onclick="ans(3,'stop')">Xe đứng yên, không tiêu hao năng lượng</button>
+        <button class="opt-btn" onclick="ans(3,'none')">Không có ý nghĩa thực tế</button>
+      </div>
+      <div class="prompt-fb" id="fb3"></div>
+    </div>
+
+    <!-- RESULTS -->
+    <div class="results-row">
+      <div class="res-card hidden" id="cardPara">
+        <div class="res-label">Thành phần cùng hướng</div>
+        <div class="res-formula">F<sub>∥</sub> = F · cosθ</div>
+        <div class="res-val c-para" id="resPara">—</div>
+        <div class="res-unit">N</div>
+      </div>
+      <div class="res-card">
+        <div class="res-label">Công cơ học</div>
+        <div class="res-formula">A = F · s · cosθ</div>
+        <div class="res-val c-work" id="resWork">459.6</div>
+        <div class="res-unit">J</div>
+      </div>
+      <div class="res-card">
+        <div class="res-label">Xe di chuyển</div>
+        <div class="res-formula">Vectơ độ dịch chuyển <span class="vec">s</span></div>
+        <div class="res-val c-dist" id="resDist">0.0</div>
+        <div class="res-unit">m</div>
+      </div>
+    </div>
+
+    <!-- RULE TABLE -->
+    <div class="rule-section" id="ruleSection">
+      <div class="section-title"><i class="ti ti-table"></i> Khám phá quy luật — thay đổi F và s, bảng tự cập nhật</div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th style="text-align:left">Góc kéo θ</th>
+              <th>0°</th>
+              <th>30°</th>
+              <th>60°</th>
+              <th>90°</th>
+              <th>120°</th>
+              <th>150°</th>
+              <th>180°</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td class="hc">F<sub>∥</sub> = F · cosθ (N)</td>
+              <td class="pos" id="tf0">120.0</td>
+              <td class="pos" id="tf30">103.9</td>
+              <td class="pos" id="tf60">60.0</td>
+              <td class="zer" id="tf90">0.0</td>
+              <td class="neg" id="tf120">-60.0</td>
+              <td class="neg" id="tf150">-103.9</td>
+              <td class="neg" id="tf180">-120.0</td>
+            </tr>
+            <tr>
+              <td class="hc">Công A (J) <small style="font-weight:400;color:var(--text-3)">(s = <span
+                    id="tblS">5.0</span> m)</small></td>
+              <td class="pos" id="ta0">600.0</td>
+              <td class="pos" id="ta30">519.6</td>
+              <td class="pos" id="ta60">300.0</td>
+              <td class="zer" id="ta90">0.0</td>
+              <td class="neg" id="ta120">-300.0</td>
+              <td class="neg" id="ta150">-519.6</td>
+              <td class="neg" id="ta180">-600.0</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="tbl-actions">
+        <button class="p5-btn gold" style="width:auto;padding:8px 22px" onclick="showConclusion()">Xem kết luận <i
+            class="ti ti-arrow-right"></i></button>
+      </div>
+    </div>
+
+    <!-- CONCLUSION -->
+    <div class="conclusion-grid">
+      <div class="formula-box" id="formulaBox">
+        <div class="section-title"><i class="ti ti-math-function"></i> Công thức xuất hiện tự nhiên</div>
+        <div class="formula-steps">
+          <div class="fstep" id="fs1">
+            <div class="fstep-num">1</div>
+            <div>
+              <div class="fstep-expr">A = <span class="hl-tvh"><span class="vec">F</span> · <span
+                    class="vec">s</span></span></div>
+              <div class="fstep-desc">Công = thành phần lực cùng hướng × quãng đường</div>
+            </div>
+          </div>
+          <div class="fstep" id="fs2">
+            <div class="fstep-num">2</div>
+            <div>
+              <div class="fstep-expr">A = F · cosθ · s</div>
+              <div class="fstep-desc">Thay F<sub>∥</sub> = F · cosθ vào...</div>
+            </div>
+          </div>
+          <div class="fstep" id="fs3">
+            <div class="fstep-num">3</div>
+            <div>
+              <div class="fstep-expr">A = |<span class="vec">F</span>| · |<span class="vec">s</span>| · cosθ</div>
+              <div class="fstep-desc">Viết lại dưới dạng độ lớn vectơ...</div>
+            </div>
+          </div>
+          <div class="fstep" id="fs4">
+            <div class="fstep-num">4</div>
+            <div>
+              <div class="fstep-expr">A = <span class="hl-tvh"><span class="vec">F</span> · <span
+                    class="vec">s</span></span></div>
+              <div class="fstep-desc">Biểu thức |<span class="vec">F</span>| · |<span class="vec">s</span>| · cosθ được
+                định nghĩa là <strong>TÍCH VÔ HƯỚNG</strong> của <span class="vec">F</span> và <span
+                  class="vec">s</span>.</div>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="understand-box" id="understandBox">
+        <div class="section-title" style="color:var(--green)"><i class="ti ti-check"></i> Bạn đã hiểu gì?</div>
+        <div class="u-item"><span style="color:var(--green);font-size:15px">✅</span><span>Công lớn nhất khi θ = 0° — kéo
+            cùng hướng chuyển động.</span></div>
+        <div class="u-item"><span style="color:var(--green);font-size:15px">✅</span><span>Công bằng 0 khi θ = 90° — lực
+            vuông góc với hướng đi.</span></div>
+        <div class="u-item"><span style="color:var(--green);font-size:15px">✅</span><span>Công âm khi θ &gt; 90° — lực
+            cản trở chuyển động.</span></div>
+        <div class="complete-box" id="completeBox">
+          <div class="trophy">🏆</div>
+          <h3>Hoàn thành Simulation 1!</h3>
+          <p style="font-size:.83rem;color:var(--text-2);margin-top:4px">Bạn đã tự khám phá lý do cosθ xuất hiện trong
+            công thức tích vô hướng.</p>
+          <div class="stars">⭐⭐⭐</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="ib-green" id="finalInfo">
+      <div class="ib-icon">💡</div>
+      <div>
+        <div class="ib-title">Ghi nhớ — Tích vô hướng</div>
+        <div class="ib-text">Tích vô hướng của hai vectơ là một <strong>số</strong>, ký hiệu <strong><span
+              class="vec">u</span> · <span class="vec">v</span> = |<span class="vec">u</span>| · |<span
+              class="vec">v</span>| · cosθ</strong>. Nó đo mức độ "cùng hướng" của hai vectơ và liên hệ trực tiếp với
+          công cơ học: <strong>A = |<span class="vec">F</span>| · |<span class="vec">s</span>| · cosθ</strong>.</div>
+      </div>
+    </div>
+
+  </div>
+  <script>
+    // ===== LMS safe accessor (PHẦN 7.2 design Toán) — tự thêm, không đụng logic khác =====
+    function LMS(){return window.AiducationLMS||{ready:function(){},progress:function(){},event:function(){},state:function(){},complete:function(){},resize:function(){}};}
+
+  /* ── [fix_vectors.js] Vẽ nhãn vector trong canvas ── */
+  function drawVecLabel(ctx, x, y, letter, color, fontSize) {
+    fontSize = fontSize || 13;
+    ctx.save();
+
+    // Reset TOÀN BỘ state nguy hiểm trước khi vẽ
+    // Tránh bị ảnh hưởng bởi lineWidth, lineDash, lineCap từ code vẽ mũi tên chính
+    ctx.setLineDash([]);
+    ctx.lineDashOffset = 0;
+    ctx.lineCap   = 'butt';
+    ctx.lineJoin  = 'miter';
+    ctx.globalAlpha = 1;
+    ctx.shadowBlur  = 0;
+    ctx.shadowColor = 'transparent';
+
+    // Đo chiều rộng chữ
+    ctx.font = '700 italic ' + fontSize + 'px "JetBrains Mono", monospace';
+    const letterW = ctx.measureText(letter).width;
+
+    // Vẽ trục mũi tên (đường ngang, mỏng)
+    const arrowY = y - fontSize * 0.72;
+    ctx.strokeStyle = color;
+    ctx.lineWidth   = 1.2;           // luôn mỏng, bất kể lineWidth bên ngoài
+    ctx.beginPath();
+    ctx.moveTo(x, arrowY);
+    ctx.lineTo(x + letterW, arrowY);
+    ctx.stroke();
+
+    // Vẽ đầu mũi tên (tam giác nhỏ — dùng fill, không dùng stroke)
+    const hs = fontSize * 0.22;
+    ctx.fillStyle = color;
+    ctx.beginPath();
+    ctx.moveTo(x + letterW + hs * 0.8, arrowY);
+    ctx.lineTo(x + letterW - hs * 0.3, arrowY - hs * 0.55);
+    ctx.lineTo(x + letterW - hs * 0.3, arrowY + hs * 0.55);
+    ctx.closePath();
+    ctx.fill();
+
+    // Vẽ chữ cái
+    ctx.font         = '700 italic ' + fontSize + 'px "JetBrains Mono", monospace';
+    ctx.fillStyle    = color;
+    ctx.textAlign    = 'left';
+    ctx.textBaseline = 'alphabetic';
+    ctx.fillText(letter, x, y);
+
+    ctx.restore();
+  }
+
+    /* ═══════════════════════════════
+       STATE
+    ═══════════════════════════════ */
+    let F = 120, theta = 40, s = 5.0, stage = 1;
+    let carX = 0;      // px tính từ vị trí gốc; dương = đã đi sang PHẢI
+    let pulling = false, dragging = false;
+    let anglesVisited = new Set(), p1Done = false, p2Done = false, p3Done = false;
+    let completionSent = false;
+
+    /* ═══════════════════════════════
+       CANVAS
+    ═══════════════════════════════ */
+    const canvas = document.getElementById('simCanvas');
+    const wrap = document.getElementById('canvasWrap');
+    const ctx = canvas.getContext('2d');
+    let CW = 0, CH = 0, dpr = 1;
+
+    function resizeCanvas() {
+      const rect = wrap.getBoundingClientRect();
+      CW = rect.width || 640; CH = rect.height || 295;
+      if (CW < 10 || CH < 10) return;
+      dpr = Math.min(window.devicePixelRatio || 1, 2);
+      canvas.width = Math.round(CW * dpr); canvas.height = Math.round(CH * dpr);
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      redraw();
+    }
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => { clearTimeout(ro._t); ro._t = setTimeout(resizeCanvas, 60) });
+      ro.observe(wrap);
+    }
+
+    const toRad = d => d * Math.PI / 180;
+    const fmt = (v, d = 1) => (Math.round(v * 10 ** d) / 10 ** d).toFixed(d);
+
+    /* ═══════════════════════════════
+       GEOMETRY
+       ─────────────────────────────
+       - Xe xuất phát ở 22% từ trái (đủ chỗ cho xe + người bên phải)
+       - carX=0 lúc đầu; khi kéo carX tăng dương (sang phải)
+       - Móc dây: cạnh PHẢI xe
+       - Người đứng cố định bên phải xe (không di chuyển cùng xe)
+       - F từ móc → sang phải+lên theo θ
+    ═══════════════════════════════ */
+    const CAR_ORIGIN = 0.22;   // vị trí tâm xe ban đầu (% CW)
+    const PX_PER_M = 20;     // tỉ lệ: 1 m = 20 px canvas
+
+    function getGround() { return CH * 0.74; }
+
+    function getCarGeom() {
+      const ground = getGround();
+      const carW = Math.min(84, CW * 0.12), carH = carW * 0.64;
+      const carCX = CW * CAR_ORIGIN + carX;       // tâm xe hiện tại
+      const carLeft = carCX - carW * 0.5;
+      const carTop = ground - carH - 2;
+      const hookX = carLeft + carW;             // móc bên PHẢI xe
+      const hookY = carTop + carH * 0.42;
+      return { ground, carW, carH, carCX, carLeft, carTop, hookX, hookY };
+    }
+
+    // attach = móc xe (di chuyển cùng xe)
+    function getAttach() {
+      const { hookX, hookY } = getCarGeom();
+      return { x: hookX, y: hookY };
+    }
+
+    // tip = đầu F (cũng là handle kéo)
+    // F hướng sang PHẢI+LÊN từ attach theo θ
+    function getTip() {
+      const att = getAttach();
+      const vLen = F * Math.min(CW, CH) * 0.0028;
+      const r = toRad(theta);
+      return { x: att.x + vLen * Math.cos(r), y: att.y - vLen * Math.sin(r) };
+    }
+
+    /* ═══════════════════════════════
+       DRAW HELPERS
+    ═══════════════════════════════ */
+    function drawArrow(x1, y1, x2, y2, color, lw, label) {
+      const dx = x2 - x1, dy = y2 - y1, len = Math.sqrt(dx * dx + dy * dy);
+      if (len < 4) return;
+      const ang = Math.atan2(dy, dx), hd = Math.max(8, Math.min(14, len * 0.2));
+      ctx.save();
+      ctx.strokeStyle = color; ctx.fillStyle = color; ctx.lineWidth = lw; ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(x1, y1); ctx.lineTo(x2, y2); ctx.stroke();
+      ctx.beginPath();
+      ctx.moveTo(x2, y2);
+      ctx.lineTo(x2 - hd * Math.cos(ang - 0.38), y2 - hd * Math.sin(ang - 0.38));
+      ctx.lineTo(x2 - hd * Math.cos(ang + 0.38), y2 - hd * Math.sin(ang + 0.38));
+      ctx.closePath(); ctx.fill();
+      if (label) {
+        // offset vuông góc với hướng mũi tên để label không đè lên đường
+        const mx = (x1 + x2) / 2 - Math.sin(ang) * 18;
+        const my = (y1 + y2) / 2 + Math.cos(ang) * 18;
+        // Đo chiều rộng label để căn giữa
+        ctx.save();
+        ctx.font = '700 italic 13px "JetBrains Mono", monospace';
+        const lw = ctx.measureText(label).width;
+        ctx.restore();
+        drawVecLabel(ctx, mx - lw / 2, my, label, color, 13);
+      }
+      ctx.restore();
+    }
+
+    // Hộp hàng (từ engine: gradient + iso feel + shadow)
+    function drawBoxCargo(cx, cy, W, H) {
+      const x = cx - W / 2, y = cy - H / 2;
+      ctx.save();
+      // Shadow
+      ctx.fillStyle = 'rgba(0,0,0,0.12)';
+      ctx.beginPath(); ctx.ellipse(cx, cy + H / 2 + 5, W * 0.48, 4, 0, 0, Math.PI * 2); ctx.fill();
+      // Mặt trên iso
+      ctx.fillStyle = '#d4b87a';
+      ctx.beginPath(); ctx.moveTo(x, y); ctx.lineTo(x + W, y); ctx.lineTo(x + W + 9, y - 11); ctx.lineTo(x + 9, y - 11); ctx.closePath(); ctx.fill();
+      ctx.strokeStyle = 'rgba(80,50,20,0.25)'; ctx.lineWidth = 1; ctx.stroke();
+      // Mặt trước gradient
+      const gr = ctx.createLinearGradient(x, y, x, y + H);
+      gr.addColorStop(0, '#c8a96e'); gr.addColorStop(1, '#a0845a');
+      ctx.fillStyle = gr; ctx.beginPath(); ctx.roundRect(x, y, W, H, 3); ctx.fill();
+      ctx.fillStyle = 'rgba(255,255,255,0.16)'; ctx.fillRect(x, y, W, 5);
+      // Dây đai
+      ctx.strokeStyle = 'rgba(80,50,20,0.48)'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(x, cy); ctx.lineTo(x + W, cy); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(cx, y); ctx.lineTo(cx, y + H); ctx.stroke();
+      ctx.fillStyle = 'rgba(80,50,20,0.5)'; ctx.font = '700 9px "Be Vietnam Pro", sans-serif';
+      ctx.textAlign = 'center'; ctx.textBaseline = 'middle'; ctx.fillText('HÀNG', cx, cy + H * 0.2);
+      ctx.restore();
+    }
+
+    // Bánh xe
+    function drawWheels(carLeft, carW, carH, ground) {
+      [carLeft + carW * 0.2, carLeft + carW * 0.8].forEach(wx => {
+        const wr = carH * 0.28;
+        ctx.fillStyle = '#263238'; ctx.beginPath(); ctx.arc(wx, ground + 1, wr, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#546E7A'; ctx.beginPath(); ctx.arc(wx, ground + 1, wr * 0.55, 0, Math.PI * 2); ctx.fill();
+        ctx.fillStyle = '#90A4AE'; ctx.beginPath(); ctx.arc(wx, ground + 1, wr * 0.2, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#37474F'; ctx.lineWidth = 1.2;
+        for (let i = 0; i < 4; i++) {
+          const a = i * Math.PI / 2 + 0.4;
+          ctx.beginPath();
+          ctx.moveTo(wx + wr * 0.22 * Math.cos(a), ground + 1 + wr * 0.22 * Math.sin(a));
+          ctx.lineTo(wx + wr * 0.50 * Math.cos(a), ground + 1 + wr * 0.50 * Math.sin(a));
+          ctx.stroke();
+        }
+      });
+    }
+
+    /* ─ Robot Mascot Aiducation ─
+       Thân tròn teal+cream, tai tròn, mặt đen oval,
+       mắt xanh mint phát sáng, cánh tay trái duỗi giữ dây tại `tip`.
+       Đứng bên PHẢI xe, mặt nhìn sang TRÁI.
+    */
+    function drawPerson(tip, ground) {
+      const R = CH * 0.11;          // bán kính thân robot
+      const att = getAttach();
+      // Tâm robot: đủ xa tip để cánh tay trông tự nhiên
+      const cx = tip.x + R * 2.2;
+      const cy = ground - R * 1.05; // ngồi trên mặt đất, đáy thân chạm ground
+
+      ctx.save();
+
+      /* ── BÓNG ĐỔ ── */
+      ctx.fillStyle = 'rgba(0,0,0,0.10)';
+      ctx.beginPath();
+      ctx.ellipse(cx + R * 0.1, ground + 3, R * 0.85, R * 0.22, 0, 0, Math.PI * 2);
+      ctx.fill();
+
+      /* ── TAI TRÁI (nhìn từ phía chúng ta = tai bên phải robot) ── */
+      // Tai = hình tròn nhỏ teal, nép phía sau đầu
+      const earR = R * 0.28;
+      // Tai phải (xa chúng ta hơn — vẽ trước để bị đầu che)
+      ctx.fillStyle = '#1A7A5E';
+      ctx.beginPath();
+      ctx.arc(cx + R * 0.62, cy - R * 0.72, earR, 0, Math.PI * 2);
+      ctx.fill();
+
+      /* ── THÂN CHÍNH — hình tròn lớn cream ── */
+      // Gradient nhẹ để có khối
+      const bodyGr = ctx.createRadialGradient(cx - R * 0.25, cy - R * 0.3, R * 0.1, cx, cy, R * 1.1);
+      bodyGr.addColorStop(0, '#F5EDD8');   // cream sáng
+      bodyGr.addColorStop(1, '#E8D9BC');   // cream tối hơn
+      ctx.fillStyle = bodyGr;
+      ctx.strokeStyle = '#2D8B6F';
+      ctx.lineWidth = 2;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+
+      /* ── VIỀN TEAL XUNG QUANH THÂN (vòng ngoài) ── */
+      ctx.strokeStyle = '#1A7A5E';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.arc(cx, cy, R * 1.12, 0, Math.PI * 2);
+      ctx.stroke();
+
+      /* ── TAI TRÁI (nhìn từ phía ta = bên trái robot, gần dây kéo) ── */
+      ctx.fillStyle = '#1A7A5E';
+      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(cx - R * 0.62, cy - R * 0.72, earR, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+      // Điểm sáng trong tai
+      ctx.fillStyle = '#4ECBA0';
+      ctx.beginPath();
+      ctx.arc(cx - R * 0.62, cy - R * 0.78, earR * 0.38, 0, Math.PI * 2);
+      ctx.fill();
+
+      /* ── MẶT — hình chữ nhật bo tròn màu đen ── */
+      const faceW = R * 1.1, faceH = R * 0.82;
+      const faceX = cx - faceW / 2, faceY = cy - R * 0.52;
+      ctx.fillStyle = '#111820';
+      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.roundRect(faceX, faceY, faceW, faceH, R * 0.28);
+      ctx.fill(); ctx.stroke();
+
+      /* ── MẮT — 2 oval xanh mint phát sáng ── */
+      const eyeW = faceW * 0.24, eyeH = faceH * 0.44;
+      const eyeY = faceY + faceH * 0.22;
+      [-0.28, 0.28].forEach(dx => {
+        const ex = cx + faceW * dx;
+        // Glow halo
+        ctx.fillStyle = 'rgba(78,203,160,0.20)';
+        ctx.beginPath();
+        ctx.ellipse(ex, eyeY + eyeH * 0.5, eyeW * 0.9, eyeH * 0.9, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // Mắt chính
+        ctx.fillStyle = '#4ECBA0';
+        ctx.beginPath();
+        ctx.ellipse(ex, eyeY + eyeH * 0.5, eyeW * 0.62, eyeH * 0.62, 0, 0, Math.PI * 2);
+        ctx.fill();
+        // Highlight nhỏ
+        ctx.fillStyle = 'rgba(255,255,255,0.55)';
+        ctx.beginPath();
+        ctx.ellipse(ex - eyeW * 0.18, eyeY + eyeH * 0.22, eyeW * 0.18, eyeH * 0.18, 0, 0, Math.PI * 2);
+        ctx.fill();
+      });
+
+      /* ── MIỆNG — cung cười nhỏ ── */
+      ctx.strokeStyle = '#4ECBA0'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.arc(cx, faceY + faceH * 0.82, faceW * 0.14, 0.15, Math.PI - 0.15);
+      ctx.stroke();
+
+      /* ── CÁNH TAY TRÁI — duỗi sang trái giữ dây tại tip ── */
+      // Cánh tay = đường bo tròn từ vai (cạnh trái thân) đến bàn tay
+      const armStartX = cx - R * 0.88;
+      const armStartY = cy - R * 0.10;
+      // Bàn tay robot = hình tròn nhỏ tại tip
+      ctx.strokeStyle = '#1A7A5E'; ctx.lineWidth = R * 0.32; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(armStartX, armStartY);
+      // Bezier nhẹ để tay cong tự nhiên
+      ctx.quadraticCurveTo(
+        (armStartX + tip.x) / 2, armStartY + R * 0.18,
+        tip.x, tip.y
+      );
+      ctx.stroke();
+      // Viền ngoài cánh tay
+      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = R * 0.32 + 2;
+      ctx.beginPath();
+      ctx.moveTo(armStartX, armStartY);
+      ctx.quadraticCurveTo(
+        (armStartX + tip.x) / 2, armStartY + R * 0.18,
+        tip.x, tip.y
+      );
+      // Vẽ viền trước (z-order)
+      // Thực ra ta vẽ tay màu đậm hơn rồi đè màu teal lên — đảo thứ tự:
+      ctx.restore(); ctx.save();
+
+      // Vẽ lại đúng thứ tự: viền → fill
+      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = R * 0.36 + 2; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(armStartX, armStartY);
+      ctx.quadraticCurveTo((armStartX + tip.x) / 2, armStartY + R * 0.18, tip.x, tip.y);
+      ctx.stroke();
+
+      ctx.strokeStyle = '#1A7A5E'; ctx.lineWidth = R * 0.32; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(armStartX, armStartY);
+      ctx.quadraticCurveTo((armStartX + tip.x) / 2, armStartY + R * 0.18, tip.x, tip.y);
+      ctx.stroke();
+
+      /* ── BÀN TAY — hình tròn nhỏ tại điểm cầm dây ── */
+      ctx.fillStyle = '#1A7A5E';
+      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(tip.x, tip.y, R * 0.18, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+
+      /* ── CÁNH TAY PHẢI — ngắn, đưa ra sau ── */
+      const armRX = cx + R * 0.88, armRY = cy - R * 0.10;
+      const armREndX = armRX + R * 0.55, armREndY = armRY + R * 0.35;
+      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = R * 0.36 + 2; ctx.lineCap = 'round';
+      ctx.beginPath(); ctx.moveTo(armRX, armRY); ctx.lineTo(armREndX, armREndY); ctx.stroke();
+      ctx.strokeStyle = '#1A7A5E'; ctx.lineWidth = R * 0.32;
+      ctx.beginPath(); ctx.moveTo(armRX, armRY); ctx.lineTo(armREndX, armREndY); ctx.stroke();
+      ctx.fillStyle = '#1A7A5E'; ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.5;
+      ctx.beginPath(); ctx.arc(armREndX, armREndY, R * 0.16, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+
+      /* ── CHÂN / ĐẾ — 2 hình tròn nhỏ teal ── */
+      [-0.38, 0.38].forEach(dx => {
+        ctx.fillStyle = '#1A7A5E';
+        ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.5;
+        ctx.beginPath();
+        ctx.ellipse(cx + R * dx, ground - R * 0.06, R * 0.24, R * 0.17, 0, 0, Math.PI * 2);
+        ctx.fill(); ctx.stroke();
+      });
+
+      /* ── ANTEN nhỏ trên đỉnh ── */
+      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
+      ctx.beginPath();
+      ctx.moveTo(cx, cy - R * 1.0);
+      ctx.lineTo(cx, cy - R * 1.38);
+      ctx.stroke();
+      ctx.fillStyle = '#4ECBA0';
+      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.5;
+      ctx.beginPath();
+      ctx.arc(cx, cy - R * 1.42, R * 0.10, 0, Math.PI * 2);
+      ctx.fill(); ctx.stroke();
+
+      ctx.restore();
+    }
+
+    /* ═══════════════════════════════
+       MAIN REDRAW
+    ═══════════════════════════════ */
+    function redraw() {
+      ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+      ctx.clearRect(0, 0, CW, CH);
+
+      const { ground, carW, carH, carCX, carLeft, carTop } = getCarGeom();
+      const att = getAttach();
+      const tip = getTip();
+      const Frad = toRad(theta);
+      const vLen = F * Math.min(CW, CH) * 0.0028;
+      const fpLen = vLen * Math.cos(Frad);
+      const fperpLen = vLen * Math.sin(Frad);
+
+      /* NỀN */
+      const sky = ctx.createLinearGradient(0, 0, 0, ground);
+      sky.addColorStop(0, '#C5E8F5'); sky.addColorStop(1, '#E8F4FD');
+      ctx.fillStyle = sky; ctx.fillRect(0, 0, CW, ground);
+      // Mặt đường
+      ctx.fillStyle = '#C8C0A8'; ctx.fillRect(0, ground, CW, CH - ground);
+      ctx.fillStyle = '#BEB2A0'; ctx.fillRect(0, ground, CW, (CH - ground) * 0.18);
+      // Vạch kẻ đường
+      ctx.strokeStyle = 'rgba(255,255,255,0.55)'; ctx.lineWidth = 2; ctx.setLineDash([20, 14]);
+      ctx.beginPath(); ctx.moveTo(0, ground + (CH - ground) * 0.5); ctx.lineTo(CW, ground + (CH - ground) * 0.5); ctx.stroke();
+      ctx.setLineDash([]);
+
+      /* TOÀ NHÀ */
+      [[CW * .68, ground - CH * .19, CW * .06, CH * .19, '#90A4AE'],
+      [CW * .76, ground - CH * .28, CW * .07, CH * .28, '#78909C'],
+      [CW * .85, ground - CH * .15, CW * .05, CH * .15, '#B0BEC5']
+      ].forEach(([x, y, w, h, c]) => {
+        ctx.fillStyle = c; ctx.fillRect(x, y, w, h);
+        ctx.fillStyle = 'rgba(255,245,150,0.6)';
+        for (let r = 0; r < 3; r++)for (let col = 0; col < 2; col++)
+          ctx.fillRect(x + 4 + col * (w * .4), y + 5 + r * (h * .25), w * .28, h * .16);
+      });
+
+      /* XE + BÁNH */
+      drawWheels(carLeft, carW, carH, ground);
+      drawBoxCargo(carCX, carTop + carH * 0.5, carW, carH);
+
+      /* DÂY KÉO: từ tay (tip) → móc xe (att) */
+      ctx.save();
+      ctx.strokeStyle = '#5D4037'; ctx.lineWidth = 2.2; ctx.lineCap = 'round'; ctx.setLineDash([]);
+      ctx.beginPath(); ctx.moveTo(tip.x, tip.y); ctx.lineTo(att.x, att.y); ctx.stroke();
+      ctx.restore();
+
+      /* F∥ và F⊥ — Giai đoạn 2+ */
+      if (stage >= 2) {
+        if (document.getElementById('chkPara').checked) {
+          drawArrow(att.x, att.y, att.x + fpLen, att.y, '#E8A24A', 2.6, 'F∥');
+          if (theta > 4 && theta < 176) {
+            ctx.save(); ctx.strokeStyle = 'rgba(232, 162, 74,0.85)'; ctx.lineWidth = 1.5;
+            ctx.strokeRect(att.x + fpLen - 9, att.y, 9, 9); ctx.restore();
+          }
+        }
+        if (document.getElementById('chkPerp').checked && theta > 3 && theta < 177) {
+          drawArrow(att.x + fpLen, att.y, att.x + fpLen, att.y - fperpLen, '#4E7F92', 2.6, 'F⊥');
+        }
+      }
+
+      /* F toàn bộ */
+      drawArrow(att.x, att.y, tip.x, tip.y, '#3CA57A', 3.2, 'F');
+
+      /* GÓC θ */
+      if (theta > 3 && theta < 177) {
+        const arcR = Math.max(22, vLen * 0.3);
+        ctx.save();
+        ctx.strokeStyle = 'rgba(60, 165, 122,0.75)'; ctx.lineWidth = 1.8;
+        ctx.beginPath(); ctx.arc(att.x, att.y, arcR, -Frad, 0); ctx.stroke();
+        const midA = -Frad / 2;
+        const tx = att.x + (arcR + 13) * Math.cos(midA), ty = att.y + (arcR + 13) * Math.sin(midA);
+        ctx.font = '700 13px "Be Vietnam Pro", sans-serif'; ctx.textAlign = 'center'; ctx.textBaseline = 'middle';
+        ctx.strokeStyle = 'rgba(255,255,255,0.9)'; ctx.lineWidth = 3.5; ctx.strokeText('θ', tx, ty);
+        ctx.fillStyle = '#2D8B6F'; ctx.fillText('θ', tx, ty);
+        ctx.restore();
+      }
+
+      /* NGƯỜI */
+      drawPerson(tip, ground);
+
+      /* s — mũi tên quãng đường dưới mặt đường, luôn tính từ vị trí gốc xe */
+      if (Math.abs(carX) > 2) {
+        const originX = CW * CAR_ORIGIN;   // tâm xe ban đầu
+        const curX = originX + carX;       // tâm xe hiện tại
+        // vẽ từ đáy bánh trước ban đầu sang bánh trước hiện tại
+        const arrowY = ground + (CH - ground) * 0.68;
+        ctx.save();
+        ctx.strokeStyle = 'rgba(45, 139, 111,0.75)'; ctx.fillStyle = 'rgba(45, 139, 111,0.75)'; ctx.lineWidth = 2;
+        ctx.setLineDash([6, 5]);
+        ctx.beginPath(); ctx.moveTo(originX, arrowY); ctx.lineTo(curX, arrowY); ctx.stroke();
+        ctx.setLineDash([]);
+        const dir = carX > 0 ? 1 : -1;
+        ctx.beginPath();
+        ctx.moveTo(curX, arrowY);
+        ctx.lineTo(curX - dir * 10, arrowY - 5);
+        ctx.lineTo(curX - dir * 10, arrowY + 5);
+        ctx.closePath(); ctx.fill();
+        ctx.font = '700 11px "JetBrains Mono", monospace'; ctx.textAlign = 'center'; ctx.textBaseline = 'bottom';
+        drawVecLabel(ctx, (originX + curX) / 2 - 5, arrowY - 2, 's', 'rgba(45, 139, 111,0.75)', 11);
+        ctx.restore();
+      }
+
+      /* HANDLE VÀNG tại đầu F */
+      ctx.save();
+      ctx.fillStyle = dragging ? '#E8A24A' : 'rgba(232, 162, 74,0.9)';
+      ctx.strokeStyle = '#CE8A33'; ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.arc(tip.x, tip.y, 10, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
+      ctx.restore();
+    }
+
+    /* ═══════════════════════════════
+       DRAG
+    ═══════════════════════════════ */
+    function getPos(e) {
+      const r = canvas.getBoundingClientRect();
+      return { x: e.clientX - r.left, y: e.clientY - r.top };
+    }
+    function updateTheta(px, py) {
+      const att = getAttach();
+      const dx = px - att.x, dy = py - att.y;
+      const len = Math.sqrt(dx * dx + dy * dy);
+      if (len < 5) return;
+      // θ = góc giữa F và phương ngang phải (+x)
+      // F sang phải+lên: dx>0 (phải), dy<0 (lên trong canvas)
+      let deg = Math.atan2(-dy, dx) * 180 / Math.PI;
+      theta = Math.max(0, Math.min(180, Math.round(deg)));
+      document.getElementById('sliderTheta').value = theta;
+      document.getElementById('thetaVal').textContent = theta;
+      refresh(); checkTriggers(); trackAngle(theta);
+    }
+
+    canvas.addEventListener('pointerdown', e => {
+      if (!e.isPrimary) return;
+      const { x, y } = getPos(e); const t = getTip();
+      if (Math.hypot(x - t.x, y - t.y) < 24) {
+        dragging = true;
+        canvas.setPointerCapture(e.pointerId);
+      }
+    });
+    canvas.addEventListener('pointermove', e => {
+      if (!e.isPrimary || !dragging) return;
+      const { x, y } = getPos(e); updateTheta(x, y);
+    });
+    function endVectorDrag(e) {
+      dragging = false;
+      if (e && canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
+    }
+    canvas.addEventListener('pointerup', endVectorDrag);
+    canvas.addEventListener('pointercancel', endVectorDrag);
+
+    /* ═══════════════════════════════
+       SLIDERS
+    ═══════════════════════════════ */
+    function onF(v) { F = parseFloat(v); document.getElementById('fVal').textContent = F; refresh(); }
+    function onTheta(v) { theta = parseFloat(v); document.getElementById('thetaVal').textContent = theta; refresh(); checkTriggers(); trackAngle(theta); }
+    function onS(v) { s = parseFloat(v); document.getElementById('sVal').textContent = s.toFixed(1); refresh(); }
+
+    /* ═══════════════════════════════
+       REFRESH
+    ═══════════════════════════════ */
+    function refresh() {
+      const A = F * s * Math.cos(toRad(theta));
+      const Fp = F * Math.cos(toRad(theta));
+      const wEl = document.getElementById('resWork');
+      wEl.textContent = fmt(A); wEl.className = 'res-val c-work' + (A < 0 ? ' c-neg' : '');
+      document.getElementById('resPara').textContent = fmt(Fp);
+      document.getElementById('resPara').className = 'res-val c-para' + (Fp < 0 ? ' c-neg' : '');
+      updateCaption(); redraw();
+      if (document.getElementById('ruleSection').classList.contains('show')) updateTable();
+      LMS().state({ stage, F, theta, s, anglesVisited:[...anglesVisited] });
+    }
+
+    /* ═══════════════════════════════
+       CAPTION
+    ═══════════════════════════════ */
+    function updateCaption() {
+      const box = document.getElementById('captionBox');
+      const ico = document.getElementById('captionIcon');
+      const txt = document.getElementById('captionText');
+      box.className = 'p5-explain'; ico.className = 'ti ti-info-circle';
+      if (stage === 1) {
+        if (Math.abs(theta) < 5) { txt.innerHTML = 'Kéo thẳng ngang — toàn bộ lực dồn vào hướng chuyển động. Hiệu quả nhất!'; box.classList.add('ok'); ico.className = 'ti ti-circle-check'; }
+        else if (Math.abs(theta - 90) < 5) { txt.innerHTML = 'Kéo thẳng đứng — xe không tiến dù bạn kéo rất mạnh. Công = 0!'; box.classList.add('warn'); ico.className = 'ti ti-alert-circle'; }
+        else if (theta > 90) { txt.innerHTML = 'Lực đang cản chuyển động — công âm!'; box.classList.add('warn'); ico.className = 'ti ti-alert-circle'; }
+        else txt.innerHTML = 'Thay đổi góc kéo θ để xem xe đi nhanh hay chậm và công thay đổi thế nào.';
+      } else if (stage === 2) {
+        txt.innerHTML = 'F<sub>∥</sub> = F · cosθ mới là phần làm xe tiến. F<sub>⊥</sub> = F · sinθ không giúp xe đi về phía trước.';
+        box.classList.add('ok'); ico.className = 'ti ti-circle-check';
+      } else {
+        txt.innerHTML = 'Tích vô hướng |<span class="vec">F</span>| · |<span class="vec">s</span>| · cosθ chính là công cơ học — đó là lý do cosθ xuất hiện!';
+        box.classList.add('ok'); ico.className = 'ti ti-circle-check';
+      }
+    }
+
+    /* ═══════════════════════════════
+       PROMPTS
+    ═══════════════════════════════ */
+    function checkTriggers() {
+      if (!p1Done && theta > 0) { showPrompt('prompt1'); p1Done = true; }
+      if (!p2Done && Math.abs(theta - 90) <= 5) { showPrompt('prompt2'); p2Done = true; }
+      if (!p3Done && theta > 90) { showPrompt('prompt3'); p3Done = true; }
+    }
+    function showPrompt(id) {
+      ['prompt1', 'prompt2', 'prompt3'].forEach(p => document.getElementById(p).classList.remove('show'));
+      document.getElementById(id).classList.add('show');
+    }
+    function trackAngle(a) {
+      anglesVisited.add(Math.round(a / 10) * 10);
+      if (anglesVisited.size >= 4 && [...anglesVisited].some(x => x > 90) && stage === 1)
+        document.getElementById('btnReveal').classList.add('show');
+    }
+    function ans(n, v) {
+      const btns = document.querySelectorAll('#prompt' + n + ' .opt-btn');
+      btns.forEach(b => b.disabled = true);
+      const fb = document.getElementById('fb' + n);
+      const cfg = {
+        1: { c: '0', ci: 0, ok: '✅ Đúng! θ=0° → cos0°=1, công lớn nhất.', no: '❌ Kéo slider về θ=0° để kiểm tra!', fix: () => { document.getElementById('sliderTheta').value = 0; onTheta(0); } },
+        2: { c: 'zero', ci: 1, ok: '✅ Đúng! cos90°=0 → A=0. Kéo vuông góc không sinh công!', no: '❌ Kéo slider đến θ=90° để kiểm tra!', fix: () => { document.getElementById('sliderTheta').value = 90; onTheta(90); } },
+        3: { c: 'resist', ci: 0, ok: '✅ Đúng! Ma sát, lực phanh — công âm là lực cản chuyển động.', no: '❌ Công âm nghĩa là lực đang chống lại chuyển động!', fix: () => { } },
+      }[n];
+      if (v === cfg.c) {
+        btns[cfg.ci].classList.add('correct');
+        fb.textContent = cfg.ok; fb.className = 'prompt-fb ok show';
+        LMS().event({ type:'answer', id:`prompt-${n}`, correct:true });
+      } else {
+        const wi = n === 1 ? (v === '45' ? 1 : 2) : n === 2 ? (v === 'max' ? 0 : 2) : (v === 'stop' ? 1 : 2);
+        btns[wi].classList.add('wrong'); btns[cfg.ci].classList.add('correct');
+        fb.textContent = cfg.no; fb.className = 'prompt-fb no show'; cfg.fix();
+        LMS().event({ type:'answer', id:`prompt-${n}`, correct:false });
+      }
+    }
+
+    /* ═══════════════════════════════
+       STAGES
+    ═══════════════════════════════ */
+    function revealStage2() {
+      stage = 2; updateStageDots();
+      LMS().progress({ id:'stage-2', value:2/3 });
+      document.getElementById('cardPara').classList.remove('hidden');
+      document.getElementById('toggleCard').style.display = 'block';
+      document.getElementById('btnReveal').classList.remove('show');
+      document.getElementById('btnReveal').style.visibility = 'hidden';
+      setTimeout(() => { updateTable(); document.getElementById('ruleSection').classList.add('show'); }, 600);
+      updateCaption(); redraw();
+    }
+    function showConclusion() {
+      stage = 3; updateStageDots();
+      LMS().progress({ id:'stage-3', value:1 });
+      document.getElementById('formulaBox').classList.add('show');
+      document.getElementById('understandBox').classList.add('show');
+      document.getElementById('completeBox').classList.add('show');
+      document.getElementById('finalInfo').classList.add('show');
+      ['fs1', 'fs2', 'fs3', 'fs4'].forEach((id, i) => setTimeout(() => document.getElementById(id).classList.add('show'), i * 500));
+      updateCaption();
+      if (!completionSent) {
+        completionSent = true;
+        LMS().complete({ score:100, maxScore:100, results:{ prompts:[p1Done,p2Done,p3Done] } });
+      }
+    }
+    function updateStageDots() {
+      const lbl = ['Giai đoạn 1 / 3 — Quan sát hiện tượng', 'Giai đoạn 2 / 3 — Phân tích lực', 'Giai đoạn 3 / 3 — Công thức'];
+      document.getElementById('stageBadge').textContent = lbl[stage - 1];
+      ['dot1', 'dot2', 'dot3'].forEach((id, i) => {
+        document.getElementById(id).className = 'sdot' + (i < stage - 1 ? ' done' : i === stage - 1 ? ' active' : '');
+      });
+    }
+    function updateTable() {
+      document.getElementById('tblS').textContent = s.toFixed(1);
+      [0, 30, 60, 90, 120, 150, 180].forEach(a => {
+        const Fp = F * Math.cos(toRad(a)), A = F * s * Math.cos(toRad(a));
+        const fe = document.getElementById('tf' + a), ae = document.getElementById('ta' + a);
+        if (fe) { fe.textContent = fmt(Fp); fe.className = Fp > .05 ? 'pos' : Fp < -.05 ? 'neg' : 'zer'; }
+        if (ae) { ae.textContent = fmt(A); ae.className = A > .05 ? 'pos' : A < -.05 ? 'neg' : 'zer'; }
+      });
+    }
+
+    /* ═══════════════════════════════
+       KÉO XE — animation + resDist real-time
+    ═══════════════════════════════ */
+    function doPull() {
+      if (pulling) return;
+      const cosT = Math.cos(toRad(theta));
+      // px xe đi = s(m) * PX_PER_M * cosT
+      // cosT>0 → xe sang phải; cosT<0 → xe sang trái (lực cản); =0 → đứng yên
+      const pxMove = s * PX_PER_M * cosT;
+
+      if (Math.abs(pxMove) < 0.5) {
+        document.getElementById('resDist').textContent = '0.0';
+        pulling = false; return;
+      }
+
+      // Giới hạn để xe không ra ngoài canvas
+      const maxRight = CW * (1 - CAR_ORIGIN - 0.15);
+      const maxLeft = -(CW * CAR_ORIGIN * 0.6);
+      const target = carX + pxMove;
+      const end = Math.max(maxLeft, Math.min(maxRight, target));
+
+      pulling = true;
+      const start = carX, dur = 1100, t0 = performance.now();
+      document.getElementById('resDist').textContent = '0.0';
+
+      function step(now) {
+        const t = Math.min((now - t0) / dur, 1);
+        const e = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;   // ease in-out quad
+        carX = start + (end - start) * e;
+        // resDist = quãng đường thực tế (luôn dương)
+        const distM = Math.abs(carX - start) / PX_PER_M;
+        document.getElementById('resDist').textContent = fmt(distM);
+        redraw();
+        if (t < 1) requestAnimationFrame(step);
+        else { carX = end; pulling = false; redraw(); trackAngle(theta); }
+      }
+      requestAnimationFrame(step);
+    }
+
+    /* ═══════════════════════════════
+       RESET — về đúng trạng thái ban đầu
+    ═══════════════════════════════ */
+    function doReset() {
+      pulling = false; dragging = false;
+      carX = 0; F = 120; theta = 40; s = 5;
+      stage = 1;
+      anglesVisited = new Set(); p1Done = false; p2Done = false; p3Done = false;
+
+      // Sliders
+      document.getElementById('sliderF').value = 120;
+      document.getElementById('sliderTheta').value = 40;
+      document.getElementById('sliderS').value = 5;
+      document.getElementById('fVal').textContent = 120;
+      document.getElementById('thetaVal').textContent = 40;
+      document.getElementById('sVal').textContent = '5.0';
+      document.getElementById('resDist').textContent = '0.0';
+
+      // Ẩn các phần đã reveal
+      document.getElementById('cardPara').classList.add('hidden');
+      document.getElementById('toggleCard').style.display = 'none';
+      document.getElementById('btnReveal').classList.remove('show');
+      document.getElementById('btnReveal').style.visibility = 'hidden';
+      document.getElementById('ruleSection').classList.remove('show');
+      document.getElementById('formulaBox').classList.remove('show');
+      document.getElementById('understandBox').classList.remove('show');
+      document.getElementById('completeBox').classList.remove('show');
+      document.getElementById('finalInfo').classList.remove('show');
+      ['fs1', 'fs2', 'fs3', 'fs4'].forEach(id => document.getElementById(id).classList.remove('show'));
+      ['prompt1', 'prompt2', 'prompt3'].forEach(id => document.getElementById(id).classList.remove('show'));
+
+      updateStageDots();
+      refresh();
+    }
+
+    /* ═══════════════════════════════
+       INIT
+    ═══════════════════════════════ */
+    window.addEventListener('load', () => setTimeout(() => { resizeCanvas(); refresh(); LMS().ready({version:1}); LMS().progress({id:'stage-1',value:1/3}); }, 60));
+    window.addEventListener('resize', () => resizeCanvas());
+  
+    // ===== Báo chiều cao thật cho LMS (PHẦN 7.7) — tự thêm =====
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      const _athenaResizeObserver = new ResizeObserver(() => {
+        clearTimeout(window._rz); window._rz = setTimeout(reportHeight, 100);
+      });
+      _athenaResizeObserver.observe(document.body);
+    } else {
+      window.setInterval(reportHeight, 1000);
+    }
+</script>
+</body>
+
+</html>
