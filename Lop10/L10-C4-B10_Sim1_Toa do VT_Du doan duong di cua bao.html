@@ -888,7 +888,8 @@
 
     // Tải trước tài nguyên ảnh bản đồ chất lượng cao nền
     const mapImage = new Image();
-    mapImage.src = 'Ban do Viet Nam.png';
+    mapImage.crossOrigin = 'anonymous';
+    mapImage.src = 'https://lh3.googleusercontent.com/d/1PkTanJP2K_2UT6kTpyzwVVbtwDRullJh';
     mapImage.onload = () => { triggerRedraw(); };
 
     // Cài đặt xử lý kích thước hiển thị vật lý Canvas (Chống mờ màn hình Retina)
