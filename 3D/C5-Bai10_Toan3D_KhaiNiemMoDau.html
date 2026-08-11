@@ -1,0 +1,2861 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 10: Đường thẳng và Mặt phẳng trong Không gian — Phòng Thí Nghiệm 3D</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    rel="stylesheet">
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+
+  <style>
+    /* DESIGN SYSTEM: NAVY & TEAL PRESET */
+    :root {
+      --green: #1B8C5A;
+      --green-light: #E6F4EE;
+      --red: #C62828;
+      --red-light: #FFEBEE;
+      --amber: #EF9F27;
+      --amber-light: #FEF3E0;
+      --blue: #1565C0;
+      --blue-light: #EBF3FF;
+      --surface: #ffffff;
+      --border: #d1dce8;
+      --text: #1a2e44;
+      --text-2: #334155;
+      --sub: #64748b;
+      --radius: 12px;
+
+      --navy: #0d2b4e;
+      --teal: #0e7a6e;
+      --bg: #f0f4f8;
+      --canvas-bg: #0a1628;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a4a7a 100%);
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: 60px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .header-badge {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .01em;
+      flex: 1;
+    }
+
+    /* APP BODY LAYOUT */
+    .app-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 60px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* CANVAS AREA */
+    .canvas-container {
+      flex: 1;
+      position: relative;
+      background: var(--canvas-bg);
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #three-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .canvas-hint {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10, 22, 40, 0.85);
+      color: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 11px;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 5;
+    }
+
+    /* HTML LABEL OVERLAY */
+    #label-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 4;
+    }
+
+    .pt-label {
+      position: absolute;
+      font-size: 13px;
+      font-weight: 700;
+      pointer-events: none;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.6);
+      white-space: nowrap;
+      will-change: transform;
+      user-select: none;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 330px;
+      background: #ffffff;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
+      z-index: 8;
+    }
+
+    /* MAIN STEP TABS */
+    .step-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .step-tab {
+      flex: 1;
+      padding: 12px 4px;
+      font-size: 10px;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      color: var(--sub);
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      letter-spacing: .02em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .step-tab:hover {
+      color: var(--navy);
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    .step-tab.active {
+      color: var(--navy);
+      border-bottom-color: var(--teal);
+      background: #ffffff;
+    }
+
+    /* STEP BODY CONTENT */
+    .step-body {
+      padding: 20px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .step-panel {
+      display: none;
+      flex-direction: column;
+      gap: 16px;
+      height: 100%;
+    }
+
+    .step-panel.active {
+      display: flex;
+    }
+
+    /* STEP TITLE & NUMBER */
+    .step-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #edf2f7;
+      padding-bottom: 10px;
+    }
+
+    .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-desc {
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: var(--text-2);
+    }
+
+    /* INFO BOXES */
+    .info-box {
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      display: flex;
+      gap: 12px;
+      font-size: 12px;
+      border-left: 4px solid transparent;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .info-box .ib-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .info-box .ib-title {
+      font-weight: 700;
+      margin-bottom: 4px;
+    }
+
+    .ib-blue {
+      background: var(--blue-light);
+      border-left-color: var(--blue);
+      color: #0d47a1;
+    }
+
+    .ib-teal {
+      background: #e6f7f4;
+      border-left-color: var(--teal);
+      color: #064e40;
+    }
+
+    .ib-gold {
+      background: var(--amber-light);
+      border-left-color: var(--amber);
+      color: #7e5109;
+    }
+
+    .ib-red {
+      background: var(--red-light);
+      border-left-color: var(--red);
+      color: #b71c1c;
+    }
+
+    /* HUD WIDGETS AND LISTS */
+    .hud-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px;
+      font-size: 12px;
+    }
+
+    .hud-title {
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .hud-list {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .hud-item {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 6px 10px;
+      border-radius: 6px;
+      background: #ffffff;
+      border: 1px solid #e2e8f0;
+      font-weight: 500;
+    }
+
+    .hud-item.valid {
+      border-color: #22c55e;
+      background: #f0fdf4;
+      color: #15803d;
+    }
+
+    .hud-item.invalid {
+      border-color: #f59e0b;
+      background: #fffbeb;
+      color: #b45309;
+    }
+
+    .badge-relation {
+      font-size: 10px;
+      font-weight: 700;
+      padding: 2px 6px;
+      border-radius: 4px;
+      text-transform: uppercase;
+    }
+
+    .badge-relation.in {
+      background: #22c55e;
+      color: #fff;
+    }
+
+    .badge-relation.out {
+      background: #f59e0b;
+      color: #fff;
+    }
+
+    /* CONTROLS AREA */
+    .controls {
+      padding: 16px 20px;
+      border-top: 1px solid var(--border);
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s;
+      border: none;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: white;
+    }
+
+    .btn-primary:hover {
+      background: #0b6157;
+    }
+
+    .btn-primary:disabled {
+      background: #cbd5e1;
+      color: #94a3b8;
+      cursor: not-allowed;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text-2);
+    }
+
+    .btn-secondary:hover {
+      background: #f1f5f9;
+    }
+
+    .btn-danger {
+      background: var(--red-light);
+      border: 1px solid var(--red);
+      color: var(--red);
+    }
+
+    .btn-danger:hover {
+      background: #ffd6d6;
+    }
+
+    /* SUB-NAVIGATION INSIDE STEPS */
+    .sub-nav {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 6px;
+      background: #edf2f7;
+      padding: 4px;
+      border-radius: 8px;
+      margin-bottom: 12px;
+      flex-shrink: 0;
+    }
+
+    .sub-tab-pill {
+      flex: 1;
+      padding: 6px 10px;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--sub);
+      transition: all 0.2s;
+      user-select: none;
+    }
+
+    .sub-tab-pill.active {
+      background: #ffffff;
+      color: var(--navy);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    }
+
+    /* PROGRESS DOTS FOR STEP 2 SUB-STEPS */
+    .sub-progress {
+      display: flex;
+      gap: 8px;
+      justify-content: center;
+      margin: 8px 0;
+      flex-shrink: 0;
+    }
+
+    .progress-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #cbd5e1;
+      transition: all 0.3s;
+    }
+
+    .progress-dot.active {
+      background: var(--teal);
+      transform: scale(1.2);
+    }
+
+    .progress-dot.completed {
+      background: var(--navy);
+    }
+
+    /* SUB-PANELS LAYOUT & SPACING */
+    .sub-panel {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* PREDICTION BLOCK (COGNITIVE CONFLICT) */
+    .prediction-box {
+      background: #fffbeb;
+      border: 1px solid #fef3c7;
+      border-radius: var(--radius);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .prediction-title {
+      font-weight: 700;
+      color: #92400e;
+      font-size: 13px;
+    }
+
+    .prediction-buttons {
+      display: flex;
+      gap: 10px;
+    }
+
+    .btn-predict {
+      flex: 1;
+      padding: 8px 12px;
+      font-size: 12px;
+      font-weight: 600;
+      border-radius: 6px;
+      cursor: pointer;
+      border: 1px solid #d97706;
+      background: #ffffff;
+      color: #b45309;
+      transition: all 0.2s;
+    }
+
+    .btn-predict:hover {
+      background: #fffbeb;
+      transform: translateY(-1px);
+    }
+
+    .btn-predict.selected {
+      background: #b45309;
+      color: #ffffff;
+    }
+
+    /* COMPLETION STATUS BADGES */
+    .status-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 20px;
+      background: #e6f4ee;
+      color: var(--green);
+      align-self: flex-start;
+      margin-top: 4px;
+    }
+
+    /* CONCLUSION LIST */
+    .conclusion-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .conclusion-card {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 12px 14px;
+      cursor: pointer;
+      transition: all 0.2s;
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+    }
+
+    .conclusion-card:hover {
+      border-color: var(--teal);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.05);
+      transform: translateX(4px);
+    }
+
+    .conclusion-card i {
+      color: var(--teal);
+      font-size: 16px;
+      margin-top: 2px;
+    }
+
+    .conclusion-title {
+      font-weight: 700;
+      color: var(--navy);
+      font-size: 13px;
+      margin-bottom: 2px;
+    }
+
+    .conclusion-text {
+      font-size: 11.5px;
+      color: var(--sub);
+    }
+
+    /* RESPONSIVE LAYOUT */
+    @media (max-width: 768px) {
+      .app-body {
+        flex-direction: column;
+      }
+
+      .canvas-container {
+        height: 50%;
+        min-height: 320px;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: 50%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-badge">🧊 Hình học không gian</div>
+    <h1>Bài 10: Đường thẳng và Mặt phẳng trong Không gian — Bài 1</h1>
+  </header>
+
+  <!-- APP BODY LAYOUT -->
+  <div class="app-body">
+
+    <!-- CANVAS AREA -->
+    <div class="canvas-container" id="canvas-wrap">
+      <canvas id="three-canvas"></canvas>
+      <div id="label-layer"></div>
+      <div class="canvas-hint" id="canvas-hint">🖱 Kéo để xoay · Cuộn để zoom · Nhấn giữa để dịch chuyển</div>
+    </div>
+
+    <!-- SIDEBAR -->
+    <div class="sidebar">
+
+      <!-- STEP TABS -->
+      <div class="step-tabs" id="step-tabs">
+        <div class="step-tab active" data-step="0">Mở đầu</div>
+        <div class="step-tab" data-step="1">Mục 1</div>
+        <div class="step-tab" data-step="2">Mục 2</div>
+        <div class="step-tab" data-step="3">Mục 3</div>
+        <div class="step-tab" data-step="4">Tổng kết</div>
+      </div>
+
+      <!-- STEP BODY CONTENT -->
+      <div class="step-body" id="step-body">
+
+        <!-- STEP 0: INTRO -->
+        <div class="step-panel active" id="panel-0">
+          <div class="step-title">
+            <div class="step-num"><i class="ti ti-hash"></i></div>
+            Nhiệm vụ của bạn
+          </div>
+          <div class="step-desc">
+            Chào mừng bạn đến với <strong>Phòng thí nghiệm Không gian</strong>! Nơi đây giúp bạn tự tay kiểm chứng lại
+            các khái niệm và tính chất hình học không gian 3D đã học.
+          </div>
+          <div class="info-box ib-blue">
+            <div class="ib-icon"><i class="ti ti-info-circle"></i></div>
+            <div>
+              <div class="ib-title">Cách thực hiện</div>
+              Đi qua từng mục, kéo thả các điểm và đối tượng 3D để quan sát và hoàn thành các nhiệm vụ tự học. Nhấn
+              <strong>"Bắt đầu học"</strong> bên dưới để thực hiện.
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 1: POINT & PLANE -->
+        <div class="step-panel" id="panel-1">
+          <div class="step-title">
+            <div class="step-num">1</div>
+            Mục 1: Điểm và Mặt phẳng
+          </div>
+          <div class="step-desc">
+            Mặt phẳng (P) màu xanh dương không có bề dày và mở rộng vô tận.
+          </div>
+          <div class="info-box ib-blue">
+            <div class="ib-icon"><i class="ti ti-plane"></i></div>
+            <div>
+              <div class="ib-title">Hướng dẫn</div>
+              - Kéo các <strong>tay cầm nhỏ ở góc</strong> để nghiêng mặt phẳng (P).<br>
+              - Bật chế độ <strong>"Thêm điểm"</strong> bên dưới rồi click lên màn hình để đặt điểm (tắt chế độ này khi
+              cần xoay camera hoặc kéo điểm để quan sát).<br>
+              - Nên chuyển về <strong>"Nhìn ngang cạnh"</strong> trước khi di chuyển các điểm để căn vị trí chính xác
+              nhất.
+            </div>
+          </div>
+          <button class="btn btn-secondary" id="btn-toggle-placement" style="margin-bottom: 8px;">
+            <i class="ti ti-plus"></i> Bật chế độ thêm điểm
+          </button>
+          <div style="display: flex; gap: 8px; margin-bottom: 12px;">
+            <button class="btn btn-secondary" id="btn-camera-edge"
+              style="flex: 1; padding: 8px 10px; font-size: 11.5px;">
+              <i class="ti ti-camera"></i> Nhìn ngang cạnh
+            </button>
+            <button class="btn btn-secondary" id="btn-camera-face"
+              style="flex: 1; padding: 8px 10px; font-size: 11.5px;">
+              <i class="ti ti-eye"></i> Nhìn trực diện
+            </button>
+          </div>
+          <div class="info-box ib-teal" id="step1-guide" style="display: none;">
+            <div class="ib-icon"><i class="ti ti-bulb"></i></div>
+            <div>
+              Hãy thử kéo điểm màu cam <strong>(∉ (P))</strong> lại gần sát mặt phẳng và quan sát khoảng cách (d) khi nó
+              đổi màu sang xanh lá <strong>(∈ (P))</strong>.
+            </div>
+          </div>
+
+          <!-- HUD showing placed points relation -->
+          <div class="hud-card">
+            <div class="hud-title"><i class="ti ti-list"></i> Trạng thái điểm đã đặt</div>
+            <div class="hud-list" id="placed-points-list">
+              <div style="color: var(--sub); font-style: italic; text-align: center; padding: 10px 0;">Hãy click chuột
+                lên màn hình tối để đặt điểm...</div>
+            </div>
+            <div class="status-badge" id="step1-status" style="display: block; background: #fee2e2; color: #ef4444;">
+              <i class="ti ti-alert-triangle"></i> Cần đặt ít nhất 1 điểm ∈ (P) và 1 điểm ∉ (P)
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 2: 4 POSTULATES -->
+        <div class="step-panel" id="panel-2">
+
+          <!-- Sub-navigation for step 2 -->
+          <div class="sub-nav">
+            <div class="sub-tab-pill active" data-sub="1">TC 1</div>
+            <div class="sub-tab-pill" data-sub="2">TC 2</div>
+            <div class="sub-tab-pill" data-sub="3">TC 3</div>
+            <div class="sub-tab-pill" data-sub="4">TC 4</div>
+          </div>
+
+          <div class="sub-progress">
+            <div class="progress-dot active" id="dot-2-1"></div>
+            <div class="progress-dot" id="dot-2-2"></div>
+            <div class="progress-dot" id="dot-2-3"></div>
+            <div class="progress-dot" id="dot-2-4"></div>
+          </div>
+
+          <!-- TC 2.1 -->
+          <div class="sub-panel" id="sub-panel-2-1">
+            <div class="step-title">Tính chất 1: Đường thẳng đi qua 2 điểm</div>
+            <div class="step-desc">
+              Kéo thả hai điểm A và B trong không gian để di chuyển đường thẳng d đi qua chúng.
+            </div>
+            <div class="info-box ib-blue">
+              <div class="ib-icon"><i class="ti ti-vector"></i></div>
+              <div>
+                Qua hai điểm phân biệt trong không gian, có <strong>một và chỉ một</strong> đường thẳng đi qua chúng.
+              </div>
+            </div>
+            <button class="btn btn-secondary" id="btn-test-line-rotation">
+              <i class="ti ti-refresh"></i> Thử dựng đường thẳng khác qua A, B
+            </button>
+            <div class="info-box ib-red" id="tc1-error-alert" style="display: none; margin-top: 8px;">
+              <div class="ib-icon"><i class="ti ti-circle-x"></i></div>
+              <div>
+                Không thể dựng đường thẳng khác qua AB!
+              </div>
+            </div>
+          </div>
+
+          <!-- TC 2.2 -->
+          <div class="sub-panel" id="sub-panel-2-2" style="display: none;">
+            <div class="step-title">Tính chất 2: 3 điểm xác định mặt phẳng</div>
+            <div class="step-desc">
+              Kéo thả ba điểm A, B, C trong không gian để thay đổi mặt phẳng (Q) đi qua chúng.
+            </div>
+            <div class="info-box ib-blue">
+              <div class="ib-icon"><i class="ti ti-plane"></i></div>
+              <div>
+                Qua ba điểm không thẳng hàng, có <strong>một và chỉ một</strong> mặt phẳng.
+              </div>
+            </div>
+            <div class="info-box ib-red" id="collinear-error-2" style="display: none;">
+              <div class="ib-icon"><i class="ti ti-circle-x"></i></div>
+              <div>
+                <div class="ib-title">Lỗi thẳng hàng!</div>
+                Ba điểm A, B, C đang thẳng hàng. Không thể xác định duy nhất mặt phẳng nào. Hãy kéo điểm C ra khỏi trục
+                AB!
+              </div>
+            </div>
+          </div>
+
+          <!-- TC 2.3 -->
+          <div class="sub-panel" id="sub-panel-2-3" style="display: none;">
+            <div class="step-title">Tính chất 3: Đường thẳng thuộc mặt phẳng</div>
+            <div class="step-desc">
+              Một đường thẳng d có hai đầu mút M và N đang được ràng buộc nằm trên mặt phẳng nằm ngang (Q).
+            </div>
+            <div class="info-box ib-blue" id="tc3-normal-info">
+              <div class="ib-icon"><i class="ti ti-check"></i></div>
+              <div>
+                Nếu một đường thẳng d có hai điểm chung phân biệt với một mặt phẳng (Q) thì mọi điểm của đường thẳng d
+                đều thuộc (Q) (kí hiệu d ⊂ (Q)).
+              </div>
+            </div>
+            <div class="info-box ib-gold" id="tc3-out-info" style="display: none;">
+              <div class="ib-icon"><i class="ti ti-alert-circle"></i></div>
+              <div>
+                Khi kéo M ra ngoài mặt phẳng (Q), đường thẳng d không còn nằm trong mặt phẳng nữa vì không đủ 2 điểm
+                thuộc (Q).
+              </div>
+            </div>
+            <button class="btn btn-primary" id="btn-pull-m-out">
+              Thử kéo đầu mút M ra ngoài (Q)
+            </button>
+          </div>
+
+          <!-- TC 2.4 -->
+          <div class="sub-panel" id="sub-panel-2-4" style="display: none;">
+            <div class="step-title">Tính chất 4: Giao tuyến của 2 mặt phẳng</div>
+            <div class="step-desc" id="tc4-desc">
+              Hai mặt phẳng (P) và (Q) đang hiển thị trước mặt bạn.
+            </div>
+
+            <!-- Cognitive Conflict Question -->
+            <div class="prediction-box" id="tc4-prediction">
+              <div class="prediction-title">Câu hỏi dự đoán:</div>
+              <p style="font-size:12px; margin-bottom:8px;">Nhìn từ góc này, theo bạn 2 mặt phẳng này có song song với
+                nhau hay không?</p>
+              <div class="prediction-buttons">
+                <button class="btn-predict" id="predict-yes">Có, chúng song song</button>
+                <button class="btn-predict" id="predict-no">Không, chúng sẽ cắt nhau</button>
+              </div>
+            </div>
+
+            <div class="info-box ib-teal" id="tc4-explanation" style="display: none;">
+              <div class="ib-icon"><i class="ti ti-bulb"></i></div>
+              <div>
+                <div class="ib-title">Trực giác sai lầm!</div>
+                Hai mặt phẳng trông như song song ở góc ban đầu, nhưng khi xoay camera, ta thấy chúng thực tế cắt nhau
+                theo giao tuyến d (đường màu đỏ).
+              </div>
+            </div>
+            <div class="info-box ib-blue" id="tc4-general" style="display: none;">
+              <div class="ib-icon"><i class="ti ti-info-circle"></i></div>
+              <div>
+                Nếu hai mặt phẳng phân biệt có một điểm chung thì chúng có một đường thẳng chung duy nhất đi qua điểm đó
+                — đường thẳng đó gọi là <strong>giao tuyến</strong>.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 3: 3 WAYS TO DEFINE A PLANE -->
+        <div class="step-panel" id="panel-3">
+
+          <!-- Sub-navigation for step 3 -->
+          <div class="sub-nav">
+            <div class="sub-tab-pill active" data-tab="1">Cách 1</div>
+            <div class="sub-tab-pill" data-tab="2">Cách 2</div>
+            <div class="sub-tab-pill" data-tab="3">Cách 3</div>
+          </div>
+
+          <!-- Way 3.1: 3 points -->
+          <div class="sub-panel" id="way-panel-3-1">
+            <div class="step-title">Cách 1: Qua 3 điểm không thẳng hàng</div>
+            <div class="step-desc">
+              Kéo thả các điểm A, B, C sao cho chúng không thẳng hàng. Giữ ổn định 1 giây để "khóa" mặt phẳng.
+            </div>
+            <div class="info-box ib-blue">
+              <div class="ib-icon"><i class="ti ti-circle-dot"></i></div>
+              <div>Kí hiệu mặt phẳng xác định qua ba điểm A, B, C không thẳng hàng là: <strong>(ABC)</strong> hoặc
+                <strong>mp(ABC)</strong>.
+              </div>
+            </div>
+            <div class="status-badge" id="badge-way-3-1" style="display: none;">
+              <i class="ti ti-circle-check"></i> ✓ Đã xác định mp(ABC)
+            </div>
+          </div>
+
+          <!-- Way 3.2: 1 point & 1 line -->
+          <div class="sub-panel" id="way-panel-3-2" style="display: none;">
+            <div class="step-title">Cách 2: Qua 1 điểm và 1 đường thẳng</div>
+            <div class="step-desc">
+              Một đường thẳng d và một điểm A bên ngoài. Hãy kéo thả điểm A hoặc thay đổi đường thẳng d.
+            </div>
+            <div class="info-box ib-blue">
+              <div class="ib-icon"><i class="ti ti-info-circle"></i></div>
+              <div>Kí hiệu mặt phẳng xác định qua điểm A và đường thẳng d không chứa A là: <strong>mp(A, d)</strong>.
+              </div>
+            </div>
+            <div class="info-box ib-red" id="collinear-error-3-2" style="display: none;">
+              <div class="ib-icon"><i class="ti ti-circle-x"></i></div>
+              <div>
+                Điểm A đang thuộc đường thẳng d — cấu hình này không xác định được duy nhất một mặt phẳng!
+              </div>
+            </div>
+            <div class="status-badge" id="badge-way-3-2" style="display: none;">
+              <i class="ti ti-circle-check"></i> ✓ Đã xác định mp(A, d)
+            </div>
+          </div>
+
+          <!-- Way 3.3: 2 intersecting lines -->
+          <div class="sub-panel" id="way-panel-3-3" style="display: none;">
+            <div class="step-title">Cách 3: Qua 2 đường thẳng cắt nhau</div>
+            <div class="step-desc">
+              Kéo thả các đầu mút của hai đường thẳng a và b sao cho chúng giao nhau.
+            </div>
+            <div class="info-box ib-blue">
+              <div class="ib-icon"><i class="ti ti-vector"></i></div>
+              <div>Hai đường thẳng cắt nhau a, b luôn xác định một mặt phẳng duy nhất, kí hiệu là: <strong>mp(a,
+                  b)</strong>.</div>
+            </div>
+            <div class="info-box ib-gold" id="skew-warning-3-3">
+              <div class="ib-icon"><i class="ti ti-alert-triangle"></i></div>
+              <div>
+                Hiện tại hai đường thẳng a và b đang chéo nhau (không cùng nằm trên mặt phẳng nào) hoặc song song. Kéo
+                các đầu mút để chúng giao nhau!
+              </div>
+            </div>
+            <div class="status-badge" id="badge-way-3-3" style="display: none;">
+              <i class="ti ti-circle-check"></i> ✓ Đã xác định mp(a, b)
+            </div>
+          </div>
+        </div>
+
+        <!-- STEP 4: CONCLUSION -->
+        <div class="step-panel" id="panel-4">
+          <div class="step-title">
+            <div class="step-num"><i class="ti ti-check"></i></div>
+            Tổng kết bài học
+          </div>
+          <div class="step-desc">
+            Nhấp chọn một nội dung bất kỳ để tải lại mô hình 3D và ôn tập:
+          </div>
+
+          <div class="conclusion-list">
+            <div class="conclusion-card" onclick="goToConcept(1)">
+              <i class="ti ti-plane"></i>
+              <div>
+                <div class="conclusion-title">Điểm ∈ hoặc ∉ Mặt phẳng</div>
+                <div class="conclusion-text">Kí hiệu tương quan A ∈ (P) và B ∉ (P).</div>
+              </div>
+            </div>
+            <div class="conclusion-card" onclick="goToConcept(2, 1)">
+              <i class="ti ti-line-dotted"></i>
+              <div>
+                <div class="conclusion-title">Tính chất thừa nhận 1</div>
+                <div class="conclusion-text">Một và chỉ một đường thẳng đi qua 2 điểm phân biệt.</div>
+              </div>
+            </div>
+            <div class="conclusion-card" onclick="goToConcept(2, 2)">
+              <i class="ti ti-square"></i>
+              <div>
+                <div class="conclusion-title">Tính chất thừa nhận 2</div>
+                <div class="conclusion-text">Một và chỉ một mặt phẳng đi qua 3 điểm không thẳng hàng.</div>
+              </div>
+            </div>
+            <div class="conclusion-card" onclick="goToConcept(2, 3)">
+              <i class="ti ti-arrow-bar-to-down"></i>
+              <div>
+                <div class="conclusion-title">Tính chất thừa nhận 3</div>
+                <div class="conclusion-text">Đường thẳng có 2 điểm chung với mặt phẳng thì nằm hoàn toàn trong đó.</div>
+              </div>
+            </div>
+            <div class="conclusion-card" onclick="goToConcept(2, 4)">
+              <i class="ti ti-border-outer"></i>
+              <div>
+                <div class="conclusion-title">Tính chất thừa nhận 4 (Giao tuyến)</div>
+                <div class="conclusion-text">Giao tuyến là đường thẳng chung duy nhất đi qua các điểm chung của 2 mp.
+                </div>
+              </div>
+            </div>
+            <div class="conclusion-card" onclick="goToConcept(3, 1)">
+              <i class="ti ti-box-margin"></i>
+              <div>
+                <div class="conclusion-title">Ba cách xác định mặt phẳng</div>
+                <div class="conclusion-text">Qua 3 điểm không thẳng hàng / Qua 1 điểm & 1 đường / Qua 2 đường cắt nhau.
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- SIDEBAR CONTROLS -->
+      <div class="controls">
+        <button class="btn btn-primary" id="btn-next-step">
+          Tiếp tục <i class="ti ti-arrow-right"></i>
+        </button>
+        <button class="btn btn-secondary" id="btn-reset-current">
+          <i class="ti ti-refresh"></i> Đặt lại góc nhìn
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- THREE.JS & ORBIT CONTROLS -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <script>
+    // ==========================================
+    // 📐 GEOMETRY MATH (FROM 06_geometry_math.md)
+    // ==========================================
+
+    function definePlaneFromPoints(p1, p2, p3) {
+      const v1 = new THREE.Vector3().subVectors(p2, p1);
+      const v2 = new THREE.Vector3().subVectors(p3, p1);
+      const normal = new THREE.Vector3().crossVectors(v1, v2);
+      if (normal.lengthSq() < 1e-6) return null;
+      normal.normalize();
+      return { normal, pointOnPlane: p1.clone() };
+    }
+
+    function projectPointOntoPlane(M, plane) {
+      const toPoint = new THREE.Vector3().subVectors(M, plane.pointOnPlane);
+      const signedDist = toPoint.dot(plane.normal);
+      const H = M.clone().sub(plane.normal.clone().multiplyScalar(signedDist));
+      return { H, distance: Math.abs(signedDist), signedDist };
+    }
+
+    function classifyTwoPlanes(plane1, plane2) {
+      const cross = new THREE.Vector3().crossVectors(plane1.normal, plane2.normal);
+      return cross.lengthSq() < 1e-6 ? 'parallel' : 'intersects';
+    }
+
+    function intersectionOfTwoPlanes(plane1, plane2) {
+      const dir = new THREE.Vector3().crossVectors(plane1.normal, plane2.normal);
+      if (dir.lengthSq() < 1e-6) return null;
+      dir.normalize();
+
+      const n1 = plane1.normal, n2 = plane2.normal;
+      const d1 = n1.dot(plane1.pointOnPlane);
+      const d2 = n2.dot(plane2.pointOnPlane);
+      const n1n2 = n1.dot(n2);
+      const denom = 1 - n1n2 * n1n2;
+      if (Math.abs(denom) < 1e-8) return null;
+
+      const c1 = (d1 - d2 * n1n2) / denom;
+      const c2 = (d2 - d1 * n1n2) / denom;
+      const point = new THREE.Vector3().addScaledVector(n1, c1).addScaledVector(n2, c2);
+      return { point, dir };
+    }
+
+    function projectPointOntoLine(M, linePoint, lineDir) {
+      const d = lineDir.clone().normalize();
+      const t = new THREE.Vector3().subVectors(M, linePoint).dot(d);
+      const H = linePoint.clone().add(d.clone().multiplyScalar(t));
+      return { H, distance: M.distanceTo(H), t };
+    }
+
+    function distanceSkewLines(P1, dir1, P2, dir2) {
+      const d1 = dir1.clone().normalize();
+      const d2 = dir2.clone().normalize();
+      const cross = new THREE.Vector3().crossVectors(d1, d2);
+      const crossLen = cross.length();
+
+      if (crossLen < 1e-5) return null;
+
+      const w = new THREE.Vector3().subVectors(P2, P1);
+      const dist = Math.abs(w.dot(cross)) / crossLen;
+
+      const b = d1.dot(d2);
+      const denom = 1 - b * b;
+      if (Math.abs(denom) < 1e-6) return null;
+
+      const e = w.dot(d1), f = w.dot(d2);
+      const t1 = (e - b * f) / denom;
+      const t2 = -(f - b * e) / denom;
+
+      const H1 = P1.clone().add(d1.clone().multiplyScalar(t1));
+      const H2 = P2.clone().add(d2.clone().multiplyScalar(t2));
+      return { dist, H1, H2, cross: cross.normalize() };
+    }
+
+
+    // ==========================================
+    // 🎨 CORE 3D INTERACTIVE CLASSES
+    // ==========================================
+
+    class InteractivePoint {
+      constructor(position, color, label, dragType = 'free', dragTarget = null, t0 = 0.5) {
+        this.label = label;
+        this.color = color;
+        this.dragType = dragType; // 'free' | 'plane' | 'segment'
+        this.dragTarget = dragTarget; // segment { start, end } or plane { normal, pointOnPlane }
+        this.t = t0;
+
+        // Visual mesh
+        const geometry = new THREE.SphereGeometry(0.09, 24, 24);
+        this.material = new THREE.MeshStandardMaterial({
+          color,
+          emissive: color,
+          emissiveIntensity: 0.25
+        });
+        this.mesh = new THREE.Mesh(geometry, this.material);
+
+        // Initial position assignment
+        if (this.dragType === 'segment' && this.dragTarget) {
+          const pos = new THREE.Vector3().lerpVectors(this.dragTarget.start, this.dragTarget.end, this.t);
+          this.mesh.position.copy(pos);
+        } else {
+          this.mesh.position.copy(position);
+        }
+
+        this.mesh.userData.draggable = this;
+        scene.add(this.mesh);
+
+        // Invisible hit area (larger for touches)
+        const hitGeo = new THREE.SphereGeometry(0.26, 8, 8);
+        const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+        this.hitMesh = new THREE.Mesh(hitGeo, hitMat);
+        this.hitMesh.position.copy(this.mesh.position);
+        this.hitMesh.userData.draggable = this;
+        scene.add(this.hitMesh);
+
+        // Glow ring during dragging
+        const ringGeo = new THREE.RingGeometry(0.13, 0.17, 32);
+        const ringMat = new THREE.MeshBasicMaterial({
+          color,
+          transparent: true,
+          opacity: 0,
+          side: THREE.DoubleSide
+        });
+        this.ring = new THREE.Mesh(ringGeo, ringMat);
+        this.ring.position.copy(this.mesh.position);
+        scene.add(this.ring);
+
+        // HTML label element
+        this.htmlLabel = document.createElement('div');
+        this.htmlLabel.className = 'pt-label';
+        this.htmlLabel.textContent = label;
+        this.htmlLabel.style.color = '#' + new THREE.Color(color).getHexString();
+        document.getElementById('label-layer').appendChild(this.htmlLabel);
+
+        this.syncLabelColor();
+      }
+
+      get position() {
+        if (this.dragType === 'segment' && this.dragTarget) {
+          return new THREE.Vector3().lerpVectors(this.dragTarget.start, this.dragTarget.end, this.t);
+        }
+        return this.mesh.position;
+      }
+
+      updatePosition() {
+        if (this.dragType === 'segment') {
+          const pos = this.position;
+          this.mesh.position.copy(pos);
+        }
+        this.hitMesh.position.copy(this.mesh.position);
+        this.ring.position.copy(this.mesh.position);
+      }
+
+      setDragging(active) {
+        this.ring.material.opacity = active ? 0.8 : 0;
+        this.mesh.material.emissiveIntensity = active ? 0.6 : 0.25;
+      }
+
+      syncRing() {
+        this.ring.lookAt(camera.position);
+      }
+
+      syncLabelColor() {
+        this.htmlLabel.style.color = '#' + this.color.toString(16).padStart(6, '0');
+      }
+
+      drag(rawPoint3D) {
+        if (this.dragType === 'free') {
+          this.mesh.position.copy(rawPoint3D);
+        } else if (this.dragType === 'plane' && this.dragTarget) {
+          const planeNormal = this.dragTarget.normal;
+          const planePoint = this.dragTarget.pointOnPlane;
+          const tempPlane = new THREE.Plane().setFromNormalAndCoplanarPoint(planeNormal, planePoint);
+          const projected = new THREE.Vector3();
+          tempPlane.projectPoint(rawPoint3D, projected);
+          this.mesh.position.copy(projected);
+        } else if (this.dragType === 'segment' && this.dragTarget) {
+          const segStart = this.dragTarget.start;
+          const segEnd = this.dragTarget.end;
+          const segVec = new THREE.Vector3().subVectors(segEnd, segStart);
+          const segLenSq = segVec.lengthSq();
+          if (segLenSq > 1e-6) {
+            const toPoint = new THREE.Vector3().subVectors(rawPoint3D, segStart);
+            let tVal = toPoint.dot(segVec) / segLenSq;
+            this.t = Math.max(0, Math.min(1, tVal));
+          }
+        }
+        this.updatePosition();
+      }
+
+      syncHtmlLabel() {
+        if (!this.mesh.visible) {
+          this.htmlLabel.style.display = 'none';
+          return;
+        }
+        const labelWorldPos = this.position.clone().add(new THREE.Vector3(0, 0.22, 0));
+        const screenPos = labelWorldPos.project(camera);
+        const rect = renderer.domElement.getBoundingClientRect();
+        const x = (screenPos.x * 0.5 + 0.5) * rect.width;
+        const y = (-screenPos.y * 0.5 + 0.5) * rect.height;
+
+        const isBehindCamera = screenPos.z > 1;
+        this.htmlLabel.style.display = isBehindCamera ? 'none' : 'block';
+        this.htmlLabel.style.transform = `translate(${x}px, ${y}px) translate(-50%, -150%)`;
+      }
+
+      dispose() {
+        scene.remove(this.mesh);
+        scene.remove(this.hitMesh);
+        scene.remove(this.ring);
+        this.mesh.geometry.dispose();
+        this.mesh.material.dispose();
+        this.hitMesh.geometry.dispose();
+        this.hitMesh.material.dispose();
+        this.ring.geometry.dispose();
+        this.ring.material.dispose();
+        if (this.htmlLabel && this.htmlLabel.parentNode) {
+          this.htmlLabel.parentNode.removeChild(this.htmlLabel);
+        }
+      }
+    }
+
+    class InteractiveLine {
+      constructor(pointA, pointB, color, label = '', isDashed = false) {
+        this.pointA = pointA;
+        this.pointB = pointB;
+        this.color = color;
+        this.label = label;
+        this.isDashed = isDashed;
+
+        const pA = this.getPos(this.pointA);
+        const pB = this.getPos(this.pointB);
+
+        this.geometry = new THREE.BufferGeometry().setFromPoints([pA, pB]);
+
+        if (isDashed) {
+          this.material = new THREE.LineDashedMaterial({
+            color,
+            dashSize: 0.15,
+            gapSize: 0.1,
+            transparent: true,
+            opacity: 0.7
+          });
+        } else {
+          this.material = new THREE.LineBasicMaterial({ color, linewidth: 2 });
+        }
+
+        this.mesh = new THREE.Line(this.geometry, this.material);
+        if (isDashed) this.mesh.computeLineDistances();
+        scene.add(this.mesh);
+
+        if (label) {
+          this.htmlLabel = document.createElement('div');
+          this.htmlLabel.className = 'pt-label line-label';
+          this.htmlLabel.textContent = label;
+          this.htmlLabel.style.color = '#' + new THREE.Color(color).getHexString();
+          document.getElementById('label-layer').appendChild(this.htmlLabel);
+        }
+      }
+
+      getPos(p) {
+        return p.position || p;
+      }
+
+      updateGeometry() {
+        const pA = this.getPos(this.pointA);
+        const pB = this.getPos(this.pointB);
+        this.geometry.setFromPoints([pA, pB]);
+        if (this.isDashed) this.mesh.computeLineDistances();
+      }
+
+      syncHtmlLabel() {
+        if (!this.htmlLabel) return;
+        if (!this.mesh.visible) {
+          this.htmlLabel.style.display = 'none';
+          return;
+        }
+        const pA = this.getPos(this.pointA);
+        const pB = this.getPos(this.pointB);
+        const midpoint = new THREE.Vector3().addVectors(pA, pB).multiplyScalar(0.5);
+        const screenPos = midpoint.project(camera);
+        const rect = renderer.domElement.getBoundingClientRect();
+        const x = (screenPos.x * 0.5 + 0.5) * rect.width;
+        const y = (-screenPos.y * 0.5 + 0.5) * rect.height;
+
+        const isBehindCamera = screenPos.z > 1;
+        this.htmlLabel.style.display = isBehindCamera ? 'none' : 'block';
+        this.htmlLabel.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+      }
+
+      dispose() {
+        scene.remove(this.mesh);
+        this.geometry.dispose();
+        this.material.dispose();
+        if (this.htmlLabel && this.htmlLabel.parentNode) {
+          this.htmlLabel.parentNode.removeChild(this.htmlLabel);
+        }
+      }
+    }
+
+    class InteractivePlane {
+      constructor(p1, p2, p3, color, size = 6) {
+        this.p1 = p1;
+        this.p2 = p2;
+        this.p3 = p3;
+        this.color = color;
+        this.size = size;
+        this.normal = new THREE.Vector3(0, 1, 0); // Stable normal default
+
+        this.geometry = new THREE.PlaneGeometry(size, size);
+        this.material = new THREE.MeshStandardMaterial({
+          color,
+          transparent: true,
+          opacity: 0.22,
+          side: THREE.DoubleSide,
+          depthWrite: false
+        });
+        this.mesh = new THREE.Mesh(this.geometry, this.material);
+        scene.add(this.mesh);
+
+        const edges = new THREE.EdgesGeometry(this.geometry);
+        this.borderMaterial = new THREE.LineBasicMaterial({ color, linewidth: 1.5, transparent: true, opacity: 0.6 });
+        this.border = new THREE.LineSegments(edges, this.borderMaterial);
+        scene.add(this.border);
+
+        this.glowMaterial = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 3, transparent: true, opacity: 0 });
+        this.glowBorder = new THREE.LineSegments(edges, this.glowMaterial);
+        scene.add(this.glowBorder);
+
+        // Store initial distance if p1 and p2 are valid points
+        if (this.p1 && this.p2 && this.p3) {
+          const pos1 = this.getPos(this.p1);
+          const pos2 = this.getPos(this.p2);
+          this.initialDistance = pos1.distanceTo(pos2);
+          if (this.initialDistance < 1e-4) {
+            this.initialDistance = 1;
+          }
+        }
+
+        this.updateGeometry();
+      }
+
+      getPos(p) {
+        return p.position || p;
+      }
+
+      updateGeometry() {
+        if (!this.p2 || !this.p3) {
+          // p1 is already a Plane definition `{ normal: Vector3, pointOnPlane: Vector3 }`
+          this.mesh.visible = true;
+          this.border.visible = true;
+          this.glowBorder.visible = true;
+
+          this.normal = this.p1.normal;
+          this.pointOnPlane = this.p1.pointOnPlane;
+
+          const pos = this.pointOnPlane;
+          this.mesh.position.copy(pos);
+          this.mesh.lookAt(pos.clone().add(this.normal));
+
+          this.border.position.copy(pos);
+          this.border.lookAt(pos.clone().add(this.normal));
+
+          this.glowBorder.position.copy(pos);
+          this.glowBorder.lookAt(pos.clone().add(this.normal));
+          return this;
+        }
+
+        const pos1 = this.getPos(this.p1);
+        const pos2 = this.getPos(this.p2);
+        const pos3 = this.getPos(this.p3);
+
+        const v1 = new THREE.Vector3().subVectors(pos2, pos1);
+        const v2 = new THREE.Vector3().subVectors(pos3, pos1);
+        const cross = new THREE.Vector3().crossVectors(v1, v2);
+
+        let planeNormal;
+        if (cross.length() < 0.15) {
+          // Collinear fallback: use previous normal or horizontal default
+          planeNormal = this.normal ? this.normal.clone() : new THREE.Vector3(0, 1, 0);
+        } else {
+          planeNormal = cross.clone().normalize();
+        }
+
+        this.mesh.visible = true;
+        this.border.visible = true;
+        this.glowBorder.visible = true;
+
+        this.normal = planeNormal;
+        this.pointOnPlane = pos3;
+
+        const centroid = new THREE.Vector3().addVectors(pos1, pos2).add(pos3).divideScalar(3);
+
+        // Calculate dynamic scale factor
+        let scaleFactor = 1.0;
+        if (this.initialDistance) {
+          const currentDistance = pos1.distanceTo(pos2);
+          scaleFactor = currentDistance / this.initialDistance;
+        }
+
+        // Apply scale factor
+        this.mesh.scale.set(scaleFactor, scaleFactor, 1);
+        this.border.scale.set(scaleFactor, scaleFactor, 1);
+        this.glowBorder.scale.set(scaleFactor, scaleFactor, 1);
+
+        this.mesh.position.copy(centroid);
+        this.mesh.lookAt(centroid.clone().add(this.normal));
+
+        this.border.position.copy(centroid);
+        this.border.lookAt(centroid.clone().add(this.normal));
+
+        this.glowBorder.position.copy(centroid);
+        this.glowBorder.lookAt(centroid.clone().add(this.normal));
+        return this;
+      }
+
+      setGlow(intensity) {
+        this.glowBorder.material.opacity = intensity;
+      }
+
+      dispose() {
+        scene.remove(this.mesh);
+        scene.remove(this.border);
+        scene.remove(this.glowBorder);
+        this.geometry.dispose();
+        this.material.dispose();
+        this.borderMaterial.dispose();
+        this.glowBorder.material.dispose();
+      }
+    }
+
+
+    // ==========================================
+    // ⚙️ INITIALIZATION & SYSTEM SETUP
+    // ==========================================
+
+    const wrap = document.getElementById('canvas-wrap');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a1628);
+
+    const camera = new THREE.PerspectiveCamera(50, wrap.clientWidth / wrap.clientHeight, 0.1, 1000);
+    camera.position.set(6, 5, 8);
+    camera.lookAt(0, 0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ canvas: document.getElementById('three-canvas'), antialias: true });
+    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    renderer.setPixelRatio(window.devicePixelRatio);
+
+    window.addEventListener('resize', () => {
+      camera.aspect = wrap.clientWidth / wrap.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    });
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.55);
+    dirLight.position.set(6, 12, 8);
+    scene.add(dirLight);
+
+    // Grid Floor & Axes
+    const gridHelper = new THREE.GridHelper(12, 12, 0x1e293b, 0x121e2e);
+    scene.add(gridHelper);
+    const axesHelper = new THREE.AxesHelper(1.8);
+    scene.add(axesHelper);
+
+    // Controls
+    const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    orbitControls.enableDamping = true;
+    orbitControls.dampingFactor = 0.08;
+
+
+    // ==========================================
+    // 🕹️ STATE MACHINE & SCENE DATA
+    // ==========================================
+
+    let currentStep = 0;
+    let step2SubStep = 1;
+    let step3Tab = 1;
+
+    // Draggable elements collections
+    let activePoints = [];
+    let activeLines = [];
+    let activePlanes = [];
+    let allDraggableHitMeshes = [];
+
+    // Interaction dragging state
+    const raycaster = new THREE.Raycaster();
+    const mouseNDC = new THREE.Vector2();
+    let dragState = {
+      active: false,
+      point: null,
+      dragPlane: null
+    };
+
+    // Easing timer / animations
+    let animationRunning = false;
+    let animObject = null; // Duplicate line for rotation test, etc.
+    let animStartTime = 0;
+
+    // Stability & locks (for module 3 check)
+    let lastDragTime = 0;
+    let isStableLocked = false;
+
+    // Module 1 dynamic placed points
+    let m1PlacedPoints = [];
+    let m1PointCounter = 0;
+    let m1PlacementModeActive = false;
+
+    // Module 2 state triggers
+    let tc3IsFreeDragging = false;
+    let tc4HasPredicted = false;
+    let tc4ResultLine = null;
+    let tc4DrawProgress = 0;
+
+
+    // ==========================================
+    // 🛠️ DRAG & DROP INTERACTION HANDLERS
+    // ==========================================
+
+    function updateMouseNDC(event) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouseNDC.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouseNDC.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    }
+
+    function getPointerIntersect(meshList) {
+      raycaster.setFromCamera(mouseNDC, camera);
+      return raycaster.intersectObjects(meshList);
+    }
+
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      if (animationRunning) return;
+      updateMouseNDC(e);
+
+      // Raycast to find draggable points
+      const hits = getPointerIntersect(allDraggableHitMeshes);
+
+      if (hits.length > 0) {
+        const hitPoint = hits[0].object.userData.draggable;
+        dragState.active = true;
+        dragState.point = hitPoint;
+
+        // Build camera billboard drag plane
+        const camDir = new THREE.Vector3();
+        camera.getWorldDirection(camDir);
+        dragState.dragPlane = new THREE.Plane().setFromNormalAndCoplanarPoint(camDir, hitPoint.mesh.position);
+
+        hitPoint.setDragging(true);
+        orbitControls.enabled = false;
+
+        // Initialize gesture lock for Module 1 handles
+        if (currentStep === 1 && (hitPoint === m1H1 || hitPoint === m1H2)) {
+          dragState.startPos = hitPoint.mesh.position.clone();
+          dragState.center = new THREE.Vector3(0, 1.2, 0);
+          dragState.startDist = dragState.startPos.distanceTo(dragState.center);
+          dragState.startDir = new THREE.Vector3().subVectors(dragState.startPos, dragState.center).normalize();
+          dragState.gestureMode = null; // will be determined on move
+        }
+      } else {
+        // Left click to place point (Only in Step 1 if placement mode is active)
+        if (currentStep === 1 && m1PlacementModeActive && e.button === 0) {
+          const camDir = new THREE.Vector3();
+          camera.getWorldDirection(camDir);
+          // virtual placement plane facing camera at height 1.2
+          const planeQ = new THREE.Plane().setFromNormalAndCoplanarPoint(camDir, new THREE.Vector3(0, 1.2, 0));
+
+          raycaster.setFromCamera(mouseNDC, camera);
+          const intersectPoint = new THREE.Vector3();
+          if (raycaster.ray.intersectPlane(planeQ, intersectPoint)) {
+            // Keep points within bounding box range
+            intersectPoint.x = Math.max(-4, Math.min(4, intersectPoint.x));
+            intersectPoint.y = Math.max(0.1, Math.min(4, intersectPoint.y));
+            intersectPoint.z = Math.max(-4, Math.min(4, intersectPoint.z));
+
+            placeM1Point(intersectPoint);
+          }
+        }
+      }
+    });
+
+    renderer.domElement.addEventListener('pointermove', (e) => {
+      updateMouseNDC(e);
+
+      if (dragState.active && dragState.point) {
+        raycaster.setFromCamera(mouseNDC, camera);
+        const intersection = new THREE.Vector3();
+        if (raycaster.ray.intersectPlane(dragState.dragPlane, intersection)) {
+          // Clamp dragging coordinate limits to avoid throwing objects to infinity
+          intersection.x = Math.max(-5, Math.min(5, intersection.x));
+          intersection.y = Math.max(0, Math.min(5, intersection.y));
+          intersection.z = Math.max(-5, Math.min(5, intersection.z));
+
+          let finalPos = intersection.clone();
+
+          // Apply gesture lock for P1/P2 in Step 1
+          if (currentStep === 1 && (dragState.point === m1H1 || dragState.point === m1H2)) {
+            const v = new THREE.Vector3().subVectors(intersection, dragState.center);
+            const dist = v.length();
+
+            if (dragState.gestureMode === null) {
+              const displacement = new THREE.Vector3().subVectors(intersection, dragState.startPos);
+              if (displacement.length() > 0.08) { // small deadzone threshold
+                const projRadial = dragState.startDir.dot(displacement);
+                const radialVec = dragState.startDir.clone().multiplyScalar(projRadial);
+                const perpVec = new THREE.Vector3().subVectors(displacement, radialVec);
+
+                if (radialVec.length() > perpVec.length() * 1.3) {
+                  dragState.gestureMode = 'radial'; // stretch only
+                } else {
+                  dragState.gestureMode = 'tangential'; // rotate only
+                }
+              }
+            }
+
+            if (dragState.gestureMode === 'radial') {
+              // Lock direction to original, only change distance
+              const projDist = v.dot(dragState.startDir);
+              // Clamp distance to reasonable limits [1.5, 5.5]
+              const clampedDist = Math.max(1.5, Math.min(5.5, projDist));
+              finalPos.copy(dragState.center).addScaledVector(dragState.startDir, clampedDist);
+            } else if (dragState.gestureMode === 'tangential') {
+              // Lock distance to original, only change direction
+              if (dist > 1e-4) {
+                finalPos.copy(dragState.center).addScaledVector(v.normalize(), dragState.startDist);
+              }
+            }
+          }
+
+          dragState.point.drag(finalPos);
+          lastDragTime = performance.now();
+          isStableLocked = false;
+          onActiveDrag(dragState.point);
+        }
+      } else {
+        const hits = getPointerIntersect(allDraggableHitMeshes);
+        if (hits.length > 0) {
+          renderer.domElement.style.cursor = 'grab';
+        } else {
+          renderer.domElement.style.cursor = (currentStep === 1 && m1PlacementModeActive) ? 'crosshair' : 'default';
+        }
+      }
+    });
+
+    function stopDragging() {
+      if (dragState.active && dragState.point) {
+        dragState.point.setDragging(false);
+      }
+      dragState.active = false;
+      dragState.point = null;
+      dragState.dragPlane = null;
+      orbitControls.enabled = true;
+    }
+
+    renderer.domElement.addEventListener('pointerup', stopDragging);
+    renderer.domElement.addEventListener('pointerleave', stopDragging);
+
+
+    // ==========================================
+    // 🎥 CAMERA ANIMATION & ALIGNMENT HELPERS
+    // ==========================================
+    let cameraAnim = null;
+    function animateCameraTo(targetPos, targetLookAt, duration = 400) {
+      if (cameraAnim) {
+        cancelAnimationFrame(cameraAnim);
+      }
+
+      const startPos = camera.position.clone();
+      const startTime = performance.now();
+
+      // Temporarily disable OrbitControls to prevent damping fighting the interpolation
+      orbitControls.enabled = false;
+
+      function stepAnim() {
+        const elapsed = performance.now() - startTime;
+        const t = Math.min(1, elapsed / duration);
+
+        // Ease in-out quad
+        const ease = t < 0.5 ? 2 * t * t : -1 + (4 - 2 * t) * t;
+
+        camera.position.lerpVectors(startPos, targetPos, ease);
+        camera.lookAt(targetLookAt);
+
+        if (t < 1) {
+          cameraAnim = requestAnimationFrame(stepAnim);
+        } else {
+          // Sync target and re-enable controls on finish
+          orbitControls.target.copy(targetLookAt);
+          orbitControls.enabled = true;
+          orbitControls.update();
+          cameraAnim = null;
+        }
+      }
+
+      cameraAnim = requestAnimationFrame(stepAnim);
+    }
+
+    function alignCameraEdgeOn() {
+      if (!m1Plane) return;
+      const center = new THREE.Vector3(0, 1.2, 0);
+      const n = m1Plane.normal.clone().normalize();
+
+      // Get current camera offset relative to center
+      const offset = new THREE.Vector3().subVectors(camera.position, center);
+
+      // Project offset onto the plane to get a coplanar vector
+      const dot = offset.dot(n);
+      const coplanar = new THREE.Vector3().subVectors(offset, n.clone().multiplyScalar(dot));
+
+      if (coplanar.lengthSq() < 1e-4) {
+        // Fallback if camera is looking exactly straight down the normal
+        coplanar.set(1, 0, 0);
+      }
+
+      coplanar.normalize().multiplyScalar(8); // Set camera distance to 8
+
+      // Ensure the camera is positioned above the plane height (Y >= 1.2)
+      if (coplanar.y < 0) {
+        coplanar.multiplyScalar(-1);
+      }
+
+      const targetPos = new THREE.Vector3().addVectors(center, coplanar);
+
+      // Smoothly animate camera to targetPos
+      animateCameraTo(targetPos, center);
+    }
+
+    function alignCameraFaceOn() {
+      if (!m1Plane) return;
+      const center = new THREE.Vector3(0, 1.2, 0);
+      const n = m1Plane.normal.clone().normalize();
+
+      // Ensure the camera is always positioned above the plane (Y >= 1.2)
+      if (n.y < 0) {
+        n.multiplyScalar(-1);
+      }
+
+      const targetPos = new THREE.Vector3().addVectors(center, n.multiplyScalar(8));
+
+      // Smoothly animate camera to targetPos
+      animateCameraTo(targetPos, center);
+    }
+
+    // ==========================================
+    // 🎚️ SCENE DISPOSAL & REBUILD
+    // ==========================================
+
+    function clearScene() {
+      // Stop ongoing dragging or animations
+      stopDragging();
+      animationRunning = false;
+      if (animObject) {
+        scene.remove(animObject);
+        animObject = null;
+      }
+      if (cameraAnim) {
+        cancelAnimationFrame(cameraAnim);
+        cameraAnim = null;
+      }
+
+      // Dispose active interactive points
+      activePoints.forEach(p => p.dispose());
+      activePoints = [];
+
+      // Dispose active interactive lines
+      activeLines.forEach(l => l.dispose());
+      activeLines = [];
+
+      // Dispose active planes
+      activePlanes.forEach(pl => pl.dispose());
+      activePlanes = [];
+
+      // Dispose M1 custom placed points
+      m1PlacedPoints.forEach(p => p.dispose());
+      m1PlacedPoints = [];
+
+      // Clean hit meshes array
+      allDraggableHitMeshes = [];
+
+      // Extra cleaning variables
+      if (tc4ResultLine) {
+        scene.remove(tc4ResultLine);
+        tc4ResultLine = null;
+      }
+
+      // Clean label overlay
+      document.getElementById('label-layer').innerHTML = '';
+
+      isStableLocked = false;
+    }
+
+    function syncDraggableHitMeshes() {
+      allDraggableHitMeshes = activePoints.map(p => p.hitMesh);
+    }
+
+
+    // ==========================================
+    // 📖 SCENE LOGIC BY MODULES
+    // ==========================================
+
+    function setupStep(step) {
+      currentStep = step;
+      clearScene();
+
+      // Update UI active states
+      document.querySelectorAll('.step-tab').forEach(tab => {
+        tab.classList.toggle('active', parseInt(tab.dataset.step) === step);
+      });
+      document.querySelectorAll('.step-panel').forEach((panel, idx) => {
+        panel.classList.toggle('active', idx === step);
+      });
+
+      // Update control buttons
+      const btnNext = document.getElementById('btn-next-step');
+      if (step === 0) {
+        btnNext.innerHTML = 'Bắt đầu học <i class="ti ti-arrow-right"></i>';
+        btnNext.disabled = false;
+      } else if (step === 4) {
+        btnNext.innerHTML = 'Hoàn thành <i class="ti ti-check"></i>';
+        btnNext.disabled = false;
+      } else {
+        btnNext.innerHTML = 'Tiếp tục <i class="ti ti-arrow-right"></i>';
+        btnNext.disabled = (step === 1 || step === 3); // Must complete condition in 1 and 3
+      }
+
+      // Set up camera & grid helper default states
+      const resetBtn = document.getElementById('btn-reset-current');
+      if (resetBtn) resetBtn.style.display = 'inline-flex';
+      orbitControls.enabled = true;
+      orbitControls.target.set(0, 0, 0);
+
+      switch (step) {
+        case 0:
+          camera.position.set(7, 6, 9);
+          break;
+
+        case 1:
+          camera.position.set(6, 4, 8);
+          setupStep1();
+          break;
+
+        case 2:
+          setupStep2();
+          break;
+
+        case 3:
+          setupStep3();
+          break;
+
+        case 4:
+          camera.position.set(6, 5, 8);
+          // Show grid & axes helper
+          break;
+      }
+    }
+
+    // --- MODULE 1 ---
+    let m1Plane = null;
+    let m1H1, m1H2, m1H3;
+
+    function setupStep1() {
+      m1PointCounter = 0;
+      m1PlacedPoints = [];
+      m1PlacementModeActive = false;
+      const btn = document.getElementById('btn-toggle-placement');
+      if (btn) {
+        btn.innerHTML = '<i class="ti ti-plus"></i> Bật chế độ thêm điểm';
+        btn.className = 'btn btn-secondary';
+      }
+      document.getElementById('placed-points-list').innerHTML = `
+        <div style="color: var(--sub); font-style: italic; text-align: center; padding: 10px 0;">Hãy click chuột lên màn hình tối để đặt điểm...</div>
+      `;
+      document.getElementById('step1-guide').style.display = 'none';
+      document.getElementById('step1-status').style.display = 'block';
+
+      // 3 Points to define the dynamic plane
+      m1H3 = new THREE.Vector3(0, 1.2, 0); // Fixed pivot center
+
+      // Draggable handle corners
+      m1H1 = new InteractivePoint(new THREE.Vector3(-2.2, 1.2, -2.2), 0x3b82f6, 'P1', 'free');
+      m1H2 = new InteractivePoint(new THREE.Vector3(2.2, 1.2, 2.2), 0x3b82f6, 'P2', 'free');
+
+      activePoints.push(m1H1, m1H2);
+      syncDraggableHitMeshes();
+
+      // Main plane
+      m1Plane = new InteractivePlane(m1H1, m1H2, m1H3, 0x3b82f6, 6.5);
+      activePlanes.push(m1Plane);
+
+      // Handle connection lines to center pivot
+      const lineH1 = new InteractiveLine(m1H1, m1H3, 0x3b82f6, '', true);
+      const lineH2 = new InteractiveLine(m1H2, m1H3, 0x3b82f6, '', true);
+      activeLines.push(lineH1, lineH2);
+    }
+
+    function placeM1Point(pos) {
+      const name = String.fromCharCode(65 + m1PointCounter); // A, B, C...
+      m1PointCounter++;
+
+      const p = new InteractivePoint(pos, 0x64748b, name, 'free');
+      m1PlacedPoints.push(p);
+
+      // Add to draggable hits array
+      allDraggableHitMeshes.push(p.hitMesh);
+
+      // Trigger update
+      evaluateM1Relations();
+    }
+
+    function evaluateM1Relations() {
+      if (currentStep !== 1 || !m1Plane) return;
+
+      const listContainer = document.getElementById('placed-points-list');
+      listContainer.innerHTML = '';
+
+      if (m1PlacedPoints.length === 0) {
+        listContainer.innerHTML = `
+          <div style="color: var(--sub); font-style: italic; text-align: center; padding: 10px 0;">Hãy click chuột lên màn hình tối để đặt điểm...</div>
+        `;
+      }
+
+      let hasIn = false;
+      let hasOut = false;
+      let minDistance = 999.0;
+
+      m1PlacedPoints.forEach((p, idx) => {
+        const { distance } = projectPointOntoPlane(p.position, m1Plane);
+        minDistance = Math.min(minDistance, distance);
+
+        let inPlane = distance < 0.07; // Tolerance threshold
+
+        if (inPlane) {
+          p.color = 0x22c55e; // Green
+          p.mesh.material.color.setHex(0x22c55e);
+          p.mesh.material.emissive.setHex(0x22c55e);
+          p.htmlLabel.textContent = `${p.label} ∈ (P)`;
+          p.htmlLabel.style.color = '#22c55e';
+          hasIn = true;
+        } else {
+          p.color = 0xf59e0b; // Orange
+          p.mesh.material.color.setHex(0xf59e0b);
+          p.mesh.material.emissive.setHex(0xf59e0b);
+          p.htmlLabel.textContent = `${p.label} ∉ (P)`;
+          p.htmlLabel.style.color = '#f59e0b';
+          hasOut = true;
+        }
+
+        // Render in HUD list with a delete button
+        const item = document.createElement('div');
+        item.className = `hud-item ${inPlane ? 'valid' : 'invalid'}`;
+        item.innerHTML = `
+          <div style="display: flex; align-items: center; gap: 8px;">
+            <button class="btn-delete-pt" onclick="deleteM1Point(${idx})" style="background: none; border: none; color: #ef4444; cursor: pointer; display: flex; align-items: center; padding: 2px;" title="Xóa điểm">
+              <i class="ti ti-trash" style="font-size: 14px;"></i>
+            </button>
+            <span>Điểm <strong>${p.label}</strong></span>
+          </div>
+          <div style="display: flex; align-items: center; gap: 6px;">
+            <span style="color: var(--sub); font-size: 11px;">d = ${distance.toFixed(2)}</span>
+            <span class="badge-relation ${inPlane ? 'in' : 'out'}">${inPlane ? '∈ (P)' : '∉ (P)'}</span>
+          </div>
+        `;
+        listContainer.appendChild(item);
+      });
+
+      // Show plane edge glow when any point is nearby (< 0.2)
+      if (minDistance < 0.20) {
+        const glowFactor = (1.0 - minDistance / 0.20);
+        m1Plane.setGlow(glowFactor * 0.9);
+      } else {
+        m1Plane.setGlow(0);
+      }
+
+      // Check task complete
+      if (hasIn && hasOut) {
+        document.getElementById('step1-status').style.display = 'none';
+        document.getElementById('step1-guide').style.display = 'block';
+        document.getElementById('btn-next-step').disabled = false;
+      } else {
+        document.getElementById('step1-status').style.display = 'block';
+        document.getElementById('step1-guide').style.display = 'none';
+        document.getElementById('btn-next-step').disabled = true;
+      }
+    }
+
+    // Global function for point deletion in Step 1
+    window.deleteM1Point = function (idx) {
+      if (idx >= 0 && idx < m1PlacedPoints.length) {
+        const p = m1PlacedPoints[idx];
+
+        // Remove from dynamic points list
+        m1PlacedPoints.splice(idx, 1);
+
+        // Remove hit mesh from raycast draggable array
+        const hitIdx = allDraggableHitMeshes.indexOf(p.hitMesh);
+        if (hitIdx > -1) {
+          allDraggableHitMeshes.splice(hitIdx, 1);
+        }
+
+        // Dispose meshes and DOM overlay
+        p.dispose();
+
+        // Re-evaluate HUD items and completion conditions
+        evaluateM1Relations();
+      }
+    };
+
+
+    // --- MODULE 2 ---
+    function setupStep2() {
+      clearScene();
+
+      // Sub-step setup
+      document.querySelectorAll('#panel-2 .sub-tab-pill').forEach((pill, idx) => {
+        pill.classList.toggle('active', idx + 1 === step2SubStep);
+      });
+      document.querySelectorAll('#panel-2 .progress-dot').forEach((dot, idx) => {
+        dot.classList.toggle('active', idx + 1 === step2SubStep);
+      });
+      document.querySelectorAll('#panel-2 .sub-panel').forEach((sub, idx) => {
+        sub.style.display = (idx + 1 === step2SubStep) ? 'flex' : 'none';
+      });
+
+      // Always reset OrbitControls and Reset Button
+      const resetBtn = document.getElementById('btn-reset-current');
+      if (resetBtn) resetBtn.style.display = 'inline-flex';
+      orbitControls.enabled = true;
+
+      if (step2SubStep === 1) {
+        camera.position.set(5, 4, 7);
+        setupTC1();
+      } else if (step2SubStep === 2) {
+        camera.position.set(5, 4, 7);
+        setupTC2();
+      } else if (step2SubStep === 3) {
+        camera.position.set(5, 3.5, 6);
+        setupTC3();
+      } else if (step2SubStep === 4) {
+        setupTC4();
+      }
+    }
+
+    // TC 2.1
+    function setupTC1() {
+      const pA = new InteractivePoint(new THREE.Vector3(-1.8, 1.5, 0), 0x378add, 'A', 'free');
+      const pB = new InteractivePoint(new THREE.Vector3(1.8, 2.2, 0.8), 0x378add, 'B', 'free');
+
+      activePoints.push(pA, pB);
+      syncDraggableHitMeshes();
+
+      // Reset error alert
+      const alertBox = document.getElementById('tc1-error-alert');
+      if (alertBox) alertBox.style.display = 'none';
+
+      // Main line passing through A & B, extended
+      const line = new InteractiveLine(pA, pB, 0xf59e0b, 'd');
+      activeLines.push(line);
+
+      // Animate rotation button listener
+      document.getElementById('btn-test-line-rotation').onclick = () => {
+        if (animationRunning) return;
+        runLineRotationAnim(pA.position, pB.position);
+      };
+    }
+
+    function runLineRotationAnim(start, end) {
+      animationRunning = true;
+      orbitControls.enabled = false;
+      document.getElementById('btn-test-line-rotation').disabled = true;
+
+      // Duplicate line for animation representation
+      const axis = new THREE.Vector3().subVectors(end, start).normalize();
+      const geom = new THREE.BufferGeometry().setFromPoints([start, end]);
+      const mat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 3 });
+      animObject = new THREE.Line(geom, mat);
+      scene.add(animObject);
+
+      animStartTime = performance.now();
+
+      function animateRotation() {
+        if (!animationRunning || !animObject) return;
+        const elapsed = performance.now() - animStartTime;
+        const duration = 800; // ms
+        const t = Math.min(1, elapsed / duration);
+
+        const angle = t * Math.PI * 2; // Full 360 degree spin
+
+        // Rotate local perpendicular offsets to visualize a revolving plane/line
+        const perp = new THREE.Vector3(1, 0, 0).cross(axis).normalize();
+        if (perp.lengthSq() < 1e-4) {
+          perp.copy(new THREE.Vector3(0, 0, 1).cross(axis).normalize());
+        }
+        perp.applyAxisAngle(axis, angle).multiplyScalar(0.5);
+
+        const animStart = start.clone().add(perp);
+        const animEnd = end.clone().add(perp);
+        animObject.geometry.setFromPoints([animStart, animEnd]);
+
+        if (t < 1) {
+          requestAnimationFrame(animateRotation);
+        } else {
+          // Completed
+          scene.remove(animObject);
+          animObject = null;
+          animationRunning = false;
+          orbitControls.enabled = true;
+          document.getElementById('btn-test-line-rotation').disabled = false;
+          const alertBox = document.getElementById('tc1-error-alert');
+          if (alertBox) alertBox.style.display = 'flex';
+        }
+      }
+
+      animateRotation();
+    }
+
+    // TC 2.2
+    let tc2Plane = null;
+    function setupTC2() {
+      const pA = new InteractivePoint(new THREE.Vector3(-1.8, 1.2, -1.0), 0x378add, 'A', 'free');
+      const pB = new InteractivePoint(new THREE.Vector3(1.8, 1.2, -1.0), 0x378add, 'B', 'free');
+      const pC = new InteractivePoint(new THREE.Vector3(0.0, 2.2, 1.5), 0x378add, 'C', 'free');
+
+      activePoints.push(pA, pB, pC);
+      syncDraggableHitMeshes();
+
+      tc2Plane = new InteractivePlane(pA, pB, pC, 0x7f77dd, 6.0);
+      activePlanes.push(tc2Plane);
+
+      // Line d_AB to visualize collinear check
+      const lineAB = new InteractiveLine(pA, pB, 0x64748b, '', true);
+      activeLines.push(lineAB);
+
+      evaluateTC2Collinearity();
+    }
+
+    function evaluateTC2Collinearity() {
+      if (step2SubStep !== 2 || activePoints.length < 3 || !tc2Plane) return;
+      const pA = activePoints[0].position;
+      const pB = activePoints[1].position;
+      const pC = activePoints[2].position;
+
+      const abDir = new THREE.Vector3().subVectors(pB, pA);
+      const { distance } = projectPointOntoLine(pC, pA, abDir);
+
+      const isCollinear = distance < 0.20; // threshold for straight line
+
+      const errBox = document.getElementById('collinear-error-2');
+
+      if (isCollinear) {
+        tc2Plane.mesh.visible = false;
+        tc2Plane.border.visible = false;
+        errBox.style.display = 'flex';
+      } else {
+        tc2Plane.updateGeometry();
+        errBox.style.display = 'none';
+      }
+    }
+
+    // TC 2.3
+    let tc3PlaneObj = null;
+    let tc3M = null;
+    let tc3N = null;
+    function setupTC3() {
+      tc3IsFreeDragging = false;
+      document.getElementById('tc3-normal-info').style.display = 'flex';
+      document.getElementById('tc3-out-info').style.display = 'none';
+      document.getElementById('btn-pull-m-out').innerText = "Thử kéo đầu mút M ra ngoài (Q)";
+      document.getElementById('btn-pull-m-out').className = "btn btn-primary";
+
+      // Fixed Horizontal Plane
+      const coplanarPoint = new THREE.Vector3(0, 1.0, 0);
+      const normal = new THREE.Vector3(0, 1, 0);
+      tc3PlaneObj = { normal, pointOnPlane: coplanarPoint };
+
+      const planeMesh = new InteractivePlane(tc3PlaneObj, null, null, 0x3b82f6, 6.0);
+      activePlanes.push(planeMesh);
+
+      // draggables M, N on the plane by default
+      tc3M = new InteractivePoint(new THREE.Vector3(-1.5, 1.0, 0.5), 0xfac775, 'M', 'plane', tc3PlaneObj);
+      tc3N = new InteractivePoint(new THREE.Vector3(1.5, 1.0, -0.5), 0xfac775, 'N', 'plane', tc3PlaneObj);
+
+      activePoints.push(tc3M, tc3N);
+      syncDraggableHitMeshes();
+
+      // Line d connecting M & N
+      const line = new InteractiveLine(tc3M, tc3N, 0x22c55e, 'd'); // starts green (subset)
+      activeLines.push(line);
+
+      // Button listener
+      document.getElementById('btn-pull-m-out').onclick = () => {
+        toggleTC3RàngBuộc();
+      };
+    }
+
+    function toggleTC3RàngBuộc() {
+      if (!tc3M) return;
+
+      tc3IsFreeDragging = !tc3IsFreeDragging;
+      const btn = document.getElementById('btn-pull-m-out');
+
+      if (tc3IsFreeDragging) {
+        // Switch M to free space dragging
+        tc3M.dragType = 'free';
+        tc3M.dragTarget = null;
+
+        // Offset vertically to force it out of the plane immediately
+        tc3M.mesh.position.y += 1.2;
+        tc3M.updatePosition();
+        tc3M.color = 0xf59e0b; // Turn orange
+        tc3M.mesh.material.color.setHex(0xf59e0b);
+        tc3M.mesh.material.emissive.setHex(0xf59e0b);
+        tc3M.syncLabelColor();
+
+        btn.innerText = "Đặt lại d nằm trên (Q)";
+        btn.className = "btn btn-secondary";
+
+        document.getElementById('tc3-normal-info').style.display = 'none';
+        document.getElementById('tc3-out-info').style.display = 'flex';
+      } else {
+        // Reset constraint
+        tc3M.dragType = 'plane';
+        tc3M.dragTarget = tc3PlaneObj;
+        tc3M.mesh.position.y = 1.0;
+        tc3M.updatePosition();
+        tc3M.color = 0xfac775;
+        tc3M.mesh.material.color.setHex(0xfac775);
+        tc3M.mesh.material.emissive.setHex(0xfac775);
+        tc3M.syncLabelColor();
+
+        btn.innerText = "Thử kéo đầu mút M ra ngoài (Q)";
+        btn.className = "btn btn-primary";
+
+        document.getElementById('tc3-normal-info').style.display = 'flex';
+        document.getElementById('tc3-out-info').style.display = 'none';
+      }
+
+      evaluateTC3Line();
+    }
+
+    function evaluateTC3Line() {
+      if (step2SubStep !== 3 || activeLines.length === 0 || !tc3M || !tc3N) return;
+      const line = activeLines[0];
+
+      // If M is free, check height distance
+      const distM = Math.abs(tc3M.position.y - 1.0);
+      const distN = Math.abs(tc3N.position.y - 1.0);
+
+      const bothOnPlane = distM < 0.05 && distN < 0.05;
+
+      if (bothOnPlane) {
+        line.mesh.material.color.setHex(0x22c55e); // Green (contained)
+        line.label = 'd ⊂ (Q)';
+        if (line.htmlLabel) line.htmlLabel.textContent = 'd ⊂ (Q)';
+      } else {
+        line.mesh.material.color.setHex(0xf59e0b); // Orange (skew/intersect)
+        line.label = 'd';
+        if (line.htmlLabel) line.htmlLabel.textContent = 'd';
+      }
+    }
+
+    // TC 2.4
+    let tc4PlaneP = null;
+    let tc4PlaneQ = null;
+    let tc4P1, tc4Q1;
+
+    function setupTC4() {
+      tc4HasPredicted = false;
+      tc4DrawProgress = 0;
+
+      // Update UI elements
+      document.getElementById('tc4-desc').style.display = 'block';
+      document.getElementById('tc4-prediction').style.display = 'flex';
+      document.getElementById('tc4-explanation').style.display = 'none';
+      document.getElementById('tc4-general').style.display = 'none';
+
+      // Hide reset button before prediction is answered
+      const resetBtn = document.getElementById('btn-reset-current');
+      if (resetBtn) resetBtn.style.display = 'none';
+
+      // Initialize camera to force parallel perspective (Cognitive Conflict)
+      orbitControls.enabled = false;
+      camera.position.set(0, 1.15, 6.5);
+      camera.lookAt(0, 1.15, 0);
+      orbitControls.target.set(0, 1.15, 0);
+      orbitControls.update();
+
+      // Define 2 planes that appear parallel from front view, but intersect in 3D
+      // Plane P (blue) - horizontal in X, slopes down towards back
+      tc4P1 = new InteractivePoint(new THREE.Vector3(-2.2, 1.6, 1.8), 0x3b82f6, 'P', 'free');
+      const p2 = new THREE.Vector3(2.2, 1.6, 1.8);
+      const p3 = new THREE.Vector3(-2.2, 0.8, -1.8);
+      tc4PlaneP = new InteractivePlane(tc4P1, p2, p3, 0x3b82f6, 6.0);
+
+      // Plane Q (purple) - horizontal in X, slopes up towards back
+      tc4Q1 = new InteractivePoint(new THREE.Vector3(-2.2, 0.7, 1.8), 0x7f77dd, 'Q', 'free');
+      const q2 = new THREE.Vector3(2.2, 0.7, 1.8);
+      const q3 = new THREE.Vector3(-2.2, 1.9, -1.8);
+      tc4PlaneQ = new InteractivePlane(tc4Q1, q2, q3, 0x7f77dd, 6.0);
+
+      activePoints.push(tc4P1, tc4Q1);
+      syncDraggableHitMeshes();
+      activePlanes.push(tc4PlaneP, tc4PlaneQ);
+
+      // Prediction listeners
+      const predictYes = document.getElementById('predict-yes');
+      const predictNo = document.getElementById('predict-no');
+      predictYes.onclick = () => onPredictSelected(true);
+      predictNo.onclick = () => onPredictSelected(false);
+    }
+
+    function onPredictSelected(isYes) {
+      if (tc4HasPredicted) return;
+      tc4HasPredicted = true;
+
+      // Disable prediction panels, show results
+      document.getElementById('tc4-desc').style.display = 'none';
+      document.getElementById('tc4-prediction').style.display = 'none';
+
+      const expBox = document.getElementById('tc4-explanation');
+      if (isYes) {
+        expBox.className = 'info-box ib-gold';
+        expBox.innerHTML = `
+          <div class="ib-icon"><i class="ti ti-alert-triangle"></i></div>
+          <div>
+            <div class="ib-title">Trực giác bị đánh lừa bởi góc nhìn!</div>
+            Bạn chọn <b>"Có, chúng song song"</b>. Ở góc nhìn thẳng ban đầu, hai mặt phẳng tạo cảm giác song song do hiệu ứng thị giác. Tuy nhiên, khi camera tự động xoay góc 3D, ta nhận thấy (P) và (Q) thực tế <b>cắt nhau</b> theo giao tuyến <b>d</b> (đường màu đỏ).
+          </div>
+        `;
+      } else {
+        expBox.className = 'info-box ib-teal';
+        expBox.innerHTML = `
+          <div class="ib-icon"><i class="ti ti-circle-check"></i></div>
+          <div>
+            <div class="ib-title">Dự đoán chính xác!</div>
+            Bạn chọn <b>"Không, chúng sẽ cắt nhau"</b>. Dự đoán không gian của bạn rất tuyệt vời! Mặc dù ở góc nhìn thẳng ban đầu 2 mặt phẳng trông như song song do hiệu ứng thị giác, nhưng khi xoay góc 3D, chúng ta thấy rõ (P) và (Q) <b>cắt nhau</b> theo giao tuyến <b>d</b> (đường màu đỏ).
+          </div>
+        `;
+      }
+
+      expBox.style.display = 'flex';
+      document.getElementById('tc4-general').style.display = 'flex';
+
+      // Switch camera to slanted angle immediately to break illusion, enable controls and reset button
+      orbitControls.enabled = true;
+      const resetBtn = document.getElementById('btn-reset-current');
+      if (resetBtn) resetBtn.style.display = 'inline-flex';
+
+      // Camera animation move
+      const startPos = camera.position.clone();
+      const endPos = new THREE.Vector3(6, 4.5, 7.5);
+
+      let camStartTime = performance.now();
+      function animateCam() {
+        const t = Math.min(1, (performance.now() - camStartTime) / 900);
+        camera.position.lerpVectors(startPos, endPos, t);
+        camera.lookAt(0, 1.25, 0);
+        if (t < 1) requestAnimationFrame(animateCam);
+        else orbitControls.update();
+      }
+      animateCam();
+
+      // Trigger drawing animation of intersection line
+      animateTC4Intersection();
+    }
+
+    function animateTC4Intersection() {
+      // Find intersection
+      if (!tc4PlaneP || !tc4PlaneQ) return;
+
+      const inter = intersectionOfTwoPlanes(tc4PlaneP, tc4PlaneQ);
+      if (!inter) return;
+
+      const pGeom = new THREE.BufferGeometry();
+      const pMat = new THREE.LineBasicMaterial({ color: 0xef4444, linewidth: 3.5 });
+      tc4ResultLine = new THREE.Line(pGeom, pMat);
+      scene.add(tc4ResultLine);
+
+      // Text label for intersection line
+      const lineLabel = document.createElement('div');
+      lineLabel.className = 'pt-label line-label';
+      lineLabel.textContent = 'd = (P) ∩ (Q)';
+      lineLabel.style.color = '#ef4444';
+      document.getElementById('label-layer').appendChild(lineLabel);
+
+      let drawStartTime = performance.now();
+
+      function drawStep() {
+        if (!tc4ResultLine) return;
+        const t = Math.min(1, (performance.now() - drawStartTime) / 1000);
+        const eased = 1 - Math.pow(1 - t, 3); // easeOutCubic
+
+        // draw from center pivot outwards in both directions
+        const halfLen = 3.5 * eased;
+        const pStart = inter.point.clone().addScaledVector(inter.dir, -halfLen);
+        const pEnd = inter.point.clone().addScaledVector(inter.dir, halfLen);
+
+        tc4ResultLine.geometry.setFromPoints([pStart, pEnd]);
+
+        // sync label pos
+        const midpoint = inter.point;
+        const screenPos = midpoint.clone().project(camera);
+        const rect = renderer.domElement.getBoundingClientRect();
+        const x = (screenPos.x * 0.5 + 0.5) * rect.width;
+        const y = (-screenPos.y * 0.5 + 0.5) * rect.height;
+
+        lineLabel.style.display = screenPos.z > 1 ? 'none' : 'block';
+        lineLabel.style.transform = `translate(${x}px, ${y}px) translate(-50%, -50%)`;
+
+        if (t < 1) {
+          requestAnimationFrame(drawStep);
+        }
+      }
+
+      drawStep();
+    }
+
+    function evaluateTC4Realtime() {
+      if (step2SubStep !== 4 || !tc4PlaneP || !tc4PlaneQ) return;
+      tc4PlaneP.updateGeometry();
+      tc4PlaneQ.updateGeometry();
+
+      // Recalculate intersection line real-time if dragged after prediction
+      if (tc4HasPredicted && tc4ResultLine) {
+        const inter = intersectionOfTwoPlanes(tc4PlaneP, tc4PlaneQ);
+        if (inter) {
+          tc4ResultLine.visible = true;
+          const pStart = inter.point.clone().addScaledVector(inter.dir, -3.5);
+          const pEnd = inter.point.clone().addScaledVector(inter.dir, 3.5);
+          tc4ResultLine.geometry.setFromPoints([pStart, pEnd]);
+        } else {
+          tc4ResultLine.visible = false;
+        }
+      }
+    }
+
+
+    // --- MODULE 3 ---
+    let m3Plane = null;
+    let m3LineA = null;
+    let m3LineB = null;
+
+    function setupStep3() {
+      clearScene();
+
+      // Sub-tab selectors
+      document.querySelectorAll('#panel-3 .sub-tab-pill').forEach((pill, idx) => {
+        pill.classList.toggle('active', idx + 1 === step3Tab);
+      });
+      document.querySelectorAll('#panel-3 .sub-panel').forEach((sub, idx) => {
+        sub.style.display = (idx + 1 === step3Tab) ? 'flex' : 'none';
+      });
+
+      lastDragTime = performance.now();
+      isStableLocked = false;
+
+      if (step3Tab === 1) {
+        setupWay3_1();
+      } else if (step3Tab === 2) {
+        setupWay3_2();
+      } else if (step3Tab === 3) {
+        setupWay3_3();
+      }
+    }
+
+    // 3.1 3 Points definition
+    function setupWay3_1() {
+      camera.position.set(5.5, 4, 7);
+      document.getElementById('badge-way-3-1').style.display = 'none';
+      document.getElementById('btn-next-step').disabled = true;
+
+      const pA = new InteractivePoint(new THREE.Vector3(-1.8, 1.2, -1.0), 0x378add, 'A', 'free');
+      const pB = new InteractivePoint(new THREE.Vector3(1.8, 1.2, -1.0), 0x378add, 'B', 'free');
+      const pC = new InteractivePoint(new THREE.Vector3(0.0, 2.2, 1.5), 0x378add, 'C', 'free');
+
+      activePoints.push(pA, pB, pC);
+      syncDraggableHitMeshes();
+
+      m3Plane = new InteractivePlane(pA, pB, pC, 0x7f77dd, 6.0);
+      activePlanes.push(m3Plane);
+
+      // Line d_AB to visualize collinear check
+      const lineAB = new InteractiveLine(pA, pB, 0x64748b, '', true);
+      activeLines.push(lineAB);
+    }
+
+    function evaluateWay3_1() {
+      if (step3Tab !== 1 || !m3Plane) return;
+
+      const pA = activePoints[0].position;
+      const pB = activePoints[1].position;
+      const pC = activePoints[2].position;
+
+      const abDir = new THREE.Vector3().subVectors(pB, pA);
+      const { distance } = projectPointOntoLine(pC, pA, abDir);
+      const isCollinear = distance < 0.18;
+
+      if (isCollinear) {
+        m3Plane.mesh.visible = false;
+        m3Plane.border.visible = false;
+        isStableLocked = false;
+        document.getElementById('badge-way-3-1').style.display = 'none';
+        document.getElementById('btn-next-step').disabled = true;
+      } else {
+        m3Plane.updateGeometry();
+
+        // Evaluate 1s stable state
+        if (!isStableLocked && !dragState.active && (performance.now() - lastDragTime > 1000)) {
+          triggerLockEffect(m3Plane);
+          document.getElementById('badge-way-3-1').style.display = 'inline-flex';
+          document.getElementById('btn-next-step').disabled = false;
+        }
+      }
+    }
+
+    // 3.2 Point and Line
+    let m3_2_D1, m3_2_D2, m3_2_A;
+    function setupWay3_2() {
+      camera.position.set(5.5, 4, 7);
+      document.getElementById('badge-way-3-2').style.display = 'none';
+      document.getElementById('collinear-error-3-2').style.display = 'none';
+      document.getElementById('btn-next-step').disabled = true;
+
+      // Line d endpoints (can be dragged)
+      m3_2_D1 = new InteractivePoint(new THREE.Vector3(-1.8, 1.2, 0.5), 0xfac775, 'D1', 'free');
+      m3_2_D2 = new InteractivePoint(new THREE.Vector3(1.8, 1.2, -0.5), 0xfac775, 'D2', 'free');
+      // Free point A
+      m3_2_A = new InteractivePoint(new THREE.Vector3(0.0, 2.5, -0.8), 0x378add, 'A', 'free');
+
+      activePoints.push(m3_2_D1, m3_2_D2, m3_2_A);
+      syncDraggableHitMeshes();
+
+      // Line d
+      m3LineA = new InteractiveLine(m3_2_D1, m3_2_D2, 0xf59e0b, 'd');
+      activeLines.push(m3LineA);
+
+      // Plane (A, d)
+      m3Plane = new InteractivePlane(m3_2_D1, m3_2_D2, m3_2_A, 0x7f77dd, 6.0);
+      activePlanes.push(m3Plane);
+    }
+
+    function evaluateWay3_2() {
+      if (step3Tab !== 2 || !m3Plane || !m3_2_D1) return;
+
+      const pD1 = m3_2_D1.position;
+      const pD2 = m3_2_D2.position;
+      const pA = m3_2_A.position;
+
+      const dDir = new THREE.Vector3().subVectors(pD2, pD1);
+      const { distance } = projectPointOntoLine(pA, pD1, dDir);
+
+      const isCollinear = distance < 0.20;
+      const errBox = document.getElementById('collinear-error-3-2');
+
+      if (isCollinear) {
+        m3Plane.mesh.visible = false;
+        m3Plane.border.visible = false;
+        errBox.style.display = 'flex';
+        isStableLocked = false;
+        document.getElementById('badge-way-3-2').style.display = 'none';
+        document.getElementById('btn-next-step').disabled = true;
+      } else {
+        m3Plane.updateGeometry();
+        errBox.style.display = 'none';
+
+        // Check lock 1s
+        if (!isStableLocked && !dragState.active && (performance.now() - lastDragTime > 1000)) {
+          triggerLockEffect(m3Plane);
+          document.getElementById('badge-way-3-2').style.display = 'inline-flex';
+          document.getElementById('btn-next-step').disabled = false;
+        }
+      }
+    }
+
+    // 3.3 Two Intersecting lines
+    let m3_3_A1, m3_3_A2, m3_3_B1, m3_3_B2;
+    function setupWay3_3() {
+      camera.position.set(5.5, 4, 7);
+      document.getElementById('badge-way-3-3').style.display = 'none';
+      document.getElementById('skew-warning-3-3').style.display = 'flex';
+      document.getElementById('btn-next-step').disabled = true;
+
+      // Line a endpoints (free)
+      m3_3_A1 = new InteractivePoint(new THREE.Vector3(-2.0, 1.2, 0.5), 0xfac775, 'A1', 'free');
+      m3_3_A2 = new InteractivePoint(new THREE.Vector3(2.0, 1.8, -0.5), 0xfac775, 'A2', 'free');
+
+      // Line b endpoints (free) - initially skew (not intersecting)
+      m3_3_B1 = new InteractivePoint(new THREE.Vector3(-1.0, 2.2, -1.5), 0x378add, 'B1', 'free');
+      m3_3_B2 = new InteractivePoint(new THREE.Vector3(1.0, 0.8, 1.5), 0x378add, 'B2', 'free');
+
+      activePoints.push(m3_3_A1, m3_3_A2, m3_3_B1, m3_3_B2);
+      syncDraggableHitMeshes();
+
+      m3LineA = new InteractiveLine(m3_3_A1, m3_3_A2, 0xf59e0b, 'a');
+      m3LineB = new InteractiveLine(m3_3_B1, m3_3_B2, 0xef4444, 'b');
+      activeLines.push(m3LineA, m3LineB);
+
+      // Dynamic plane mp(a, b) initialized using 3 points
+      m3Plane = new InteractivePlane(m3_3_A1, m3_3_A2, m3_3_B1, 0x7f77dd, 6.0);
+      m3Plane.mesh.visible = false;
+      m3Plane.border.visible = false;
+      activePlanes.push(m3Plane);
+    }
+
+    function evaluateWay3_3() {
+      if (step3Tab !== 3 || !m3Plane || !m3_3_A1) return;
+
+      const pA1 = m3_3_A1.position;
+      const pA2 = m3_3_A2.position;
+      const pB1 = m3_3_B1.position;
+      const pB2 = m3_3_B2.position;
+
+      const dirA = new THREE.Vector3().subVectors(pA2, pA1);
+      const dirB = new THREE.Vector3().subVectors(pB2, pB1);
+
+      // Solve intersection skew distance
+      const skew = distanceSkewLines(pA1, dirA, pB1, dirB);
+
+      const warnBox = document.getElementById('skew-warning-3-3');
+
+      let intersects = false;
+
+      if (skew) {
+        // Are intersection spots H1 / H2 relatively close to each other (<0.10)
+        // and located within/near the segment bounds (avoiding infinite projections)
+        const isNear = skew.dist < 0.12;
+
+        // Calculate projection params t (line A) and s (line B)
+        const t = new THREE.Vector3().subVectors(skew.H1, pA1).dot(dirA) / dirA.lengthSq();
+        const s = new THREE.Vector3().subVectors(skew.H2, pB1).dot(dirB) / dirB.lengthSq();
+
+        const inSegments = t >= -0.2 && t <= 1.2 && s >= -0.2 && s <= 1.2;
+
+        if (isNear && inSegments) {
+          intersects = true;
+        }
+      }
+
+      if (intersects) {
+        // Build plane containing both lines
+        m3Plane.p3 = m3_3_B1; // Ensure 3rd point is from b
+        m3Plane.updateGeometry();
+
+        warnBox.style.display = 'none';
+
+        // Check lock 1s
+        if (!isStableLocked && !dragState.active && (performance.now() - lastDragTime > 1000)) {
+          triggerLockEffect(m3Plane);
+          document.getElementById('badge-way-3-3').style.display = 'inline-flex';
+          document.getElementById('btn-next-step').disabled = false;
+        }
+      } else {
+        m3Plane.mesh.visible = false;
+        m3Plane.border.visible = false;
+        warnBox.style.display = 'flex';
+        isStableLocked = false;
+        document.getElementById('badge-way-3-3').style.display = 'none';
+        document.getElementById('btn-next-step').disabled = true;
+      }
+    }
+
+
+    // --- ANIMATIONS & LOCK FEEDBACK ---
+    function triggerLockEffect(planeObj) {
+      isStableLocked = true;
+
+      // Visual scale bounce animation on plane mesh
+      const mesh = planeObj.mesh;
+      const border = planeObj.border;
+
+      let t = 0;
+      function bounce() {
+        t += 0.1;
+        const scale = 1.0 + 0.05 * Math.sin(t * Math.PI); // bounce 1.0 -> 1.05 -> 1.0
+        mesh.scale.set(scale, scale, scale);
+        border.scale.set(scale, scale, scale);
+
+        if (t < 1.0) {
+          requestAnimationFrame(bounce);
+        } else {
+          mesh.scale.set(1, 1, 1);
+          border.scale.set(1, 1, 1);
+        }
+      }
+      bounce();
+    }
+
+
+    // ==========================================
+    // 🕹️ EVENTS & RUNTIME LOGIC UPDATES
+    // ==========================================
+
+    function onActiveDrag(point) {
+      if (currentStep === 1) {
+        evaluateM1Relations();
+      } else if (currentStep === 2) {
+        if (step2SubStep === 2) evaluateTC2Collinearity();
+        else if (step2SubStep === 3) evaluateTC3Line();
+        else if (step2SubStep === 4) evaluateTC4Realtime();
+      } else if (currentStep === 3) {
+        if (step3Tab === 1) evaluateWay3_1();
+        else if (step3Tab === 2) evaluateWay3_2();
+        else if (step3Tab === 3) evaluateWay3_3();
+      }
+    }
+
+    function onDragEnd(point) {
+      // Simply check stability rules on drag release
+      if (currentStep === 3) {
+        lastDragTime = performance.now();
+      }
+    }
+
+    // MAIN STEP EVENT LISTENERS
+    document.getElementById('step-tabs').addEventListener('click', (e) => {
+      const tab = e.target.closest('.step-tab');
+      if (tab) {
+        setupStep(parseInt(tab.dataset.step));
+      }
+    });
+
+    // Toggle placement mode for step 1
+    document.getElementById('btn-toggle-placement').addEventListener('click', () => {
+      m1PlacementModeActive = !m1PlacementModeActive;
+      const btn = document.getElementById('btn-toggle-placement');
+      if (m1PlacementModeActive) {
+        btn.innerHTML = '<i class="ti ti-mouse"></i> Click lên canvas để đặt điểm';
+        btn.className = 'btn btn-primary';
+        renderer.domElement.style.cursor = 'crosshair';
+      } else {
+        btn.innerHTML = '<i class="ti ti-plus"></i> Bật chế độ thêm điểm';
+        btn.className = 'btn btn-secondary';
+        renderer.domElement.style.cursor = 'default';
+      }
+    });
+
+    // Center camera to look edge-on at P
+    document.getElementById('btn-camera-edge').addEventListener('click', () => {
+      alignCameraEdgeOn();
+    });
+
+    // Center camera to look face-on at P
+    document.getElementById('btn-camera-face').addEventListener('click', () => {
+      alignCameraFaceOn();
+    });
+
+    // Sub-step listeners (Step 2)
+    document.querySelector('#panel-2 .sub-nav').addEventListener('click', (e) => {
+      const sub = e.target.closest('.sub-tab-pill');
+      if (sub) {
+        step2SubStep = parseInt(sub.dataset.sub);
+        setupStep2();
+      }
+    });
+
+    // Sub-tab listeners (Step 3)
+    document.querySelector('#panel-3 .sub-nav').addEventListener('click', (e) => {
+      const tab = e.target.closest('.sub-tab-pill');
+      if (tab) {
+        step3Tab = parseInt(tab.dataset.tab);
+        setupStep3();
+      }
+    });
+
+    // Sidebar Next button handler
+    document.getElementById('btn-next-step').onclick = () => {
+      if (currentStep === 2) {
+        if (step2SubStep < 4) {
+          step2SubStep++;
+          setupStep2();
+        } else {
+          setupStep(3);
+        }
+      } else if (currentStep === 3) {
+        if (step3Tab < 3) {
+          step3Tab++;
+          setupStep3();
+        } else {
+          setupStep(4);
+        }
+      } else {
+        setupStep(currentStep + 1);
+      }
+    };
+
+    // Sidebar Reset button handler
+    document.getElementById('btn-reset-current').onclick = () => {
+      if (currentStep === 2) {
+        setupStep2();
+      } else if (currentStep === 3) {
+        setupStep3();
+      } else {
+        setupStep(currentStep);
+      }
+    };
+
+    // Conclusion Navigation redirects
+    window.goToConcept = function (step, subStep = 1) {
+      if (step === 2) {
+        step2SubStep = subStep;
+      } else if (step === 3) {
+        step3Tab = subStep;
+      }
+      setupStep(step);
+    };
+
+
+    // ==========================================
+    // 🔄 RENDER LOOP
+    // ==========================================
+
+    function animate() {
+      requestAnimationFrame(animate);
+
+      // Controls damping update
+      orbitControls.update();
+
+      // Synchronize 3D positions with labels and helpers
+      activePoints.forEach(p => {
+        p.updatePosition();
+        p.syncRing();
+        p.syncHtmlLabel();
+      });
+
+      activeLines.forEach(l => {
+        l.updateGeometry();
+        l.syncHtmlLabel();
+      });
+
+      activePlanes.forEach(pl => {
+        pl.updateGeometry();
+      });
+
+      // Special items sync
+      m1PlacedPoints.forEach(p => {
+        p.updatePosition();
+        p.syncRing();
+        p.syncHtmlLabel();
+      });
+
+      // Update real-time check of Module 3 if stable and not dragging
+      if (currentStep === 3 && !dragState.active && !isStableLocked) {
+        if (step3Tab === 1) evaluateWay3_1();
+        else if (step3Tab === 2) evaluateWay3_2();
+        else if (step3Tab === 3) evaluateWay3_3();
+      }
+
+      renderer.render(scene, camera);
+    }
+
+
+    // BẮT ĐẦU CHẠY APP
+    setupStep(0);
+    animate();
+
+
+
+  </script>
+</body>
+
+</html>

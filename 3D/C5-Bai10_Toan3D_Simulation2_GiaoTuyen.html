@@ -1,0 +1,2818 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 10: Giao tuyến & Thiết diện hình chóp — Phòng Thí Nghiệm 3D</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    rel="stylesheet">
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+
+  <!-- Three.js r128 & OrbitControls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    /* DESIGN SYSTEM: NAVY & TEAL PRESET */
+    :root {
+      --green: #1B8C5A;
+      --green-light: #E6F4EE;
+      --red: #C62828;
+      --red-light: #FFEBEE;
+      --amber: #EF9F27;
+      --amber-light: #FEF3E0;
+      --blue: #1565C0;
+      --blue-light: #EBF3FF;
+      --surface: #ffffff;
+      --border: #d1dce8;
+      --text: #1a2e44;
+      --text-2: #334155;
+      --sub: #64748b;
+      --radius: 12px;
+
+      --navy: #0d2b4e;
+      --teal: #0e7a6e;
+      --bg: #f0f4f8;
+      --canvas-bg: #0a1628;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, #1a4a7a 100%);
+      color: #fff;
+      padding: 14px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      height: 60px;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+      z-index: 10;
+      flex-shrink: 0;
+    }
+
+    .header-badge {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      letter-spacing: .01em;
+      flex: 1;
+    }
+
+    /* APP BODY LAYOUT */
+    .app-body {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 60px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* CANVAS AREA */
+    .canvas-container {
+      flex: 1;
+      position: relative;
+      background: var(--canvas-bg);
+      height: 100%;
+      overflow: hidden;
+    }
+
+    #three-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+
+    .canvas-hint {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10, 22, 40, 0.85);
+      color: rgba(255, 255, 255, 0.85);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 11.5px;
+      pointer-events: none;
+      white-space: nowrap;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+      z-index: 5;
+    }
+
+    /* HTML LABEL OVERLAY */
+    #label-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 4;
+    }
+
+    .pt-label {
+      position: absolute;
+      font-size: 13.5px;
+      font-weight: 700;
+      pointer-events: none;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.6);
+      white-space: nowrap;
+      will-change: transform;
+      user-select: none;
+    }
+
+    /* SIDEBAR */
+    .sidebar {
+      width: 330px;
+      background: #ffffff;
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      height: 100%;
+      overflow: hidden;
+      flex-shrink: 0;
+      box-shadow: -2px 0 10px rgba(0, 0, 0, 0.05);
+      z-index: 8;
+    }
+
+    /* MAIN STEP TABS */
+    .step-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      background: #f8fafc;
+      flex-shrink: 0;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .step-tabs::-webkit-scrollbar {
+      display: none;
+    }
+
+    .step-tab {
+      flex: 1;
+      min-width: 60px;
+      padding: 12px 4px;
+      font-size: 11px;
+      font-weight: 700;
+      text-align: center;
+      cursor: pointer;
+      color: var(--sub);
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s;
+      letter-spacing: .02em;
+      white-space: nowrap;
+    }
+
+    .step-tab:hover {
+      color: var(--navy);
+      background: rgba(0, 0, 0, 0.02);
+    }
+
+    .step-tab.active {
+      color: var(--navy);
+      border-bottom-color: var(--teal);
+      background: #ffffff;
+    }
+
+    /* SUB PILLS TOOLBAR */
+    .sub-pills {
+      display: flex;
+      gap: 6px;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .sub-pill {
+      flex: 1;
+      padding: 6px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      text-align: center;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+      background: #fff;
+      color: var(--text-2);
+      cursor: pointer;
+      transition: all .15s;
+    }
+
+    .sub-pill:hover {
+      background: #f0f4f8;
+    }
+
+    .sub-pill.active {
+      background: var(--teal);
+      color: #fff;
+      border-color: var(--teal);
+    }
+
+    /* STEP BODY CONTENT */
+    .step-body {
+      padding: 18px;
+      flex: 1;
+      overflow-y: auto;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .step-panel {
+      display: none;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .step-panel.active {
+      display: flex;
+    }
+
+    /* STEP TITLE & NUMBER */
+    .step-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1px solid #edf2f7;
+      padding-bottom: 8px;
+    }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-desc {
+      font-size: 12.5px;
+      line-height: 1.6;
+      color: var(--text-2);
+    }
+
+    /* INFO BOXES */
+    .info-box {
+      border-radius: var(--radius);
+      padding: 12px 14px;
+      display: flex;
+      gap: 10px;
+      font-size: 12px;
+      line-height: 1.5;
+      border-left: 4px solid transparent;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.03);
+    }
+
+    .info-box .ib-icon {
+      font-size: 16px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .info-box .ib-title {
+      font-weight: 700;
+      margin-bottom: 2px;
+    }
+
+    .ib-blue {
+      background: var(--blue-light);
+      border-left-color: var(--blue);
+      color: #0d47a1;
+    }
+
+    .ib-teal {
+      background: #e6f7f4;
+      border-left-color: var(--teal);
+      color: #064e40;
+    }
+
+    .ib-gold {
+      background: var(--amber-light);
+      border-left-color: var(--amber);
+      color: #7e5109;
+    }
+
+    .ib-red {
+      background: var(--red-light);
+      border-left-color: var(--red);
+      color: #b71c1c;
+    }
+
+    /* BUTTONS & CHOICES */
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      border: 1px solid transparent;
+      transition: all .15s;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background: var(--navy);
+      color: #fff;
+    }
+
+    .btn-primary:hover {
+      background: #153e6e;
+    }
+
+    .btn-teal {
+      background: var(--teal);
+      color: #fff;
+    }
+
+    .btn-teal:hover {
+      background: #0b6158;
+    }
+
+    .btn-outline {
+      background: #fff;
+      border-color: var(--border);
+      color: var(--text-2);
+    }
+
+    .btn-outline:hover {
+      background: #f8fafc;
+      border-color: #b0c2d4;
+    }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .choice-group {
+      display: flex;
+      gap: 8px;
+    }
+
+    .choice-btn {
+      flex: 1;
+      padding: 8px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #fff;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      transition: all .15s;
+    }
+
+    .choice-btn:hover {
+      border-color: var(--teal);
+      background: #f0fdfa;
+    }
+
+    .choice-btn.selected {
+      border-color: var(--teal);
+      background: var(--teal);
+      color: #fff;
+    }
+
+    /* CHECKLISTS & EDGE LISTS */
+    .check-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+
+    .check-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 9px 12px;
+      border-radius: 8px;
+      background: #f8fafc;
+      font-size: 12.5px;
+      border: 1px solid var(--border);
+      line-height: 1.45;
+    }
+
+    .check-item.done {
+      background: var(--green-light);
+      border-color: #a8e0c7;
+      color: #0e5c38;
+    }
+
+    .edge-select-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 8px;
+      margin-bottom: 12px;
+    }
+
+    .edge-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 8px 12px;
+      background: #f8fafc;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      font-size: 12.5px;
+    }
+
+    .edge-row .btn-group {
+      display: flex;
+      gap: 4px;
+    }
+
+    .mini-btn {
+      padding: 3px 8px;
+      font-size: 11px;
+      font-weight: 600;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: #fff;
+      cursor: pointer;
+    }
+
+    .mini-btn.active-solid {
+      background: var(--navy);
+      color: #fff;
+      border-color: var(--navy);
+    }
+
+    .mini-btn.active-dashed {
+      background: var(--sub);
+      color: #fff;
+      border-color: var(--sub);
+    }
+
+    /* RANGE SLIDER */
+    .range-slider-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .range-slider-row label {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .range-slider-row input[type=range] {
+      width: 100%;
+      accent-color: var(--teal);
+    }
+
+    /* CONTROLS FOOTER */
+    .controls-footer {
+      padding: 12px 18px;
+      border-top: 1px solid var(--border);
+      background: #f8fafc;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      flex-shrink: 0;
+    }
+
+    .toggle-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      font-size: 12px;
+      color: var(--text-2);
+    }
+
+    .toggle-switch {
+      position: relative;
+      width: 36px;
+      height: 20px;
+    }
+
+    .toggle-switch input {
+      opacity: 0;
+      width: 0;
+      height: 0;
+    }
+
+    .slider {
+      position: absolute;
+      cursor: pointer;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-color: #cbd5e1;
+      transition: .2s;
+      border-radius: 20px;
+    }
+
+    .slider:before {
+      position: absolute;
+      content: "";
+      height: 14px;
+      width: 14px;
+      left: 3px;
+      bottom: 3px;
+      background-color: white;
+      transition: .2s;
+      border-radius: 50%;
+    }
+
+    input:checked+.slider {
+      background-color: var(--teal);
+    }
+
+    input:checked+.slider:before {
+      transform: translateX(16px);
+    }
+
+    @media (max-width: 768px) {
+      .app-body {
+        flex-direction: column;
+      }
+
+      .sidebar {
+        width: 100%;
+        height: 50%;
+      }
+
+      .canvas-container {
+        height: 50%;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- Header -->
+  <header>
+    <div class="header-badge">🧊 HÌNH HỌC KHÔNG GIAN 11</div>
+    <h1>Bài 10: Giao tuyến & Thiết diện hình chóp</h1>
+  </header>
+
+  <!-- App Body Layout -->
+  <div class="app-body">
+
+    <!-- 3D Canvas Area -->
+    <div class="canvas-container">
+      <div id="label-layer"></div>
+      <canvas id="three-canvas"></canvas>
+      <div class="canvas-hint">🖱️ Kéo để xoay · Cuộn để zoom · Nhấp chọn điểm/giao điểm</div>
+    </div>
+
+    <!-- Right Sidebar -->
+    <div class="sidebar">
+
+      <!-- 5 Main Step Tabs -->
+      <div class="step-tabs">
+        <div class="step-tab active" data-tab="1">Tab 1</div>
+        <div class="step-tab" data-tab="2">Tab 2</div>
+        <div class="step-tab" data-tab="3">Tab 3</div>
+        <div class="step-tab" data-tab="4">Tab 4</div>
+        <div class="step-tab" data-tab="5">Tab 5</div>
+      </div>
+
+      <!-- Sub Pills Bar (Dynamic for Tab 3, 4, 5) -->
+      <div class="sub-pills" id="sub-pills-bar" style="display: none;"></div>
+
+      <!-- Step Body Panel Container -->
+      <div class="step-body">
+
+        <!-- TAB 1 PANEL: GIAO TUYẾN 2 ĐIỂM CHUNG -->
+        <div class="step-panel active" id="panel-tab1">
+          <div class="step-title">
+            <div class="step-num">1</div>
+            Giao tuyến của (SBN) và (SCM)
+          </div>
+          <div class="step-desc">
+            Cho hình chóp <b>S.ABCD</b>. M, N lần lượt là trung điểm AB, AC. Tìm giao tuyến của <b>(SBN)</b> và
+            <b>(SCM)</b>.
+          </div>
+
+          <div class="info-box ib-blue">
+            <div class="ib-icon">📐</div>
+            <div>
+              <div class="ib-title">Mặt phẳng chứa đỉnh S</div>
+              Cả hai mặt phẳng (SBN) và (SCM) đều chứa đỉnh <b>S</b>.
+            </div>
+          </div>
+
+          <!-- Question 1.2 -->
+          <div>
+            <div style="font-size: 12px; font-weight: 600; margin-bottom: 6px;">
+              Dự đoán: S có phải là điểm chung thứ nhất không?
+            </div>
+            <div class="choice-group">
+              <button class="choice-btn" id="t1-btn-yes" onclick="t1SelectYes()">Có</button>
+              <button class="choice-btn" id="t1-btn-no" onclick="t1SelectNo()">Không</button>
+            </div>
+            <div id="t1-feedback-1" style="display:none; margin-top: 8px;" class="info-box ib-teal">
+              Đúng! Đỉnh S nằm trong tên gọi của cả (SBN) và (SCM) nên S là 1 điểm chung.
+            </div>
+          </div>
+
+          <!-- Step 1.3: Find 2nd Common Point -->
+          <div id="t1-step-13" style="display:none;">
+            <div class="step-title">
+              <div class="step-num">2</div>
+              Tìm điểm chung thứ hai G
+            </div>
+            <div class="step-desc">
+              Nhấp trực tiếp vào <b>giao điểm của BN và CM</b> trên mặt đáy (ABCD) trong không gian 3D.
+            </div>
+            <div style="margin-bottom: 8px;">
+              <button class="btn btn-teal" id="t1-btn-select-point" onclick="t1StartPointSelection()">
+                <i class="ti ti-pointer"></i> Chọn điểm
+              </button>
+            </div>
+            <div id="t1-feedback-2" class="info-box ib-gold" style="display:none;">
+              👉 Hãy nhấp chuột vào giao điểm G của BN và CM trên canvas.
+            </div>
+            <button class="btn btn-teal" id="t1-btn-build" style="display:none; margin-top: 8px;"
+              onclick="t1BuildLine()">
+              <i class="ti ti-vector"></i> Nối S và G thành giao tuyến SG
+            </button>
+          </div>
+
+          <!-- Step 1.5/1.6: Conclusion -->
+          <div id="t1-conclusion" style="display:none;" class="info-box ib-teal">
+            <div class="ib-icon">✓</div>
+            <div>
+              <div class="ib-title">Kết luận</div>
+              Giao tuyến của (SBN) và (SCM) là đường thẳng <b>SG</b> (màu đỏ). Hãy xoay hình 3D để kiểm chứng!
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 2 PANEL: GIAO ĐIỂM ĐƯỜNG THẲNG & MẶT PHẲNG -->
+        <div class="step-panel" id="panel-tab2">
+          <div class="step-title">
+            <div class="step-num">1</div>
+            Giao điểm BF ∩ (ABCD)
+          </div>
+          <div class="step-desc">
+            Cho E thuộc mặt bên (SCD), F thuộc SE. Tìm giao điểm của <b>BF</b> với mặt đáy <b>(ABCD)</b>.
+          </div>
+
+          <div class="info-box ib-blue">
+            <div class="ib-icon">💡</div>
+            <div>BF không nằm sẵn trong mặt nào của khối. Ta cần dùng <b>mặt phẳng phụ</b> chứa BF.</div>
+          </div>
+
+          <!-- Step 2.3: Select Auxiliary Plane -->
+          <div>
+            <div style="font-size: 12px; font-weight: 600; margin-bottom: 6px;">
+              Bước 1: Tạo mặt phẳng phụ (SBE) chứa đường thẳng BF:
+            </div>
+            <div class="check-list">
+              <div class="check-item" id="t2-pt-S">Đỉnh 1: <b>S</b></div>
+              <div class="check-item" id="t2-pt-B">Đỉnh 2: <b>B</b></div>
+              <div class="check-item" id="t2-pt-E">Đỉnh 3: <b>E</b></div>
+            </div>
+            <button class="btn btn-primary" id="t2-btn-select-aux" style="margin-top:8px;" onclick="t2BuildAuxPlane()">
+              <i class="ti ti-plane"></i> Dựng mặt phẳng phụ (SBE)
+            </button>
+          </div>
+
+          <!-- Step 2.4: Build Auxiliary Line -->
+          <div id="t2-step-24" style="display:none; margin-top: 10px;">
+            <div style="font-size: 12px; font-weight: 600; margin-bottom: 6px;">
+              Bước 2: Tìm giao tuyến của (SBE) và mặt đáy (ABCD):
+            </div>
+            <div class="info-box ib-blue" style="margin-bottom: 8px;">
+              <div class="ib-icon">📐</div>
+              <div>Hai mặt phẳng (SBE) và (ABCD) có điểm chung B và giao điểm của SE với mặt đáy.</div>
+            </div>
+            <button class="btn btn-teal" id="t2-btn-build-line" onclick="t2BuildAuxLine()">
+              <i class="ti ti-vector"></i> Dựng giao tuyến phụ
+            </button>
+          </div>
+
+          <!-- Step 2.5: Find Intersection -->
+          <div id="t2-step-25" style="display:none; margin-top: 10px;">
+            <div class="step-title" style="margin-bottom: 8px;">
+              <div class="step-num">3</div>
+              Xác định giao điểm của BF và giao tuyến phụ
+            </div>
+            <div class="info-box ib-teal" style="margin-bottom: 8px;">
+              <div class="ib-icon">📐</div>
+              <div>
+                <div class="ib-title">Giao tuyến phụ</div>
+                Mặt phẳng (SBE) cắt mặt đáy (ABCD) theo <b>giao tuyến phụ</b>.
+              </div>
+            </div>
+            <div style="margin-bottom: 8px;">
+              <button class="btn btn-teal" id="t2-btn-select-point" onclick="t2StartPointSelection()">
+                <i class="ti ti-pointer"></i> Chọn điểm
+              </button>
+            </div>
+            <div class="info-box ib-gold" id="t2-click-k-hint" style="display:none;">
+              <div class="ib-icon">👉</div>
+              <div>Nhấp vào giao điểm giữa <b>BF</b> và <b>giao tuyến phụ</b> trên canvas 3D.</div>
+            </div>
+
+            <!-- Naming Modal / Card -->
+            <div id="t2-name-modal"
+              style="display:none; margin-top: 8px; padding: 12px; background: #ffffff; border: 1px solid var(--border); border-radius: var(--radius); box-shadow: 0 4px 12px rgba(0,0,0,0.08);">
+              <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;">
+                🏷️ Đặt tên cho giao điểm mới:
+              </div>
+              <div style="display: flex; gap: 8px; align-items: center;">
+                <input type="text" id="t2-name-input" value="K" maxlength="3"
+                  style="width: 70px; padding: 6px 10px; border: 1px solid #cbd5e1; border-radius: 6px; font-weight: 700; text-align: center; text-transform: uppercase;">
+                <button class="btn btn-primary" onclick="t2ConfirmPointName()" style="padding: 6px 14px;">
+                  <i class="ti ti-check"></i> Xác nhận
+                </button>
+              </div>
+              <div id="t2-name-error"
+                style="display:none; font-size: 11.5px; color: #dc2626; margin-top: 6px; font-weight: 600;"></div>
+            </div>
+
+            <div id="t2-conclusion" style="display:none; margin-top: 8px;" class="info-box ib-teal">
+              <div class="ib-icon">✓</div>
+              <div>
+                <div class="ib-title" id="t2-conclusion-title">Kết quả: K = BF ∩ (ABCD)</div>
+                <span id="t2-conclusion-text">K chính là giao điểm của đường thẳng BF với mặt phẳng đáy (ABCD).</span>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- TAB 3 PANEL: HÌNH CHÓP S.ABCD -->
+        <div class="step-panel" id="panel-tab3">
+          <!-- Sub-Pill 3A Content -->
+          <div id="panel-tab3-pillA">
+            <div class="step-title">
+              <div class="step-num">3A</div>
+              Cấu trúc Hình Chóp S.ABCD
+            </div>
+            <div class="step-desc">
+              Nhấp vào các yếu tố trên hình 3D để khám phá tên gọi:
+            </div>
+            <div class="check-list">
+              <div class="check-item" id="t3-ck-apex" onclick="t3SelectApex()" style="cursor:pointer;">Đỉnh S</div>
+              <div class="check-item" id="t3-ck-base" onclick="t3SelectBase()" style="cursor:pointer;">Mặt đáy ABCD
+              </div>
+              <div class="check-item" id="t3-ck-sideface" onclick="t3SelectSideFace()" style="cursor:pointer;">Mặt bên
+                (SAB)</div>
+              <div class="check-item" id="t3-ck-sideedge" onclick="t3SelectSideEdge()" style="cursor:pointer;">Cạnh bên
+                SA</div>
+              <div class="check-item" id="t3-ck-baseedge" onclick="t3SelectBaseEdge()" style="cursor:pointer;">Cạnh đáy
+                AB</div>
+            </div>
+            <div style="font-size: 13px; font-weight: 700; color: var(--navy); margin-top: 10px; margin-bottom: 6px;"
+              id="t3-explore-count-text">
+              Đã khám phá: 0 / 5 mục
+            </div>
+
+            <!-- Edge Counting Section (unlocked after 5/5 explored) -->
+            <div id="t3-count-box"
+              style="display:none; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
+              <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 4px;">
+                🔢 Đếm số cạnh hình chóp S.ABCD:
+              </div>
+              <div style="font-size: 13px; font-weight: 700; color: var(--teal); margin-bottom: 8px;"
+                id="t3-edge-count-text">
+                Đã đếm: 0 / 8 cạnh
+              </div>
+              <div class="check-list" id="t3-edge-checklist"
+                style="display: grid; grid-template-columns: 1fr 1fr; gap: 6px;">
+                <div class="check-item" id="t3-ck-edge-SA" onclick="t3ClickEdgeCard('SA')" style="cursor:pointer;">Cạnh
+                  SA</div>
+                <div class="check-item" id="t3-ck-edge-SB" onclick="t3ClickEdgeCard('SB')" style="cursor:pointer;">Cạnh
+                  SB</div>
+                <div class="check-item" id="t3-ck-edge-SC" onclick="t3ClickEdgeCard('SC')" style="cursor:pointer;">Cạnh
+                  SC</div>
+                <div class="check-item" id="t3-ck-edge-SD" onclick="t3ClickEdgeCard('SD')" style="cursor:pointer;">Cạnh
+                  SD</div>
+                <div class="check-item" id="t3-ck-edge-AB" onclick="t3ClickEdgeCard('AB')" style="cursor:pointer;">Cạnh
+                  AB</div>
+                <div class="check-item" id="t3-ck-edge-BC" onclick="t3ClickEdgeCard('BC')" style="cursor:pointer;">Cạnh
+                  BC</div>
+                <div class="check-item" id="t3-ck-edge-CD" onclick="t3ClickEdgeCard('CD')" style="cursor:pointer;">Cạnh
+                  CD</div>
+                <div class="check-item" id="t3-ck-edge-DA" onclick="t3ClickEdgeCard('DA')" style="cursor:pointer;">Cạnh
+                  DA</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-Pill 3B Content -->
+          <div id="panel-tab3-pillB" style="display:none;">
+            <div class="step-title">
+              <div class="step-num">3B</div>
+              Phân loại Nét Liền / Nét Đứt
+            </div>
+            <div class="step-desc">
+              Xác định quy ước vẽ hình biểu diễn (Hình 4.11 SGK):
+            </div>
+            <button class="btn btn-outline" onclick="setCameraStandardSGK()">
+              <i class="ti ti-refresh"></i> Đặt về góc chuẩn SGK
+            </button>
+            <div class="edge-select-list" id="t3-edge-list"></div>
+            <button class="btn btn-teal" onclick="checkTab3BAnswer()">
+              <i class="ti ti-check"></i> Kiểm tra đáp án
+            </button>
+            <div id="t3b-feedback" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- TAB 4 PANEL: TỨ DIỆN S.ABC -->
+        <div class="step-panel" id="panel-tab4">
+          <!-- Sub-Pill 4A: Nhận diện & Tìm giao điểm -->
+          <div id="panel-tab4-pillA">
+            <div class="step-title">
+              <div class="step-num">4A</div>
+              Tứ diện S.ABC & Giao điểm
+            </div>
+            <div class="step-desc">
+              Tứ diện S.ABC là hình chóp đáy tam giác (gồm đúng 4 mặt).
+            </div>
+
+            <!-- Step 4A.1: Explore 4 faces -->
+            <div class="info-box ib-blue" style="margin-bottom: 8px;">
+              <div class="ib-icon">💡</div>
+              <div>Nhấp vào danh sách hoặc hình 3D để khám phá cả 4 mặt của tứ diện:</div>
+            </div>
+            <div class="check-list">
+              <div class="check-item" id="t4-ck-sab" onclick="t4SelectFace('SAB')" style="cursor:pointer;">Mặt bên (SAB)
+              </div>
+              <div class="check-item" id="t4-ck-sbc" onclick="t4SelectFace('SBC')" style="cursor:pointer;">Mặt bên (SBC)
+              </div>
+              <div class="check-item" id="t4-ck-sac" onclick="t4SelectFace('SAC')" style="cursor:pointer;">Mặt bên (SAC)
+              </div>
+              <div class="check-item" id="t4-ck-abc" onclick="t4SelectFace('ABC')" style="cursor:pointer;">Mặt đáy (ABC)
+              </div>
+            </div>
+            <div style="font-size: 13px; font-weight: 700; color: var(--navy); margin-top: 8px; margin-bottom: 8px;"
+              id="t4-explore-count-text">
+              Đã khám phá: 0 / 4 mặt
+            </div>
+
+            <!-- Step 4A.2: Intersection BF ∩ (SAC) -->
+            <div id="t4-inter-section"
+              style="display:none; margin-top: 12px; padding-top: 10px; border-top: 1px dashed #cbd5e1;">
+              <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;">
+                🎯 Tìm giao điểm của BF với mặt phẳng (SAC):
+              </div>
+
+              <div>
+                <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Bước 1: Chọn mặt phẳng phụ (SBF)
+                  chứa BF</div>
+                <button class="btn btn-primary" id="t4-btn-aux-plane" onclick="t4BuildAuxPlane()">
+                  <i class="ti ti-plane"></i> Dựng mặt phẳng phụ (SBF)
+                </button>
+              </div>
+
+              <div id="t4-step-2" style="display:none; margin-top: 8px;">
+                <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Bước 2: Dựng giao tuyến phụ SF của
+                  (SBF) và (SAC)</div>
+                <button class="btn btn-teal" id="t4-btn-aux-line" onclick="t4BuildAuxLine()">
+                  <i class="ti ti-vector"></i> Dựng giao tuyến phụ SF
+                </button>
+              </div>
+
+              <div id="t4-step-3" style="display:none; margin-top: 8px;">
+                <div style="font-size: 12px; font-weight: 600; margin-bottom: 4px;">Bước 3: Nhấp vào giao điểm F trên
+                  canvas 3D</div>
+                <div style="margin-bottom: 8px;">
+                  <button class="btn btn-teal" id="t4-btn-select-point" onclick="t4StartPointSelection()">
+                    <i class="ti ti-pointer"></i> Chọn điểm
+                  </button>
+                </div>
+                <div class="info-box ib-gold" id="t4-k-hint" style="display:none;">
+                  <div class="ib-icon">👉</div>
+                  <div>Nhấp chọn giao điểm F giữa BF và SF trên canvas 3D.</div>
+                </div>
+                <div id="t4-conclusion" style="display:none; margin-top: 6px;" class="info-box ib-teal">
+                  <div class="ib-icon">✓</div>
+                  <div><b>Kết quả:</b> F chính là giao điểm của đường thẳng BF với mặt phẳng (SAC).</div>
+                </div>
+              </div>
+            </div>
+          </div>
+
+          <!-- Sub-Pill 4B: THIẾT DIỆN TRƯỢT MNP -->
+          <div id="panel-tab4-pillB" style="display:none;">
+            <div class="step-title">
+              <div class="step-num">4B</div>
+              Thiết diện trượt MNP (Tứ diện S.ABC)
+            </div>
+            <div class="step-desc">
+              N, P là trung điểm SB, SC. <b>Kéo thanh trượt điểm M trên SA</b> để xem thiết diện tam giác MNP biến đổi
+              mượt mà!
+            </div>
+
+            <div class="range-slider-row">
+              <label>
+                <span>Vị trí M trên SA (t):</span>
+                <span id="t4-m-val">0.50</span>
+              </label>
+              <input type="range" id="t4-m-slider" min="0.10" max="0.90" step="0.01" value="0.5">
+            </div>
+
+            <div class="info-box ib-teal">
+              <div class="ib-icon">✨</div>
+              <div><b>Thiết diện MNP</b> tô màu cam phát sáng nổi bật (emissive), tự động tính lại mượt mà theo thời
+                gian thực khi M trượt.</div>
+            </div>
+          </div>
+
+          <!-- Sub-Pill 4C: NÉT LIỀN / ĐỨT TỨ DIỆN -->
+          <div id="panel-tab4-pillC" style="display:none;">
+            <div class="step-title">
+              <div class="step-num">4C</div>
+              Nét liền / Nét đứt (Tứ diện S.ABC)
+            </div>
+            <div class="step-desc">
+              Phân loại 6 cạnh của tứ diện S.ABC theo quy ước vẽ SGK (Hình 4.12):
+            </div>
+            <button class="btn btn-outline" onclick="setCameraTetraSGK()">
+              <i class="ti ti-refresh"></i> Đặt góc nhìn SGK
+            </button>
+            <div class="edge-select-list" id="t4c-edge-list"></div>
+            <button class="btn btn-teal" onclick="checkTab4CAnswer()">
+              <i class="ti ti-check"></i> Kiểm tra đáp án
+            </button>
+            <div id="t4c-feedback" style="display:none;"></div>
+          </div>
+        </div>
+
+        <!-- TAB 5 PANEL: LUYỆN TẬP TỔNG HỢP -->
+        <div class="step-panel" id="panel-tab5">
+          <!-- Pill 5A -->
+          <div id="panel-tab5-pillA">
+            <div class="step-title">
+              <div class="step-num">5A</div>
+              Nhiều cặp mặt phẳng
+            </div>
+            <div class="step-desc">
+              Luyện tập xác định giao tuyến trên hình chóp đáy hình thang <b>S.ABCD (AB ∥ CD)</b>.
+            </div>
+            <div style="display:flex; flex-direction:column; gap:10px; margin-top:10px; margin-bottom:12px;">
+              <button class="btn btn-outline" style="padding:10px 14px; font-size:13px;" onclick="t5aShowCase(1)">Cặp 1:
+                (SAB) ∩ (SCD)</button>
+              <button class="btn btn-outline" style="padding:10px 14px; font-size:13px;" onclick="t5aShowCase(2)">Cặp 2:
+                (SAC) ∩ (SBD)</button>
+            </div>
+            <div id="t5a-info" class="info-box ib-blue" style="display:none; margin-top:12px; padding:12px 14px;"></div>
+          </div>
+
+          <!-- Pill 5B: THIẾT DIỆN TĨNH -->
+          <div id="panel-tab5-pillB" style="display:none;">
+            <div class="step-title">
+              <div class="step-num">5B</div>
+              Xây dựng Thiết diện (Tĩnh)
+            </div>
+            <div class="step-desc">
+              M, N, P là trung điểm cố định của SA, SB, SC. Dựng thiết diện MNPQ từng bước:
+            </div>
+
+            <div class="check-list" style="margin-top: 10px; margin-bottom: 14px;">
+              <div class="check-item" id="t5b-step1">1. Giao tuyến (MNP) ∩ (SAB) = MN</div>
+              <div class="check-item" id="t5b-step2">2. Giao tuyến (MNP) ∩ (SBC) = NP</div>
+              <div class="check-item" id="t5b-step3">3. Giao điểm Q = SD ∩ (MNP) & Nối PQ, QM</div>
+            </div>
+
+            <div style="margin-top: 8px; margin-bottom: 14px;">
+              <button class="btn btn-teal" id="t5b-btn-step" onclick="t5bNextStep()"
+                style="padding: 10px 14px; font-size: 13px;">
+                <i class="ti ti-player-play"></i> Thực hiện bước tiếp theo
+              </button>
+            </div>
+
+            <div id="t5b-conclusion" style="display:none; margin-top: 12px; padding: 12px 14px;"
+              class="info-box ib-teal">
+              <div class="ib-icon">✓</div>
+              <div><b>Hoàn thành!</b> Thiết diện MNPQ là tứ giác cắt trọn qua 4 mặt hình chóp.</div>
+            </div>
+          </div>
+        </div>
+
+      </div>
+
+      <!-- Controls Footer -->
+      <div class="controls-footer">
+        <!-- Next / Back Step Navigation Buttons -->
+        <div style="display: flex; gap: 8px; margin-bottom: 4px;">
+          <button class="btn btn-outline" id="btn-prev-step" onclick="goToPrevStep()" style="flex: 1;" disabled>
+            <i class="ti ti-chevron-left"></i> Quay lại
+          </button>
+          <button class="btn btn-primary" id="btn-next-step" onclick="goToNextStep()" style="flex: 1;">
+            Tiếp tục <i class="ti ti-chevron-right"></i>
+          </button>
+        </div>
+
+        <div class="toggle-row">
+          <span>Hiện mặt phẳng tô mờ</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="tog-planes" checked onchange="togglePlanes(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <div class="toggle-row">
+          <span>Hiện lưới tham chiếu</span>
+          <label class="toggle-switch">
+            <input type="checkbox" id="tog-grid" checked onchange="toggleGrid(this.checked)">
+            <span class="slider"></span>
+          </label>
+        </div>
+        <button class="btn btn-outline" onclick="resetCameraDefault()">
+          <i class="ti ti-refresh"></i> Đặt lại góc nhìn mặc định
+        </button>
+      </div>
+
+    </div>
+
+  </div>
+
+  <!-- JavaScript Application Engine -->
+  <script>
+    /* ========================================================================
+       1. THREE.JS ENGINE SETUP & DESIGN SYSTEM TOKENS
+       ======================================================================== */
+    const COLOR_PLANE_1 = 0x3b82f6;   // Blue (SBN)
+    const COLOR_PLANE_2 = 0xa78bfa;   // Purple (SCM)
+    const COLOR_PLANE_AUX = 0xf59e0b; // Orange (SBE)
+    const COLOR_SECTION = 0xf97316;   // Vibrant Orange Emissive
+    const COLOR_LINE_RESULT = 0xef4444; // Red (Giao tuyến)
+    const COLOR_POINT_FREE = 0x378add;
+    const COLOR_POINT_ACTIVE = 0xfac775;
+    const COLOR_EDGE_SOLID = 0xe6edf3;
+    const COLOR_EDGE_HIDDEN = 0xe6edf3; // Crisp bright color matching prototype3 so dashed lines are clearly visible
+
+    const canvas = document.getElementById('three-canvas');
+    const container = canvas.parentElement;
+    const width = (container && container.clientWidth) ? container.clientWidth : 800;
+    const height = (container && container.clientHeight) ? container.clientHeight : 600;
+
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a1628);
+
+    const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 1000);
+    camera.position.set(7.3, 7.5, 14.5);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(width, height);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    orbitControls.enableDamping = true;
+    orbitControls.dampingFactor = 0.08;
+    orbitControls.target.set(0, 0.8, 0);
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.65);
+    dirLight.position.set(6, 12, 8);
+    scene.add(dirLight);
+
+    // Grid
+    const gridHelper = new THREE.GridHelper(12, 12, 0x30363d, 0x1c2333);
+    gridHelper.position.y = 0;
+    scene.add(gridHelper);
+
+    // Window Resize Handler
+    window.addEventListener('resize', () => {
+      const w = container.clientWidth || 800;
+      const h = container.clientHeight || 600;
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h);
+    });
+
+    /* ========================================================================
+       2. GEOMETRY MATH UTILITIES (06_geometry_math.md)
+       ======================================================================== */
+    function definePlaneFromPoints(p1, p2, p3) {
+      const v1 = new THREE.Vector3().subVectors(p2, p1);
+      const v2 = new THREE.Vector3().subVectors(p3, p1);
+      const normal = new THREE.Vector3().crossVectors(v1, v2);
+      if (normal.lengthSq() < 1e-6) return null;
+      normal.normalize();
+      return { normal, pointOnPlane: p1.clone() };
+    }
+
+    function lineIntersectPlane(lineStart, lineEnd, plane) {
+      const lineDir = new THREE.Vector3().subVectors(lineEnd, lineStart);
+      const denom = lineDir.dot(plane.normal);
+      if (Math.abs(denom) < 1e-8) return null;
+      const t = new THREE.Vector3().subVectors(plane.pointOnPlane, lineStart).dot(plane.normal) / denom;
+      const point = lineStart.clone().add(lineDir.clone().multiplyScalar(t));
+      return { point, t };
+    }
+
+    function segmentIntersection(p1, p2, p3, p4, epsilon = 0.05) {
+      const d1 = new THREE.Vector3().subVectors(p2, p1);
+      const d2 = new THREE.Vector3().subVectors(p4, p3);
+      const r = new THREE.Vector3().subVectors(p1, p3);
+      const a = d1.dot(d1), e = d2.dot(d2), f = d2.dot(r);
+      if (a < 1e-10 || e < 1e-10) return null;
+      const c = d1.dot(r), b = d1.dot(d2);
+      const denom = a * e - b * b;
+      if (Math.abs(denom) < 1e-8) return null;
+      const t = (b * f - c * e) / denom;
+      const s = (a * f - b * c) / denom;
+      const pt1 = p1.clone().add(d1.clone().multiplyScalar(t));
+      const pt2 = p3.clone().add(d2.clone().multiplyScalar(s));
+      if (pt1.distanceTo(pt2) > epsilon) return null;
+      return pt1.lerp(pt2, 0.5);
+    }
+
+    /* ========================================================================
+       3. 3D SCENE OBJECT BUILDERS & LABELS
+       ======================================================================== */
+    const labelLayer = document.getElementById('label-layer');
+    const labelsMap = new Map();
+    const sceneObjects = [];
+
+    let currentSolidMesh = null;
+    const currentOcclusionEdges = [];
+
+    function clearSceneObjects() {
+      sceneObjects.forEach(obj => {
+        scene.remove(obj);
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) {
+          if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+          else obj.material.dispose();
+        }
+      });
+      sceneObjects.length = 0;
+      labelsMap.forEach((pos, el) => el.remove());
+      labelsMap.clear();
+
+      currentOcclusionEdges.length = 0;
+      if (currentSolidMesh) {
+        if (currentSolidMesh.geometry) currentSolidMesh.geometry.dispose();
+        if (currentSolidMesh.material) currentSolidMesh.material.dispose();
+        currentSolidMesh = null;
+      }
+    }
+
+    function buildPyramidSolidMesh(pS, pA, pB, pC, pD) {
+      const positions = [];
+      function pushTri(v1, v2, v3) {
+        positions.push(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z);
+      }
+      pushTri(pS, pA, pB);
+      pushTri(pS, pB, pC);
+      pushTri(pS, pC, pD);
+      pushTri(pS, pD, pA);
+      pushTri(pA, pB, pC);
+      pushTri(pA, pC, pD);
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geo.computeVertexNormals();
+
+      const mat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.updateMatrixWorld(true);
+      return mesh;
+    }
+
+    function buildTetrahedronSolidMesh(pS, pA, pB, pC) {
+      const positions = [];
+      function pushTri(v1, v2, v3) {
+        positions.push(v1.x, v1.y, v1.z, v2.x, v2.y, v2.z, v3.x, v3.y, v3.z);
+      }
+      pushTri(pS, pA, pB);
+      pushTri(pS, pB, pC);
+      pushTri(pS, pC, pA);
+      pushTri(pA, pB, pC);
+
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geo.computeVertexNormals();
+
+      const mat = new THREE.MeshBasicMaterial({ side: THREE.DoubleSide });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.updateMatrixWorld(true);
+      return mesh;
+    }
+
+    function createOcclusionLine(p1, p2, name = '', colorSolid = COLOR_EDGE_SOLID, colorDashed = COLOR_EDGE_SOLID) {
+      const geoSolid = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+      const matSolid = new THREE.LineBasicMaterial({ color: colorSolid, linewidth: 2, depthTest: false });
+      const lineSolid = new THREE.Line(geoSolid, matSolid);
+      lineSolid.renderOrder = 999;
+      scene.add(lineSolid);
+      sceneObjects.push(lineSolid);
+
+      const geoDashed = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+      const matDashed = new THREE.LineDashedMaterial({ color: colorDashed, dashSize: 0.18, gapSize: 0.12, depthTest: false, transparent: true, opacity: 0.95 });
+      const lineDashed = new THREE.Line(geoDashed, matDashed);
+      lineDashed.computeLineDistances();
+      lineDashed.renderOrder = 999;
+      lineDashed.visible = false;
+      scene.add(lineDashed);
+      sceneObjects.push(lineDashed);
+
+      const edgeObj = { name, p1, p2, lineSolid, lineDashed, isDashed: false };
+      currentOcclusionEdges.push(edgeObj);
+      return edgeObj;
+    }
+
+    function isEdgeOccluded(p1, p2, camera, solidMesh) {
+      if (!solidMesh) return false;
+      const midpoint = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+
+      const rayDir = new THREE.Vector3().subVectors(midpoint, camera.position);
+      const distToMidpoint = rayDir.length();
+      if (distToMidpoint < 1e-4) return false;
+      rayDir.normalize();
+
+      const ray = new THREE.Raycaster(camera.position, rayDir, 0.1, distToMidpoint - 0.08);
+      const hits = ray.intersectObject(solidMesh);
+
+      return hits.length > 0;
+    }
+
+    function updateOcclusion() {
+      if ((currentTab === 3 && currentPill === 'B') || (currentTab === 4 && currentPill === 'C')) {
+        return;
+      }
+      if (!currentSolidMesh || currentOcclusionEdges.length === 0) return;
+
+      currentOcclusionEdges.forEach(edge => {
+        const occluded = isEdgeOccluded(edge.p1, edge.p2, camera, currentSolidMesh);
+        edge.isDashed = occluded;
+        edge.lineSolid.visible = !occluded;
+        edge.lineDashed.visible = occluded;
+      });
+    }
+
+    function createPointLabel(name, position, colorHex = '#ffffff') {
+      const el = document.createElement('div');
+      el.className = 'pt-label';
+      el.textContent = name;
+      el.style.color = colorHex;
+      labelLayer.appendChild(el);
+      labelsMap.set(el, position);
+      return el;
+    }
+
+    function createPointMesh(pos, color = COLOR_POINT_FREE, r = 0.09) {
+      const geo = new THREE.SphereGeometry(r, 24, 24);
+      const mat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.copy(pos);
+      scene.add(mesh);
+      sceneObjects.push(mesh);
+      return mesh;
+    }
+
+    function createLineMesh(p1, p2, color = COLOR_EDGE_SOLID, isDashed = false) {
+      const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+      let mat;
+      if (isDashed) {
+        mat = new THREE.LineDashedMaterial({ color, dashSize: 0.18, gapSize: 0.12, transparent: true, opacity: 0.7 });
+      } else {
+        mat = new THREE.LineBasicMaterial({ color, linewidth: 2 });
+      }
+      const line = new THREE.Line(geo, mat);
+      if (isDashed) line.computeLineDistances();
+      scene.add(line);
+      sceneObjects.push(line);
+      return line;
+    }
+
+    function createPolygonMesh(points, color, opacity = 0.22) {
+      const geom = new THREE.BufferGeometry();
+      const vertices = [];
+      const indices = [];
+
+      points.forEach(p => {
+        vertices.push(p.x, p.y, p.z);
+      });
+
+      for (let i = 1; i < points.length - 1; i++) {
+        indices.push(0, i, i + 1);
+      }
+
+      geom.setAttribute('position', new THREE.Float32BufferAttribute(vertices, 3));
+      geom.setIndex(indices);
+      geom.computeVertexNormals();
+
+      const mat = new THREE.MeshStandardMaterial({
+        color, transparent: true, opacity, side: THREE.DoubleSide, depthWrite: false, emissive: color, emissiveIntensity: 0.15
+      });
+      const mesh = new THREE.Mesh(geom, mat);
+      scene.add(mesh);
+      sceneObjects.push(mesh);
+      return mesh;
+    }
+
+    function updateHtmlLabels() {
+      const rect = container.getBoundingClientRect();
+      labelsMap.forEach((pos, el) => {
+        const p = pos.clone().add(new THREE.Vector3(0, 0.2, 0));
+        const proj = p.project(camera);
+        if (proj.z > 1) {
+          el.style.display = 'none';
+        } else {
+          el.style.display = 'block';
+          const x = (proj.x * 0.5 + 0.5) * rect.width;
+          const y = (-proj.y * 0.5 + 0.5) * rect.height;
+          el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -100%)`;
+        }
+      });
+    }
+
+    /* ========================================================================
+       4. NAVIGATION & TAB SYSTEM STATE
+       ======================================================================== */
+    let currentTab = 1;
+    let currentPill = 'A';
+
+    // Base Pyramid Coordinates
+    const S = new THREE.Vector3(0, 4.5, 0);
+    const A = new THREE.Vector3(-2.2, 0, 2.2);
+    const B = new THREE.Vector3(2.2, 0, 2.5);
+    const C = new THREE.Vector3(3.0, 0, -1.8);
+    const D = new THREE.Vector3(-1.8, 0, -2.4);
+
+    // Midpoints
+    const M_ab = new THREE.Vector3().addVectors(A, B).multiplyScalar(0.5);
+    const N_ac = new THREE.Vector3().addVectors(A, C).multiplyScalar(0.5);
+
+    const STEP_SEQUENCE = [
+      { tab: 1, pill: 'A' },
+      { tab: 2, pill: 'A' },
+      { tab: 3, pill: 'A' },
+      { tab: 3, pill: 'B' },
+      { tab: 4, pill: 'A' },
+      { tab: 4, pill: 'B' },
+      { tab: 4, pill: 'C' },
+      { tab: 5, pill: 'A' },
+      { tab: 5, pill: 'B' }
+    ];
+
+    let currentStepIndex = 0;
+
+    function resetAllTabStates() {
+      // --- TAB 1 RESET ---
+      t1PointSelecting = false; t1PointSelected = false;
+      const t1BtnSel = document.getElementById('t1-btn-select-point');
+      if (t1BtnSel) { t1BtnSel.disabled = false; t1BtnSel.className = 'btn btn-teal'; t1BtnSel.innerHTML = '<i class="ti ti-pointer"></i> Chọn điểm'; }
+      const t1BtnYes = document.getElementById('t1-btn-yes');
+      const t1BtnNo = document.getElementById('t1-btn-no');
+      if (t1BtnYes) t1BtnYes.classList.remove('selected');
+      if (t1BtnNo) t1BtnNo.classList.remove('selected');
+      const t1Fb1 = document.getElementById('t1-feedback-1');
+      if (t1Fb1) { t1Fb1.style.display = 'none'; t1Fb1.className = 'info-box ib-teal'; }
+      const t1Step13 = document.getElementById('t1-step-13');
+      if (t1Step13) t1Step13.style.display = 'none';
+      const t1Fb2 = document.getElementById('t1-feedback-2');
+      if (t1Fb2) {
+        t1Fb2.style.display = 'none';
+        t1Fb2.className = 'info-box ib-gold';
+        t1Fb2.innerHTML = '👉 Hãy nhấp chuột vào giao điểm G của BN và CM trên canvas.';
+      }
+      const t1BtnBuild = document.getElementById('t1-btn-build');
+      if (t1BtnBuild) t1BtnBuild.style.display = 'none';
+      const t1Conclusion = document.getElementById('t1-conclusion');
+      if (t1Conclusion) t1Conclusion.style.display = 'none';
+
+      t1PointGMesh = null; t1PointGLabel = null; t1PlaneSBN = null; t1PlaneSCM = null; t1LineSG = null;
+
+      // --- TAB 2 RESET ---
+      t2PointSelecting = false; t2PointSelected = false;
+      const t2BtnSel = document.getElementById('t2-btn-select-point');
+      if (t2BtnSel) { t2BtnSel.disabled = false; t2BtnSel.className = 'btn btn-teal'; t2BtnSel.innerHTML = '<i class="ti ti-pointer"></i> Chọn điểm'; }
+      ['t2-pt-S', 't2-pt-B', 't2-pt-E'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('done');
+      });
+      const t2BtnAux = document.getElementById('t2-btn-select-aux');
+      if (t2BtnAux) t2BtnAux.style.display = 'inline-flex';
+      const t2BtnLine = document.getElementById('t2-btn-build-line');
+      if (t2BtnLine) t2BtnLine.style.display = 'inline-flex';
+      const t2Step24 = document.getElementById('t2-step-24');
+      if (t2Step24) t2Step24.style.display = 'none';
+      const t2Step25 = document.getElementById('t2-step-25');
+      if (t2Step25) t2Step25.style.display = 'none';
+      const t2Modal = document.getElementById('t2-name-modal');
+      if (t2Modal) t2Modal.style.display = 'none';
+      const t2Conclusion = document.getElementById('t2-conclusion');
+      if (t2Conclusion) t2Conclusion.style.display = 'none';
+      const t2Hint = document.getElementById('t2-click-k-hint');
+      if (t2Hint) {
+        t2Hint.style.display = 'none';
+        t2Hint.className = 'info-box ib-gold';
+        t2Hint.innerHTML = '<div class="ib-icon">👉</div><div>Nhấp vào giao điểm giữa <b>BF</b> và <b>giao tuyến phụ</b> trên canvas 3D.</div>';
+      }
+      const t2Input = document.getElementById('t2-name-input');
+      if (t2Input) t2Input.value = 'K';
+      t2SelectedPointName = 'K';
+      t2PointKMesh = null; t2PointKLabel = null; t2AuxPlaneMesh = null; t2AuxLineMesh = null; t2LineBFMesh = null;
+
+      // --- TAB 3A RESET ---
+      t3EdgeCount = 0;
+      t3EdgesCounted.clear();
+      t3ExploredItems.clear();
+      const t3ExpTxt = document.getElementById('t3-explore-count-text');
+      if (t3ExpTxt) t3ExpTxt.textContent = 'Đã khám phá: 0 / 5 mục';
+      const t3EdgeTxt = document.getElementById('t3-edge-count-text');
+      if (t3EdgeTxt) t3EdgeTxt.textContent = 'Đã đếm: 0 / 8 cạnh';
+      const t3CountBox = document.getElementById('t3-count-box');
+      if (t3CountBox) t3CountBox.style.display = 'none';
+      ['apex', 'base', 'sideface', 'sideedge', 'baseedge'].forEach(id => {
+        const el = document.getElementById('t3-ck-' + id);
+        if (el) el.classList.remove('done');
+      });
+      ['SA', 'SB', 'SC', 'SD', 'AB', 'BC', 'CD', 'DA'].forEach(name => {
+        const el = document.getElementById('t3-ck-edge-' + name);
+        if (el) el.classList.remove('done');
+      });
+      const t3InfoBox = document.getElementById('t3-info-box');
+      if (t3InfoBox) t3InfoBox.style.display = 'none';
+
+      // --- TAB 3B RESET ---
+      if (typeof t3EdgesList !== 'undefined') {
+        t3EdgesList.forEach(eName => {
+          t3UserSelections[eName] = 'solid';
+          const btnSolid = document.getElementById(`t3-btn-${eName}-solid`);
+          const btnDashed = document.getElementById(`t3-btn-${eName}-dashed`);
+          if (btnSolid) btnSolid.className = 'mini-btn active-solid';
+          if (btnDashed) btnDashed.className = 'mini-btn';
+        });
+        const t3bRes = document.getElementById('t3b-result');
+        if (t3bRes) t3bRes.style.display = 'none';
+      }
+
+      // --- TAB 4A RESET ---
+      t4PointSelecting = false; t4PointSelected = false;
+      const t4BtnSel = document.getElementById('t4-btn-select-point');
+      if (t4BtnSel) { t4BtnSel.disabled = false; t4BtnSel.className = 'btn btn-teal'; t4BtnSel.innerHTML = '<i class="ti ti-pointer"></i> Chọn điểm'; }
+      t4ExploredFaces.clear();
+      const t4ExpTxt = document.getElementById('t4-explore-count-text');
+      if (t4ExpTxt) t4ExpTxt.textContent = 'Đã khám phá: 0 / 4 mặt';
+      const t4InterSec = document.getElementById('t4-inter-section');
+      if (t4InterSec) t4InterSec.style.display = 'none';
+      ['sab', 'sbc', 'sac', 'abc'].forEach(id => {
+        const el = document.getElementById('t4-ck-' + id);
+        if (el) el.classList.remove('done');
+      });
+      const t4BtnAux = document.getElementById('t4-btn-select-aux');
+      if (t4BtnAux) t4BtnAux.style.display = 'inline-flex';
+      const t4BtnLine = document.getElementById('t4-btn-build-line');
+      if (t4BtnLine) t4BtnLine.style.display = 'inline-flex';
+      const t4Step2 = document.getElementById('t4-step-2');
+      if (t4Step2) t4Step2.style.display = 'none';
+      const t4Step3 = document.getElementById('t4-step-3');
+      if (t4Step3) t4Step3.style.display = 'none';
+      const t4Conclusion = document.getElementById('t4-conclusion');
+      if (t4Conclusion) t4Conclusion.style.display = 'none';
+      const t4Hint = document.getElementById('t4-click-k-hint');
+      if (t4Hint) {
+        t4Hint.style.display = 'none';
+        t4Hint.className = 'info-box ib-gold';
+        t4Hint.innerHTML = '<div class="ib-icon">👉</div><div>Nhấp vào giao điểm giữa SF và AC trên canvas 3D.</div>';
+      }
+      t4AuxPlane = null; t4AuxLine = null; t4PointKMesh = null; t4PointKLabel = null;
+
+      // --- TAB 4B RESET ---
+      const t4Slider = document.getElementById('t4-m-slider');
+      if (t4Slider) {
+        t4Slider.value = 0.5;
+        const t4Val = document.getElementById('t4-m-val');
+        if (t4Val) t4Val.textContent = '0.50';
+      }
+
+      // --- TAB 4C RESET ---
+      if (typeof t4cEdgesList !== 'undefined') {
+        t4cEdgesList.forEach(eName => {
+          t4cUserSelections[eName] = 'solid';
+          const btnSolid = document.getElementById(`t4c-btn-${eName}-solid`);
+          const btnDashed = document.getElementById(`t4c-btn-${eName}-dashed`);
+          if (btnSolid) btnSolid.className = 'mini-btn active-solid';
+          if (btnDashed) btnDashed.className = 'mini-btn';
+        });
+        const t4cRes = document.getElementById('t4c-result');
+        if (t4cRes) t4cRes.style.display = 'none';
+      }
+
+      // --- TAB 5A RESET ---
+      const t5aInfo = document.getElementById('t5a-info');
+      if (t5aInfo) t5aInfo.style.display = 'none';
+
+      // --- TAB 5B RESET ---
+      t5bStep = 0;
+      ['t5b-step1', 't5b-step2', 't5b-step3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) el.classList.remove('done');
+      });
+      const t5bBtn = document.getElementById('t5b-btn-step');
+      if (t5bBtn) {
+        t5bBtn.style.display = 'inline-flex';
+        t5bBtn.innerHTML = '<i class="ti ti-player-play"></i> Thực hiện bước tiếp theo';
+      }
+      const t5bConclusion = document.getElementById('t5b-conclusion');
+      if (t5bConclusion) t5bConclusion.style.display = 'none';
+    }
+
+    function syncStepUI() {
+      const step = STEP_SEQUENCE[currentStepIndex];
+      currentTab = step.tab;
+      currentPill = step.pill;
+
+      // Update main tabs UI
+      document.querySelectorAll('.step-tab').forEach(t => {
+        t.classList.toggle('active', parseInt(t.dataset.tab) === currentTab);
+      });
+      document.querySelectorAll('.step-panel').forEach((p, idx) => {
+        p.classList.toggle('active', idx + 1 === currentTab);
+      });
+
+      setupSubPills();
+
+      // Update sub-panels
+      if (currentTab === 3) {
+        document.getElementById('panel-tab3-pillA').style.display = currentPill === 'A' ? 'block' : 'none';
+        document.getElementById('panel-tab3-pillB').style.display = currentPill === 'B' ? 'block' : 'none';
+      } else if (currentTab === 4) {
+        document.getElementById('panel-tab4-pillA').style.display = currentPill === 'A' ? 'block' : 'none';
+        document.getElementById('panel-tab4-pillB').style.display = currentPill === 'B' ? 'block' : 'none';
+        document.getElementById('panel-tab4-pillC').style.display = currentPill === 'C' ? 'block' : 'none';
+      } else if (currentTab === 5) {
+        document.getElementById('panel-tab5-pillA').style.display = currentPill === 'A' ? 'block' : 'none';
+        document.getElementById('panel-tab5-pillB').style.display = currentPill === 'B' ? 'block' : 'none';
+      }
+
+      // Update Next / Prev Buttons State
+      const btnPrev = document.getElementById('btn-prev-step');
+      const btnNext = document.getElementById('btn-next-step');
+      if (btnPrev) btnPrev.disabled = (currentStepIndex === 0);
+      if (btnNext) {
+        if (currentStepIndex === STEP_SEQUENCE.length - 1) {
+          btnNext.innerHTML = 'Hoàn thành <i class="ti ti-check"></i>';
+          btnNext.disabled = true;
+        } else {
+          btnNext.innerHTML = 'Tiếp tục <i class="ti ti-chevron-right"></i>';
+          btnNext.disabled = false;
+        }
+      }
+
+      resetAllTabStates();
+      loadTabScene();
+    }
+
+    function goToNextStep() {
+      if (currentStepIndex < STEP_SEQUENCE.length - 1) {
+        currentStepIndex++;
+        syncStepUI();
+      }
+    }
+
+    function goToPrevStep() {
+      if (currentStepIndex > 0) {
+        currentStepIndex--;
+        syncStepUI();
+      }
+    }
+
+    document.querySelectorAll('.step-tab').forEach(tabEl => {
+      tabEl.addEventListener('click', () => {
+        const tabNum = parseInt(tabEl.dataset.tab);
+        const idx = STEP_SEQUENCE.findIndex(s => s.tab === tabNum);
+        if (idx !== -1) {
+          currentStepIndex = idx;
+          syncStepUI();
+        }
+      });
+    });
+
+    function setupSubPills() {
+      const bar = document.getElementById('sub-pills-bar');
+      bar.innerHTML = '';
+
+      if (currentTab === 3) {
+        bar.style.display = 'flex';
+        bar.innerHTML = `
+          <div class="sub-pill ${currentPill === 'A' ? 'active' : ''}" onclick="switchPill('A')">Pill A: Cấu trúc</div>
+          <div class="sub-pill ${currentPill === 'B' ? 'active' : ''}" onclick="switchPill('B')">Pill B: Nét liền / đứt</div>
+        `;
+      } else if (currentTab === 4) {
+        bar.style.display = 'flex';
+        bar.innerHTML = `
+          <div class="sub-pill ${currentPill === 'A' ? 'active' : ''}" onclick="switchPill('A')">4A: Nhận diện</div>
+          <div class="sub-pill ${currentPill === 'B' ? 'active' : ''}" onclick="switchPill('B')">4B: Thiết diện trượt</div>
+          <div class="sub-pill ${currentPill === 'C' ? 'active' : ''}" onclick="switchPill('C')">4C: Nét liền / đứt</div>
+        `;
+      } else if (currentTab === 5) {
+        bar.style.display = 'flex';
+        bar.innerHTML = `
+          <div class="sub-pill ${currentPill === 'A' ? 'active' : ''}" onclick="switchPill('A')">5A: Cặp mặt</div>
+          <div class="sub-pill ${currentPill === 'B' ? 'active' : ''}" onclick="switchPill('B')">5B: Thiết diện tĩnh</div>
+        `;
+      } else {
+        bar.style.display = 'none';
+        currentPill = 'A';
+      }
+    }
+
+    function switchPill(pill) {
+      const idx = STEP_SEQUENCE.findIndex(s => s.tab === currentTab && s.pill === pill);
+      if (idx !== -1) {
+        currentStepIndex = idx;
+        syncStepUI();
+      }
+    }
+
+    /* ========================================================================
+       5. SCENE BUILDERS & LOGIC
+       ======================================================================== */
+    let interactiveHitObjects = [];
+    let raycaster = new THREE.Raycaster();
+    let mouse = new THREE.Vector2();
+
+    function loadTabScene() {
+      clearSceneObjects();
+      interactiveHitObjects = [];
+
+      if (currentTab === 3) {
+        setCameraStandardSGK();
+        if (currentPill === 'A') {
+          orbitControls.enableRotate = true;
+          buildTab3AScene();
+        } else {
+          orbitControls.enableRotate = false;
+          buildTab3BScene();
+        }
+      } else {
+        if (currentTab === 4 && currentPill === 'C') {
+          orbitControls.enableRotate = false;
+        } else {
+          orbitControls.enableRotate = true;
+        }
+
+        if (currentTab === 4) {
+          setCameraTetraSGK();
+        } else {
+          setCameraStandardSGK();
+        }
+
+        if (currentTab === 1) {
+          buildTab1Scene();
+        } else if (currentTab === 2) {
+          buildTab2Scene();
+        } else if (currentTab === 4) {
+          if (currentPill === 'A') buildTab4AScene();
+          else if (currentPill === 'B') buildTab4BScene();
+          else buildTab4CScene();
+        } else if (currentTab === 5) {
+          if (currentPill === 'A') buildTab5AScene();
+          else buildTab5BScene();
+        }
+      }
+    }
+
+    /* --- TAB 1: GIAO TUYẾN 2 ĐIỂM CHUNG --- */
+    let t1PointG = null;
+    let t1PointGMesh = null;
+    let t1PointGLabel = null;
+    let t1PlaneSBN = null, t1PlaneSCM = null;
+    let t1LineSG = null;
+
+    function buildTab1Scene() {
+      t1PointGMesh = null;
+      t1PointGLabel = null;
+      t1PlaneSBN = null;
+      t1PlaneSCM = null;
+      t1LineSG = null;
+
+      currentSolidMesh = buildPyramidSolidMesh(S, A, B, C, D);
+      createOcclusionLine(S, A, 'SA'); createOcclusionLine(S, B, 'SB');
+      createOcclusionLine(S, C, 'SC'); createOcclusionLine(S, D, 'SD');
+      createOcclusionLine(A, B, 'AB'); createOcclusionLine(B, C, 'BC');
+      createOcclusionLine(C, D, 'CD'); createOcclusionLine(D, A, 'DA');
+
+      createPointMesh(S); createPointLabel('S', S);
+      createPointMesh(A); createPointLabel('A', A);
+      createPointMesh(B); createPointLabel('B', B);
+      createPointMesh(C); createPointLabel('C', C);
+      createPointMesh(D); createPointLabel('D', D);
+
+      createPointMesh(M_ab, COLOR_POINT_ACTIVE); createPointLabel('M', M_ab);
+      createPointMesh(N_ac, COLOR_POINT_ACTIVE); createPointLabel('N', N_ac);
+
+      createOcclusionLine(B, N_ac, 'BN', 0x94a3b8);
+      createOcclusionLine(C, M_ab, 'CM', 0x94a3b8);
+
+      t1PointG = segmentIntersection(B, N_ac, C, M_ab, 0.5);
+      if (!t1PointG) t1PointG = new THREE.Vector3(0.3, 0, 0.6);
+
+      const hitGeo = new THREE.SphereGeometry(0.5, 16, 16);
+      const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+      const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+      hitMesh.position.copy(t1PointG);
+      hitMesh.userData = { type: 't1-g-hit' };
+      scene.add(hitMesh);
+      sceneObjects.push(hitMesh);
+      interactiveHitObjects.push(hitMesh);
+    }
+
+    let t1PointSelecting = false;
+    let t1PointSelected = false;
+
+    function t1StartPointSelection() {
+      if (t1PointSelected) return;
+      t1PointSelecting = true;
+      const btn = document.getElementById('t1-btn-select-point');
+      if (btn) {
+        btn.innerHTML = '<i class="ti ti-pointer"></i> Đang chọn điểm... (Hãy nhấp trên 3D)';
+        btn.className = 'btn btn-primary';
+      }
+      const hint = document.getElementById('t1-feedback-2');
+      if (hint) hint.style.display = 'flex';
+    }
+
+    function selectPointGSuccess() {
+      t1PointSelected = true;
+      t1PointSelecting = false;
+      const btn = document.getElementById('t1-btn-select-point');
+      if (btn) {
+        btn.disabled = true;
+        btn.className = 'btn btn-teal';
+        btn.innerHTML = '<i class="ti ti-check"></i> Đã chọn điểm chính xác';
+      }
+
+      if (!t1PointGMesh) {
+        t1PointGMesh = createPointMesh(t1PointG, COLOR_POINT_ACTIVE, 0.12);
+        t1PointGLabel = createPointLabel('G', t1PointG, '#FAC775');
+      }
+      document.getElementById('t1-feedback-2').className = 'info-box ib-teal';
+      document.getElementById('t1-feedback-2').innerHTML = '✓ ĐÚNG! G = BN ∩ CM chính là giao điểm thứ hai trên mặt đáy. Điểm G đã xuất hiện trên hình 3D!';
+      document.getElementById('t1-btn-build').style.display = 'inline-flex';
+    }
+
+    function selectPointGFail() {
+      if (!t1PointGMesh) {
+        document.getElementById('t1-feedback-2').className = 'info-box ib-red';
+        document.getElementById('t1-feedback-2').innerHTML = '❌ Vị trí bạn chọn chưa phải giao điểm. Hãy tìm và nhấp đúng vào chỗ 2 đường BN và CM giao nhau trên mặt đáy (ABCD).';
+      }
+    }
+
+    function t1SelectYes() {
+      document.getElementById('t1-btn-yes').classList.add('selected');
+      document.getElementById('t1-btn-no').classList.remove('selected');
+      const fb = document.getElementById('t1-feedback-1');
+      fb.className = 'info-box ib-teal';
+      fb.innerHTML = '<div class="ib-icon">✓</div><div><b>Chính xác!</b> Đỉnh S xuất hiện trong tên gọi của cả (SBN) và (SCM) nên S chính là điểm chung thứ nhất.</div>';
+      fb.style.display = 'flex';
+      document.getElementById('t1-step-13').style.display = 'block';
+
+      if (!t1PlaneSBN) {
+        t1PlaneSBN = createPolygonMesh([S, B, N_ac], COLOR_PLANE_1, 0.22);
+        t1PlaneSCM = createPolygonMesh([S, C, M_ab], COLOR_PLANE_2, 0.22);
+      }
+    }
+
+    function t1SelectNo() {
+      document.getElementById('t1-btn-no').classList.add('selected');
+      document.getElementById('t1-btn-yes').classList.remove('selected');
+      const fb = document.getElementById('t1-feedback-1');
+      fb.className = 'info-box ib-red';
+      fb.innerHTML = '<div class="ib-icon">❌</div><div><b>Chưa chính xác!</b> Đỉnh S xuất hiện trong tên gọi của cả hai mặt phẳng (<b>S</b>BN) và (<b>S</b>CM) nên S thuộc cả 2 mặt và là điểm chung thứ nhất. Hãy chọn lại!</div>';
+      fb.style.display = 'flex';
+      document.getElementById('t1-step-13').style.display = 'none';
+    }
+
+    function t1BuildLine() {
+      if (!t1LineSG) {
+        if (!t1PointGMesh) {
+          selectPointGSuccess();
+        }
+        t1LineSG = createLineMesh(S, t1PointG, COLOR_LINE_RESULT);
+        document.getElementById('t1-conclusion').style.display = 'flex';
+      }
+    }
+
+    /* --- TAB 2: GIAO ĐIỂM ĐƯỜNG THẲNG & MẶT PHẲNG --- */
+    let E_pt = new THREE.Vector3(1.2, 1.5, -1.4);
+    let F_pt = new THREE.Vector3().lerpVectors(S, E_pt, 0.55);
+    let K_pt = new THREE.Vector3(2.76, 0, 4.77);
+
+    let t2AuxPlane = null;
+    let t2AuxLine = null;
+    let t2PointKMesh = null;
+    let t2PointKLabel = null;
+
+    function buildTab2Scene() {
+      t2AuxPlane = null;
+      t2AuxLine = null;
+      t2PointKMesh = null;
+      t2PointKLabel = null;
+
+      currentSolidMesh = buildPyramidSolidMesh(S, A, B, C, D);
+      createOcclusionLine(S, A, 'SA'); createOcclusionLine(S, B, 'SB');
+      createOcclusionLine(S, C, 'SC'); createOcclusionLine(S, D, 'SD');
+      createOcclusionLine(A, B, 'AB'); createOcclusionLine(B, C, 'BC');
+      createOcclusionLine(C, D, 'CD'); createOcclusionLine(D, A, 'DA');
+
+      createPointMesh(S); createPointLabel('S', S);
+      createPointMesh(A); createPointLabel('A', A);
+      createPointMesh(B); createPointLabel('B', B);
+      createPointMesh(C); createPointLabel('C', C);
+      createPointMesh(D); createPointLabel('D', D);
+
+      createPointMesh(E_pt, COLOR_POINT_FREE); createPointLabel('E', E_pt);
+      createPointMesh(F_pt, COLOR_POINT_ACTIVE); createPointLabel('F', F_pt);
+
+      // Line BF: Inside pyramid (B -> F) = dashed; Outside pyramid = solid
+      const dirBF = new THREE.Vector3().subVectors(F_pt, B).normalize();
+      const BF_start = B.clone().sub(dirBF.clone().multiplyScalar(0.5));
+      const BF_end = F_pt.clone().add(dirBF.clone().multiplyScalar(2.2));
+
+      createLineMesh(B, F_pt, 0xf59e0b, true);        // Inside: Dashed
+      createLineMesh(F_pt, BF_end, 0xf59e0b, false);  // Outside forward: Solid
+      createLineMesh(BF_start, B, 0xf59e0b, false);   // Outside backward: Solid
+
+      const hitGeo = new THREE.SphereGeometry(0.8, 16, 16);
+      const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+      const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+      hitMesh.position.copy(B);
+      hitMesh.userData = { type: 't2-b-hit' };
+      scene.add(hitMesh);
+      sceneObjects.push(hitMesh);
+      interactiveHitObjects.push(hitMesh);
+    }
+
+    function t2BuildAuxPlane() {
+      document.getElementById('t2-pt-S').classList.add('done');
+      document.getElementById('t2-pt-B').classList.add('done');
+      document.getElementById('t2-pt-E').classList.add('done');
+      const btn = document.getElementById('t2-btn-select-aux');
+      if (btn) btn.style.display = 'none';
+
+      if (!t2AuxPlane) {
+        t2AuxPlane = createPolygonMesh([S, B, E_pt], COLOR_PLANE_AUX, 0.25);
+        createLineMesh(S, E_pt, 0x38bdf8, true);
+      }
+
+      document.getElementById('t2-step-24').style.display = 'block';
+    }
+
+    function t2BuildAuxLine() {
+      const btn = document.getElementById('t2-btn-build-line');
+      if (btn) btn.style.display = 'none';
+
+      if (!t2AuxLine) {
+        const E0_pt = new THREE.Vector3(1.08, 0, -2.04);
+        const dirBE = new THREE.Vector3().subVectors(K_pt, E0_pt);
+        const BE_start = E0_pt.clone().sub(dirBE.clone().multiplyScalar(0.2));
+        const BE_end = K_pt.clone().add(dirBE.clone().multiplyScalar(0.25));
+
+        // Auxiliary Line: Inside base (E0 -> B) = dashed; Outside base = solid
+        t2AuxLine = createLineMesh(E0_pt, B, 0x10b981, true);   // Inside base: Dashed
+        createLineMesh(B, BE_end, 0x10b981, false);             // Outside forward: Solid
+        createLineMesh(BE_start, E0_pt, 0x10b981, false);       // Outside backward: Solid
+
+        createPointMesh(E0_pt, 0x10b981, 0.08);
+      }
+
+      document.getElementById('t2-step-25').style.display = 'block';
+    }
+
+    let t2SelectedPointName = '';
+
+    function selectPointKSuccess() {
+      const modal = document.getElementById('t2-name-modal');
+      if (modal && !t2PointKMesh) {
+        modal.style.display = 'block';
+        const inp = document.getElementById('t2-name-input');
+        if (inp) {
+          inp.value = 'K';
+          inp.focus();
+          inp.select();
+        }
+      }
+    }
+
+    function t2ConfirmPointName() {
+      const inp = document.getElementById('t2-name-input');
+      const err = document.getElementById('t2-name-error');
+      if (!inp) return;
+
+      const name = inp.value.trim().toUpperCase();
+      const usedNames = ['S', 'A', 'B', 'C', 'D', 'E', 'F', 'M', 'N', 'G'];
+
+      if (!name) {
+        if (err) {
+          err.textContent = '⚠️ Vui lòng nhập tên cho điểm!';
+          err.style.display = 'block';
+        }
+        return;
+      }
+
+      if (usedNames.includes(name)) {
+        if (err) {
+          err.textContent = `❌ Tên điểm "${name}" đã trùng với điểm có sẵn! Vui lòng chọn tên khác (ví dụ: K, H, I, P).`;
+          err.style.display = 'block';
+        }
+        return;
+      }
+
+      if (err) err.style.display = 'none';
+      document.getElementById('t2-name-modal').style.display = 'none';
+
+      t2SelectedPointName = name;
+      if (!t2PointKMesh) {
+        t2PointKMesh = createPointMesh(K_pt, COLOR_POINT_ACTIVE, 0.12);
+        t2PointKLabel = createPointLabel(name, K_pt, '#FAC775');
+      }
+
+      const hint = document.getElementById('t2-click-k-hint');
+      if (hint) {
+        hint.className = 'info-box ib-teal';
+        hint.innerHTML = `<div class="ib-icon">✓</div><div><b>Chính xác!</b> Giao điểm là điểm <b>${name}</b>.</div>`;
+      }
+
+      const title = document.getElementById('t2-conclusion-title');
+      const text = document.getElementById('t2-conclusion-text');
+      if (title) title.innerHTML = `Kết quả: Giao điểm là điểm ${name}`;
+      if (text) text.textContent = `Điểm ${name} chính là giao điểm của đường thẳng BF với mặt phẳng đáy (ABCD).`;
+      document.getElementById('t2-conclusion').style.display = 'flex';
+    }
+
+    let t2PointSelecting = false;
+    let t2PointSelected = false;
+
+    function t2StartPointSelection() {
+      if (t2PointSelected) return;
+      t2PointSelecting = true;
+      const btn = document.getElementById('t2-btn-select-point');
+      if (btn) {
+        btn.innerHTML = '<i class="ti ti-pointer"></i> Đang chọn điểm... (Hãy nhấp trên 3D)';
+        btn.className = 'btn btn-primary';
+      }
+      const hint = document.getElementById('t2-click-k-hint');
+      if (hint) hint.style.display = 'flex';
+    }
+
+    function selectExistingPointB() {
+      t2PointSelected = true;
+      t2PointSelecting = false;
+      const btn = document.getElementById('t2-btn-select-point');
+      if (btn) {
+        btn.disabled = true;
+        btn.className = 'btn btn-teal';
+        btn.innerHTML = '<i class="ti ti-check"></i> Đã chọn điểm chính xác';
+      }
+
+      const hint = document.getElementById('t2-click-k-hint');
+      if (hint) {
+        hint.className = 'info-box ib-teal';
+        hint.innerHTML = `<div class="ib-icon">✓</div><div><b>Chính xác!</b> Giao điểm là điểm <b>B</b>.</div>`;
+      }
+      const title = document.getElementById('t2-conclusion-title');
+      const text = document.getElementById('t2-conclusion-text');
+      if (title) title.innerHTML = `Kết quả: Giao điểm là điểm B`;
+      if (text) text.textContent = `Điểm B chính là giao điểm của đường thẳng BF với mặt phẳng đáy (ABCD).`;
+      document.getElementById('t2-conclusion').style.display = 'flex';
+    }
+
+    function selectPointKFail() {
+      if (!t2PointKMesh) {
+        const hint = document.getElementById('t2-click-k-hint');
+        if (hint) {
+          hint.className = 'info-box ib-red';
+          hint.innerHTML = '<div class="ib-icon">❌</div><div><b>Chưa chính xác!</b> Điểm bạn chọn chưa phải giao điểm. Hãy nhấp đúng vào giao điểm giữa BF và giao tuyến phụ trên canvas 3D.</div>';
+        }
+      }
+    }
+
+    /* --- TAB 3: HÌNH CHÓP S.ABCD --- */
+    let t3EdgeCount = 0;
+    const t3EdgesCounted = new Set();
+
+    let t3HighlightMesh = null;
+
+    function clearT3Highlights() {
+      if (t3HighlightMesh) {
+        scene.remove(t3HighlightMesh);
+        t3HighlightMesh = null;
+      }
+    }
+
+    function showT3Info(msg) {
+      let box = document.getElementById('t3-info-box');
+      if (!box) {
+        box = document.createElement('div');
+        box.id = 't3-info-box';
+        box.className = 'info-box ib-teal';
+        box.style.marginTop = '8px';
+        const container = document.getElementById('panel-tab3-pillA');
+        if (container) container.appendChild(box);
+      }
+      box.style.display = 'flex';
+      box.innerHTML = `<div class="ib-icon">💡</div><div>${msg}</div>`;
+    }
+
+    const t3ExploredItems = new Set();
+    const t3EdgeMeshes = {};
+
+    function updateT3ExploredProgress(key) {
+      if (!t3ExploredItems.has(key)) {
+        t3ExploredItems.add(key);
+        const count = t3ExploredItems.size;
+        const txt = document.getElementById('t3-explore-count-text');
+        if (txt) txt.textContent = `Đã khám phá: ${count} / 5 mục`;
+
+        if (count === 5) {
+          const countBox = document.getElementById('t3-count-box');
+          if (countBox) countBox.style.display = 'block';
+          showT3Info('🎉 <b>Xuất sắc!</b> Bạn đã khám phá đủ 5/5 yếu tố. Hãy chuyển xuống đếm 8 cạnh dưới đây!');
+        }
+      }
+    }
+
+    function t3ClickEdgeCard(eName) {
+      if (!t3EdgesCounted.has(eName)) {
+        t3EdgesCounted.add(eName);
+        t3EdgeCount++;
+
+        const card = document.getElementById('t3-ck-edge-' + eName);
+        if (card) card.classList.add('done');
+
+        const txt = document.getElementById('t3-edge-count-text');
+        if (txt) txt.textContent = `Đã đếm: ${t3EdgeCount} / 8 cạnh`;
+
+        clearT3Highlights();
+        const edgeData = t3EdgeMeshes[eName];
+        if (edgeData && edgeData.edgeObj) {
+          edgeData.edgeObj.lineSolid.material.color.setHex(COLOR_POINT_ACTIVE);
+          edgeData.edgeObj.lineDashed.material.color.setHex(COLOR_POINT_ACTIVE);
+        }
+
+        showT3Info(`Đã đếm: <b>Cạnh ${eName}</b> (${t3EdgeCount}/8 cạnh).`);
+
+        if (t3EdgeCount === 8) {
+          showT3Info('🎉 <b>Xuất sắc!</b> Bạn đã đếm đúng đủ 8 cạnh của hình chóp S.ABCD (4 cạnh bên SA, SB, SC, SD và 4 cạnh đáy AB, BC, CD, DA).');
+        }
+      }
+    }
+
+    function t3SelectApex() {
+      clearT3Highlights();
+      document.getElementById('t3-ck-apex').classList.add('done');
+      t3HighlightMesh = createPointMesh(S, 0xfac775, 0.16);
+      showT3Info('S là <b>đỉnh</b> của hình chóp — nơi 4 mặt bên cùng gặp nhau tại một điểm.');
+      updateT3ExploredProgress('apex');
+    }
+
+    function t3SelectBase() {
+      clearT3Highlights();
+      document.getElementById('t3-ck-base').classList.add('done');
+      t3HighlightMesh = createPolygonMesh([A, B, C, D], 0x3b82f6, 0.4);
+      showT3Info('<b>Mặt đáy ABCD</b> là đa giác tứ giác nằm ở phía bên dưới của hình chóp S.ABCD.');
+      updateT3ExploredProgress('base');
+    }
+
+    function t3SelectSideFace() {
+      clearT3Highlights();
+      document.getElementById('t3-ck-sideface').classList.add('done');
+      t3HighlightMesh = createPolygonMesh([S, A, B], 0xa78bfa, 0.4);
+      showT3Info('<b>Mặt bên (SAB)</b> là mặt tam giác tạo bởi đỉnh S và cạnh đáy AB.');
+      updateT3ExploredProgress('sideface');
+    }
+
+    function t3SelectSideEdge() {
+      clearT3Highlights();
+      document.getElementById('t3-ck-sideedge').classList.add('done');
+      t3HighlightMesh = createLineMesh(S, A, 0xf97316);
+      showT3Info('<b>Cạnh bên SA</b> là đoạn thẳng nối từ đỉnh S xuống đỉnh A ở mặt đáy.');
+      updateT3ExploredProgress('sideedge');
+    }
+
+    function t3SelectBaseEdge() {
+      clearT3Highlights();
+      document.getElementById('t3-ck-baseedge').classList.add('done');
+      t3HighlightMesh = createLineMesh(A, B, 0x10b981);
+      showT3Info('<b>Cạnh đáy AB</b> là một trong 4 cạnh thuộc đa giác đáy ABCD.');
+      updateT3ExploredProgress('baseedge');
+    }
+
+    function buildTab3AScene() {
+      clearT3Highlights();
+      t3EdgeCount = 0;
+      t3EdgesCounted.clear();
+      t3ExploredItems.clear();
+
+      const expTxt = document.getElementById('t3-explore-count-text');
+      if (expTxt) expTxt.textContent = 'Đã khám phá: 0 / 5 mục';
+      const edgeTxt = document.getElementById('t3-edge-count-text');
+      if (edgeTxt) edgeTxt.textContent = 'Đã đếm: 0 / 8 cạnh';
+      const countBox = document.getElementById('t3-count-box');
+      if (countBox) countBox.style.display = 'none';
+
+      ['apex', 'base', 'sideface', 'sideedge', 'baseedge'].forEach(id => {
+        const el = document.getElementById('t3-ck-' + id);
+        if (el) el.classList.remove('done');
+      });
+
+      ['SA', 'SB', 'SC', 'SD', 'AB', 'BC', 'CD', 'DA'].forEach(name => {
+        const el = document.getElementById('t3-ck-edge-' + name);
+        if (el) el.classList.remove('done');
+      });
+
+      currentSolidMesh = buildPyramidSolidMesh(S, A, B, C, D);
+
+      const edges = [
+        { p1: S, p2: A, name: 'SA' }, { p1: S, p2: B, name: 'SB' },
+        { p1: S, p2: C, name: 'SC' }, { p1: S, p2: D, name: 'SD' },
+        { p1: A, p2: B, name: 'AB' }, { p1: B, p2: C, name: 'BC' },
+        { p1: C, p2: D, name: 'CD' }, { p1: D, p2: A, name: 'DA' }
+      ];
+
+      const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+
+      // Edge hit spheres
+      edges.forEach(e => {
+        const edgeObj = createOcclusionLine(e.p1, e.p2, e.name);
+        const mid = new THREE.Vector3().addVectors(e.p1, e.p2).multiplyScalar(0.5);
+        const hitGeo = new THREE.SphereGeometry(0.5, 12, 12);
+        const hit = new THREE.Mesh(hitGeo, hitMat);
+        hit.position.copy(mid);
+        hit.userData = { type: 't3-edge', name: e.name, edgeObj };
+        t3EdgeMeshes[e.name] = { edgeObj, hit };
+        scene.add(hit);
+        sceneObjects.push(hit);
+        interactiveHitObjects.push(hit);
+      });
+
+      // Apex S hit sphere
+      const hitApexGeo = new THREE.SphereGeometry(0.6, 16, 16);
+      const hitApex = new THREE.Mesh(hitApexGeo, hitMat);
+      hitApex.position.copy(S);
+      hitApex.userData = { type: 't3-apex' };
+      scene.add(hitApex); sceneObjects.push(hitApex); interactiveHitObjects.push(hitApex);
+
+      createPointMesh(S); createPointLabel('S', S);
+      createPointMesh(A); createPointLabel('A', A);
+      createPointMesh(B); createPointLabel('B', B);
+      createPointMesh(C); createPointLabel('C', C);
+      createPointMesh(D); createPointLabel('D', D);
+    }
+
+    const t3EdgesList = ['SA', 'SB', 'SC', 'SD', 'AB', 'BC', 'CD', 'DA'];
+    const t3Answers = { SA: 'solid', SB: 'solid', SC: 'solid', SD: 'dashed', AB: 'solid', BC: 'solid', CD: 'dashed', DA: 'dashed' };
+    const t3UserSelections = {};
+
+    function buildTab3BScene() {
+      setCameraStandardSGK();
+      const listContainer = document.getElementById('t3-edge-list');
+      listContainer.innerHTML = '';
+
+      t3EdgesList.forEach(eName => {
+        t3UserSelections[eName] = 'solid';
+        const row = document.createElement('div');
+        row.className = 'edge-row';
+        row.innerHTML = `
+          <span>Cạnh <b>${eName}</b></span>
+          <div class="btn-group">
+            <button class="mini-btn active-solid" id="t3-btn-${eName}-solid" onclick="selectTab3BEdge('${eName}', 'solid')">Nét liền</button>
+            <button class="mini-btn" id="t3-btn-${eName}-dashed" onclick="selectTab3BEdge('${eName}', 'dashed')">Nét đứt</button>
+          </div>
+        `;
+        listContainer.appendChild(row);
+      });
+
+      renderTab3B3D();
+    }
+
+    function selectTab3BEdge(eName, type) {
+      t3UserSelections[eName] = type;
+      const btnSolid = document.getElementById(`t3-btn-${eName}-solid`);
+      const btnDashed = document.getElementById(`t3-btn-${eName}-dashed`);
+      if (type === 'solid') {
+        btnSolid.className = 'mini-btn active-solid';
+        btnDashed.className = 'mini-btn';
+      } else {
+        btnSolid.className = 'mini-btn';
+        btnDashed.className = 'mini-btn active-dashed';
+      }
+      renderTab3B3D();
+    }
+
+    function renderTab3B3D() {
+      clearSceneObjects();
+      const points = { S, A, B, C, D };
+      const edges = [
+        ['S', 'A'], ['S', 'B'], ['S', 'C'], ['S', 'D'],
+        ['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A']
+      ];
+
+      edges.forEach(([p1Key, p2Key]) => {
+        const name = p1Key + p2Key;
+        const type = t3UserSelections[name] || 'solid';
+        const isDashed = type === 'dashed';
+        createLineMesh(points[p1Key], points[p2Key], isDashed ? COLOR_EDGE_HIDDEN : COLOR_EDGE_SOLID, isDashed);
+      });
+
+      createPointMesh(S); createPointLabel('S', S);
+      createPointMesh(A); createPointLabel('A', A);
+      createPointMesh(B); createPointLabel('B', B);
+      createPointMesh(C); createPointLabel('C', C);
+      createPointMesh(D); createPointLabel('D', D);
+    }
+
+    function checkTab3BAnswer() {
+      let correct = true;
+      t3EdgesList.forEach(e => {
+        if (t3UserSelections[e] !== t3Answers[e]) correct = false;
+      });
+      const fb = document.getElementById('t3b-feedback');
+      fb.style.display = 'block';
+      if (correct) {
+        fb.className = 'info-box ib-teal';
+        fb.innerHTML = '<div class="ib-icon">✓</div><div><b>Chính xác!</b> Toàn bộ các cạnh đã phân loại đúng nét vẽ.</div>';
+      } else {
+        fb.className = 'info-box ib-red';
+        fb.innerHTML = '<div class="ib-icon">❌</div><div><b>Chưa chính xác.</b> Hãy kiểm tra lại các cạnh khuất.</div>';
+      }
+    }
+
+
+    /* --- TAB 4: TỨ DIỆN S.ABC --- */
+    const t4ExploredFaces = new Set();
+    let t4AuxPlane = null;
+    let t4AuxLine = null;
+    let t4PointKMesh = null;
+    let t4PointKLabel = null;
+
+    let E_base = new THREE.Vector3().addVectors(A, C).multiplyScalar(0.5);
+    let F_tetra = new THREE.Vector3().lerpVectors(S, E_base, 0.55);
+    let K_tetra = E_base; // Intersection K is at the base plane on edge AC!
+
+    function t4SelectFace(faceKey) {
+      clearT3Highlights();
+      document.getElementById('t4-ck-' + faceKey.toLowerCase()).classList.add('done');
+      if (faceKey === 'SAB') t3HighlightMesh = createPolygonMesh([S, A, B], 0x3b82f6, 0.4);
+      else if (faceKey === 'SBC') t3HighlightMesh = createPolygonMesh([S, B, C], 0xa78bfa, 0.4);
+      else if (faceKey === 'SAC') t3HighlightMesh = createPolygonMesh([S, A, C], 0x38bdf8, 0.4);
+      else if (faceKey === 'ABC') t3HighlightMesh = createPolygonMesh([A, B, C], 0x10b981, 0.4);
+
+      if (!t4ExploredFaces.has(faceKey)) {
+        t4ExploredFaces.add(faceKey);
+        const count = t4ExploredFaces.size;
+        const txt = document.getElementById('t4-explore-count-text');
+        if (txt) txt.textContent = `Đã khám phá: ${count} / 4 mặt`;
+
+        if (count === 4) {
+          const section = document.getElementById('t4-inter-section');
+          if (section) section.style.display = 'block';
+          showT3Info('🎉 <b>Xuất sắc!</b> Bạn đã khám phá đủ 4 mặt của Tứ diện S.ABC. Bây giờ hãy tìm giao điểm BF ∩ (SAC) dưới đây!');
+        }
+      }
+    }
+
+    function buildTab4AScene() {
+      clearT3Highlights();
+      t4ExploredFaces.clear();
+      t4AuxPlane = null;
+      t4AuxLine = null;
+      t4PointKMesh = null;
+      t4PointKLabel = null;
+
+      const expTxt = document.getElementById('t4-explore-count-text');
+      if (expTxt) expTxt.textContent = 'Đã khám phá: 0 / 4 mặt';
+      const section = document.getElementById('t4-inter-section');
+      if (section) section.style.display = 'none';
+
+      ['sab', 'sbc', 'sac', 'abc'].forEach(id => {
+        const el = document.getElementById('t4-ck-' + id);
+        if (el) el.classList.remove('done');
+      });
+
+      currentSolidMesh = buildTetrahedronSolidMesh(S, A, B, C);
+
+      createOcclusionLine(S, A, 'SA'); createOcclusionLine(S, B, 'SB'); createOcclusionLine(S, C, 'SC');
+      createOcclusionLine(A, B, 'AB'); createOcclusionLine(B, C, 'BC'); createOcclusionLine(C, A, 'CA');
+
+      createPointMesh(S); createPointLabel('S', S);
+      createPointMesh(A); createPointLabel('A', A);
+      createPointMesh(B); createPointLabel('B', B);
+      createPointMesh(C); createPointLabel('C', C);
+
+      // Hit sphere for Point F intersection in Tetra
+      const hitGeo = new THREE.SphereGeometry(0.8, 16, 16);
+      const hitMat = new THREE.MeshBasicMaterial({ transparent: true, opacity: 0, depthWrite: false });
+      const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+      hitMesh.position.copy(F_tetra);
+      hitMesh.userData = { type: 't4-k-hit' };
+      scene.add(hitMesh); sceneObjects.push(hitMesh); interactiveHitObjects.push(hitMesh);
+    }
+
+    function t4BuildAuxPlane() {
+      clearT3Highlights();
+      const btn = document.getElementById('t4-btn-aux-plane');
+      if (btn) btn.style.display = 'none';
+      if (!t4AuxPlane) {
+        // Auxiliary plane bounded inside triangle SBF
+        t4AuxPlane = createPolygonMesh([S, B, F_tetra], COLOR_PLANE_AUX, 0.25);
+
+        // Point F on SF & Line BF
+        createPointMesh(F_tetra, COLOR_POINT_ACTIVE); createPointLabel('F', F_tetra);
+
+        const dirBF = new THREE.Vector3().subVectors(F_tetra, B).normalize();
+        const BF_start = B.clone().sub(dirBF.clone().multiplyScalar(0.4));
+        const BF_end = F_tetra.clone().add(dirBF.clone().multiplyScalar(0.6));
+        createLineMesh(B, F_tetra, 0xf59e0b, true);        // Inside segment (B -> F): Dashed
+        createLineMesh(F_tetra, BF_end, 0xf59e0b, false);  // Outside extension beyond F: Solid
+        createLineMesh(BF_start, B, 0xf59e0b, false);      // Outside extension before B: Solid
+      }
+      document.getElementById('t4-step-2').style.display = 'block';
+    }
+
+    function t4BuildAuxLine() {
+      const btn = document.getElementById('t4-btn-aux-line');
+      if (btn) btn.style.display = 'none';
+      if (!t4AuxLine) {
+        const dirSE = new THREE.Vector3().subVectors(E_base, S).normalize();
+        const SE_top = S.clone().sub(dirSE.clone().multiplyScalar(0.4));
+        const SE_bottom = E_base.clone().add(dirSE.clone().multiplyScalar(0.4));
+
+        // Inside segment (S -> E_base passing through F): Dashed
+        t4AuxLine = createLineMesh(S, E_base, 0x10b981, true);
+
+        // Extensions outside 3D body: Solid
+        createLineMesh(SE_top, S, 0x10b981, false);
+        createLineMesh(E_base, SE_bottom, 0x10b981, false);
+      }
+      document.getElementById('t4-step-3').style.display = 'block';
+    }
+
+    let t4PointSelecting = false;
+    let t4PointSelected = false;
+
+    function t4StartPointSelection() {
+      if (t4PointSelected) return;
+      t4PointSelecting = true;
+      const btn = document.getElementById('t4-btn-select-point');
+      if (btn) {
+        btn.innerHTML = '<i class="ti ti-pointer"></i> Đang chọn điểm... (Hãy nhấp trên 3D)';
+        btn.className = 'btn btn-primary';
+      }
+      const hint = document.getElementById('t4-k-hint');
+      if (hint) hint.style.display = 'flex';
+    }
+
+    function selectTab4KSuccess() {
+      t4PointSelected = true;
+      t4PointSelecting = false;
+      const btn = document.getElementById('t4-btn-select-point');
+      if (btn) {
+        btn.disabled = true;
+        btn.className = 'btn btn-teal';
+        btn.innerHTML = '<i class="ti ti-check"></i> Đã chọn điểm chính xác';
+      }
+
+      if (!t4PointKMesh) {
+        t4PointKMesh = createPointMesh(F_tetra, COLOR_POINT_ACTIVE, 0.14);
+        t4PointKLabel = createPointLabel('F', F_tetra, '#FAC775');
+      }
+      const hint = document.getElementById('t4-k-hint');
+      if (hint) {
+        hint.className = 'info-box ib-teal';
+        hint.innerHTML = '<div class="ib-icon">✓</div><div><b>Chính xác!</b> Điểm <b>F</b> thuộc giao tuyến SF (nằm trên mặt SAC), nên <b>F</b> chính là giao điểm của BF với mặt phẳng (SAC).</div>';
+      }
+      document.getElementById('t4-conclusion').style.display = 'flex';
+    }
+
+    /* TAB 4B: THIẾT DIỆN TRƯỢT MNP TRÊN TỨ DIỆN S.ABC */
+    function buildTab4BScene() {
+      const slider = document.getElementById('t4-m-slider');
+      slider.oninput = (e) => {
+        const t = parseFloat(e.target.value);
+        document.getElementById('t4-m-val').textContent = t.toFixed(2);
+        updateTab4BSection(t);
+      };
+      updateTab4BSection(parseFloat(slider.value));
+    }
+
+    function updateTab4BSection(t) {
+      clearSceneObjects();
+
+      currentSolidMesh = buildTetrahedronSolidMesh(S, A, B, C);
+
+      // Tetrahedron S.ABC edges with dynamic occlusion
+      createOcclusionLine(S, A, 'SA', 0x475569);
+      createOcclusionLine(S, B, 'SB', 0x475569);
+      createOcclusionLine(S, C, 'SC', 0x475569);
+      createOcclusionLine(A, B, 'AB', 0x475569);
+      createOcclusionLine(B, C, 'BC', 0x475569);
+      createOcclusionLine(C, A, 'CA', 0x475569);
+
+      createPointMesh(S); createPointLabel('S', S);
+      createPointMesh(A); createPointLabel('A', A);
+      createPointMesh(B); createPointLabel('B', B);
+      createPointMesh(C); createPointLabel('C', C);
+
+      const M_sa = new THREE.Vector3().lerpVectors(S, A, t);
+      const N_sb = new THREE.Vector3().lerpVectors(S, B, 0.5);
+      const P_sc = new THREE.Vector3().lerpVectors(S, C, 0.5);
+
+      createPointMesh(M_sa, COLOR_POINT_ACTIVE); createPointLabel('M', M_sa, '#FAC775');
+      createPointMesh(N_sb, COLOR_POINT_FREE); createPointLabel('N', N_sb);
+      createPointMesh(P_sc, COLOR_POINT_FREE); createPointLabel('P', P_sc);
+
+      createPolygonMesh([M_sa, N_sb, P_sc], COLOR_SECTION, 0.55);
+      createLineMesh(M_sa, N_sb, COLOR_SECTION);
+      createLineMesh(N_sb, P_sc, COLOR_SECTION);
+      createLineMesh(P_sc, M_sa, COLOR_SECTION);
+    }
+
+    /* TAB 4C: NÉT LIỀN / ĐỨT TỨ DIỆN */
+    const t4cEdgesList = ['SA', 'SB', 'SC', 'AB', 'BC', 'CA'];
+    const t4cAnswers = { SA: 'solid', SB: 'solid', SC: 'solid', AB: 'solid', BC: 'solid', CA: 'dashed' };
+    const t4cUserSelections = {};
+
+    function buildTab4CScene() {
+      orbitControls.enableRotate = false;
+      setCameraTetraSGK();
+      const listContainer = document.getElementById('t4c-edge-list');
+      listContainer.innerHTML = '';
+
+      t4cEdgesList.forEach(eName => {
+        t4cUserSelections[eName] = 'solid';
+        const row = document.createElement('div');
+        row.className = 'edge-row';
+        row.innerHTML = `
+          <span>Cạnh <b>${eName}</b></span>
+          <div class="btn-group">
+            <button class="mini-btn active-solid" id="t4c-btn-${eName}-solid" onclick="selectTab4CEdge('${eName}', 'solid')">Nét liền</button>
+            <button class="mini-btn" id="t4c-btn-${eName}-dashed" onclick="selectTab4CEdge('${eName}', 'dashed')">Nét đứt</button>
+          </div>
+        `;
+        listContainer.appendChild(row);
+      });
+      renderTab4C3D();
+    }
+
+    function selectTab4CEdge(eName, type) {
+      t4cUserSelections[eName] = type;
+      const btnSolid = document.getElementById(`t4c-btn-${eName}-solid`);
+      const btnDashed = document.getElementById(`t4c-btn-${eName}-dashed`);
+      if (type === 'solid') {
+        btnSolid.className = 'mini-btn active-solid';
+        btnDashed.className = 'mini-btn';
+      } else {
+        btnSolid.className = 'mini-btn';
+        btnDashed.className = 'mini-btn active-dashed';
+      }
+      renderTab4C3D();
+    }
+
+    function renderTab4C3D() {
+      clearSceneObjects();
+      const points = { S, A, B, C };
+      const edges = [['S', 'A'], ['S', 'B'], ['S', 'C'], ['A', 'B'], ['B', 'C'], ['C', 'A']];
+
+      edges.forEach(([p1Key, p2Key]) => {
+        const name = p1Key + p2Key;
+        const type = t4cUserSelections[name] || 'solid';
+        const isDashed = type === 'dashed';
+        createLineMesh(points[p1Key], points[p2Key], isDashed ? COLOR_EDGE_HIDDEN : COLOR_EDGE_SOLID, isDashed);
+      });
+
+      createPointMesh(S); createPointLabel('S', S);
+      createPointMesh(A); createPointLabel('A', A);
+      createPointMesh(B); createPointLabel('B', B);
+      createPointMesh(C); createPointLabel('C', C);
+    }
+
+    function checkTab4CAnswer() {
+      let correct = true;
+      t4cEdgesList.forEach(e => {
+        if (t4cUserSelections[e] !== t4cAnswers[e]) correct = false;
+      });
+      const fb = document.getElementById('t4c-feedback');
+      fb.style.display = 'block';
+      if (correct) {
+        fb.className = 'info-box ib-teal';
+        fb.innerHTML = '<div class="ib-icon">✓</div><div><b>Chính xác!</b> Cạnh CA (AC) nằm ở phía sau nên vẽ bằng nét đứt.</div>';
+      } else {
+        fb.className = 'info-box ib-red';
+        fb.innerHTML = '<div class="ib-icon">❌</div><div><b>Chưa chính xác.</b> Gợi ý: Kiểm tra lại cạnh đáy CA (nằm ở phía sau).</div>';
+      }
+    }
+
+    /* --- TAB 5: LUYỆN TẬP TỔNG HỢP --- */
+    function buildTab5AScene() {
+      const Bt = new THREE.Vector3(2.5, 0, 1.8);
+      const Ct = new THREE.Vector3(1.2, 0, -1.8);
+      const Dt = new THREE.Vector3(-1.2, 0, -1.8);
+
+      createLineMesh(S, A); createLineMesh(S, Bt); createLineMesh(S, Ct); createLineMesh(S, Dt);
+      createLineMesh(A, Bt); createLineMesh(Bt, Ct); createLineMesh(Ct, Dt); createLineMesh(Dt, A);
+
+      createPointMesh(S); createPointLabel('S', S);
+      createPointMesh(A); createPointLabel('A', A);
+      createPointMesh(Bt); createPointLabel('B', Bt);
+      createPointMesh(Ct); createPointLabel('C', Ct);
+      createPointMesh(Dt); createPointLabel('D', Dt);
+    }
+
+    function t5aShowCase(num) {
+      clearSceneObjects();
+      buildTab5AScene();
+
+      const info = document.getElementById('t5a-info');
+      info.style.display = 'flex';
+      const Bt = new THREE.Vector3(2.5, 0, 1.8);
+      const Ct = new THREE.Vector3(1.2, 0, -1.8);
+      const Dt = new THREE.Vector3(-1.2, 0, -1.8);
+
+      if (num === 1) {
+        info.innerHTML = '<div class="ib-icon">📐</div><div><b>(SAB) ∩ (SCD):</b><br/>Vì AB ∥ CD (đáy hình thang) nên giao tuyến đi qua S và song song với AB, CD.</div>';
+        createPolygonMesh([S, A, Bt], COLOR_PLANE_1, 0.22);
+        createPolygonMesh([S, Ct, Dt], COLOR_PLANE_2, 0.22);
+        const p1 = S.clone().add(new THREE.Vector3(-3, 0, 0));
+        const p2 = S.clone().add(new THREE.Vector3(3, 0, 0));
+        createLineMesh(p1, p2, COLOR_LINE_RESULT);
+      } else {
+        info.innerHTML = '<div class="ib-icon">📐</div><div><b>(SAC) ∩ (SBD):</b><br/>Giao tuyến là <b>SO</b>, trong đó O là giao điểm của 2 đường chéo AC và BD.</div>';
+
+        // Render planes (SAC) and (SBD)
+        createPolygonMesh([S, A, Ct], COLOR_PLANE_1, 0.22);    // Plane (SAC)
+        createPolygonMesh([S, Bt, Dt], COLOR_PLANE_AUX, 0.25); // Plane (SBD)
+
+        // Diagonals AC and BD
+        createLineMesh(A, Ct, 0x94a3b8, true);
+        createLineMesh(Bt, Dt, 0x94a3b8, true);
+
+        let O = segmentIntersection(A, Ct, Bt, Dt, 0.5);
+        if (!O) O = new THREE.Vector3(0.12, 0, -0.13);
+
+        createPointMesh(O, COLOR_POINT_ACTIVE); createPointLabel('O', O, '#FAC775');
+        createLineMesh(S, O, COLOR_LINE_RESULT);
+      }
+    }
+
+    let t5bStep = 1;
+    function buildTab5BScene() {
+      t5bStep = 1;
+      document.getElementById('t5b-step1').classList.remove('done');
+      document.getElementById('t5b-step2').classList.remove('done');
+      document.getElementById('t5b-step3').classList.remove('done');
+      document.getElementById('t5b-conclusion').style.display = 'none';
+
+      createLineMesh(S, A); createLineMesh(S, B); createLineMesh(S, C); createLineMesh(S, D);
+      createLineMesh(A, B); createLineMesh(B, C); createLineMesh(C, D); createLineMesh(D, A);
+
+      createPointMesh(S); createPointLabel('S', S);
+      createPointMesh(A); createPointLabel('A', A);
+      createPointMesh(B); createPointLabel('B', B);
+      createPointMesh(C); createPointLabel('C', C);
+      createPointMesh(D); createPointLabel('D', D);
+
+      const M = new THREE.Vector3().lerpVectors(S, A, 0.5);
+      const N = new THREE.Vector3().lerpVectors(S, B, 0.5);
+      const P = new THREE.Vector3().lerpVectors(S, C, 0.5);
+
+      createPointMesh(M, COLOR_POINT_ACTIVE); createPointLabel('M', M);
+      createPointMesh(N, COLOR_POINT_ACTIVE); createPointLabel('N', N);
+      createPointMesh(P, COLOR_POINT_ACTIVE); createPointLabel('P', P);
+    }
+
+    function t5bNextStep() {
+      const M = new THREE.Vector3().lerpVectors(S, A, 0.5);
+      const N = new THREE.Vector3().lerpVectors(S, B, 0.5);
+      const P = new THREE.Vector3().lerpVectors(S, C, 0.5);
+      const Q = new THREE.Vector3().lerpVectors(S, D, 0.5);
+
+      if (t5bStep === 1) {
+        createLineMesh(M, N, COLOR_SECTION);
+        document.getElementById('t5b-step1').classList.add('done');
+        t5bStep++;
+      } else if (t5bStep === 2) {
+        createLineMesh(N, P, COLOR_SECTION);
+        document.getElementById('t5b-step2').classList.add('done');
+        t5bStep++;
+      } else if (t5bStep === 3) {
+        createPointMesh(Q, COLOR_POINT_ACTIVE); createPointLabel('Q', Q);
+        createLineMesh(P, Q, COLOR_SECTION);
+        createLineMesh(Q, M, COLOR_SECTION);
+        createPolygonMesh([M, N, P, Q], COLOR_SECTION, 0.5);
+        document.getElementById('t5b-step3').classList.add('done');
+        document.getElementById('t5b-conclusion').style.display = 'flex';
+      }
+    }
+
+    /* ========================================================================
+       6. RAYCASTING & INTERACTION LISTENERS
+       ======================================================================== */
+    renderer.domElement.addEventListener('pointerdown', (e) => {
+      const rect = container.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(interactiveHitObjects);
+
+      if (intersects.length > 0) {
+        const hitData = intersects[0].object.userData;
+        if (hitData.type === 't1-g-hit') {
+          const step13 = document.getElementById('t1-step-13');
+          if (step13 && step13.style.display !== 'none' && t1PointSelecting && !t1PointSelected) {
+            selectPointGSuccess();
+          }
+          return;
+        } else if (hitData.type === 't2-b-hit') {
+          if (t2PointSelecting && !t2PointSelected) {
+            selectExistingPointB();
+          }
+          return;
+        } else if (hitData.type === 't3-edge') {
+          t3ClickEdgeCard(hitData.name);
+          return;
+        } else if (hitData.type === 't3-apex') {
+          t3SelectApex();
+          return;
+        } else if (hitData.type === 't4-k-hit') {
+          if (t4PointSelecting && !t4PointSelected) {
+            selectTab4KSuccess();
+          }
+          return;
+        }
+      }
+
+      // Base plane fallback raycasting for Tab 1 Step 1.3
+      if (currentTab === 1 && document.getElementById('t1-step-13') && document.getElementById('t1-step-13').style.display !== 'none') {
+        if (!t1PointSelecting || t1PointSelected) return;
+        const basePlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+        const interPt = new THREE.Vector3();
+        if (raycaster.ray.intersectPlane(basePlane, interPt)) {
+          if (interPt.distanceTo(t1PointG) <= 0.7) {
+            selectPointGSuccess();
+          } else {
+            selectPointGFail();
+          }
+        }
+      }
+
+      // Fallback raycasting for Tab 4 Step 4A.2 (Point F in Tetra)
+      if (currentTab === 4 && currentPill === 'A' && document.getElementById('t4-step-3') && document.getElementById('t4-step-3').style.display !== 'none') {
+        if (!t4PointSelecting || t4PointSelected) return;
+        const ray = raycaster.ray;
+        const ptOnRay = ray.closestPointToPoint(F_tetra);
+        if (ptOnRay.distanceTo(F_tetra) <= 1.5) {
+          selectTab4KSuccess();
+        }
+      }
+
+      // Base plane fallback raycasting for Tab 2 Step 2.5 (Point B)
+      if (currentTab === 2 && document.getElementById('t2-step-25') && document.getElementById('t2-step-25').style.display !== 'none') {
+        if (!t2PointSelecting || t2PointSelected) return;
+        const basePlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0);
+        const interPt = new THREE.Vector3();
+        if (raycaster.ray.intersectPlane(basePlane, interPt)) {
+          if (interPt.distanceTo(B) <= 1.2) {
+            selectExistingPointB();
+          } else {
+            selectPointKFail();
+          }
+        }
+      }
+    });
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const modal = document.getElementById('t2-name-modal');
+        if (modal && modal.style.display !== 'none') {
+          t2ConfirmPointName();
+        }
+      }
+    });
+
+    renderer.domElement.addEventListener('pointermove', (e) => {
+      const rect = container.getBoundingClientRect();
+      mouse.x = ((e.clientX - rect.left) / rect.width) * 2 - 1;
+      mouse.y = -((e.clientY - rect.top) / rect.height) * 2 + 1;
+
+      raycaster.setFromCamera(mouse, camera);
+      const intersects = raycaster.intersectObjects(interactiveHitObjects);
+      let isPointer = false;
+      if (intersects.length > 0) {
+        const hitData = intersects[0].object.userData;
+        if (hitData.type === 't1-g-hit') {
+          const step13 = document.getElementById('t1-step-13');
+          if (step13 && step13.style.display !== 'none') isPointer = true;
+        } else {
+          isPointer = true;
+        }
+      }
+      renderer.domElement.style.cursor = isPointer ? 'pointer' : 'default';
+    });
+
+    /* ========================================================================
+       7. GLOBAL TOGGLES & RESET
+       ======================================================================== */
+    function togglePlanes(checked) {
+      sceneObjects.forEach(obj => {
+        if (obj.isMesh && obj.material && obj.material.transparent && obj.geometry.type === 'BufferGeometry') {
+          obj.visible = checked;
+        }
+      });
+    }
+
+    function toggleGrid(checked) {
+      gridHelper.visible = checked;
+    }
+
+    function setCameraStandardSGK() {
+      camera.position.set(7.3, 7.5, 14.5);
+      orbitControls.target.set(0, 0.8, 0);
+      orbitControls.update();
+    }
+
+    function setCameraTetraSGK() {
+      camera.position.set(9.3, 6.8, 13.2);
+      orbitControls.target.set(0, 0.8, 0);
+      orbitControls.update();
+    }
+
+    function resetCameraDefault() {
+      if (currentTab === 4) {
+        setCameraTetraSGK();
+      } else {
+        setCameraStandardSGK();
+      }
+    }
+
+    /* ========================================================================
+       8. ANIMATION LOOP
+       ======================================================================== */
+    function animate() {
+      requestAnimationFrame(animate);
+      orbitControls.update();
+      updateHtmlLabels();
+      updateOcclusion();
+      renderer.render(scene, camera);
+    }
+
+    // Init first scene
+    loadTabScene();
+    animate();
+
+  </script>
+</body>
+
+</html>
