@@ -122,6 +122,42 @@
       font-size: .85rem; line-height: 1.65; overflow-wrap: anywhere;
     }
 
+    /* ── COLLAPSIBLE PANEL & INFO PANEL (PHẦN 3.6 & 3.7 design Toán) ── */
+    .collapsible-panel { width: 100%; }
+    .cp-toggle {
+      width: 100%; display: flex; justify-content: space-between; align-items: center;
+      min-height: 44px; padding: 0.75rem 1.1rem; background: var(--white);
+      border: 1px solid var(--paper-line); border-radius: var(--radius-lg);
+      cursor: pointer; font-weight: 700; font-size: 0.88rem; color: var(--ink);
+      font-family: inherit; transition: all 0.2s ease;
+      box-shadow: var(--shadow-sm);
+    }
+    .cp-toggle:hover { background: var(--cream); color: var(--jade-deep); border-color: var(--jade-soft); }
+    .cp-toggle span { display: flex; align-items: center; gap: 8px; }
+    .cp-chevron { transition: transform 0.25s ease; color: var(--ink-3); font-size: 1.1rem; }
+    .cp-body {
+      overflow: hidden; max-height: 1200px; margin-top: 0.6rem;
+      transition: max-height 0.35s ease, opacity 0.25s ease, margin-top 0.3s ease;
+    }
+    .collapsible-panel.collapsed .cp-body { max-height: 0; opacity: 0; margin-top: 0; }
+    .collapsible-panel.collapsed .cp-chevron { transform: rotate(180deg); }
+
+    .info-panel { width: 100%; border-radius: var(--radius-lg); display: flex; overflow: hidden; box-shadow: var(--shadow-sm); }
+    .info-col { flex: 1; padding: 1.1rem 1.25rem; }
+    .info-col-observe { background: var(--sage-pale); border: 1px solid var(--sage); border-radius: var(--radius-lg) 0 0 var(--radius-lg); }
+    .info-col-guide { background: var(--jade-pale); border: 1px solid var(--jade-soft); border-radius: 0 var(--radius-lg) var(--radius-lg) 0; }
+    .info-col-label { display: flex; align-items: center; gap: 6px; font-size: 0.75rem; font-weight: 700; text-transform: uppercase; letter-spacing: 0.05em; color: var(--jade-deep); margin-bottom: 8px; }
+    .info-col p, .info-col ul li { font-size: 0.83rem; color: var(--ink-2); line-height: 1.6; }
+    .info-col ul { list-style: none; padding: 0; margin: 0; }
+    .info-col ul li { display: flex; align-items: flex-start; gap: 8px; margin-bottom: 7px; }
+    .info-col ul li i { color: var(--jade-deep); font-size: 1.05rem; flex-shrink: 0; margin-top: 2px; }
+
+    @media (max-width: 768px) {
+      .info-panel { flex-direction: column; }
+      .info-col-observe { border-radius: var(--radius-lg) var(--radius-lg) 0 0; border-bottom: none; }
+      .info-col-guide { border-radius: 0 0 var(--radius-lg) var(--radius-lg); }
+    }
+
     /* ── BANNER HEADER ── */
     .sim-banner {
       background: linear-gradient(135deg, #5C4DB1 0%, #403294 100%);
@@ -190,6 +226,25 @@
       width: 100%;
       min-width: 0;
       touch-action: none;
+    }
+
+    .canvas-overlay-text {
+      position: absolute;
+      top: 10px;
+      left: 10px;
+      z-index: 2;
+      background: rgba(255, 255, 255, 0.92);
+      border: 1px solid var(--paper-line);
+      border-radius: 6px;
+      padding: 4px 10px;
+      font-size: 0.76rem;
+      font-weight: 600;
+      color: var(--ink-2);
+      pointer-events: none;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      box-shadow: var(--shadow-sm);
     }
 
     canvas {
@@ -455,7 +510,7 @@
       height: 4px;
       background: #A09D95;
       position: relative;
-      margin: 1.5rem 1rem;
+      margin: 3.6rem 1.5rem 2.2rem;
     }
 
     /* Arrowheads on ends */
@@ -486,36 +541,56 @@
       top: -6px;
       width: 100%;
       left: 0;
-      display: flex;
-      justify-content: space-between;
+      height: 16px;
     }
 
     .scale-tick {
       width: 2px;
       height: 16px;
       background: #4A4A4A;
-      position: relative;
+      position: absolute;
+      top: 0;
+      transform: translateX(-50%);
     }
 
     .tick-label {
       position: absolute;
       top: 20px;
       transform: translateX(-50%);
-      font-size: 0.72rem;
+      font-size: 0.74rem;
       font-weight: 700;
       white-space: nowrap;
       text-align: center;
-      color: var(--text);
+      color: var(--text-2);
+      font-family: 'JetBrains Mono', monospace;
     }
 
     .tick-desc {
       position: absolute;
-      bottom: 20px;
-      transform: translateX(-50%);
-      font-size: 0.72rem;
+      bottom: 18px;
+      font-size: 0.76rem;
       font-weight: 700;
+      line-height: 1.35;
       white-space: nowrap;
       text-align: center;
+    }
+
+    .tick-desc.td-left {
+      left: 0;
+      transform: translateX(0);
+      text-align: left;
+    }
+
+    .tick-desc.td-center {
+      left: 50%;
+      transform: translateX(-50%);
+      text-align: center;
+    }
+
+    .tick-desc.td-right {
+      right: 0;
+      transform: translateX(0);
+      text-align: right;
     }
 
     .scale-pointer {
@@ -729,10 +804,34 @@
 
     <p class="intro-text"><strong>Nhiệm vụ:</strong> Thay đổi độ dài và góc giữa hai vectơ để quan sát tích vô hướng, phép chiếu và mức độ cùng hướng biến đổi theo thời gian thực.</p>
 
+    <!-- COLLAPSIBLE INSTRUCTION PANEL (PHẦN 3.6 & 3.7 design Toán) -->
+    <div class="collapsible-panel" id="guidePanel">
+      <button class="cp-toggle" onclick="toggleCollapsible('guidePanel')" aria-expanded="true" aria-controls="guidePanel-body">
+        <span><i class="ti ti-compass" style="color:var(--jade-deep);font-size:1.1rem"></i> <strong>Hướng dẫn & thao tác chi tiết</strong></span>
+        <i class="ti ti-chevron-up cp-chevron"></i>
+      </button>
+      <div class="cp-body" id="guidePanel-body">
+        <div class="info-panel">
+          <div class="info-col info-col-observe">
+            <div class="info-col-label"><i class="ti ti-target"></i> Mục tiêu khám phá</div>
+            <p>Hiểu bản chất tích vô hướng <span class="vec">u</span> · <span class="vec">v</span> = |<span class="vec">u</span>||<span class="vec">v</span>|cosθ thông qua phép chiếu hình học và mối liên hệ giữa dấu tích vô hướng với hướng của 2 vectơ.</p>
+          </div>
+          <div class="info-col info-col-guide">
+            <div class="info-col-label"><i class="ti ti-hand-click"></i> Các bước thao tác</div>
+            <ul>
+              <li><i class="ti ti-circle-number-1"></i><span><strong>Chỉnh tham số:</strong> Kéo 3 slider ở bảng điều khiển (độ lớn |<span class="vec">u</span>|, |<span class="vec">v</span>| và góc θ) hoặc kéo thả trực tiếp điểm mút vectơ <span class="vec">u</span>, <span class="vec">v</span> trên đồ thị.</span></li>
+              <li><i class="ti ti-circle-number-2"></i><span><strong>Quan sát chỉ số:</strong> Xem 4 thẻ hiển thị giá trị real-time: Góc θ, cosθ, Tích vô hướng <span class="vec">u</span> · <span class="vec">v</span> và Phép chiếu |<span class="vec">u</span>|cosθ.</span></li>
+              <li><i class="ti ti-circle-number-3"></i><span><strong>Xem phép chiếu:</strong> Xem 4 bước hình học minh họa đoạn màu vàng (phép chiếu của <span class="vec">u</span> lên <span class="vec">v</span>) và đoạn vuông góc nét đứt.</span></li>
+              <li><i class="ti ti-circle-number-4"></i><span><strong>Đối chiếu ý nghĩa:</strong> Quan sát chấm xanh di chuyển trên thanh thang đo (Dương: cùng hướng, 0: vuông góc, Âm: ngược hướng) và bấm "Luyện tập thêm" để làm bài tập vận dụng.</span></li>
+            </ul>
+          </div>
+        </div>
+      </div>
+    </div>
+
     <!-- MAIN ROW: CANVAS & CONTROLS -->
     <div class="row-visuals">
       <div class="canvas-wrapper">
-        <div class="canvas-overlay-text">Mặt phẳng tọa độ Oxy</div>
         <canvas id="mainCanvas"></canvas>
       </div>
 
@@ -846,25 +945,22 @@
           <div class="scale-pointer" id="scalePointer"></div>
           <div class="scale-ticks">
             <div class="scale-tick" style="left: 0%;">
-              <span class="tick-desc" style="color: var(--red);">Ngược hướng<br>(θ > 90°)</span>
-              <span class="tick-label" id="lblScaleMin">-20.00</span>
+              <span class="tick-desc td-left" style="color: var(--red);">Ngược hướng<br>(θ > 90°)</span>
+              <span class="tick-label" id="lblScaleMin" style="left: 0; transform: translateX(0);">-20.00</span>
             </div>
-            <div class="scale-tick" style="left: 33.3%;">
+            <div class="scale-tick" style="left: 25%;">
               <span class="tick-label" id="lblScaleMinMid">-10.00</span>
             </div>
             <div class="scale-tick" style="left: 50%;">
-              <span class="tick-desc" style="color: var(--text-3);">Vuông góc<br>(θ = 90°)</span>
+              <span class="tick-desc td-center" style="color: var(--text-3);">Vuông góc<br>(θ = 90°)</span>
               <span class="tick-label">0</span>
             </div>
-            <div class="scale-tick" style="left: 66.6%;">
+            <div class="scale-tick" style="left: 75%;">
               <span class="tick-label" id="lblScaleMaxMid">10.00</span>
             </div>
             <div class="scale-tick" style="left: 100%;">
-              <span class="tick-desc" style="color: var(--green);">Cùng hướng<br>(0° &lt; θ &lt; 90°)</span>
-              <span class="tick-label" id="lblScaleMax">20.00</span>
-              <span class="tick-desc"
-                style="right: 0%; transform: translateX(50%); top: -45px; color: var(--green);">Cùng hướng tối đa<br>(θ
-                = 0°)</span>
+              <span class="tick-desc td-right" style="color: var(--green);">Cùng hướng<br>(0° &lt; θ &le; 90°)</span>
+              <span class="tick-label" id="lblScaleMax" style="right: 0; transform: translateX(0);">20.00</span>
             </div>
           </div>
         </div>
@@ -931,6 +1027,13 @@
     // ===== ATHENA AVATAR MASCOT (PHẦN 3.9 & 7.9 design Toán) =====
     const ATHENA_AVATAR = "data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><circle cx='50' cy='50' r='48' fill='%23DCEAE1' stroke='%232D8B6F' stroke-width='3'/><circle cx='23' cy='32' r='9' fill='%231A7A5E'/><circle cx='77' cy='32' r='9' fill='%231A7A5E'/><circle cx='50' cy='52' r='36' fill='%23F5EDD8' stroke='%232D8B6F' stroke-width='3'/><rect x='26' y='38' width='48' height='27' rx='9' fill='%23111820'/><ellipse cx='38' cy='51' rx='6.5' ry='8.5' fill='%234ECBA0'/><ellipse cx='62' cy='51' rx='6.5' ry='8.5' fill='%234ECBA0'/><circle cx='36' cy='48' r='2.2' fill='%23FFFFFF'/><circle cx='60' cy='48' r='2.2' fill='%23FFFFFF'/><path d='M43 59 Q50 63 57 59' stroke='%234ECBA0' stroke-width='2' stroke-linecap='round' fill='none'/><line x1='50' y1='16' x2='50' y2='8' stroke='%232D8B6F' stroke-width='3' stroke-linecap='round'/><circle cx='50' cy='6' r='4' fill='%234ECBA0'/></svg>";
     document.addEventListener('DOMContentLoaded', () => {
+      document.querySelectorAll('.collapsible-panel').forEach(p => {
+        if (window.matchMedia('(max-width: 768px)').matches) {
+          p.classList.add('collapsed');
+          const btn = p.querySelector('.cp-toggle');
+          if (btn) btn.setAttribute('aria-expanded', 'false');
+        }
+      });
       document.querySelectorAll('.athena-avatar img').forEach(img => img.src = ATHENA_AVATAR);
     });
 
@@ -1011,6 +1114,7 @@
 
       ctx.strokeStyle = color;
       ctx.lineWidth = width;
+      ctx.lineCap = 'round';
       ctx.beginPath();
       ctx.moveTo(p1.px, p1.py);
       ctx.lineTo(p2.px, p2.py);
@@ -1023,17 +1127,17 @@
       ctx.rotate(angle);
       ctx.beginPath();
       ctx.moveTo(0, 0);
-      ctx.lineTo(-10, -4);
-      ctx.lineTo(-10, 4);
+      ctx.lineTo(-12, -5);
+      ctx.lineTo(-12, 5);
       ctx.closePath();
       ctx.fillStyle = color;
       ctx.fill();
       ctx.restore();
 
       if (label) {
-        ctx.fillStyle = color;
-        ctx.font = 'bold 13px Be Vietnam Pro';
-        drawVecLabel(ctx, p2.px + 5 * Math.cos(angle - Math.PI / 4), p2.py + 5 * Math.sin(angle - Math.PI / 4), label, ctx.fillStyle, 13);
+        const lblX = p2.px + 14 * Math.cos(angle - Math.PI / 4);
+        const lblY = p2.py + 14 * Math.sin(angle - Math.PI / 4);
+        drawVecLabel(ctx, lblX, lblY, label, color, 14);
       }
     }
 
@@ -1049,104 +1153,133 @@
       // Clear
       ctx.clearRect(0, 0, CW, CH);
 
-      // Recalculate origin and uniform scale
-      O.px = 40;
-      O.py = CH - 40;
-      // Fit 9 units comfortably in both directions (taking padding into account)
-      scale = Math.min((CW - 60) / 9, (CH - 60) / 9);
-
-      // Grid Lines
-      ctx.strokeStyle = 'rgba(45, 139, 111, 0.05)';
-      ctx.lineWidth = 1;
-      for (let x = 1; x <= 9; x++) {
-        const px = O.px + x * scale;
-        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, CH); ctx.stroke();
-      }
-      for (let y = 1; y <= 9; y++) {
-        const py = O.py - y * scale;
-        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(CW, py); ctx.stroke();
-      }
-
-      // Coordinate axes
-      ctx.strokeStyle = 'rgba(0, 0, 0, 0.5)';
-      ctx.lineWidth = 1.5;
-      // Ox
-      ctx.beginPath(); ctx.moveTo(0, O.py); ctx.lineTo(CW, O.py); ctx.stroke();
-      drawArrowTip(CW - 2, O.py, 0, 8, 'rgba(0,0,0,0.5)');
-      // Oy
-      ctx.beginPath(); ctx.moveTo(O.px, CH); ctx.lineTo(O.px, 0); ctx.stroke();
-      drawArrowTip(O.px, 2, -Math.PI / 2, 8, 'rgba(0,0,0,0.5)');
-
-      // Label axes
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.6)';
-      ctx.font = '700 11px "JetBrains Mono", monospace';
-      ctx.fillText('x', CW - 15, O.py + 15);
-      ctx.fillText('y', O.px - 15, 15);
-      ctx.fillText('O', O.px - 14, O.py + 14);
-
-      // Axis ticks and labels
-      ctx.fillStyle = 'rgba(0, 0, 0, 0.5)';
-      ctx.font = '700 10px "JetBrains Mono", monospace';
-
-      // Ox ticks (1 to 8)
-      for (let x = 1; x <= 8; x++) {
-        const px = O.px + x * scale;
-        ctx.beginPath();
-        ctx.moveTo(px, O.py - 3);
-        ctx.lineTo(px, O.py + 3);
-        ctx.stroke();
-        ctx.fillText(x.toString(), px - 3, O.py + 14);
-      }
-
-      // Oy ticks (1 to 8)
-      for (let y = 1; y <= 8; y++) {
-        const py = O.py - y * scale;
-        ctx.beginPath();
-        ctx.moveTo(O.px - 3, py);
-        ctx.lineTo(O.px + 3, py);
-        ctx.stroke();
-        ctx.fillText(y.toString(), O.px - 16, py + 4);
-      }
-
-      const alpha = 15 * Math.PI / 180; // 15 degrees base angle to match screenshot
+      const alpha = 15 * Math.PI / 180;
       const thetaRad = thetaDeg * Math.PI / 180;
 
-      // Vector v coordinates
+      // Vector v coordinates (in math units)
       const vx = lenV * Math.cos(alpha);
       const vy = lenV * Math.sin(alpha);
 
-      // Vector u coordinates (rotated by alpha + thetaRad)
+      // Vector u coordinates (in math units)
       const ux = lenU * Math.cos(alpha + thetaRad);
       const uy = lenU * Math.sin(alpha + thetaRad);
 
-      const cVEnd = m2c(vx, vy);
-      const cUEnd = m2c(ux, uy);
-
-      // 1. Draw angle arc θ
-      if (thetaDeg > 0) {
-        ctx.strokeStyle = '#4E7F92';
-        ctx.fillStyle = 'rgba(78, 127, 146, 0.08)';
-        ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        // Since Y is inverted in canvas, drawing from -alpha to -(alpha+thetaRad) goes counter-clockwise
-        ctx.arc(O.px, O.py, 30, -alpha, -(alpha + thetaRad), true);
-        ctx.stroke();
-        ctx.fill();
-
-        const midAngle = -(alpha + thetaRad / 2);
-        ctx.fillStyle = '#4E7F92';
-        ctx.font = '700 11px "JetBrains Mono", monospace';
-        ctx.fillText('θ', O.px + 36 * Math.cos(midAngle) - 4, O.py + 36 * Math.sin(midAngle) + 4);
-      }
-
-      // 2. Draw Projection line & yellow projection segment
+      // Projection coordinates (in math units)
       const projDist = lenU * Math.cos(thetaRad);
       const projX = projDist * Math.cos(alpha);
       const projY = projDist * Math.sin(alpha);
+
+      // Determine bounding box in math units
+      let minMathX = Math.min(0, vx, ux, projX);
+      let maxMathX = Math.max(0, vx, ux, projX);
+      let minMathY = Math.min(0, vy, uy, projY);
+      let maxMathY = Math.max(0, vy, uy, projY);
+
+      // Ensure minimum visible bounds for axes and aesthetic padding
+      minMathX = Math.min(minMathX, -0.5);
+      maxMathX = Math.max(maxMathX, 5.0);
+      minMathY = Math.min(minMathY, -0.5);
+      maxMathY = Math.max(maxMathY, 4.0);
+
+      // Viewport padding in pixels
+      const padLeft = 45;
+      const padRight = (CW > 450) ? 175 : 45; // Space for top-right info badge if wide enough
+      const padTop = 40;
+      const padBottom = 40;
+
+      const availW = Math.max(100, CW - padLeft - padRight);
+      const availH = Math.max(100, CH - padTop - padBottom);
+
+      const mathW = maxMathX - minMathX;
+      const mathH = maxMathY - minMathY;
+
+      scale = Math.min(availW / mathW, availH / mathH);
+
+      // Compute Origin pixel coordinates
+      O.px = padLeft - minMathX * scale;
+      O.py = CH - padBottom + minMathY * scale;
+
+      // Grid bounds
+      const gridMinX = Math.floor(minMathX) - 1;
+      const gridMaxX = Math.ceil(maxMathX) + 1;
+      const gridMinY = Math.floor(minMathY) - 1;
+      const gridMaxY = Math.ceil(maxMathY) + 1;
+
+      // 1. Soft grid lines
+      ctx.strokeStyle = 'rgba(45, 139, 111, 0.08)';
+      ctx.lineWidth = 1;
+      for (let x = gridMinX; x <= gridMaxX; x++) {
+        if (x === 0) continue;
+        const px = O.px + x * scale;
+        if (px >= 0 && px <= CW) {
+          ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, CH); ctx.stroke();
+        }
+      }
+      for (let y = gridMinY; y <= gridMaxY; y++) {
+        if (y === 0) continue;
+        const py = O.py - y * scale;
+        if (py >= 0 && py <= CH) {
+          ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(CW, py); ctx.stroke();
+        }
+      }
+
+      // 2. Coordinate axes
+      ctx.strokeStyle = '#263238';
+      ctx.lineWidth = 1.8;
+
+      const oxStartPx = Math.max(10, O.px + gridMinX * scale);
+      const oxEndPx = Math.min(CW - 10, O.px + gridMaxX * scale);
+      ctx.beginPath(); ctx.moveTo(oxStartPx, O.py); ctx.lineTo(oxEndPx, O.py); ctx.stroke();
+      drawArrowTip(oxEndPx, O.py, 0, 9, '#263238');
+
+      const oyStartPy = Math.min(CH - 10, O.py - gridMinY * scale);
+      const oyEndPy = Math.max(10, O.py - gridMaxY * scale);
+      ctx.beginPath(); ctx.moveTo(O.px, oyStartPy); ctx.lineTo(O.px, oyEndPy); ctx.stroke();
+      drawArrowTip(O.px, oyEndPy, -Math.PI / 2, 9, '#263238');
+
+      // Label axes & Origin
+      ctx.fillStyle = '#263238';
+      ctx.font = '700 12px "JetBrains Mono", monospace';
+      ctx.fillText('x', oxEndPx - 10, O.py + 18);
+      ctx.fillText('y', O.px - 18, oyEndPy + 10);
+      ctx.fillText('O', O.px - 16, O.py + 16);
+
+      // Axis ticks and numbers
+      ctx.fillStyle = '#546E7A';
+      ctx.font = '700 10.5px "JetBrains Mono", monospace';
+
+      // Ox ticks
+      for (let x = gridMinX; x <= gridMaxX; x++) {
+        if (x === 0) continue;
+        const px = O.px + x * scale;
+        if (px >= oxStartPx + 5 && px <= oxEndPx - 15) {
+          ctx.beginPath();
+          ctx.moveTo(px, O.py - 3); ctx.lineTo(px, O.py + 3);
+          ctx.stroke();
+          ctx.fillText(x.toString(), px - (x < 0 ? 8 : 3), O.py + 16);
+        }
+      }
+
+      // Oy ticks
+      for (let y = gridMinY; y <= gridMaxY; y++) {
+        if (y === 0) continue;
+        const py = O.py - y * scale;
+        if (py <= oyStartPy - 5 && py >= oyEndPy + 15) {
+          ctx.beginPath();
+          ctx.moveTo(O.px - 3, py); ctx.lineTo(O.px + 3, py);
+          ctx.stroke();
+          ctx.fillText(y.toString(), O.px - (y < 0 ? 22 : 18), py + 4);
+        }
+      }
+
+      const cVEnd = m2c(vx, vy);
+      const cUEnd = m2c(ux, uy);
       const cProj = m2c(projX, projY);
 
-      ctx.strokeStyle = 'rgba(78, 127, 146, 0.4)';
-      ctx.lineWidth = 1.5;
+      // 3. Projection line & gold projection segment
+      // Dashed line from u tip to projection point on v line
+      ctx.strokeStyle = 'rgba(78, 127, 146, 0.65)';
+      ctx.lineWidth = 1.8;
       ctx.setLineDash([5, 4]);
       ctx.beginPath();
       ctx.moveTo(cUEnd.px, cUEnd.py);
@@ -1154,9 +1287,9 @@
       ctx.stroke();
       ctx.setLineDash([]);
 
-      // Draw perpendicular mark at projection point
-      if (projDist !== 0) {
-        const pSize = 6;
+      // Perpendicular mark at projection point
+      if (Math.abs(projDist) > 0.05) {
+        const pSize = 7;
         const vDirX = Math.cos(alpha);
         const vDirY = Math.sin(alpha);
         const perpDirX = -vDirY;
@@ -1176,8 +1309,8 @@
         const cp2 = m2c(p2x, p2y);
         const cp3 = m2c(p3x, p3y);
 
-        ctx.strokeStyle = 'rgba(78, 127, 146, 0.6)';
-        ctx.lineWidth = 1;
+        ctx.strokeStyle = 'rgba(78, 127, 146, 0.8)';
+        ctx.lineWidth = 1.2;
         ctx.beginPath();
         ctx.moveTo(cp1.px, cp1.py);
         ctx.lineTo(cp2.px, cp2.py);
@@ -1185,31 +1318,88 @@
         ctx.stroke();
       }
 
-      // Gold projection highlight
+      // Gold projection highlight segment
       ctx.strokeStyle = '#E8A24A';
-      ctx.lineWidth = 5;
+      ctx.lineWidth = 6;
+      ctx.lineCap = 'round';
       ctx.beginPath();
       ctx.moveTo(O.px, O.py);
       ctx.lineTo(cProj.px, cProj.py);
       ctx.stroke();
 
-      // Draw Vector v (green)
-      drawArrow(0, 0, vx, vy, '#3CA57A', 3.5, 'v');
-      // Draw Vector u (purple)
-      drawArrow(0, 0, ux, uy, '#7C3AED', 3.5, 'u');
+      // Text label for projection segment
+      if (Math.abs(projDist) > 0.7) {
+        const midPx = (O.px + cProj.px) / 2;
+        const midPy = (O.py + cProj.py) / 2 + 18;
+        ctx.save();
+        ctx.font = '700 11.5px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#CE8A33';
+        ctx.textAlign = 'center';
+        ctx.fillText(`Chiếu = ${projDist.toFixed(2)}`, midPx, midPy);
+        ctx.restore();
+      }
 
-      // Drag handle indicators at the tips of vectors
+      // 4. Angle arc θ
+      if (thetaDeg > 0) {
+        ctx.strokeStyle = '#4E7F92';
+        ctx.fillStyle = 'rgba(78, 127, 146, 0.12)';
+        ctx.lineWidth = 1.8;
+        ctx.beginPath();
+        ctx.arc(O.px, O.py, Math.min(36, 1.2 * scale), -alpha, -(alpha + thetaRad), true);
+        ctx.stroke();
+        ctx.fill();
+
+        const midAngle = -(alpha + thetaRad / 2);
+        const arcR = Math.min(48, 1.6 * scale);
+        const arcTx = O.px + arcR * Math.cos(midAngle);
+        const arcTy = O.py + arcR * Math.sin(midAngle);
+        ctx.save();
+        ctx.font = '700 12px "JetBrains Mono", monospace';
+        ctx.fillStyle = '#1B5E48';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(`θ=${thetaDeg}°`, arcTx, arcTy);
+        ctx.restore();
+      }
+
+      // 5. Draw Vector v (Jade Green) & Vector u (Purple)
+      drawArrow(0, 0, vx, vy, '#2D8B6F', 4, 'v');
+      drawArrow(0, 0, ux, uy, '#7C3AED', 4, 'u');
+
+      // 6. Interactive Drag Handle Dots at vector tips
+      // Handle v
+      ctx.save();
       ctx.fillStyle = '#FFFFFF';
-      ctx.strokeStyle = '#3CA57A';
-      ctx.lineWidth = 2;
+      ctx.strokeStyle = '#2D8B6F';
+      ctx.lineWidth = 2.5;
       ctx.beginPath();
-      ctx.arc(cVEnd.px, cVEnd.py, 5, 0, Math.PI * 2);
+      ctx.arc(cVEnd.px, cVEnd.py, 8, 0, Math.PI * 2);
       ctx.fill(); ctx.stroke();
 
+      // Handle u
       ctx.strokeStyle = '#7C3AED';
       ctx.beginPath();
-      ctx.arc(cUEnd.px, cUEnd.py, 5, 0, Math.PI * 2);
+      ctx.arc(cUEnd.px, cUEnd.py, 8, 0, Math.PI * 2);
       ctx.fill(); ctx.stroke();
+      ctx.restore();
+
+      // 7. Coordinate Real-time Info Badge (Top-Right)
+      ctx.save();
+      const boxW = 160, boxH = 46;
+      const boxX = CW - boxW - 12, boxY = 12;
+      ctx.fillStyle = 'rgba(255, 255, 255, 0.94)';
+      ctx.strokeStyle = 'var(--paper-line)';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(boxX, boxY, boxW, boxH, 8);
+      ctx.fill(); ctx.stroke();
+
+      ctx.font = '700 11px "JetBrains Mono", monospace';
+      ctx.fillStyle = '#7C3AED';
+      ctx.fillText(`u = (${ux.toFixed(1)}; ${uy.toFixed(1)})`, boxX + 10, boxY + 18);
+      ctx.fillStyle = '#2D8B6F';
+      ctx.fillText(`v = (${vx.toFixed(1)}; ${vy.toFixed(1)})`, boxX + 10, boxY + 36);
+      ctx.restore();
     }
 
     function drawArrowTip(px, py, angle, size, color) {
@@ -1411,11 +1601,31 @@
       const distU = Math.hypot(mousePx - uTip.px, mousePy - uTip.py);
       const distV = Math.hypot(mousePx - vTip.px, mousePy - vTip.py);
 
-      if (distU < 22) {
+      if (distU < 28) {
         isDraggingU = true;
-      } else if (distV < 22) {
+      } else if (distV < 28) {
         isDraggingV = true;
       }
+    }
+
+    function checkHover(clientX, clientY) {
+      const rect = canvas.getBoundingClientRect();
+      const mousePx = clientX - rect.left;
+      const mousePy = clientY - rect.top;
+
+      const rad = thetaDeg * Math.PI / 180;
+      const alpha = 15 * Math.PI / 180;
+      const vx = lenV * Math.cos(alpha);
+      const vy = lenV * Math.sin(alpha);
+      const ux = lenU * Math.cos(alpha + rad);
+      const uy = lenU * Math.sin(alpha + rad);
+
+      const uTip = m2c(ux, uy);
+      const vTip = m2c(vx, vy);
+
+      const isNearU = Math.hypot(mousePx - uTip.px, mousePy - uTip.py) < 28;
+      const isNearV = Math.hypot(mousePx - vTip.px, mousePy - vTip.py) < 28;
+      canvas.style.cursor = (isNearU || isNearV) ? 'grab' : 'default';
     }
 
     function handleMove(clientX, clientY) {
@@ -1458,16 +1668,25 @@
     canvas.addEventListener('pointerdown', (e) => {
       if (!e.isPrimary) return;
       handleStart(e.clientX, e.clientY);
-      if (isDraggingU || isDraggingV) canvas.setPointerCapture(e.pointerId);
+      if (isDraggingU || isDraggingV) {
+        canvas.setPointerCapture(e.pointerId);
+        canvas.style.cursor = 'grabbing';
+      }
     });
     canvas.addEventListener('pointermove', (e) => {
       if (!e.isPrimary) return;
-      handleMove(e.clientX, e.clientY);
+      if (isDraggingU || isDraggingV) {
+        handleMove(e.clientX, e.clientY);
+        canvas.style.cursor = 'grabbing';
+      } else {
+        checkHover(e.clientX, e.clientY);
+      }
     });
 
     function endVectorDrag(e) {
       isDraggingU = false;
       isDraggingV = false;
+      canvas.style.cursor = 'default';
       if (e && canvas.hasPointerCapture(e.pointerId)) canvas.releasePointerCapture(e.pointerId);
     }
     canvas.addEventListener('pointerup', endVectorDrag);
@@ -1479,6 +1698,14 @@
       const open = panel.classList.toggle('show');
       button.setAttribute('aria-expanded', String(open));
       button.textContent = open ? 'Đóng bài luyện tập' : 'Luyện tập thêm';
+      reportHeight();
+    }
+
+    function toggleCollapsible(id) {
+      const panel = document.getElementById(id);
+      const btn = panel.querySelector('.cp-toggle');
+      const isCollapsed = panel.classList.toggle('collapsed');
+      if (btn) btn.setAttribute('aria-expanded', String(!isCollapsed));
       reportHeight();
     }
 
