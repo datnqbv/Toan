@@ -1,0 +1,2245 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 11 · Vị trí tương đối của hai đường thẳng</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    rel="stylesheet">
+  <style>
+    :root {
+      --cream: #FAF7F0; --cream-2: #F0EADD; --cream-3: #E7DECC;
+      --paper-line: #E5DECF; --paper-line-2: #D6CCB6;
+      --ink: #1A1A1A; --ink-2: #514C44; --ink-3: #7C756A; --ink-faint: #ABA396;
+      --jade: #3CA57A; --jade-deep: #2D8B6F; --jade-dark: #14432F;
+      --jade-text: #1B5E48; --jade-soft: #A9D0BE; --jade-pale: #DCEAE1;
+      --sage: #A8C9B8; --sage-deep: #7CA792; --sage-text: #46685A; --sage-pale: #E1ECE4;
+      --accent: #E8A24A; --accent-deep: #CE8A33; --accent-text: #8A551A; --accent-pale: #F7E7CD;
+      --correct: #2D8B6F; --correct-bg: #DCEAE1;
+      --wrong: #C15F3C; --wrong-bg: #F3E2D6;
+      --warning: #C58A2E; --warning-bg: #F5E7CB;
+      --info: #4E7F92; --info-bg: #DCE7EB;
+      --white: #FFFFFF;
+      --green: var(--correct); --green-light: var(--correct-bg);
+      --red: var(--wrong); --red-light: var(--wrong-bg);
+      --amber: var(--warning); --amber-light: var(--warning-bg);
+      --blue: var(--info); --blue-light: var(--info-bg);
+      --surface: var(--white);
+      --border: var(--paper-line);
+      --text: var(--ink);
+      --text-2: var(--ink-2);
+      --sub: var(--ink-3);
+      --radius: 12px;
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+      --canvas-bg: #0a1628;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
+    html,
+    body {
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--jade-dark) 0%, var(--jade-deep) 100%);
+      color: #fff;
+      padding: 14px 24px 13px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      flex-shrink: 0;
+    }
+
+    .header-badge {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .header-progress {
+      display: flex;
+      gap: 5px;
+      margin-left: auto;
+    }
+
+    .hp-dot {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 10.5px;
+      font-weight: 700;
+      color: rgba(255, 255, 255, .6);
+    }
+
+    .hp-dot.done {
+      background: var(--teal);
+      border-color: var(--teal);
+      color: #fff;
+    }
+
+    .hp-dot.active {
+      background: #fff;
+      border-color: #fff;
+      color: var(--navy);
+    }
+
+    .main {
+      display: flex;
+      min-height: 0;
+      height: calc(100vh - 59px);
+    }
+
+    .canvas-wrap {
+      flex: 1;
+      position: relative;
+      background: var(--canvas-bg);
+      min-height: 400px;
+    }
+
+    #three-canvas-container {
+      position: absolute;
+      inset: 0;
+    }
+
+    .canvas-hint {
+      position: absolute;
+      bottom: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(255, 255, 255, 0.10);
+      color: rgba(255, 255, 255, 0.75);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      border-radius: 20px;
+      padding: 5px 14px;
+      font-size: 11.5px;
+      pointer-events: none;
+      white-space: nowrap;
+      z-index: 5;
+    }
+
+    #label-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 4;
+    }
+
+    .pt-label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-size: 16px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.8), 0 0 8px rgba(0, 0, 0, 0.5);
+      white-space: nowrap;
+      will-change: transform;
+    }
+
+    .pt-label.small {
+      font-size: 12px;
+    }
+
+    .pt-label.tag {
+      font-size: 12.5px;
+      background: rgba(10, 22, 40, 0.75);
+      padding: 3px 9px;
+      border-radius: 10px;
+    }
+
+    #hud {
+      position: absolute;
+      top: 14px;
+      left: 50%;
+      transform: translateX(-50%);
+      background: rgba(10, 22, 40, 0.88);
+      color: #fff;
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      z-index: 6;
+      display: none;
+      white-space: nowrap;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      pointer-events: none;
+    }
+
+    #hud.analyzing {
+      color: rgba(255, 255, 255, 0.6);
+      font-style: italic;
+      font-weight: 500;
+    }
+
+    #hud.ok {
+      background: rgba(27, 140, 90, 0.92);
+    }
+
+    #hud.no {
+      background: rgba(198, 40, 40, 0.85);
+    }
+
+    #hud.info {
+      background: rgba(21, 101, 192, 0.9);
+    }
+
+    /* ---------- MODULE 2: side vision toggles ---------- */
+    .side-vision-btn {
+      position: absolute;
+      top: 14px;
+      z-index: 8;
+      background: rgba(10, 22, 40, 0.88);
+      color: #fff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 20px;
+      padding: 7px 14px;
+      font-size: 12px;
+      font-weight: 700;
+      cursor: pointer;
+    }
+
+    .side-vision-btn.left {
+      left: 14px;
+    }
+
+    .side-vision-btn.right {
+      right: 14px;
+    }
+
+    .side-tag {
+      position: absolute;
+      top: 58px;
+      z-index: 7;
+      color: rgba(255, 255, 255, .55);
+      font-size: 11px;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+    }
+
+    .side-tag.left {
+      left: 20px;
+    }
+
+    .side-tag.right {
+      right: 20px;
+    }
+
+    .not-found-msg {
+      position: absolute;
+      z-index: 7;
+      color: var(--wrong-bg);
+      font-size: 12.5px;
+      font-weight: 700;
+      background: rgba(193, 95, 60, 0.18);
+      border: 1px solid rgba(193, 95, 60, .5);
+      border-radius: 10px;
+      padding: 6px 12px;
+      opacity: 0;
+      transition: opacity .3s;
+    }
+
+    .not-found-msg.show {
+      opacity: 1;
+    }
+
+    /* ---------- SIDEBAR (shared) ---------- */
+    .sidebar {
+      width: 310px;
+      flex-shrink: 0;
+      background: var(--surface);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    .step-tabs {
+      display: flex;
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+
+    .step-tab {
+      flex: 1;
+      padding: 10px 3px;
+      font-size: 10.5px;
+      font-weight: 600;
+      text-align: center;
+      cursor: pointer;
+      color: var(--sub);
+      border-bottom: 2.5px solid transparent;
+      transition: all .2s;
+      letter-spacing: .03em;
+      text-transform: uppercase;
+    }
+
+    .step-tab.active {
+      color: var(--navy);
+      border-bottom-color: var(--teal);
+      background: var(--cream-2);
+    }
+
+    .step-tab.locked {
+      color: var(--ink-faint);
+      cursor: not-allowed;
+    }
+
+    .step-body {
+      padding: 16px 16px 12px;
+      flex: 1;
+    }
+
+    .step-panel {
+      display: none;
+    }
+
+    .step-panel.active {
+      display: block;
+    }
+
+    .step-title {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .step-num {
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #fff;
+      font-size: 11px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-desc {
+      font-size: 12.5px;
+      line-height: 1.65;
+      color: var(--text-2);
+      margin-bottom: 12px;
+    }
+
+    .step-desc b {
+      color: var(--navy);
+    }
+
+    .info-box {
+      border-radius: var(--radius);
+      padding: 11px 12px;
+      display: flex;
+      gap: 9px;
+      margin-bottom: 10px;
+      font-size: 12px;
+      line-height: 1.6;
+    }
+
+    .info-box .ib-icon {
+      font-size: 15px;
+      flex-shrink: 0;
+      margin-top: 1px;
+    }
+
+    .info-box .ib-title {
+      font-weight: 700;
+      font-size: 11.5px;
+      margin-bottom: 3px;
+    }
+
+    .ib-blue {
+      background: var(--info-bg);
+      border: 1px solid var(--info);
+      color: var(--info);
+    }
+
+    .ib-teal {
+      background: var(--jade-pale);
+      border: 1px solid var(--jade-soft);
+      color: var(--jade-text);
+    }
+
+    .ib-gold {
+      background: var(--warning-bg);
+      border: 1px solid var(--warning);
+      color: var(--accent-text);
+    }
+
+    .ib-red {
+      background: var(--wrong-bg);
+      border: 1px solid var(--wrong);
+      color: var(--wrong);
+    }
+
+    .ib-green {
+      background: var(--correct-bg);
+      border: 1px solid var(--correct);
+      color: var(--jade-text);
+    }
+
+    .conclusion {
+      background: linear-gradient(135deg, var(--jade-dark), var(--jade-deep));
+      color: #fff;
+      border-radius: var(--radius);
+      padding: 13px 14px;
+      font-size: 12.5px;
+      line-height: 1.65;
+      margin-top: 4px;
+    }
+
+    .conclusion strong {
+      color: var(--jade-pale);
+    }
+
+    .btn {
+      width: 100%;
+      padding: 10px;
+      background: var(--navy);
+      color: #fff;
+      border: none;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      margin-top: 8px;
+      font-family: inherit;
+      transition: background .2s, opacity .2s;
+    }
+
+    .btn:hover {
+      background: var(--jade-deep);
+    }
+
+    .btn:disabled {
+      opacity: .4;
+      cursor: not-allowed;
+    }
+
+    .btn.secondary {
+      background: var(--cream-2);
+      color: var(--navy);
+    }
+
+    .btn.secondary:hover {
+      background: var(--cream-3);
+    }
+
+    .btn.teal {
+      background: var(--teal);
+    }
+
+    .btn.teal:hover {
+      background: var(--jade-dark);
+    }
+
+    .opt-btn {
+      width: 100%;
+      text-align: left;
+      padding: 10px 12px;
+      margin-bottom: 7px;
+      border: 1.5px solid var(--border);
+      border-radius: 9px;
+      background: var(--surface);
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text-2);
+      cursor: pointer;
+      font-family: inherit;
+      transition: all .15s;
+    }
+
+    .opt-btn:hover {
+      border-color: var(--teal);
+      background: var(--jade-pale);
+    }
+
+    .opt-btn.correct {
+      border-color: var(--green);
+      background: var(--green-light);
+      color: var(--jade-text);
+    }
+
+    .opt-btn.wrong {
+      border-color: var(--red);
+      background: var(--red-light);
+      color: var(--wrong);
+      animation: shake .3s;
+    }
+
+    .opt-btn:disabled {
+      cursor: default;
+    }
+
+    @keyframes shake {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      25% {
+        transform: translateX(-4px);
+      }
+
+      75% {
+        transform: translateX(4px);
+      }
+    }
+
+    .hint-box {
+      font-size: 12px;
+      background: var(--warning-bg);
+      border: 1px solid var(--warning);
+      color: var(--accent-text);
+      border-radius: 9px;
+      padding: 9px 11px;
+      margin-top: 6px;
+      display: none;
+    }
+
+    .hint-box.show {
+      display: block;
+    }
+
+    .attempt-bar-wrap {
+      margin: 10px 0;
+    }
+
+    .attempt-bar-track {
+      height: 6px;
+      border-radius: 4px;
+      background: var(--paper-line-2);
+      overflow: hidden;
+    }
+
+    .attempt-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--accent), var(--jade));
+      transition: width .15s;
+    }
+
+    .attempt-bar-label {
+      font-size: 10.5px;
+      color: var(--sub);
+      margin-top: 4px;
+      text-transform: uppercase;
+      letter-spacing: .04em;
+    }
+
+    .round-progress {
+      display: flex;
+      gap: 5px;
+      margin-bottom: 10px;
+    }
+
+    .round-dot {
+      flex: 1;
+      height: 5px;
+      border-radius: 3px;
+      background: var(--paper-line-2);
+    }
+
+    .round-dot.done {
+      background: var(--teal);
+    }
+
+    .round-dot.current {
+      background: var(--accent);
+    }
+
+    .mcq-source {
+      font-size: 12.5px;
+      background: var(--cream-2);
+      border-radius: 9px;
+      padding: 10px 11px;
+      margin-bottom: 10px;
+      color: var(--text-2);
+      border-left: 3px solid var(--teal);
+    }
+
+    /* ---------- MODULE 3: flowchart tree ---------- */
+    .flow-tree {
+      margin-bottom: 10px;
+    }
+
+    .flow-node {
+      position: relative;
+      padding: 8px 10px 8px 18px;
+      margin-bottom: 3px;
+      border-radius: 8px;
+      font-size: 12px;
+      color: var(--sub);
+      border-left: 2px solid var(--border);
+      background: var(--cream);
+    }
+
+    .flow-node.active {
+      color: var(--navy);
+      font-weight: 700;
+      border-left-color: var(--teal);
+      background: var(--jade-pale);
+    }
+
+    .flow-node.done {
+      color: var(--teal);
+      font-weight: 600;
+    }
+
+    .flow-node.leaf {
+      text-align: center;
+      font-weight: 700;
+    }
+
+    .flow-node.leaf.reached {
+      color: #fff;
+      background: var(--teal);
+      border-left-color: var(--teal);
+    }
+
+    .flow-node .flow-token {
+      display: inline-block;
+      width: 7px;
+      height: 7px;
+      border-radius: 50%;
+      background: var(--accent);
+      margin-right: 6px;
+      box-shadow: 0 0 6px 2px rgba(245, 158, 11, .6);
+    }
+
+    .flow-answer {
+      font-size: 11px;
+      color: var(--teal);
+      font-weight: 700;
+      margin-left: 4px;
+    }
+
+    .flow-branch-btns {
+      display: flex;
+      gap: 6px;
+      margin: 4px 0 8px 18px;
+    }
+
+    .flow-branch-btns .opt-btn {
+      margin-bottom: 0;
+      padding: 7px 9px;
+      font-size: 11.5px;
+    }
+
+    .proof-pool,
+    .proof-built {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .proof-item {
+      padding: 8px 10px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      font-size: 12px;
+      background: var(--surface);
+      cursor: pointer;
+    }
+
+    .proof-item:hover {
+      border-color: var(--teal);
+    }
+
+    .proof-item.locked {
+      background: var(--green-light);
+      border-color: var(--green);
+      cursor: default;
+      color: var(--jade-text);
+    }
+
+    .proof-item.shake {
+      animation: shake .25s;
+      border-color: var(--red);
+    }
+
+    .proof-label {
+      font-size: 10.5px;
+      text-transform: uppercase;
+      letter-spacing: .05em;
+      color: var(--sub);
+      font-weight: 700;
+      margin: 8px 0 4px;
+    }
+
+    /* ---------- MODULE 4 ---------- */
+    .m4-answer-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 7px;
+      margin: 10px 0;
+    }
+
+    .m4-answer-grid .opt-btn {
+      margin-bottom: 0;
+      text-align: center;
+    }
+
+    .m4-summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin-top: 8px;
+    }
+
+    .m4-summary-table td,
+    .m4-summary-table th {
+      border: 1px solid var(--border);
+      padding: 6px 8px;
+      text-align: center;
+    }
+
+    .m4-summary-table th {
+      background: var(--cream-2);
+      color: var(--navy);
+    }
+
+    .hint-touch, .sticky-indicator { display: none; }
+    .sticky-indicator {
+      position: absolute; top: 10px; right: 10px; z-index: 30;
+      padding: 5px 9px; border-radius: 999px;
+      background: rgba(45,139,111,.92); color: var(--white);
+      font-size: 10.5px; font-weight: 700; pointer-events: none;
+      box-shadow: 0 3px 10px rgba(10,22,40,.25);
+    }
+
+    @media (min-width: 769px) and (max-width: 1024px) {
+      body { display: block; overflow-y: auto; }
+      .main { flex-direction: column; height: auto; overflow: visible; }
+      .canvas-wrap {
+        position: sticky; top: 0; z-index: 20; flex: none;
+        height: clamp(380px,46vh,460px); min-height: 380px;
+        box-shadow: 0 8px 22px rgba(10,22,40,.18);
+        transition: height .25s ease, min-height .25s ease, box-shadow .25s ease;
+      }
+      body.canvas-is-sticky .canvas-wrap { height: 320px; min-height: 320px; box-shadow: 0 10px 28px rgba(10,22,40,.3); }
+      body.canvas-is-sticky .sticky-indicator { display: block; }
+      .sidebar { width: 100%; height: auto; overflow: visible; border-left: none; border-top: 1px solid var(--border); }
+    }
+
+    @media (any-pointer: coarse) and (max-width: 1400px) {
+      .canvas-hint { width: max-content; max-width: calc(100% - 24px); white-space: normal; text-align: center; }
+      .hint-desktop { display: none; }
+      .hint-touch { display: inline; }
+      .btn, .opt-btn, .step-tab, .side-vision-btn, .proof-item { min-height: 44px; }
+      .proof-item { display: flex; align-items: center; }
+    }
+
+    @media (min-width: 1025px) and (max-width: 1400px) and (any-pointer: coarse) {
+      .sidebar { width: clamp(330px, 30vw, 390px); }
+      .step-body { padding: 18px; }
+      .side-vision-btn { min-width: 170px; }
+    }
+
+    @media (max-width: 768px) {
+      body { display: block; overflow-y: auto; }
+      header { padding: 12px 14px; gap: 8px; }
+      .header-badge { padding: 5px 10px; font-size: 10px; }
+      .header-progress { gap: 4px; }
+      .hp-dot { width: 26px; height: 26px; }
+      .main { flex-direction: column; height: auto; overflow: visible; }
+      .canvas-wrap {
+        position: sticky; top: 0; z-index: 20; flex: none;
+        height: clamp(320px,50vh,400px); min-height: 320px;
+        box-shadow: 0 8px 22px rgba(10,22,40,.18);
+        transition: height .25s ease, min-height .25s ease, box-shadow .25s ease;
+      }
+      body.canvas-is-sticky .canvas-wrap { height: 300px; min-height: 300px; box-shadow: 0 10px 28px rgba(10,22,40,.3); }
+      body.canvas-is-sticky .sticky-indicator { display: block; }
+      .sidebar { width: 100%; height: auto; overflow: visible; border-left: none; border-top: 1px solid var(--border); }
+      .step-body { padding: 16px 14px 22px; }
+      .step-tab { font-size: 10px; padding-inline: 2px; }
+      .m4-answer-grid { grid-template-columns: 1fr; }
+      .side-vision-btn { top: 10px; width: calc(50% - 16px); padding: 7px 8px; font-size: 10.5px; line-height: 1.25; white-space: normal; }
+      .side-vision-btn.left { left: 10px; }
+      .side-vision-btn.right { right: 10px; }
+      .side-tag { top: 62px; font-size: 10px; }
+      #hud { top: 10px; max-width: min(72%, 300px); padding: 6px 12px; font-size: 12px; line-height: 1.35; white-space: normal; text-align: center; }
+      body.module-2-active #hud { top: 68px; }
+      .canvas-hint { bottom: 10px; font-size: 10.5px; }
+    }
+
+    /* LMS có thể dựng iframe theo chiều rộng desktop rồi scale xuống điện thoại.
+       Class này dùng kích thước màn hình vật lý để không bỏ sót trường hợp đó. */
+    body.phone-device { display: block; overflow-y: auto; }
+    body.phone-device header { padding: 12px 14px; gap: 8px; }
+    body.phone-device .header-badge { padding: 5px 10px; font-size: 10px; }
+    body.phone-device .header-progress { gap: 4px; }
+    body.phone-device .hp-dot { width: 26px; height: 26px; }
+    body.phone-device .main { flex-direction: column; height: auto; overflow: visible; }
+    body.phone-device .canvas-wrap {
+      position: sticky; top: 0; z-index: 20; flex: none;
+      height: 300px; min-height: 300px;
+      box-shadow: 0 8px 22px rgba(10,22,40,.18);
+      transition: height .25s ease, min-height .25s ease, box-shadow .25s ease;
+    }
+    body.phone-device.canvas-is-sticky .canvas-wrap { height: 260px; min-height: 260px; box-shadow: 0 10px 28px rgba(10,22,40,.3); }
+    body.phone-device.canvas-is-sticky .sticky-indicator { display: block; }
+    body.phone-device .sidebar { width: 100%; height: auto; overflow: visible; border-left: none; border-top: 1px solid var(--border); }
+    body.phone-device .step-body { padding: 16px 14px 22px; }
+    body.phone-device .step-tab { min-height: 44px; font-size: 10px; padding-inline: 2px; }
+    body.phone-device .m4-answer-grid { grid-template-columns: 1fr; }
+    body.phone-device .side-vision-btn { top: 10px; width: calc(50% - 16px); min-height: 44px; padding: 7px 8px; font-size: 10.5px; line-height: 1.25; white-space: normal; }
+    body.phone-device .side-vision-btn.left { left: 10px; }
+    body.phone-device .side-vision-btn.right { right: 10px; }
+    body.phone-device .side-tag { top: 62px; font-size: 10px; }
+    body.phone-device #hud { top: 10px; max-width: min(72%, 300px); padding: 6px 12px; font-size: 12px; line-height: 1.35; white-space: normal; text-align: center; }
+    body.phone-device.module-2-active #hud { top: 68px; }
+    body.phone-device .canvas-hint { bottom: 10px; width: max-content; max-width: calc(100% - 24px); font-size: 10.5px; white-space: normal; text-align: center; }
+    body.phone-device .hint-desktop { display: none; }
+    body.phone-device .hint-touch { display: inline; }
+  </style>
+</head>
+
+<body>
+
+  <header>
+    <div class="header-badge">🧊 Hình học không gian</div>
+    <div class="header-progress" id="header-progress"></div>
+  </header>
+
+  <div class="main">
+    <div class="canvas-wrap" id="canvas-wrap">
+      <div id="three-canvas-container"></div>
+      <div id="label-layer"></div>
+      <div id="hud"></div>
+
+      <button class="side-vision-btn left" id="m2-left-btn" style="display:none" onclick="m2ToggleVision('left')">👁
+        Plane Vision (trái)</button>
+      <button class="side-vision-btn right" id="m2-right-btn" style="display:none" onclick="m2ToggleVision('right')">👁
+        Plane Vision (phải)</button>
+      <div class="side-tag left" id="m2-left-tag" style="display:none">Cặp bên trái</div>
+      <div class="side-tag right" id="m2-right-tag" style="display:none">Cặp bên phải</div>
+
+      <div class="canvas-hint">
+        <span class="hint-desktop">🖱 Kéo để xoay · Cuộn để zoom</span>
+        <span class="hint-touch">👆 Một ngón để xoay · Chụm/mở để zoom</span>
+      </div>
+      <div class="sticky-indicator">📌 Hình 3D đang theo dõi</div>
+    </div>
+
+    <div class="sidebar">
+      <div class="step-tabs" id="step-tabs">
+        <div class="step-tab active" data-step="1">Module 1</div>
+        <div class="step-tab locked" data-step="2">Module 2</div>
+        <div class="step-tab locked" data-step="3">Module 3</div>
+        <div class="step-tab locked" data-step="4">Module 4</div>
+      </div>
+      <div class="step-body">
+
+        <!-- ============ MODULE 1 ============ -->
+        <div class="step-panel active" id="panel-1">
+          <div class="step-title">
+            <div class="step-num">1</div>Tự tay tạo ra 4 vị trí
+          </div>
+          <div class="step-desc" id="m1-context">Hãy thử kéo đường màu cam để nó song song với đường màu xanh. Kéo tự
+            do, xoay camera bao nhiêu lần cũng được.</div>
+
+          <div class="attempt-bar-wrap" id="m1-livewrap" style="display:none">
+            <div class="attempt-bar-track">
+              <div class="attempt-bar-fill" id="m1-livebar"></div>
+            </div>
+            <div class="attempt-bar-label">Độ gần song song</div>
+          </div>
+          <div class="attempt-bar-label" id="m1-counter" style="margin-bottom:8px"></div>
+
+          <button class="btn teal" id="m1-tool-btn" style="display:none" onclick="m1UseTool()">📐 Dựng chính
+            xác</button>
+
+          <div class="conclusion" id="m1-done-box" style="display:none">
+            Song song khó tạo bằng mắt hơn bạn tưởng — chỉ cần lệch một chút là biến thành chéo nhau ngay. Đây là điều
+            hình vẽ 2D trong SGK không thể cho bạn thấy được.
+          </div>
+          <button class="btn" id="m1-next-btn" style="display:none" onclick="goToModule(2)">Tiếp tục sang Module 2
+            →</button>
+        </div>
+
+        <!-- ============ MODULE 2 ============ -->
+        <div class="step-panel" id="panel-2">
+          <div class="step-title">
+            <div class="step-num">2</div>"Không cắt nhau" chưa đủ
+          </div>
+          <div class="step-desc">Cả hai cặp bên dưới đều KHÔNG cắt nhau. Xoay hình để kiểm tra kỹ — rồi cho biết chúng
+            có gì khác nhau. Bật Plane Vision ở mỗi bên để quan sát.</div>
+          <div class="mcq-source" id="m2-provoke-question" style="display:none">Cả hai đều không cắt nhau. Vậy nếu chỉ
+            dựa vào "không cắt nhau", bạn có chắc kết luận được cặp nào song song không?</div>
+          <div class="info-box ib-gold" id="m2-conclusion" style="display:none">
+            <div class="ib-icon">⚠️</div>
+            <div><b>Song song</b> = không cắt nhau VÀ đồng phẳng. <b>Chéo nhau</b> = không cắt nhau VÀ KHÔNG đồng phẳng.
+              "Không cắt nhau" một mình không đủ để kết luận.</div>
+          </div>
+          <div class="conclusion" id="m2-insight-box" style="display:none">
+            Không cắt nhau chưa đủ để kết luận song song — phải kiểm tra thêm đồng phẳng. Đây chính là chỗ khác nhau
+            giữa không gian và mặt phẳng mà bạn học ở lớp dưới.
+          </div>
+          <button class="btn" id="m2-next-btn" style="display:none" onclick="goToModule(3)">Tiếp tục sang Module 3
+            →</button>
+        </div>
+
+        <!-- ============ MODULE 3 ============ -->
+        <div class="step-panel" id="panel-3">
+          <div class="step-title">
+            <div class="step-num">3</div>Cây quyết định + phản chứng
+          </div>
+          <div class="step-desc" id="m3-intro">Đây là một cặp đường thẳng mới. Xoay hình để quan sát rồi trả lời cây
+            quyết định bên dưới.</div>
+          <div class="round-progress" id="m3-progress"></div>
+          <div class="flow-tree" id="m3-flowtree"></div>
+          <button class="btn secondary" id="m3-next-pair-btn" style="display:none" onclick="m3NextPair()">Cặp tiếp theo
+            →</button>
+
+          <div id="m3-proof-section" style="display:none">
+            <div class="info-box ib-blue">
+              <div class="ib-icon">🧩</div>
+              <div>Bạn vừa NHÌN thấy hai đường không đồng phẳng. Nhưng khi làm bài trên giấy, không có mô hình để xoay —
+                làm sao CHỨNG MINH được điều đó? Hãy click các câu theo đúng thứ tự lập luận.</div>
+            </div>
+            <div class="proof-label">Đã sắp xếp</div>
+            <div class="proof-built" id="proof-built"></div>
+            <div class="proof-label">Chọn tiếp</div>
+            <div class="proof-pool" id="proof-pool"></div>
+            <div class="info-box ib-gold" id="proof-done-box" style="display:none">
+              <div class="ib-icon">✅</div>
+              <div>Khi không có hình quay được, phản chứng là công cụ duy nhất để khẳng định chéo nhau.</div>
+            </div>
+            <div class="conclusion" id="m3-insight-box" style="display:none">
+              Muốn phân loại hai đường thẳng, chỉ cần hỏi đúng 2 câu: có điểm chung không, và nếu không thì có đồng
+              phẳng không. Khi không có mô hình để quay, phản chứng là cách duy nhất để trả lời câu hỏi thứ hai.
+            </div>
+          </div>
+          <button class="btn" id="m3-next-module-btn" style="display:none" onclick="goToModule(4)">Tiếp tục sang Module
+            4 →</button>
+        </div>
+
+        <!-- ============ MODULE 4 ============ -->
+        <div class="step-panel" id="panel-4">
+          <div class="step-title">
+            <div class="step-num">4</div>Áp dụng: hình hộp + hình chóp
+          </div>
+          <div class="round-progress" id="m4-progress"></div>
+          <div class="info-box ib-blue" id="m4-strategy-box">
+            <div class="ib-icon">🧠</div>
+            <div>
+              <div class="ib-title" style="font-weight: 700; margin-bottom: 2px;">Phản xạ 2 câu hỏi quyết định:</div>
+              1. Hai đường có điểm chung không?<br>
+              2. Nếu không, chúng có đồng phẳng không?
+            </div>
+          </div>
+          <div class="mcq-source" id="m4-question"></div>
+          <div class="m4-answer-grid" id="m4-answers"></div>
+          <div class="hint-box" id="m4-hint"></div>
+          <button class="btn secondary" id="m4-review-btn" style="display:none" onclick="m4Review()">🔍 Xem lại (1
+            lần)</button>
+          <div id="m4-summary" style="display:none">
+            <div class="step-title" style="margin-top:12px">
+              <div class="step-num">✓</div>Tổng kết
+            </div>
+            <table class="m4-summary-table" id="m4-summary-table"></table>
+            <div class="conclusion" style="margin-top:10px">Hai câu hỏi này dùng được cho MỌI bài toán về vị trí tương
+              đối trong không gian — từ hình hộp, hình chóp, đến bất kỳ hình nào bạn gặp sau này.</div>
+            <button class="btn teal" style="margin-top:14px" onclick="finishSimulation1()">Hoàn thành Simulation 1
+              ✓</button>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script>
+    function LMS() {
+      return window.AiducationLMS || {
+        ready: function () {}, progress: function () {}, event: function () {},
+        state: function () {}, complete: function () {}, resize: function () {}
+      };
+    }
+
+    function syncDeviceLayoutClass() {
+      const coarsePointer = window.matchMedia('(any-pointer: coarse)').matches;
+      const touchDevice = navigator.maxTouchPoints > 0 || coarsePointer;
+      const screenShortSide = Math.min(window.screen.width || Infinity, window.screen.height || Infinity);
+      const mobileUserAgent = /Android|iPhone|iPod|Mobile/i.test(navigator.userAgent);
+      document.body.classList.toggle('phone-device', mobileUserAgent || (touchDevice && screenShortSide <= 600));
+    }
+    syncDeviceLayoutClass();
+
+    /* ============================================================
+       MÀU (04_design_toan_3d.md PHẦN 1.3)
+       ============================================================ */
+    const COLOR_EDGE_SOLID = 0xe6edf3;
+    const COLOR_LINE_BLUE = 0x378ADD;
+    const COLOR_LINE_ORANGE = 0xD85A30;
+    const COLOR_RESULT = 0xFAC775;
+    const COLOR_PLANE_1 = 0x3b82f6;
+
+    function hexToCSS(hex) { return '#' + hex.toString(16).padStart(6, '0'); }
+    function P(x, y, z) { return new THREE.Vector3(x, z, y); } // toán (x,y ngang,z cao) -> three (x,z,y)
+
+    /* ============================================================
+       HÀM TOÁN THUẦN
+       ============================================================ */
+    function isParallelDir(dir1, dir2, tolDeg) {
+      const d1 = dir1.clone().normalize();
+      const d2 = dir2.clone().normalize();
+      const cosTol = Math.cos(tolDeg * Math.PI / 180);
+      return Math.abs(d1.dot(d2)) >= cosTol;
+    }
+    // Phân loại vị trí tương đối 2 đường thẳng bằng toạ độ thật (không đọc animation).
+    // Trả 'song_song' | 'trung' | 'cat' | 'cheo'
+    function classifyTwoLines(p1, dir1, p2, dir2, tolDeg) {
+      tolDeg = tolDeg || 2.5;
+      const d1 = dir1.clone().normalize();
+      const d2 = dir2.clone().normalize();
+      if (isParallelDir(d1, d2, tolDeg)) {
+        const w = new THREE.Vector3().subVectors(p2, p1);
+        const t = w.dot(d1);
+        const H = p1.clone().add(d1.clone().multiplyScalar(t));
+        const dist = p2.distanceTo(H);
+        return dist < 0.08 ? 'trung' : 'song_song';
+      } else {
+        const cross = new THREE.Vector3().crossVectors(d1, d2);
+        const w = new THREE.Vector3().subVectors(p2, p1);
+        const dist = Math.abs(w.dot(cross)) / cross.length();
+        return dist < 0.08 ? 'cat' : 'cheo';
+      }
+    }
+    function angleScore(dir1, dir2) {
+      return Math.abs(dir1.clone().normalize().dot(dir2.clone().normalize()));
+    }
+    const CLASSIFY_LABEL = { song_song: 'Song song', trung: 'Trùng nhau', cat: 'Cắt nhau', cheo: 'Chéo nhau' };
+
+    /* ============================================================
+       SETUP THREE.JS — camera kép (Perspective dùng M1/M3/M4, Orthographic dùng M2)
+       ============================================================ */
+    const wrap = document.getElementById('canvas-wrap');
+    const container = document.getElementById('three-canvas-container');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a1628);
+
+    const perspectiveCamera = new THREE.PerspectiveCamera(50, wrap.clientWidth / wrap.clientHeight, 0.1, 1000);
+    perspectiveCamera.position.set(6, 5, 9);
+    const ORTHO_SIZE = 4.2;
+    const orthographicCamera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0.1, 1000);
+    orthographicCamera.position.set(0.9, 3.6, 9);
+    let camera = perspectiveCamera;
+
+    function updateOrthoFrustum(width, height) {
+      const aspect = Math.max(1, width || wrap.clientWidth) / Math.max(1, height || wrap.clientHeight);
+      orthographicCamera.left = -ORTHO_SIZE * aspect;
+      orthographicCamera.right = ORTHO_SIZE * aspect;
+      orthographicCamera.top = ORTHO_SIZE;
+      orthographicCamera.bottom = -ORTHO_SIZE;
+      orthographicCamera.updateProjectionMatrix();
+    }
+    updateOrthoFrustum();
+
+    const renderer = new THREE.WebGLRenderer({ antialias: true });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    renderer.domElement.style.touchAction = 'none';
+    container.appendChild(renderer.domElement);
+
+    function resizeRendererToWrap() {
+      const width = Math.max(1, wrap.clientWidth);
+      const height = Math.max(1, wrap.clientHeight);
+      perspectiveCamera.aspect = width / height;
+      perspectiveCamera.updateProjectionMatrix();
+      updateOrthoFrustum(width, height);
+      renderer.setSize(width, height, false);
+    }
+    if (typeof ResizeObserver !== 'undefined') {
+      const canvasResizeObserver = new ResizeObserver(resizeRendererToWrap);
+      canvasResizeObserver.observe(wrap);
+    } else {
+      window.addEventListener('resize', resizeRendererToWrap);
+    }
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.85));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
+    dirLight.position.set(5, 10, 7);
+    scene.add(dirLight);
+
+    const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    orbitControls.enableDamping = true;
+    orbitControls.dampingFactor = 0.08;
+
+    function switchCamera(cam, target) {
+      camera = cam;
+      orbitControls.object = cam;
+      orbitControls.target.copy(target);
+      orbitControls.update();
+    }
+    switchCamera(perspectiveCamera, new THREE.Vector3(0, 1, 0));
+
+    const raycaster = new THREE.Raycaster();
+    const mouseNDC = new THREE.Vector2();
+    function updateMouseNDC(event) {
+      const rect = renderer.domElement.getBoundingClientRect();
+      mouseNDC.x = ((event.clientX - rect.left) / rect.width) * 2 - 1;
+      mouseNDC.y = -((event.clientY - rect.top) / rect.height) * 2 + 1;
+    }
+
+    /* ============================================================
+       LABEL SYSTEM (HTML overlay)
+       ============================================================ */
+    const labelLayer = document.getElementById('label-layer');
+    let activeLabels = [];
+    function addLabel(text, colorHex, opts) {
+      opts = opts || {};
+      const el = document.createElement('div');
+      el.className = 'pt-label' + (opts.small ? ' small' : '') + (opts.tag ? ' tag' : '');
+      el.textContent = text;
+      el.style.color = hexToCSS(colorHex);
+      labelLayer.appendChild(el);
+      const entry = { el, getPos: opts.getPos, offsetY: opts.offsetY !== undefined ? opts.offsetY : 0.22 };
+      activeLabels.push(entry);
+      return entry;
+    }
+    function removeLabel(entry) {
+      if (!entry) return;
+      entry.el.remove();
+      activeLabels = activeLabels.filter(l => l !== entry);
+    }
+    function syncAllLabels() {
+      const rect = renderer.domElement.getBoundingClientRect();
+      activeLabels.forEach(l => {
+        const pos = l.getPos();
+        if (!pos) { l.el.style.display = 'none'; return; }
+        const worldPos = pos.clone().add(new THREE.Vector3(0, l.offsetY, 0));
+        const screenPos = worldPos.project(camera);
+        const behind = screenPos.z > 1;
+        l.el.style.display = behind ? 'none' : 'block';
+        if (!behind) {
+          const x = (screenPos.x * 0.5 + 0.5) * rect.width;
+          const y = (-screenPos.y * 0.5 + 0.5) * rect.height;
+          l.el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -100%)`;
+        }
+      });
+    }
+
+    /* ============================================================
+       TRANSIENT OBJECT MANAGEMENT
+       ============================================================ */
+    let transient = { meshes: [], labels: [] };
+    function trackMesh(mesh) { transient.meshes.push(mesh); return mesh; }
+    function trackLabel(entry) { transient.labels.push(entry); return entry; }
+    function clearTransient() {
+      transient.meshes.forEach(m => {
+        scene.remove(m);
+        if (m.geometry) m.geometry.dispose();
+        if (m.material) { if (Array.isArray(m.material)) m.material.forEach(mm => mm.dispose()); else m.material.dispose(); }
+      });
+      transient.meshes = [];
+      transient.labels.forEach(l => removeLabel(l));
+      transient.labels = [];
+    }
+    function makeLine(p1, p2, color, opts) {
+      opts = opts || {};
+      const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+      const mat = new THREE.LineBasicMaterial({ color, transparent: true, opacity: opts.opacity !== undefined ? opts.opacity : 1 });
+      const line = new THREE.Line(geo, mat);
+      scene.add(line);
+      return line;
+    }
+    function makeMarker(pos, color, radius) {
+      const geo = new THREE.SphereGeometry(radius || 0.08, 16, 16);
+      const mat = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.3 });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.copy(pos);
+      scene.add(mesh);
+      return mesh;
+    }
+    function makePlane(centroid, normal, color, opacity, size) {
+      const geo = new THREE.PlaneGeometry(size || 5, size || 5);
+      const mat = new THREE.MeshStandardMaterial({ color, transparent: true, opacity: opacity !== undefined ? opacity : 0.2, side: THREE.DoubleSide, depthWrite: false });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.copy(centroid);
+      mesh.lookAt(centroid.clone().add(normal));
+      scene.add(mesh);
+      return mesh;
+    }
+
+    /* ============================================================
+       SELECTABLE LINE — 2 đầu mút kéo được (05_threejs_engine.md PHẦN 4.5)
+       Dùng self-contained dispose() thay vì transient chung, vì
+       rebuildGeometry() tự thay thế hitMesh/glowMesh bên trong.
+       ============================================================ */
+    class SelectableLine {
+      constructor(p1, p2, color, label) {
+        this.p1 = p1.clone();
+        this.p2 = p2.clone();
+        this.color = color;
+        this.label = label;
+
+        this.material = new THREE.LineBasicMaterial({ color, linewidth: 2 });
+        this.line = new THREE.Line(new THREE.BufferGeometry().setFromPoints([this.p1, this.p2]), this.material);
+        scene.add(this.line);
+
+        this.hitMesh = this.makeHitCylinder();
+        scene.add(this.hitMesh);
+
+        this.endpointStart = this.makeEndpointHandle(this.p1, 'start');
+        this.endpointEnd = this.makeEndpointHandle(this.p2, 'end');
+
+        this.labelEntry = addLabel(label, color, { getPos: () => this.midpoint, offsetY: 0.18 });
+      }
+      makeEndpointHandle(pos, which) {
+        const geometry = new THREE.SphereGeometry(0.08, 16, 16);
+        const material = new THREE.MeshStandardMaterial({ color: this.color, emissive: this.color, emissiveIntensity: 0.25 });
+        const mesh = new THREE.Mesh(geometry, material);
+        mesh.position.copy(pos);
+        scene.add(mesh);
+        const hitRadius = window.matchMedia('(any-pointer: coarse)').matches ? 0.34 : 0.26;
+        const hitGeo = new THREE.SphereGeometry(hitRadius, 8, 8);
+        const hitMat = new THREE.MeshBasicMaterial({ visible: false });
+        const hitMesh = new THREE.Mesh(hitGeo, hitMat);
+        hitMesh.position.copy(pos);
+        hitMesh.userData.endpointOf = this;
+        hitMesh.userData.which = which;
+        scene.add(hitMesh);
+        return { mesh, hitMesh };
+      }
+      makeHitCylinder() {
+        const dir = new THREE.Vector3().subVectors(this.p2, this.p1);
+        const length = dir.length();
+        const geo = new THREE.CylinderGeometry(0.16, 0.16, length, 8);
+        const mat = new THREE.MeshBasicMaterial({ visible: false });
+        const mesh = new THREE.Mesh(geo, mat);
+        mesh.position.copy(this.midpoint);
+        mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
+        return mesh;
+      }
+      get midpoint() { return new THREE.Vector3().addVectors(this.p1, this.p2).multiplyScalar(0.5); }
+      get direction() { return new THREE.Vector3().subVectors(this.p2, this.p1); }
+      rebuildGeometry() {
+        this.line.geometry.dispose();
+        this.line.geometry = new THREE.BufferGeometry().setFromPoints([this.p1, this.p2]);
+        scene.remove(this.hitMesh);
+        this.hitMesh.geometry.dispose();
+        this.hitMesh.material.dispose();
+        this.hitMesh = this.makeHitCylinder();
+        scene.add(this.hitMesh);
+        this.endpointStart.mesh.position.copy(this.p1);
+        this.endpointStart.hitMesh.position.copy(this.p1);
+        this.endpointEnd.mesh.position.copy(this.p2);
+        this.endpointEnd.hitMesh.position.copy(this.p2);
+      }
+      setEndpoint(which, newPos) {
+        if (which === 'start') this.p1.copy(newPos); else this.p2.copy(newPos);
+        this.rebuildGeometry();
+      }
+      setEndpointDragging(which, active) {
+        const h = which === 'start' ? this.endpointStart : this.endpointEnd;
+        h.mesh.material.emissiveIntensity = active ? 0.7 : 0.25;
+      }
+      dispose() {
+        scene.remove(this.line); this.line.geometry.dispose(); this.line.material.dispose();
+        scene.remove(this.hitMesh); this.hitMesh.geometry.dispose(); this.hitMesh.material.dispose();
+        scene.remove(this.endpointStart.mesh); this.endpointStart.mesh.geometry.dispose(); this.endpointStart.mesh.material.dispose();
+        scene.remove(this.endpointStart.hitMesh); this.endpointStart.hitMesh.geometry.dispose(); this.endpointStart.hitMesh.material.dispose();
+        scene.remove(this.endpointEnd.mesh); this.endpointEnd.mesh.geometry.dispose(); this.endpointEnd.mesh.material.dispose();
+        scene.remove(this.endpointEnd.hitMesh); this.endpointEnd.hitMesh.geometry.dispose(); this.endpointEnd.hitMesh.material.dispose();
+        removeLabel(this.labelEntry);
+      }
+    }
+    function animateLineEndpoints(line, targetP1, targetP2, duration, onComplete) {
+      const startP1 = line.p1.clone(), startP2 = line.p2.clone();
+      const t0 = performance.now();
+      function step() {
+        const p = Math.min(1, (performance.now() - t0) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        line.p1.copy(startP1).lerp(targetP1, eased);
+        line.p2.copy(startP2).lerp(targetP2, eased);
+        line.rebuildGeometry();
+        if (p < 1) requestAnimationFrame(step);
+        else { line.p1.copy(targetP1); line.p2.copy(targetP2); line.rebuildGeometry(); onComplete && onComplete(); }
+      }
+      requestAnimationFrame(step);
+    }
+    // Xoay THẬT quanh trung điểm của chính đường (giữ nguyên độ dài + trung điểm suốt animation,
+    // khác animateLineEndpoints ở trên vốn chỉ nội suy thẳng 2 đầu mút — "trông đúng" ở điểm đầu/cuối
+    // nhưng đường đi giữa chừng bị "co ngắn rồi giãn ra" thay vì thật sự quét/xoay như một thanh cứng).
+    function animateRotateAroundMidpoint(line, targetDir, duration, onComplete) {
+      const pivot = line.midpoint.clone();
+      const halfLen = line.direction.length() / 2;
+      const fromDir = line.direction.clone().normalize();
+      const toDir = targetDir.clone().normalize();
+      const qDelta = new THREE.Quaternion().setFromUnitVectors(fromDir, toDir);
+      const t0 = performance.now();
+      function step() {
+        const p = Math.min(1, (performance.now() - t0) / duration);
+        const eased = 1 - Math.pow(1 - p, 3);
+        const qStep = new THREE.Quaternion().slerp(qDelta, eased); // identity -> qDelta theo tỉ lệ eased
+        const curDir = fromDir.clone().applyQuaternion(qStep);
+        line.p1.copy(pivot.clone().sub(curDir.clone().multiplyScalar(halfLen)));
+        line.p2.copy(pivot.clone().add(curDir.clone().multiplyScalar(halfLen)));
+        line.rebuildGeometry();
+        if (p < 1) requestAnimationFrame(step);
+        else onComplete && onComplete();
+      }
+      requestAnimationFrame(step);
+    }
+    // Đường CỐ ĐỊNH hoàn toàn — không có endpoint handle, không đưa vào raycast kéo được
+    // (khác SelectableLine dùng cho đường cam). Chỉ cần {p1,p2,midpoint,direction,dispose()}.
+    function makeFixedLine(p1, p2, color, label) {
+      const line = makeLine(p1, p2, color);
+      const fixedP1 = p1.clone(), fixedP2 = p2.clone();
+      const labelEntry = addLabel(label, color, { getPos: () => new THREE.Vector3().addVectors(fixedP1, fixedP2).multiplyScalar(0.5), offsetY: 0.18 });
+      return {
+        p1: fixedP1, p2: fixedP2,
+        get midpoint() { return new THREE.Vector3().addVectors(this.p1, this.p2).multiplyScalar(0.5); },
+        get direction() { return new THREE.Vector3().subVectors(this.p2, this.p1); },
+        dispose() { scene.remove(line); line.geometry.dispose(); line.material.dispose(); removeLabel(labelEntry); }
+      };
+    }
+
+    /* ============================================================
+       HÌNH CHÓP S.ABCD + HÌNH HỘP (dùng ở Module 4, toạ độ như Simulation 2)
+       ============================================================ */
+    const PYR = { A: P(0, 0, 0), B: P(4, 0, 0), C: P(5, 3, 0), D: P(1, 3, 0), S: P(1, 1, 4) };
+    const PYR_EDGE_DEFS = [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], ['S', 'A'], ['S', 'B'], ['S', 'C'], ['S', 'D']];
+    let pyramidEdges = {}, pyramidGroup = [], pyramidVertexLabels = [], pyramidVisible = false;
+    function buildPyramid() {
+      PYR_EDGE_DEFS.forEach(([a, b]) => {
+        const p1 = PYR[a], p2 = PYR[b];
+        const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+        const mat = new THREE.LineBasicMaterial({ color: COLOR_EDGE_SOLID, transparent: true, opacity: 0.85 });
+        const line = new THREE.Line(geo, mat);
+        line.visible = false;
+        scene.add(line);
+        pyramidGroup.push(line);
+        pyramidEdges[a + b] = { line, mat, p1, p2, baseColor: COLOR_EDGE_SOLID };
+      });
+      ['A', 'B', 'C', 'D', 'S'].forEach(name => {
+        pyramidVertexLabels.push(addLabel(name, 0xffffff, { getPos: () => pyramidVisible ? PYR[name] : null }));
+      });
+    }
+    function setPyramidVisible(v) { pyramidVisible = v; pyramidGroup.forEach(l => l.visible = v); }
+    function setPyramidEmphasis(highlightMap, dimOpacity) {
+      dimOpacity = dimOpacity !== undefined ? dimOpacity : 0.18;
+      Object.keys(pyramidEdges).forEach(name => {
+        const e = pyramidEdges[name];
+        if (highlightMap && highlightMap[name] !== undefined) { e.mat.color.set(highlightMap[name]); e.mat.opacity = 1; }
+        else { e.mat.color.set(e.baseColor); e.mat.opacity = dimOpacity; }
+      });
+    }
+    function resetPyramidEmphasis() {
+      Object.keys(pyramidEdges).forEach(name => { const e = pyramidEdges[name]; e.mat.color.set(e.baseColor); e.mat.opacity = 0.85; });
+    }
+    buildPyramid();
+
+    const BOX = { A: P(0, 0, 0), B: P(4, 0, 0), C: P(4, 3, 0), D: P(0, 3, 0), A2: P(0, 0, 2), B2: P(4, 0, 2), C2: P(4, 3, 2), D2: P(0, 3, 2) };
+    const BOX_EDGE_DEFS = [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A'], ['A2', 'B2'], ['B2', 'C2'], ['C2', 'D2'], ['D2', 'A2'], ['A', 'A2'], ['B', 'B2'], ['C', 'C2'], ['D', 'D2']];
+    let boxEdges = {}, boxGroup = [], boxVertexLabels = [], boxVisible = false;
+    const BOX_LABEL_TEXT = { A: 'A', B: 'B', C: 'C', D: 'D', A2: "A'", B2: "B'", C2: "C'", D2: "D'" };
+    function buildBox() {
+      BOX_EDGE_DEFS.forEach(([a, b]) => {
+        const p1 = BOX[a], p2 = BOX[b];
+        const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+        const mat = new THREE.LineBasicMaterial({ color: COLOR_EDGE_SOLID, transparent: true, opacity: 0.85 });
+        const line = new THREE.Line(geo, mat);
+        line.visible = false;
+        scene.add(line);
+        boxGroup.push(line);
+        boxEdges[a + b] = { line, mat, p1, p2, baseColor: COLOR_EDGE_SOLID };
+      });
+      Object.keys(BOX).forEach(name => {
+        boxVertexLabels.push(addLabel(BOX_LABEL_TEXT[name], 0xffffff, { getPos: () => boxVisible ? BOX[name] : null }));
+      });
+    }
+    function setBoxVisible(v) { boxVisible = v; boxGroup.forEach(l => l.visible = v); }
+    function setBoxEmphasis(highlightMap, dimOpacity) {
+      dimOpacity = dimOpacity !== undefined ? dimOpacity : 0.18;
+      Object.keys(boxEdges).forEach(name => {
+        const e = boxEdges[name];
+        if (highlightMap && highlightMap[name] !== undefined) { e.mat.color.set(highlightMap[name]); e.mat.opacity = 1; }
+        else { e.mat.color.set(e.baseColor); e.mat.opacity = dimOpacity; }
+      });
+    }
+    buildBox();
+
+    /* ============================================================
+       HUD
+       ============================================================ */
+    const hudEl = document.getElementById('hud');
+    let hudDebounceTimer = null;
+    function setHud(text, cls) { hudEl.textContent = text; hudEl.className = cls || ''; hudEl.style.display = text ? 'block' : 'none'; }
+    function hudAnalyzeThenShow(finalFn, delay) {
+      setHud('Đang phân tích...', 'analyzing');
+      clearTimeout(hudDebounceTimer);
+      hudDebounceTimer = setTimeout(finalFn, delay || 400);
+    }
+
+    /* ============================================================
+       TABS
+       ============================================================ */
+    let currentModule = 1;
+    let unlockedModule = 1;
+    let simulationFinished = false;
+    function updateHeaderProgress() {
+      const el = document.getElementById('header-progress');
+      el.innerHTML = '';
+      for (let i = 1; i <= 4; i++) {
+        const d = document.createElement('div');
+        const isDone = i < currentModule || (i === 4 && simulationFinished);
+        d.className = 'hp-dot' + (isDone ? ' done' : '') + (i === currentModule && !simulationFinished ? ' active' : '');
+        d.textContent = isDone ? '✓' : i;
+        el.appendChild(d);
+      }
+    }
+    function goToModule(n) {
+      if (n > unlockedModule) unlockedModule = n;
+      currentModule = n;
+      document.body.classList.toggle('module-2-active', n === 2);
+      document.querySelectorAll('.step-tab').forEach(t => {
+        const s = parseInt(t.dataset.step);
+        t.classList.toggle('active', s === n);
+        t.classList.toggle('locked', s > unlockedModule);
+      });
+      document.querySelectorAll('.step-panel').forEach(p => p.classList.remove('active'));
+      document.getElementById('panel-' + n).classList.add('active');
+      updateHeaderProgress();
+      setHud('', '');
+      clearTransient();
+      // Module 1's blue/orange SelectableLine dùng dispose() riêng (không qua transient
+      // chung, vì rebuildGeometry() tự thay thế hitMesh bên trong) — phải dọn thủ công ở
+      // đây mỗi khi RỜI module 1, không chỉ khi quay lại module 1.
+      if (m1 && m1.blueLine) { m1.blueLine.dispose(); m1.orangeLine.dispose(); m1.blueLine = null; m1.orangeLine = null; }
+      document.getElementById('m2-left-btn').style.display = 'none';
+      document.getElementById('m2-right-btn').style.display = 'none';
+      document.getElementById('m2-left-tag').style.display = 'none';
+      document.getElementById('m2-right-tag').style.display = 'none';
+      // Module 2's "not found plane" message + its plane mesh cũng nằm ngoài transient
+      // (mesh gắn qua m2State, DOM node append thẳng vào canvas-wrap) — dọn thủ công.
+      if (m2State.leftMesh) { scene.remove(m2State.leftMesh); m2State.leftMesh.geometry.dispose(); m2State.leftMesh.material.dispose(); m2State.leftMesh = null; }
+      document.querySelectorAll('.not-found-msg').forEach(el => el.remove());
+      if (n === 1) setupModule1();
+      else if (n === 2) setupModule2();
+      else if (n === 3) setupModule3();
+      else if (n === 4) setupModule4();
+    }
+    document.querySelectorAll('.step-tab').forEach(tab => {
+      tab.addEventListener('click', () => {
+        const s = parseInt(tab.dataset.step);
+        if (s <= unlockedModule) goToModule(s);
+      });
+    });
+
+    /* ============================================================
+       MODULE 1 — TỰ TAY TẠO RA 4 VỊ TRÍ (1 phiên liên tục, 4 mục tiêu)
+       ============================================================ */
+    const M1_GOALS = [
+      {
+        key: 'song_song', label: 'Song song', n: 4, t: 18000, liveBar: true, tool: true,
+        instruction: 'Hãy thử kéo đường màu cam để nó song song với đường màu xanh. Kéo tự do, xoay camera bao nhiêu lần cũng được.',
+        achieveText: 'Chính xác! Bạn vừa tự tạo ra được hai đường song song.'
+      },
+      {
+        key: 'cheo', label: 'Chéo nhau (nhích nhẹ)', n: 0, t: 0, liveBar: false, tool: false,
+        instruction: 'Vậy nếu thay đổi một chút thì chuyện gì xảy ra? Thử kéo nhẹ đường cam xem sao.',
+        achieveText: 'Chỉ cần lệch nhẹ, hai đường không còn song song nữa. Đây chính là chéo nhau — trạng thái phổ biến nhất khi hai đường trong không gian không cố ý sắp đặt cùng nhau.'
+      },
+      {
+        key: 'cat', label: 'Cắt nhau', n: 2, t: 0, liveBar: false, tool: true,
+        instruction: 'Giờ thử kéo để hai đường CẮT NHAU — có đúng 1 điểm chung.',
+        achieveText: 'Chính xác! Bạn vừa tự kéo được hai đường cắt nhau tại đúng 1 điểm.'
+      },
+      {
+        key: 'trung', label: 'Trùng nhau', n: 2, t: 0, liveBar: false, tool: true,
+        instruction: 'Cuối cùng, thử kéo để hai đường TRÙNG NHAU hoàn toàn.',
+        achieveText: 'Chính xác! Hai đường giờ đã trùng khít lên nhau.'
+      }
+    ];
+    let m1 = null;
+
+    function setupModule1() {
+      if (m1 && m1.blueLine) { m1.blueLine.dispose(); m1.orangeLine.dispose(); }
+      document.getElementById('m1-tool-btn').style.display = 'none';
+      document.getElementById('m1-done-box').style.display = 'none';
+      document.getElementById('m1-next-btn').style.display = 'none';
+      document.getElementById('m1-livewrap').style.display = 'none';
+
+      switchCamera(perspectiveCamera, new THREE.Vector3(0, 1, 0));
+      camera.position.set(6, 5, 9);
+
+      // d cố định — khoá cứng hoàn toàn, KHÔNG gắn endpoint handle, không đưa vào raycast kéo được.
+      const blueLine = makeFixedLine(new THREE.Vector3(-2, 0.6, -1.5), new THREE.Vector3(2.2, 1.6, 1.3), COLOR_LINE_BLUE, 'd (cố định)');
+      const orangeLine = new SelectableLine(new THREE.Vector3(-1.5, 2.2, 1.8), new THREE.Vector3(1.8, -0.5, -1.2), COLOR_LINE_ORANGE, 'd′ (kéo được)');
+
+      m1 = { goalIdx: 0, attempts: 0, startTime: performance.now(), unlockedTool: false, blueLine, orangeLine };
+      m1EnterGoal(0);
+    }
+    function m1EnterGoal(idx) {
+      m1.goalIdx = idx;
+      m1.attempts = 0;
+      m1.startTime = performance.now();
+      m1.unlockedTool = false;
+      const g = M1_GOALS[idx];
+      document.getElementById('m1-context').textContent = g.instruction;
+      document.getElementById('m1-tool-btn').style.display = 'none';
+      document.getElementById('m1-livewrap').style.display = g.liveBar ? 'block' : 'none';
+      m1UpdateCounterText();
+    }
+    function m1UpdateCounterText() {
+      const g = M1_GOALS[m1.goalIdx];
+      const counterEl = document.getElementById('m1-counter');
+      if (g.n === 0) { counterEl.textContent = ''; return; }
+      const elapsed = Math.floor((performance.now() - m1.startTime) / 1000);
+      counterEl.textContent = g.t > 0
+        ? `Thử: ${m1.attempts}/${g.n} · Thời gian: ${Math.min(elapsed, g.t / 1000)}/${g.t / 1000}s`
+        : `Thử: ${m1.attempts}/${g.n}`;
+    }
+    let m1Interval = setInterval(() => {
+      if (currentModule === 1 && m1 && m1.blueLine) {
+        m1UpdateCounterText();
+        m1CheckUnlock();
+      }
+    }, 400);
+    function m1CheckUnlock() {
+      const g = M1_GOALS[m1.goalIdx];
+      if (m1.unlockedTool || !g.tool) return;
+      const elapsed = performance.now() - m1.startTime;
+      if (m1.attempts >= g.n && elapsed >= g.t) {
+        m1.unlockedTool = true;
+        document.getElementById('m1-tool-btn').style.display = 'block';
+        if (g.key === 'song_song') setHud('Trong hình học, người ta không ước lượng bằng mắt. Người ta dùng phép dựng.', '');
+      }
+    }
+    function m1OnRelease() {
+      m1.attempts++;
+      const g = M1_GOALS[m1.goalIdx];
+      hudAnalyzeThenShow(() => {
+        if (!m1) return;
+        const result = classifyTwoLines(m1.blueLine.p1, m1.blueLine.direction, m1.orangeLine.p1, m1.orangeLine.direction);
+        setHud('Hai đường đang ' + CLASSIFY_LABEL[result].toLowerCase() + '.', result === g.key ? 'ok' : '');
+        if (result === g.key) m1Achieve();
+      }, 400);
+    }
+    function m1Achieve() {
+      const g = M1_GOALS[m1.goalIdx];
+      const isLast = m1.goalIdx === M1_GOALS.length - 1;
+      setTimeout(() => {
+        setHud(g.achieveText, 'ok');
+        setTimeout(() => {
+          if (isLast) m1Complete();
+          else m1EnterGoal(m1.goalIdx + 1);
+        }, 900);
+      }, 200);
+    }
+    function m1Complete() {
+      setHud('', '');
+      document.getElementById('m1-livewrap').style.display = 'none';
+      document.getElementById('m1-counter').textContent = '';
+      document.getElementById('m1-tool-btn').style.display = 'none';
+      document.getElementById('m1-done-box').style.display = 'block';
+      document.getElementById('m1-next-btn').style.display = 'block';
+    }
+    function m1UseTool() {
+      const g = M1_GOALS[m1.goalIdx];
+      document.getElementById('m1-tool-btn').disabled = true;
+      const blue = m1.blueLine, orange = m1.orangeLine;
+      const onDone = () => {
+        document.getElementById('m1-tool-btn').disabled = false;
+        setHud('Hai đường đang ' + CLASSIFY_LABEL[g.key].toLowerCase() + '.', 'ok');
+        m1Achieve();
+      };
+      if (g.key === 'song_song') {
+        // Xoay THẬT quanh trung điểm của chính đường cam — không dịch chuyển, không xoay
+        // quanh 1 đầu mút (tránh cảm giác "bị kéo lê"), đúng yêu cầu kịch bản.
+        animateRotateAroundMidpoint(orange, blue.direction, 950, onDone);
+        return;
+      }
+      const halfLen = orange.direction.length() / 2;
+      let targetP1, targetP2;
+      if (g.key === 'cat') {
+        const O = blue.midpoint;
+        const blueDir = blue.direction.clone().normalize();
+        const ref = Math.abs(blueDir.y) < 0.9 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+        const axis = new THREE.Vector3().crossVectors(blueDir, ref).normalize();
+        const newDir = blueDir.clone().applyAxisAngle(axis, 70 * Math.PI / 180);
+        targetP1 = O.clone().sub(newDir.clone().multiplyScalar(halfLen));
+        targetP2 = O.clone().add(newDir.clone().multiplyScalar(halfLen));
+      } else if (g.key === 'trung') {
+        targetP1 = blue.p1.clone();
+        targetP2 = blue.p2.clone();
+      }
+      animateLineEndpoints(orange, targetP1, targetP2, 950, onDone);
+    }
+
+    /* Drag input dùng chung cho SelectableLine ở Module 1 và Module 3 (không cùng lúc active) */
+    let dragEndpoint = null; // { line, which }
+    let dragPlaneEndpoint = null;
+    function getActiveEndpointHitMeshes() {
+      if (currentModule === 1 && m1 && m1.blueLine) {
+        return [m1.orangeLine.endpointStart.hitMesh, m1.orangeLine.endpointEnd.hitMesh];
+      }
+      return [];
+    }
+    renderer.domElement.addEventListener('pointerdown', (event) => {
+      updateMouseNDC(event);
+      raycaster.setFromCamera(mouseNDC, camera);
+      const hits = raycaster.intersectObjects(getActiveEndpointHitMeshes());
+      if (hits.length === 0) return;
+      event.preventDefault();
+      const hitMesh = hits[0].object;
+      dragEndpoint = { line: hitMesh.userData.endpointOf, which: hitMesh.userData.which };
+      const currentPos = dragEndpoint.which === 'start' ? dragEndpoint.line.p1 : dragEndpoint.line.p2;
+      const camDir = new THREE.Vector3();
+      camera.getWorldDirection(camDir);
+      dragPlaneEndpoint = new THREE.Plane().setFromNormalAndCoplanarPoint(camDir, currentPos);
+      dragEndpoint.line.setEndpointDragging(dragEndpoint.which, true);
+      orbitControls.enabled = false;
+      renderer.domElement.setPointerCapture && renderer.domElement.setPointerCapture(event.pointerId);
+    });
+    renderer.domElement.addEventListener('pointermove', (event) => {
+      updateMouseNDC(event);
+      if (!dragEndpoint) return;
+      raycaster.setFromCamera(mouseNDC, camera);
+      const intersection = new THREE.Vector3();
+      if (raycaster.ray.intersectPlane(dragPlaneEndpoint, intersection)) {
+        dragEndpoint.line.setEndpoint(dragEndpoint.which, intersection);
+        if (currentModule === 1 && m1 && M1_GOALS[m1.goalIdx].liveBar) {
+          const score = angleScore(m1.blueLine.direction, m1.orangeLine.direction);
+          document.getElementById('m1-livebar').style.width = (score * 100) + '%';
+        }
+      }
+    });
+    function endDragEndpoint() {
+      if (!dragEndpoint) return;
+      dragEndpoint.line.setEndpointDragging(dragEndpoint.which, false);
+      const wasModule1 = currentModule === 1 && m1 && m1.blueLine;
+      dragEndpoint = null;
+      dragPlaneEndpoint = null;
+      orbitControls.enabled = true;
+      if (wasModule1) m1OnRelease();
+    }
+    renderer.domElement.addEventListener('pointerup', endDragEndpoint);
+    renderer.domElement.addEventListener('pointercancel', endDragEndpoint);
+    renderer.domElement.addEventListener('pointerleave', endDragEndpoint);
+
+    /* ============================================================
+       MODULE 2 — SO SÁNH "KHÔNG CẮT NHAU" CHƯA ĐỦ (Orthographic)
+       ============================================================ */
+    const M2_LEFT = {
+      p1: new THREE.Vector3(-4, 0.4, -1.5), p2: new THREE.Vector3(-4, 0.4, 1.8),
+      q1: new THREE.Vector3(-2.6, 1.6, -1.5), q2: new THREE.Vector3(-2.6, 1.6, 1.8)
+    };
+    const M2_RIGHT = {
+      p1: new THREE.Vector3(3, 0.4, -1.5), p2: new THREE.Vector3(3, 0.4, 1.8),
+      q1: new THREE.Vector3(4.6, 1.8, -0.6), q2: new THREE.Vector3(4.2, 0.2, 1.6)
+    };
+    let m2State = { leftOn: false, rightOn: false, leftMesh: null, rightNotified: false };
+
+    function setupModule2() {
+      switchCamera(orthographicCamera, new THREE.Vector3(0.9, 1.1, 0.2));
+      m2State = { leftOn: false, rightOn: false, leftMesh: null, rightNotified: false };
+      document.getElementById('m2-conclusion').style.display = 'none';
+      document.getElementById('m2-insight-box').style.display = 'none';
+      document.getElementById('m2-provoke-question').style.display = 'none';
+      document.getElementById('m2-next-btn').style.display = 'none';
+      document.getElementById('m2-left-btn').style.display = 'block';
+      document.getElementById('m2-right-btn').style.display = 'block';
+      document.getElementById('m2-left-tag').style.display = 'block';
+      document.getElementById('m2-right-tag').style.display = 'block';
+      document.getElementById('m2-left-btn').textContent = '👁 Plane Vision (trái)';
+      document.getElementById('m2-right-btn').textContent = '👁 Plane Vision (phải)';
+
+      trackMesh(makeLine(M2_LEFT.p1, M2_LEFT.p2, COLOR_LINE_BLUE));
+      trackMesh(makeLine(M2_LEFT.q1, M2_LEFT.q2, COLOR_LINE_ORANGE));
+      trackMesh(makeLine(M2_RIGHT.p1, M2_RIGHT.p2, COLOR_LINE_BLUE));
+      trackMesh(makeLine(M2_RIGHT.q1, M2_RIGHT.q2, COLOR_LINE_ORANGE));
+      trackLabel(addLabel('a', COLOR_LINE_BLUE, { getPos: () => M2_LEFT.p1.clone().lerp(M2_LEFT.p2, 0.5) }));
+      trackLabel(addLabel('b', COLOR_LINE_ORANGE, { getPos: () => M2_LEFT.q1.clone().lerp(M2_LEFT.q2, 0.5) }));
+      trackLabel(addLabel('c', COLOR_LINE_BLUE, { getPos: () => M2_RIGHT.p1.clone().lerp(M2_RIGHT.p2, 0.5) }));
+      trackLabel(addLabel('d', COLOR_LINE_ORANGE, { getPos: () => M2_RIGHT.q1.clone().lerp(M2_RIGHT.q2, 0.5) }));
+
+      const notFoundEntry = { el: document.createElement('div') };
+      notFoundEntry.el.className = 'not-found-msg';
+      notFoundEntry.el.textContent = '❌ Không tìm được mặt phẳng chứa cả hai';
+      document.getElementById('canvas-wrap').appendChild(notFoundEntry.el);
+      m2State.notFoundEl = notFoundEntry.el;
+    }
+    function m2CheckDone() {
+      if (m2State.leftOn && m2State.rightOn) {
+        document.getElementById('m2-provoke-question').style.display = 'block';
+        document.getElementById('m2-conclusion').style.display = 'flex';
+        document.getElementById('m2-insight-box').style.display = 'block';
+        document.getElementById('m2-next-btn').style.display = 'block';
+      }
+    }
+    function m2ToggleVision(side) {
+      if (side === 'left') {
+        m2State.leftOn = !m2State.leftOn;
+        document.getElementById('m2-left-btn').textContent = m2State.leftOn ? '👁 Tắt Vision (trái)' : '👁 Plane Vision (trái)';
+        if (m2State.leftMesh) { scene.remove(m2State.leftMesh); m2State.leftMesh.geometry.dispose(); m2State.leftMesh.material.dispose(); m2State.leftMesh = null; }
+        if (m2State.leftOn) {
+          const dir1 = new THREE.Vector3().subVectors(M2_LEFT.p2, M2_LEFT.p1);
+          const dir2 = new THREE.Vector3().subVectors(M2_LEFT.q2, M2_LEFT.q1);
+          const normal = new THREE.Vector3().crossVectors(dir1, dir2).normalize();
+          const centroid = M2_LEFT.p1.clone().add(M2_LEFT.p2).add(M2_LEFT.q1).add(M2_LEFT.q2).multiplyScalar(0.25);
+          const mesh = makePlane(centroid, normal, COLOR_PLANE_1, 0.001, 2.6);
+          m2State.leftMesh = mesh;
+          const t0 = performance.now(); const dur = 700;
+          function grow() {
+            const p = Math.min(1, (performance.now() - t0) / dur);
+            mesh.material.opacity = 0.28 * p;
+            mesh.scale.set(p, p, 1);
+            if (p < 1 && m2State.leftMesh === mesh) requestAnimationFrame(grow);
+          }
+          grow();
+          m2CheckDone();
+        } else {
+          m2CheckDone();
+        }
+      } else {
+        m2State.rightOn = !m2State.rightOn;
+        document.getElementById('m2-right-btn').textContent = m2State.rightOn ? '👁 Tắt Vision (phải)' : '👁 Plane Vision (phải)';
+        if (m2State.rightOn) {
+          m2State.notFoundEl.classList.remove('show');
+          setHud('Đang tìm mặt phẳng chứa cả hai...', 'analyzing');
+          setTimeout(() => {
+            setHud('', '');
+            const rect = renderer.domElement.getBoundingClientRect();
+            const worldMid = M2_RIGHT.p1.clone().add(M2_RIGHT.q1).multiplyScalar(0.5).add(new THREE.Vector3(0, 1.3, 0));
+            const screenPos = worldMid.project(camera);
+            const x = (screenPos.x * 0.5 + 0.5) * rect.width;
+            const y = (-screenPos.y * 0.5 + 0.5) * rect.height;
+            m2State.notFoundEl.style.left = x + 'px';
+            m2State.notFoundEl.style.top = y + 'px';
+            m2State.notFoundEl.style.transform = 'translate(-50%,-50%)';
+            m2State.notFoundEl.classList.add('show');
+            m2CheckDone();
+            // "...rồi biến mất" — thông báo chỉ thoáng qua, không ở lại vĩnh viễn trên canvas;
+            // trạng thái rightOn (đã bật Vision) vẫn giữ nguyên nên điều kiện hoàn thành module
+            // không bị ảnh hưởng, học sinh bật lại nút bất kỳ lúc nào để xem lại.
+            clearTimeout(m2State.notFoundFadeTimer);
+            m2State.notFoundFadeTimer = setTimeout(() => {
+              if (m2State.notFoundEl) m2State.notFoundEl.classList.remove('show');
+            }, 2400);
+          }, 650);
+        } else {
+          m2State.notFoundEl.classList.remove('show');
+          m2CheckDone();
+        }
+      }
+    }
+
+    /* ============================================================
+       MODULE 3 — DECISION TREE + CẦU NỐI PHẢN CHỨNG
+       ============================================================ */
+    const M3_PAIRS = {
+      song_song: { p1: new THREE.Vector3(-4, 0.3, -1), p2: new THREE.Vector3(-4, 0.3, 2), q1: new THREE.Vector3(-2, 1.5, -1), q2: new THREE.Vector3(-2, 1.5, 2) },
+      cat: { p1: new THREE.Vector3(-4, 0.3, -1), p2: new THREE.Vector3(-1, 0.3, 2), q1: new THREE.Vector3(-1, 0.3, 2), q2: new THREE.Vector3(-4, 2.3, 2) },
+      trung: { p1: new THREE.Vector3(2, 1, -2), p2: new THREE.Vector3(2, 1, 1), q1: new THREE.Vector3(2, 1, -0.5), q2: new THREE.Vector3(2, 1, 2.5) },
+      cheo: { p1: new THREE.Vector3(-4, 0.3, -1), p2: new THREE.Vector3(-1, 0.3, 2), q1: new THREE.Vector3(0, 2, -1), q2: new THREE.Vector3(0, -1, 2) }
+    };
+    let m3State = { order: [], idx: 0, flow: { step: 'q1', answers: {} }, resultPending: null };
+
+    function m3BuildOrder() {
+      // "cheo" LUÔN là cặp cuối cùng — Bước 3.2 (phản chứng) mở đầu bằng "Bạn vừa NHÌN thấy
+      // hai đường không đồng phẳng", nên phải là phần tiếp nối trực tiếp của đúng cặp chéo nhau
+      // vừa giải, không phải cặp bất kỳ rơi vào cuối dãy ngẫu nhiên. 3 vị trí còn lại xáo trộn
+      // tự do để tránh học thuộc thứ tự cố định.
+      const keys = ['song_song', 'cat', 'trung'];
+      for (let i = keys.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[keys[i], keys[j]] = [keys[j], keys[i]]; }
+      keys.push('cheo');
+      return keys;
+    }
+    function setupModule3() {
+      switchCamera(perspectiveCamera, new THREE.Vector3(-2, 1, 0.3));
+      camera.position.set(3.5, 4.5, 6.5); // góc hơi khó đọc, buộc chủ động xoay
+      m3State = { order: m3BuildOrder(), idx: 0, flow: { step: 'q1', answers: {} } };
+      document.getElementById('m3-proof-section').style.display = 'none';
+      document.getElementById('m3-next-module-btn').style.display = 'none';
+      m3RenderPair();
+    }
+    function m3RenderPair() {
+      clearTransient();
+      if (m3State.planeMesh) { scene.remove(m3State.planeMesh); m3State.planeMesh.geometry.dispose(); m3State.planeMesh.material.dispose(); m3State.planeMesh = null; }
+      if (m3State.notFoundEl) { m3State.notFoundEl.remove(); m3State.notFoundEl = null; }
+      m3State.visionOn = false;
+      document.getElementById('m3-next-pair-btn').style.display = 'none';
+      const key = m3State.order[m3State.idx];
+      const pair = M3_PAIRS[key];
+      m3State.currentKey = key;
+      m3State.flow = { step: 'q1', answers: {} };
+      trackMesh(makeLine(pair.p1, pair.p2, COLOR_LINE_BLUE));
+      trackMesh(makeLine(pair.q1, pair.q2, COLOR_LINE_ORANGE));
+      trackLabel(addLabel('m', COLOR_LINE_BLUE, { getPos: () => pair.p1.clone().lerp(pair.p2, 0.5) }));
+      trackLabel(addLabel('n', COLOR_LINE_ORANGE, { getPos: () => pair.q1.clone().lerp(pair.q2, 0.5) }));
+      m3RenderFlowTree();
+      m3RenderProgress();
+    }
+    function m3RenderProgress() {
+      const wrap = document.getElementById('m3-progress');
+      wrap.innerHTML = '';
+      for (let i = 0; i < m3State.order.length; i++) {
+        const d = document.createElement('div');
+        d.className = 'round-dot' + (i < m3State.idx ? ' done' : '') + (i === m3State.idx ? ' current' : '');
+        wrap.appendChild(d);
+      }
+    }
+    function m3RenderFlowTree() {
+      const el = document.getElementById('m3-flowtree');
+      const f = m3State.flow;
+      let html = '';
+      html += `<div class="flow-node ${f.step === 'q1' ? 'active' : 'done'}">${f.step === 'q1' ? '<span class="flow-token"></span>' : ''}Có điểm chung không?${f.answers.q1 ? ` <span class="flow-answer">${f.answers.q1 === 'co' ? 'Có' : 'Không'} ✓</span>` : ''}</div>`;
+      if (f.step === 'q1') {
+        html += `<div class="flow-branch-btns"><button class="opt-btn" onclick="m3Answer('q1','co',this)">Có</button><button class="opt-btn" onclick="m3Answer('q1','khong',this)">Không</button></div>`;
+      }
+      if (f.answers.q1 === 'co') {
+        html += `<div class="flow-node ${f.step === 'q2co' ? 'active' : (f.answers.q2co ? 'done' : '')}">${f.step === 'q2co' ? '<span class="flow-token"></span>' : ''}Bao nhiêu điểm chung?${f.answers.q2co ? ` <span class="flow-answer">${f.answers.q2co === '1' ? '1 điểm' : 'Vô số điểm'} ✓</span>` : ''}</div>`;
+        if (f.step === 'q2co') html += `<div class="flow-branch-btns"><button class="opt-btn" onclick="m3Answer('q2co','1',this)">1 điểm</button><button class="opt-btn" onclick="m3Answer('q2co','vosode',this)">Vô số điểm</button></div>`;
+      }
+      if (f.answers.q1 === 'khong') {
+        html += `<div class="flow-node ${f.step === 'q2khong' ? 'active' : (f.answers.q2khong ? 'done' : '')}">${f.step === 'q2khong' ? '<span class="flow-token"></span>' : ''}Có đồng phẳng không?${f.answers.q2khong ? ` <span class="flow-answer">${f.answers.q2khong === 'co' ? 'Có' : 'Không'} ✓</span>` : ''}</div>`;
+        if (f.step === 'q2khong') {
+          const visionBtn = `<button class="opt-btn secondary" onclick="m3ToggleVision()" style="grid-column:1/-1">👁 ${m3State.visionOn ? 'Tắt' : 'Bật'} Plane Scanner</button>`;
+          html += `<div class="flow-branch-btns" style="flex-wrap:wrap">${visionBtn}<button class="opt-btn" ${m3State.visionOn ? '' : 'disabled'} onclick="m3Answer('q2khong','co',this)">Có</button><button class="opt-btn" ${m3State.visionOn ? '' : 'disabled'} onclick="m3Answer('q2khong','khong',this)">Không</button></div>`;
+        }
+      }
+      const leaves = ['cat', 'trung', 'song_song', 'cheo'];
+      const leafLabel = { cat: 'Cắt nhau', trung: 'Trùng nhau', song_song: 'Song song', cheo: 'Chéo nhau' };
+      const reached = f.leaf;
+      html += '<div style="display:grid;grid-template-columns:1fr 1fr;gap:4px;margin-top:6px">';
+      leaves.forEach(l => { html += `<div class="flow-node leaf ${reached === l ? 'reached' : ''}">${leafLabel[l]}</div>`; });
+      html += '</div>';
+      el.innerHTML = html;
+    }
+    function m3Answer(step, value, btnEl) {
+      m3State.flow.answers[step] = value;
+      const correctKey = m3State.currentKey;
+      if (step === 'q1') {
+        const shouldBeCo = (correctKey === 'cat' || correctKey === 'trung');
+        const isCorrect = (value === 'co') === shouldBeCo;
+        if (!isCorrect) { m3State.flow.answers.q1 = null; m3FlashWrong(btnEl); return; }
+        m3State.flow.step = value === 'co' ? 'q2co' : 'q2khong';
+      } else if (step === 'q2co') {
+        const shouldBe1 = correctKey === 'cat';
+        const isCorrect = (value === '1') === shouldBe1;
+        if (!isCorrect) { m3State.flow.answers.q2co = null; m3FlashWrong(btnEl); return; }
+        m3State.flow.leaf = correctKey;
+        m3PairSolved();
+      } else if (step === 'q2khong') {
+        const shouldBeCo = correctKey === 'song_song';
+        const isCorrect = (value === 'co') === shouldBeCo;
+        if (!isCorrect) { m3State.flow.answers.q2khong = null; m3FlashWrong(btnEl); return; }
+        m3State.flow.leaf = correctKey;
+        m3PairSolved();
+      }
+      m3RenderFlowTree();
+    }
+    function m3FlashWrong(btnEl) {
+      setHud('Hãy quan sát kỹ lại — xoay hình để kiểm tra.', 'no');
+      // KHÔNG gọi m3RenderFlowTree() ở đây — trạng thái cây chưa đổi (answers vừa bị null lại),
+      // và rebuild innerHTML ngay lúc này sẽ xoá mất nút vừa bấm trước khi kịp thấy hiệu ứng nảy.
+      if (btnEl) { btnEl.classList.add('wrong'); setTimeout(() => btnEl.classList.remove('wrong'), 350); }
+    }
+    function m3ToggleVision() {
+      m3State.visionOn = !m3State.visionOn;
+      m3RenderFlowTree();
+
+      if (m3State.planeMesh) {
+        scene.remove(m3State.planeMesh);
+        m3State.planeMesh.geometry.dispose();
+        m3State.planeMesh.material.dispose();
+        m3State.planeMesh = null;
+      }
+      if (m3State.notFoundEl) {
+        m3State.notFoundEl.remove();
+        m3State.notFoundEl = null;
+      }
+
+      if (m3State.visionOn) {
+        const key = m3State.currentKey;
+        const pair = M3_PAIRS[key];
+        if (key === 'song_song' || key === 'cat' || key === 'trung') {
+          const p1 = pair.p1, p2 = pair.p2, q1 = pair.q1, q2 = pair.q2;
+          const dir1 = new THREE.Vector3().subVectors(p2, p1);
+          let dir2;
+          if (key === 'song_song') {
+            dir2 = new THREE.Vector3().subVectors(q1, p1);
+          } else {
+            dir2 = new THREE.Vector3().subVectors(q2, q1);
+          }
+          const normal = new THREE.Vector3().crossVectors(dir1, dir2).normalize();
+          if (normal.lengthSq() > 1e-6) {
+            const centroid = new THREE.Vector3().addVectors(p1, p2).add(q1).add(q2).multiplyScalar(0.25);
+            const mesh = makePlane(centroid, normal, COLOR_PLANE_1, 0.001, 5.0);
+            m3State.planeMesh = mesh;
+            trackMesh(mesh);
+
+            const t0 = performance.now(); const dur = 700;
+            function grow() {
+              const p = Math.min(1, (performance.now() - t0) / dur);
+              mesh.material.opacity = 0.22 * p;
+              mesh.scale.set(p, p, 1);
+              if (p < 1 && m3State.planeMesh === mesh) requestAnimationFrame(grow);
+            }
+            grow();
+          }
+        } else {
+          setHud('Đang tìm mặt phẳng chứa cả hai...', 'analyzing');
+          setTimeout(() => {
+            if (!m3State.visionOn || m3State.currentKey !== 'cheo') return;
+            setHud('', '');
+
+            const el = document.createElement('div');
+            el.className = 'not-found-msg';
+            el.textContent = '❌ Không tìm được mặt phẳng chứa cả hai';
+            document.getElementById('canvas-wrap').appendChild(el);
+            m3State.notFoundEl = el;
+
+            const rect = renderer.domElement.getBoundingClientRect();
+            const midPoint = pair.p1.clone().add(pair.q1).multiplyScalar(0.5).add(new THREE.Vector3(0, 0.8, 0));
+            const screenPos = midPoint.project(camera);
+            const x = (screenPos.x * 0.5 + 0.5) * rect.width;
+            const y = (-screenPos.y * 0.5 + 0.5) * rect.height;
+            el.style.left = x + 'px';
+            el.style.top = y + 'px';
+            el.style.transform = 'translate(-50%,-50%)';
+            el.classList.add('show');
+
+            setTimeout(() => {
+              if (m3State.notFoundEl === el) {
+                el.classList.remove('show');
+                setTimeout(() => el.remove(), 300);
+              }
+            }, 2200);
+          }, 650);
+        }
+      }
+    }
+    function m3PairSolved() {
+      setHud('Đúng — ' + CLASSIFY_LABEL[m3State.currentKey] + '.', 'ok');
+      const isLastNeeded = m3State.idx >= 2; // đã đủ tối thiểu 3 cặp (idx 0,1,2)
+      if (m3State.idx < m3State.order.length - 1) {
+        document.getElementById('m3-next-pair-btn').style.display = 'block';
+      } else {
+        setTimeout(() => m3StartProof(), 700);
+      }
+    }
+    function m3NextPair() {
+      m3State.idx++;
+      m3RenderPair();
+    }
+
+    /* --- 3.2 Cầu nối phản chứng: sắp xếp câu theo thứ tự --- */
+    const PROOF_STATEMENTS = [
+      'Giả sử AB và CD không chéo nhau',
+      '→ Chúng đồng phẳng',
+      '→ 4 điểm A, B, C, D đồng phẳng',
+      '→ Mâu thuẫn với giả thiết ABCD là tứ diện',
+      '→ Vậy AB và CD chéo nhau'
+    ];
+    let m3Proof = { order: [], builtCount: 0 };
+    function m3StartProof() {
+      clearTransient();
+      document.getElementById('m3-next-pair-btn').style.display = 'none';
+      document.getElementById('m3-proof-section').style.display = 'block';
+      document.getElementById('proof-done-box').style.display = 'none';
+      document.getElementById('m3-insight-box').style.display = 'none';
+      const TA = new THREE.Vector3(0, 0, 0), TB = new THREE.Vector3(3, 0, 0), TC = new THREE.Vector3(1, 0, 2), TD = new THREE.Vector3(1, 2.2, 0.8);
+      switchCamera(perspectiveCamera, new THREE.Vector3(1.25, 0.7, 0.7));
+      camera.position.set(5.5, 4, 6);
+      trackMesh(makeLine(TA, TB, COLOR_EDGE_SOLID));
+      trackMesh(makeLine(TA, TC, COLOR_EDGE_SOLID));
+      trackMesh(makeLine(TA, TD, COLOR_EDGE_SOLID));
+      trackMesh(makeLine(TB, TC, COLOR_EDGE_SOLID));
+      trackMesh(makeLine(TB, TD, COLOR_EDGE_SOLID, { opacity: 0.85 }));
+      trackMesh(makeLine(TC, TD, COLOR_EDGE_SOLID));
+      trackMesh(makeLine(TA, TB, COLOR_LINE_BLUE));
+      trackMesh(makeLine(TC, TD, COLOR_LINE_ORANGE));
+      trackLabel(addLabel('A', 0xffffff, { getPos: () => TA }));
+      trackLabel(addLabel('B', 0xffffff, { getPos: () => TB }));
+      trackLabel(addLabel('C', 0xffffff, { getPos: () => TC }));
+      trackLabel(addLabel('D', 0xffffff, { getPos: () => TD }));
+
+      const order = [0, 1, 2, 3, 4];
+      for (let i = order.length - 1; i > 0; i--) { const j = Math.floor(Math.random() * (i + 1));[order[i], order[j]] = [order[j], order[i]]; }
+      m3Proof = { order, builtCount: 0 };
+      m3RenderProof();
+    }
+    function m3RenderProof() {
+      const builtWrap = document.getElementById('proof-built');
+      const poolWrap = document.getElementById('proof-pool');
+      builtWrap.innerHTML = '';
+      poolWrap.innerHTML = '';
+      for (let i = 0; i < m3Proof.builtCount; i++) {
+        const div = document.createElement('div');
+        div.className = 'proof-item locked';
+        div.textContent = (i + 1) + '. ' + PROOF_STATEMENTS[i];
+        builtWrap.appendChild(div);
+      }
+      // pool hiển thị các câu CHƯA được khoá, giữ nguyên thứ tự xáo trộn ban đầu (trừ câu đã khoá)
+      m3Proof.order.forEach(i => {
+        if (i < m3Proof.builtCount) return;
+        const div = document.createElement('div');
+        div.className = 'proof-item';
+        div.textContent = PROOF_STATEMENTS[i];
+        div.onclick = () => m3ClickProofItem(i, div);
+        poolWrap.appendChild(div);
+      });
+    }
+    function m3ClickProofItem(i, div) {
+      if (i === m3Proof.builtCount) {
+        m3Proof.builtCount++;
+        if (m3Proof.builtCount === PROOF_STATEMENTS.length) {
+          document.getElementById('proof-done-box').style.display = 'flex';
+          document.getElementById('m3-insight-box').style.display = 'block';
+          document.getElementById('m3-next-module-btn').style.display = 'block';
+        }
+        m3RenderProof();
+      } else {
+        div.classList.add('shake');
+        setTimeout(() => div.classList.remove('shake'), 260);
+      }
+    }
+
+    /* ============================================================
+       MODULE 4 — ÁP DỤNG: HÌNH HỘP + HÌNH CHÓP
+       ============================================================ */
+    const M4_PAIRS = [
+      { solid: 'box', a: ['A', 'B'], b: ['C', 'D'], label: 'AB và CD' },
+      { solid: 'box', a: ['A', 'C'], b: ['B', 'D'], label: 'AC và BD' },
+      { solid: 'box', a: ['A', 'C'], b: ['B', 'D2'], label: "AC và BD'" },
+      { solid: 'box', a: ['A', 'B'], b: ['B', 'A'], label: 'AB và BA (xét theo 2 đường thẳng chứa chúng)' },
+      { solid: 'pyramid', a: ['A', 'B'], b: ['D', 'C'], label: 'AB và DC' },
+      { solid: 'pyramid', a: ['S', 'A'], b: ['S', 'B'], label: 'SA và SB' },
+      { solid: 'pyramid', a: ['S', 'A'], b: ['B', 'C'], label: 'SA và BC' },
+      { solid: 'pyramid', a: ['S', 'C'], b: ['S', 'D'], label: 'SC và SD' }
+    ];
+    const M4_ANSWER_KEYS = ['song_song', 'cat', 'trung', 'cheo'];
+    let m4State = { idx: 0, order: [], reviewed: false, counts: { song_song: 0, cat: 0, trung: 0, cheo: 0 }, answered: [] };
+
+    function m4GetPoint(solid, name) { return solid === 'box' ? BOX[name] : PYR[name]; }
+    function setupModule4() {
+      switchCamera(perspectiveCamera, new THREE.Vector3(2, 1, 1.5));
+      camera.position.set(7, 6, 8.5);
+      m4State = { idx: 0, order: [...Array(M4_PAIRS.length).keys()], reviewed: false, counts: { song_song: 0, cat: 0, trung: 0, cheo: 0 }, answered: [] };
+      document.getElementById('m4-summary').style.display = 'none';
+      const stratBox = document.getElementById('m4-strategy-box');
+      if (stratBox) stratBox.style.display = 'flex';
+      m4RenderPair();
+    }
+    function m4RenderPair() {
+      clearTransient();
+      document.getElementById('m4-question').style.display = 'block';
+      document.getElementById('m4-hint').classList.remove('show');
+      document.getElementById('m4-review-btn').style.display = 'none';
+      m4State.reviewed = false;
+      const pairIdx = m4State.order[m4State.idx];
+      const pair = M4_PAIRS[pairIdx];
+      m4State.currentPair = pair;
+      const isBox = pair.solid === 'box';
+      setPyramidVisible(!isBox);
+      setBoxVisible(isBox);
+      if (isBox) { resetPyramidEmphasis(); setBoxEmphasis({ [pair.a.join('')]: COLOR_LINE_BLUE, [pair.b.join('')]: COLOR_LINE_ORANGE }, 0.2); }
+      else { setBoxEmphasis({}, 0); Object.keys(boxEdges).forEach(k => { boxEdges[k].mat.opacity = 0; }); resetPyramidEmphasis(); setPyramidEmphasis({ [pair.a.join('')]: COLOR_LINE_BLUE, [pair.b.join('')]: COLOR_LINE_ORANGE }, 0.15); }
+
+      document.getElementById('m4-question').textContent = `Xét hai đường thẳng ${pair.label} trên ${isBox ? 'hình hộp' : 'hình chóp'}. Vị trí tương đối là gì?`;
+      const answersEl = document.getElementById('m4-answers');
+      answersEl.innerHTML = '';
+      const labels = { song_song: 'Song song', cat: 'Cắt nhau', trung: 'Trùng nhau', cheo: 'Chéo nhau' };
+      M4_ANSWER_KEYS.forEach(k => {
+        const btn = document.createElement('button');
+        btn.className = 'opt-btn';
+        btn.textContent = labels[k];
+        btn.onclick = () => m4Answer(k, btn);
+        answersEl.appendChild(btn);
+      });
+      m4RenderProgress();
+    }
+    function m4RenderProgress() {
+      const wrap = document.getElementById('m4-progress');
+      wrap.innerHTML = '';
+      M4_PAIRS.forEach((_, i) => {
+        const d = document.createElement('div');
+        const posInOrder = m4State.order.indexOf(i);
+        d.className = 'round-dot' + (posInOrder < m4State.idx ? ' done' : '') + (posInOrder === m4State.idx ? ' current' : '');
+        wrap.appendChild(d);
+      });
+    }
+    function m4Answer(chosen, btn) {
+      const pair = m4State.currentPair;
+      const p1 = m4GetPoint(pair.solid, pair.a[0]), p2 = m4GetPoint(pair.solid, pair.a[1]);
+      const q1 = m4GetPoint(pair.solid, pair.b[0]), q2 = m4GetPoint(pair.solid, pair.b[1]);
+      const dir1 = new THREE.Vector3().subVectors(p2, p1);
+      const dir2 = new THREE.Vector3().subVectors(q2, q1);
+      const correct = classifyTwoLines(p1, dir1, q1, dir2);
+      if (chosen === correct) {
+        btn.classList.add('correct');
+        Array.from(document.getElementById('m4-answers').children).forEach(b => b.disabled = true);
+        m4State.counts[correct]++;
+        m4State.answered.push(correct);
+        document.getElementById('m4-review-btn').style.display = 'block';
+        setTimeout(() => m4Advance(), 1100);
+      } else {
+        btn.classList.add('wrong');
+        setTimeout(() => btn.classList.remove('wrong'), 350);
+        // 3 kiểu nhầm lẫn ứng với 3 nhánh của cây quyết định (Module 3):
+        // - lệch câu 1 (điểm chung): giữa nhóm {cắt, trùng} và nhóm {song song, chéo}
+        // - đúng câu 1, lệch câu 2a (bao nhiêu điểm chung): giữa cắt và trùng
+        // - đúng câu 1, lệch câu 2b (đồng phẳng): giữa song song và chéo
+        const hasCommonPoint = k => k === 'cat' || k === 'trung';
+        let hintText;
+        if (hasCommonPoint(chosen) !== hasCommonPoint(correct)) {
+          hintText = 'Hãy kiểm tra lại: hai đường này có điểm chung không?';
+        } else if (hasCommonPoint(correct)) {
+          hintText = 'Hãy kiểm tra lại: hai đường này cắt nhau tại đúng 1 điểm, hay trùng khít hoàn toàn (vô số điểm chung)?';
+        } else {
+          hintText = 'Hãy kiểm tra lại: hai đường này có đồng phẳng không?';
+        }
+        document.getElementById('m4-hint').textContent = hintText;
+        document.getElementById('m4-hint').classList.add('show');
+      }
+    }
+    function m4Review() {
+      if (m4State.reviewed) return;
+      m4State.reviewed = true;
+      document.getElementById('m4-review-btn').disabled = true;
+      setHud('Xem lại: xoay hình tự do để đối chiếu.', 'info');
+      setTimeout(() => setHud('', ''), 2500);
+    }
+    function m4Advance() {
+      m4State.idx++;
+      const enoughPairs = m4State.idx >= 6;
+      const typesCovered = new Set(m4State.answered).size;
+      if (m4State.idx >= M4_PAIRS.length || (enoughPairs && typesCovered >= 4)) {
+        m4ShowSummary();
+      } else {
+        m4RenderPair();
+      }
+    }
+    function m4ShowSummary() {
+      clearTransient();
+      document.getElementById('m4-summary').style.display = 'block';
+      const stratBox = document.getElementById('m4-strategy-box');
+      if (stratBox) stratBox.style.display = 'none';
+      const table = document.getElementById('m4-summary-table');
+      const labels = { song_song: 'Song song', cat: 'Cắt nhau', trung: 'Trùng nhau', cheo: 'Chéo nhau' };
+      let html = '<tr><th>Vị trí</th><th>Số cặp</th></tr>';
+      M4_ANSWER_KEYS.forEach(k => { html += `<tr><td>${labels[k]}</td><td>${m4State.counts[k]}</td></tr>`; });
+      table.innerHTML = html;
+      document.getElementById('m4-question').style.display = 'none';
+      document.getElementById('m4-answers').innerHTML = '';
+      document.getElementById('m4-hint').classList.remove('show');
+      document.getElementById('m4-review-btn').style.display = 'none';
+      document.getElementById('m4-progress').innerHTML = '';
+
+      // Đánh dấu hoàn thành toàn bài và cập nhật thanh tiến trình đầu trang
+      simulationFinished = true;
+      updateHeaderProgress();
+    }
+    function finishSimulation1() {
+      setHud('Chúc mừng! Bạn đã hoàn thành toàn bộ bài học Simulation 1.', 'ok');
+      LMS().complete({ simulation: 'simulation_1' });
+      if (window.parent) {
+        window.parent.postMessage({ type: 'simulation_completed', simulation: 'simulation_1' }, '*');
+      }
+    }
+
+    /* ============================================================
+       RENDER LOOP
+       ============================================================ */
+    function animate() {
+      requestAnimationFrame(animate);
+      orbitControls.update();
+      syncAllLabels();
+      renderer.render(scene, camera);
+    }
+
+    /* ============================================================
+       INIT
+       ============================================================ */
+    updateHeaderProgress();
+    setupModule1();
+    animate();
+    LMS().ready();
+
+    function reportHeight() {
+      LMS().resize({ height: document.documentElement.scrollHeight });
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      const pageResizeObserver = new ResizeObserver(() => {
+        clearTimeout(window._rz);
+        window._rz = setTimeout(reportHeight, 100);
+      });
+      pageResizeObserver.observe(document.body);
+    } else {
+      setInterval(reportHeight, 800);
+    }
+
+    function syncStickyCanvasState() {
+      if (window.innerWidth > 1024 && !document.body.classList.contains('phone-device')) {
+        document.body.classList.remove('canvas-is-sticky');
+        return;
+      }
+      const header = document.querySelector('header');
+      document.body.classList.toggle('canvas-is-sticky', header.getBoundingClientRect().bottom <= 0);
+    }
+    window.addEventListener('scroll', syncStickyCanvasState, { passive: true });
+    window.addEventListener('resize', () => {
+      syncDeviceLayoutClass();
+      syncStickyCanvasState();
+    });
+    window.addEventListener('orientationchange', () => {
+      syncDeviceLayoutClass();
+      syncStickyCanvasState();
+    });
+    syncStickyCanvasState();
+  </script>
+</body>
+
+</html>
