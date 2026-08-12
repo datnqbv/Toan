@@ -1243,16 +1243,26 @@
       createLabel3D('A', A); createLabel3D('B', B); createLabel3D('C', C);
       createLabel3D("A'", Ap); createLabel3D("B'", Bp); createLabel3D("C'", Cp);
 
-      document.getElementById('chk-t1-1').onclick = () => handleTab1Click('bot_face');
-      document.getElementById('chk-t1-2').onclick = () => handleTab1Click('top_face');
-      document.getElementById('chk-t1-3').onclick = () => handleTab1Click('side_face');
-      document.getElementById('chk-t1-4').onclick = () => handleTab1Click('side_face');
-      document.getElementById('chk-t1-5').onclick = () => handleTab1Click('bot_face');
+      document.getElementById('chk-t1-1').onclick = () => showTab1ClickHint(1);
+      document.getElementById('chk-t1-2').onclick = () => showTab1ClickHint(2);
+      document.getElementById('chk-t1-3').onclick = () => showTab1ClickHint(3);
+      document.getElementById('chk-t1-4').onclick = () => showTab1ClickHint(4);
+      document.getElementById('chk-t1-5').onclick = () => showTab1ClickHint(5);
 
       document.getElementById('btn-next-tab1').onclick = () => {
         unlockTab(2);
         switchToTab(2);
       };
+    }
+
+    function showTab1ClickHint(step) {
+      if (step < t1Step) {
+        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Bước ${step} đã hoàn thành. Hãy tiếp tục thực hiện Bước ${t1Step} bằng cách click trực tiếp vào mô hình 3D!`;
+      } else if (step === t1Step) {
+        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Hãy <b>click trực tiếp vào thành phần tương ứng trên mô hình 3D</b> để hoàn thành Bước ${step}!`;
+      } else {
+        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Bạn cần thực hiện lần lượt từng bước. Hiện tại hãy hoàn thành Bước ${t1Step} trên mô hình 3D trước!`;
+      }
     }
 
     /* UNIVERSAL CANVAS POINTER TAP LISTENER FOR MOBILE TOUCHSCREENS */
