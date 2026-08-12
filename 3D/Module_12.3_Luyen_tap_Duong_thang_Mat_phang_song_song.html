@@ -997,8 +997,24 @@
        ========================================================================= */
     let currentTab = 1;
     let frameUpdateHook = null;
+    let unlockedTabs = { 1: true, 2: false, 3: false, 4: false };
+
+    function unlockTab(n) {
+      unlockedTabs[n] = true;
+      const btn = document.querySelector(`.tab-btn[data-tab="${n}"]`);
+      if (btn) {
+        btn.classList.remove('locked');
+        if (n === 2) btn.innerHTML = 'Tab 2: Giao tuyến ✓';
+        else if (n === 3) btn.innerHTML = 'Tab 3: Thiết diện ✓';
+        else if (n === 4) btn.innerHTML = 'Tab 4: Luyện tập ✓';
+      }
+    }
 
     function switchToTab(targetTab) {
+      if (!unlockedTabs[targetTab]) {
+        alert(`Athena: Bạn cần hoàn thành nhiệm vụ ở Tab ${targetTab - 1} trước khi mở khóa Tab ${targetTab} nhé!`);
+        return;
+      }
       if (targetTab === currentTab) return;
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
@@ -1017,9 +1033,18 @@
       });
     });
 
-    document.getElementById('btn-next-tab1').onclick = () => switchToTab(2);
-    document.getElementById('btn-next-tab2').onclick = () => switchToTab(3);
-    document.getElementById('btn-next-tab3').onclick = () => switchToTab(4);
+    document.getElementById('btn-next-tab1').onclick = () => {
+      unlockTab(2);
+      switchToTab(2);
+    };
+    document.getElementById('btn-next-tab2').onclick = () => {
+      unlockTab(3);
+      switchToTab(3);
+    };
+    document.getElementById('btn-next-tab3').onclick = () => {
+      unlockTab(4);
+      switchToTab(4);
+    };
 
     document.getElementById('btn-reset-cam').addEventListener('click', () => {
       resetCameraAngle();
