@@ -6,16 +6,44 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Đền thờ Euclid: Hành trình đầu tiên</title>
   <link
-    href="https://fonts.googleapis.com/css2?family=Cinzel:wght@500;700&family=Crimson+Pro:ital,wght@0,400;0,600;0,700;1,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
     rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
   <style>
     :root {
-      --gold: #e8c27a;
-      --gold-bright: #ffe3a3;
-      --amber: #f0a84e;
-      --ink: #1a1410;
-      --panel-bg: rgba(20, 14, 8, 0.82);
-      --panel-border: rgba(232, 194, 122, 0.35);
+      /* Tokens hệ thống Jade & Cream chuẩn */
+      --jade-dark: #14432F;
+      --jade-deep: #1B5E43;
+      --jade-main: #237A57;
+      --jade-light: #449B74;
+      --cream: #F9F7F1;
+      --cream-card: #FFFFFF;
+      --paper-line: #E2DDD0;
+      --ink: #1F2923;
+      --ink-2: #4A554E;
+      --ink-3: #76837A;
+      --correct: #1B8C5A;
+      --correct-bg: #E6F4EE;
+      --wrong: #C62828;
+      --wrong-bg: #FFEBEE;
+      --warning: #EF9F27;
+      --warning-bg: #FEF3E0;
+      --info: #1565C0;
+      --info-bg: #EBF3FF;
+      --radius: 12px;
+
+      /* Aliases chuẩn hóa cho UI */
+      --navy: var(--jade-dark);
+      --teal: var(--jade-main);
+      --bg: var(--cream);
+      --canvas-bg: #0a1628;
+
+      /* Tông màu cổ kính trong UI dark-card */
+      --gold: #FAC775;
+      --gold-bright: #FFE3A3;
+      --amber: var(--warning);
+      --panel-bg: rgba(14, 30, 22, 0.88);
+      --panel-border: rgba(68, 155, 116, 0.35);
     }
 
     * {
@@ -27,104 +55,118 @@
       margin: 0;
       padding: 0;
       width: 100%;
-      height: 100%;
+      min-height: 100vh;
+      background: var(--bg);
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-size: 14px;
+      line-height: 1.6;
+      color: var(--ink);
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---------- Header chuẩn 3D ---------- */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #fff;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      z-index: 10;
+      box-shadow: 0 2px 10px rgba(10, 22, 40, 0.15);
+      flex-shrink: 0;
+    }
+
+    .header-badge {
+      background: rgba(255, 255, 255, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: 20px;
+      padding: 4px 12px;
+      font-size: 11px;
+      font-weight: 600;
+      letter-spacing: .06em;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    header h1 {
+      font-size: 16px;
+      font-weight: 700;
+      margin: 0;
+      letter-spacing: .01em;
+      flex: 1;
+    }
+
+    /* ---------- Container chính ---------- */
+    #app-body {
+      position: relative;
+      flex: 1;
+      min-height: 550px;
       overflow: hidden;
-      background: #050403;
-      font-family: 'Crimson Pro', serif;
-      color: #f3e6cf;
+      display: flex;
     }
 
-    h1,
-    h2,
-    h3,
-    .title-font {
-      font-family: 'Cinzel', serif;
-    }
-
+    /* ---------- Background bối cảnh theo trạm (Khôi phục link ảnh) ---------- */
     #bg {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
+      z-index: 0;
       background-size: cover;
       background-position: center;
-      filter: brightness(0.7) saturate(0.9);
       transition: filter 1.2s ease, background-image 0.6s ease;
-      z-index: 0;
+      filter: brightness(0.7) saturate(0.9);
     }
 
-    /* Ánh sáng tăng dần theo trạm */
     body[data-station="0"] #bg {
-      background-image: url('https://lh3.googleusercontent.com/d/1_Kv5bB17f9Juq1axPkANuCgrKEUwY8wG');
+      background-image: url('https://lh3.googleusercontent.com/d/1_Kv5bB17f9Juq1axPkANuCgrKEUwY8wG'), url('Bat_dau_vao_Tram_0.png');
       filter: brightness(0.45) saturate(0.7);
     }
 
     body[data-station="1"] #bg {
-      background-image: url('https://lh3.googleusercontent.com/d/1MLlXZkNmPP4rXs9MAC7aYbHKSJBgMOOR');
+      background-image: url('https://lh3.googleusercontent.com/d/1MLlXZkNmPP4rXs9MAC7aYbHKSJBgMOOR'), url('1_Cong_den_Tram_1.png');
       filter: brightness(0.62) saturate(0.85);
     }
 
     body[data-station="2"] #bg {
-      background-image: url('https://lh3.googleusercontent.com/d/1LblxGJdQxJ51oNkJwIYYO1hKvTUAgbIu');
+      background-image: url('https://lh3.googleusercontent.com/d/1LblxGJdQxJ51oNkJwIYYO1hKvTUAgbIu'), url('2_Hanh_lang_Tram_2.png');
       filter: brightness(0.72) saturate(0.9);
     }
 
     body[data-station="3"] #bg {
-      background-image: url('https://lh3.googleusercontent.com/d/1a-RqkU3rRw0v4M1FtHe1Eq9KuLI4tou2');
+      background-image: url('https://lh3.googleusercontent.com/d/1a-RqkU3rRw0v4M1FtHe1Eq9KuLI4tou2'), url('3_Buong_trung_tam_Tram_3.png');
       filter: brightness(0.8) saturate(0.95);
     }
 
     body[data-station="4"] #bg {
-      background-image: url('https://lh3.googleusercontent.com/d/19Eb4_QRdwzHw__gSMiGqNGNY3JvvJGFy');
+      background-image: url('https://lh3.googleusercontent.com/d/19Eb4_QRdwzHw__gSMiGqNGNY3JvvJGFy'), url('4_Kho_bau_Tram_4.png');
       filter: brightness(0.85) saturate(1);
     }
 
     body[data-station="5"] #bg {
-      background-image: url('https://lh3.googleusercontent.com/d/1q1UsPlQU6ojLTa5eJiJV4iFMtZWXAsnJ');
+      background-image: url('https://lh3.googleusercontent.com/d/1q1UsPlQU6ojLTa5eJiJV4iFMtZWXAsnJ'), url('5_Dich_cuoi_Tram_5.png');
       filter: brightness(1.05) saturate(1.1);
     }
 
     #warm-overlay {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
       height: 100%;
       z-index: 1;
       pointer-events: none;
-      background: radial-gradient(ellipse at 50% 40%, rgba(255, 190, 110, 0.10), rgba(0, 0, 0, 0.35) 75%);
+      background: radial-gradient(ellipse at 50% 40%, rgba(255, 190, 110, 0.12), rgba(0, 0, 0, 0.4) 75%);
       mix-blend-mode: screen;
       transition: opacity 1s ease;
-      opacity: 0.2;
-    }
-
-    body[data-station="0"] #warm-overlay {
-      opacity: 0.05;
-    }
-
-    body[data-station="1"] #warm-overlay {
-      opacity: 0.15;
-    }
-
-    body[data-station="2"] #warm-overlay {
       opacity: 0.25;
     }
 
-    body[data-station="3"] #warm-overlay {
-      opacity: 0.35;
-    }
-
-    body[data-station="4"] #warm-overlay {
-      opacity: 0.5;
-    }
-
-    body[data-station="5"] #warm-overlay {
-      opacity: 0.75;
-    }
-
     #three-canvas {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
@@ -137,8 +179,32 @@
       pointer-events: none;
     }
 
+    #label-layer {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 6;
+    }
+
+    .point-label {
+      position: absolute;
+      top: 0;
+      left: 0;
+      font-size: 14px;
+      font-weight: 700;
+      color: #fff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 8px rgba(0, 0, 0, 0.7);
+      white-space: nowrap;
+      will-change: transform;
+      pointer-events: none;
+    }
+
     #ui-layer {
-      position: fixed;
+      position: absolute;
       top: 0;
       left: 0;
       width: 100%;
@@ -156,54 +222,59 @@
       position: absolute;
       top: 18px;
       left: 18px;
-      width: 210px;
+      width: 220px;
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
-      border-radius: 10px;
-      padding: 12px 14px;
-      backdrop-filter: blur(3px);
-      box-shadow: 0 0 22px rgba(0, 0, 0, 0.5);
+      border-radius: var(--radius);
+      padding: 14px 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 24px rgba(10, 22, 40, 0.35);
+      color: #f3e6cf;
     }
 
     #sidebar h3 {
-      margin: 0 0 8px;
+      margin: 0 0 10px;
       font-size: 15px;
+      font-weight: 700;
       color: var(--gold-bright);
-      letter-spacing: 0.5px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
 
     #relic-frame {
       display: grid;
       grid-template-columns: repeat(5, 1fr);
-      gap: 5px;
-      margin-bottom: 10px;
+      gap: 6px;
+      margin-bottom: 12px;
     }
 
     .relic-slot {
       width: 100%;
       aspect-ratio: 1;
-      border: 1px solid rgba(232, 194, 122, 0.4);
-      border-radius: 6px;
+      border: 1px solid rgba(68, 155, 116, 0.4);
+      border-radius: 8px;
       display: flex;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.35);
-      transition: all .4s ease;
+      background: rgba(10, 22, 16, 0.5);
+      transition: all .3s ease;
     }
 
     .relic-slot.filled {
-      background: rgba(232, 194, 122, 0.18);
-      box-shadow: 0 0 10px rgba(232, 194, 122, 0.5) inset;
+      background: rgba(68, 155, 116, 0.25);
+      border-color: var(--jade-light);
+      box-shadow: 0 0 12px rgba(68, 155, 116, 0.5) inset;
     }
 
     .relic-slot svg {
       width: 70%;
       height: 70%;
-      opacity: 0.85;
+      opacity: 0.9;
     }
 
     #score-line {
-      font-size: 14px;
+      font-size: 13.5px;
       margin: 4px 0;
     }
 
@@ -213,8 +284,8 @@
     }
 
     #rank-line {
-      font-size: 13px;
-      color: #d8b98a;
+      font-size: 12.5px;
+      color: #cbd5e1;
     }
 
     #stars-line {
@@ -229,65 +300,77 @@
       bottom: 18px;
       left: 50%;
       transform: translateX(-50%);
-      width: min(680px, 88vw);
+      width: min(680px, 90vw);
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
-      border-radius: 12px;
+      border-radius: var(--radius);
       padding: 16px 20px;
       text-align: center;
-      box-shadow: 0 0 26px rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 30px rgba(0, 0, 0, 0.5);
     }
 
     #keeper-name {
-      font-size: 12px;
+      font-size: 11.5px;
+      font-weight: 700;
       letter-spacing: 2px;
-      color: var(--amber);
+      color: var(--gold-bright);
       text-transform: uppercase;
       margin-bottom: 4px;
     }
 
     #keeper-text {
-      font-size: 16px;
-      line-height: 1.5;
+      font-size: 14.5px;
+      line-height: 1.6;
       color: #f3e6cf;
       min-height: 24px;
     }
 
     #keeper-buttons {
-      margin-top: 10px;
+      margin-top: 12px;
       display: flex;
       gap: 10px;
       justify-content: center;
     }
 
-    /* ---------- Nút chung ---------- */
+    /* ---------- Nút bấm ---------- */
     button.btn {
-      font-family: 'Crimson Pro', serif;
-      font-size: 14px;
+      font-family: inherit;
+      font-size: 13px;
       font-weight: 700;
-      letter-spacing: 0.5px;
-      background: linear-gradient(180deg, #7a5424, #4a340f);
-      border: 1px solid var(--gold);
-      color: var(--gold-bright);
-      padding: 9px 18px;
-      border-radius: 7px;
+      letter-spacing: 0.3px;
+      background: linear-gradient(135deg, var(--jade-deep) 0%, var(--jade-main) 100%);
+      border: 1px solid var(--jade-light);
+      color: #fff;
+      padding: 8px 16px;
+      border-radius: 8px;
       cursor: pointer;
       transition: all .2s ease;
-      text-transform: uppercase;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
     }
 
     button.btn:hover:not(:disabled) {
-      background: linear-gradient(180deg, #93662d, #5c4113);
-      box-shadow: 0 0 14px rgba(232, 194, 122, 0.5);
+      background: linear-gradient(135deg, var(--jade-main) 0%, var(--jade-light) 100%);
+      box-shadow: 0 0 12px rgba(68, 155, 116, 0.4);
     }
 
     button.btn:disabled {
-      opacity: 0.4;
+      opacity: 0.45;
       cursor: not-allowed;
     }
 
     button.btn.secondary {
-      background: rgba(40, 30, 18, 0.6);
+      background: rgba(20, 35, 27, 0.6);
+      border-color: rgba(68, 155, 116, 0.4);
+      color: #e2e8f0;
+    }
+
+    button.btn.secondary:hover:not(:disabled) {
+      background: rgba(35, 122, 87, 0.3);
+      color: #fff;
     }
 
     /* ---------- Panel trạm (góc phải) ---------- */
@@ -295,36 +378,38 @@
       position: absolute;
       top: 18px;
       right: 18px;
-      width: 340px;
+      width: 320px;
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
-      border-radius: 10px;
-      padding: 16px 18px;
-      backdrop-filter: blur(3px);
-      box-shadow: 0 0 22px rgba(0, 0, 0, 0.5);
-      max-height: 78vh;
+      border-radius: var(--radius);
+      padding: 16px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 8px 24px rgba(10, 22, 40, 0.35);
+      max-height: 80vh;
       overflow-y: auto;
+      color: #f3e6cf;
     }
 
     #station-panel h4 {
       margin: 0 0 10px;
-      font-size: 17px;
+      font-size: 15px;
+      font-weight: 700;
       color: var(--gold-bright);
     }
 
     #station-panel p.hint {
-      font-size: 16px;
-      color: #cbb896;
+      font-size: 13.5px;
+      color: #cbd5e1;
       line-height: 1.55;
       margin: 8px 0 12px;
     }
 
     .rule-list {
-      font-size: 15px;
-      color: #d8c8a8;
+      font-size: 13px;
+      color: #cbd5e1;
       margin: 8px 0;
       padding-left: 18px;
-      line-height: 1.45;
+      line-height: 1.5;
     }
 
     .rule-list li {
@@ -336,23 +421,25 @@
       width: 100%;
       text-align: left;
       margin-bottom: 8px;
-      background: rgba(40, 30, 18, 0.55);
-      border: 1px solid rgba(232, 194, 122, 0.3);
-      color: #f0e2c4;
-      padding: 9px 12px;
-      border-radius: 6px;
+      background: rgba(20, 35, 27, 0.6);
+      border: 1px solid rgba(68, 155, 116, 0.4);
+      color: #f3e6cf;
+      padding: 8px 12px;
+      border-radius: 7px;
       cursor: pointer;
-      font-family: 'Crimson Pro', serif;
-      font-size: 16px;
+      font-family: inherit;
+      font-size: 13.5px;
+      transition: all .2s;
     }
 
     .plane-choice-btn.selected {
       border-color: var(--gold-bright);
-      background: rgba(232, 194, 122, 0.22);
+      background: rgba(35, 122, 87, 0.4);
+      color: #fff;
     }
 
     .plane-choice-btn:hover {
-      background: rgba(232, 194, 122, 0.15);
+      background: rgba(35, 122, 87, 0.25);
     }
 
     #station4-input-row {
@@ -367,25 +454,26 @@
       padding: 6px 8px;
       border-radius: 6px;
       border: 1px solid var(--panel-border);
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(10, 20, 15, 0.6);
       color: #fff;
-      font-size: 16px;
+      font-size: 14px;
+      text-align: center;
     }
 
     #feedback-line {
-      font-size: 16px;
+      font-size: 13.5px;
       font-weight: 600;
       margin: 8px 0 4px;
       min-height: 20px;
     }
 
     #history-log {
-      font-size: 14px;
-      color: #c9b691;
+      font-size: 12px;
+      color: #cbd5e1;
       max-height: 110px;
       overflow-y: auto;
       margin-top: 6px;
-      border-top: 1px dashed rgba(232, 194, 122, 0.25);
+      border-top: 1px dashed rgba(68, 155, 116, 0.3);
       padding-top: 6px;
     }
 
@@ -400,19 +488,19 @@
       width: 100%;
       text-align: left;
       margin-bottom: 8px;
-      background: rgba(40, 30, 18, 0.5);
-      border: 1px solid rgba(232, 194, 122, 0.3);
-      color: #f0e2c4;
-      padding: 9px 12px;
-      border-radius: 6px;
+      background: rgba(20, 35, 27, 0.5);
+      border: 1px solid rgba(68, 155, 116, 0.4);
+      color: #f3e6cf;
+      padding: 8px 12px;
+      border-radius: 7px;
       cursor: pointer;
-      font-size: 15.5px;
+      font-size: 13px;
     }
 
     .checkitem-btn.done {
-      background: rgba(120, 200, 140, 0.15);
-      border-color: rgba(150, 220, 160, 0.5);
-      color: #cdeed4;
+      background: rgba(27, 140, 90, 0.25);
+      border-color: var(--correct);
+      color: #d1fae5;
     }
 
     .checkitem-btn .tick {
@@ -429,13 +517,14 @@
       justify-content: center;
       flex-direction: column;
       text-align: center;
-      padding: 40px;
+      padding: 30px;
+      z-index: 7;
     }
 
     #intro-lines {
-      max-width: 720px;
-      font-size: 21px;
-      line-height: 1.95;
+      max-width: 680px;
+      font-size: 17px;
+      line-height: 1.8;
       color: #f3e6cf;
     }
 
@@ -450,20 +539,20 @@
     }
 
     #intro-actions {
-      margin-top: 28px;
+      margin-top: 24px;
       display: flex;
-      gap: 16px;
+      gap: 14px;
     }
 
     #intro-actions button.btn {
-      font-size: 16px;
-      padding: 11px 24px;
+      font-size: 14px;
+      padding: 10px 20px;
     }
 
     #floor-score-badge {
       margin-top: 20px;
-      font-size: 16px;
-      color: var(--amber);
+      font-size: 14px;
+      color: var(--gold-bright);
     }
 
     /* ---------- Trạm 5 overlay tổng kết ---------- */
@@ -473,53 +562,57 @@
       display: none;
       align-items: center;
       justify-content: center;
-      background: rgba(0, 0, 0, 0.35);
+      background: rgba(10, 22, 16, 0.65);
       flex-direction: column;
       text-align: center;
+      z-index: 8;
     }
 
     #ending-card {
       background: var(--panel-bg);
       border: 1px solid var(--panel-border);
-      border-radius: 14px;
-      padding: 28px 36px;
-      width: min(480px, 88vw);
-      box-shadow: 0 0 40px rgba(255, 200, 120, 0.25);
+      border-radius: var(--radius);
+      padding: 24px 32px;
+      width: min(480px, 90vw);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.6);
+      color: #f3e6cf;
     }
 
     #ending-card h2 {
-      margin: 0 0 6px;
+      margin: 0 0 8px;
+      font-size: 18px;
       color: var(--gold-bright);
     }
 
     .ending-stat {
-      font-size: 15px;
+      font-size: 14px;
       margin: 6px 0;
-      color: #e9d8b6;
+      color: #e2e8f0;
     }
 
     .ending-stat b {
       color: var(--gold-bright);
-      font-size: 20px;
+      font-size: 18px;
     }
 
     #leaderboard-list {
       margin-top: 14px;
-      max-height: 180px;
+      max-height: 160px;
       overflow-y: auto;
-      font-size: 13.5px;
+      font-size: 12.5px;
       text-align: left;
     }
 
     #leaderboard-list div {
       display: flex;
       justify-content: space-between;
-      padding: 3px 6px;
+      padding: 4px 8px;
       border-radius: 5px;
     }
 
     #leaderboard-list div.me {
-      background: rgba(232, 194, 122, 0.2);
+      background: rgba(35, 122, 87, 0.35);
+      font-weight: 600;
     }
 
     #name-row {
@@ -533,41 +626,43 @@
       padding: 7px 10px;
       border-radius: 6px;
       border: 1px solid var(--panel-border);
-      background: rgba(0, 0, 0, 0.4);
+      background: rgba(10, 20, 15, 0.6);
       color: #fff;
+      font-size: 13px;
     }
 
-    /* mảnh phù điêu cuối - kéo thả 2D */
+    /* Mảnh phù điêu cuối */
     #relic-drop-zone {
       position: absolute;
       inset: 0;
       display: none;
+      z-index: 7;
     }
 
     #drop-zone-hint {
       position: absolute;
-      top: 22%;
+      top: 20%;
       left: 50%;
       transform: translateX(-50%);
-      font-family: 'Cinzel', serif;
-      font-size: 15px;
+      font-size: 14px;
+      font-weight: 600;
       color: #fff;
       text-align: center;
-      background: rgba(10, 8, 4, 0.55);
+      background: rgba(14, 30, 22, 0.85);
+      border: 1px solid var(--panel-border);
       padding: 8px 18px;
-      border-radius: 8px;
-      text-shadow: 0 0 8px rgba(0, 0, 0, 0.8);
+      border-radius: 20px;
       white-space: nowrap;
     }
 
     #final-slot {
       position: absolute;
-      width: 100px;
-      height: 100px;
+      width: 90px;
+      height: 90px;
       border-radius: 12px;
-      border: 3px dashed #7de8ff;
-      box-shadow: 0 0 22px rgba(125, 232, 255, 0.55), inset 0 0 18px rgba(125, 232, 255, 0.25);
-      background: rgba(10, 20, 30, 0.35);
+      border: 3px dashed #449B74;
+      box-shadow: 0 0 20px rgba(68, 155, 116, 0.55), inset 0 0 16px rgba(68, 155, 116, 0.25);
+      background: rgba(10, 22, 16, 0.4);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -578,11 +673,11 @@
 
       0%,
       100% {
-        box-shadow: 0 0 22px rgba(125, 232, 255, 0.55), inset 0 0 18px rgba(125, 232, 255, 0.25);
+        box-shadow: 0 0 20px rgba(68, 155, 116, 0.55), inset 0 0 16px rgba(68, 155, 116, 0.25);
       }
 
       50% {
-        box-shadow: 0 0 46px rgba(125, 232, 255, 0.95), inset 0 0 30px rgba(125, 232, 255, 0.5);
+        box-shadow: 0 0 40px rgba(68, 155, 116, 0.95), inset 0 0 28px rgba(68, 155, 116, 0.5);
       }
     }
 
@@ -594,14 +689,14 @@
 
     #final-piece {
       position: absolute;
-      width: 100px;
-      height: 100px;
+      width: 90px;
+      height: 90px;
       cursor: grab;
       touch-action: none;
       background: radial-gradient(circle, rgba(255, 240, 200, 0.95), rgba(255, 200, 110, 0.85));
       border: 3px solid #fff8e0;
       border-radius: 12px;
-      box-shadow: 0 0 26px rgba(255, 220, 140, 0.9), 0 0 8px rgba(255, 255, 255, 0.8);
+      box-shadow: 0 0 24px rgba(255, 220, 140, 0.9);
       display: flex;
       align-items: center;
       justify-content: center;
@@ -616,28 +711,25 @@
       }
 
       50% {
-        transform: scale(1.08);
+        transform: scale(1.06);
       }
     }
 
     #final-piece.snapped {
       cursor: default;
       animation: none;
-      background: radial-gradient(circle, rgba(200, 255, 235, 0.95), rgba(125, 232, 255, 0.85));
-      border: 3px dashed #7de8ff;
-      border-radius: 12px;
-      box-shadow: 0 0 34px rgba(125, 232, 255, 0.95), inset 0 0 20px rgba(125, 232, 255, 0.5);
+      background: radial-gradient(circle, rgba(200, 255, 235, 0.95), rgba(68, 155, 116, 0.85));
+      border: 3px dashed #449B74;
       transform: scale(1);
     }
 
     #final-slot.near {
       border-color: #fff;
-      box-shadow: 0 0 36px rgba(125, 232, 255, 0.9), inset 0 0 26px rgba(125, 232, 255, 0.4);
       transform: scale(1.04);
     }
 
     .flash-white {
-      position: fixed;
+      position: absolute;
       inset: 0;
       background: #fff;
       opacity: 0;
@@ -653,17 +745,20 @@
 
     #wrong-toast {
       position: absolute;
-      top: 70px;
+      top: 65px;
       left: 50%;
       transform: translateX(-50%);
-      background: rgba(90, 20, 10, 0.75);
-      border: 1px solid rgba(255, 150, 120, 0.5);
-      padding: 8px 16px;
-      border-radius: 8px;
-      font-size: 13.5px;
+      background: rgba(198, 40, 40, 0.9);
+      color: #fff;
+      border: 1px solid rgba(255, 200, 200, 0.4);
+      padding: 8px 18px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
       opacity: 0;
       transition: opacity .3s ease;
       pointer-events: none;
+      z-index: 9;
     }
 
     #wrong-toast.show {
@@ -674,17 +769,50 @@
       display: none !important;
     }
 
-    .point-label {
-      position: fixed;
-      top: 0;
-      left: 0;
-      pointer-events: none;
-      z-index: 6;
-      font-family: 'Cinzel', serif;
-      font-size: 15px;
-      font-weight: 700;
-      text-shadow: 0 0 6px rgba(0, 0, 0, 0.9), 0 0 10px rgba(0, 0, 0, 0.7);
-      transform: translate(-50%, -140%);
+    /* ---------- Responsive Media Queries (768px) ---------- */
+    @media (max-width: 768px) {
+      header h1 {
+        font-size: 14px;
+      }
+
+      .header-badge {
+        font-size: 10px;
+        padding: 3px 8px;
+      }
+
+      #sidebar {
+        top: 10px;
+        left: 10px;
+        width: 170px;
+        padding: 10px;
+      }
+
+      #sidebar h3 {
+        font-size: 13px;
+      }
+
+      #station-panel {
+        top: auto;
+        bottom: 85px;
+        right: 10px;
+        left: 10px;
+        width: auto;
+        max-height: 40vh;
+        padding: 12px;
+      }
+
+      #keeper-box {
+        bottom: 10px;
+        padding: 12px 14px;
+      }
+
+      #keeper-text {
+        font-size: 13px;
+      }
+
+      #intro-lines {
+        font-size: 14.5px;
+      }
     }
 
     ::-webkit-scrollbar {
@@ -692,7 +820,7 @@
     }
 
     ::-webkit-scrollbar-thumb {
-      background: rgba(232, 194, 122, 0.4);
+      background: rgba(68, 155, 116, 0.4);
       border-radius: 4px;
     }
   </style>
@@ -700,96 +828,168 @@
 
 <body data-station="0">
 
-  <div id="bg"></div>
-  <div id="warm-overlay"></div>
-  <canvas id="three-canvas"></canvas>
+  <header>
+    <div class="header-badge">🧊 Hình học không gian</div>
+  </header>
 
-  <div id="ui-layer">
-    <div id="sidebar">
-      <h3>🏺 Hành trình</h3>
-      <div id="relic-frame"></div>
-      <div id="score-line">Điểm: <span id="score-value">250</span></div>
-      <div id="rank-line">Nhà khảo cổ tập sự</div>
-      <div id="stars-line">⭐</div>
-      <button class="btn secondary" id="btn-reset-station"
-        style="width:100%; margin-top:10px; font-size:10.5px; padding:7px 8px;">↺ Làm lại trạm này</button>
-    </div>
+  <div id="app-body">
+    <div id="bg"></div>
+    <div id="warm-overlay"></div>
+    <canvas id="three-canvas"></canvas>
+    <div id="label-layer"></div>
 
-    <div id="station-panel" class="hidden"></div>
-
-    <div id="wrong-toast"></div>
-
-    <div id="keeper-box" class="hidden">
-      <div id="keeper-name">Người Gác Đền</div>
-      <div id="keeper-text"></div>
-      <div id="keeper-buttons"></div>
-    </div>
-
-    <div id="intro-screen">
-      <div id="intro-lines"></div>
-      <div id="intro-actions" style="display:none;">
-        <button class="btn secondary" id="btn-skip-intro">Bỏ qua</button>
-        <button class="btn" id="btn-enter">Bước vào Đền thờ</button>
+    <div id="ui-layer">
+      <div id="sidebar">
+        <h3><i class="ti ti-cube"></i> Hành trình</h3>
+        <div id="relic-frame"></div>
+        <div id="score-line">Điểm: <span id="score-value">250</span></div>
+        <div id="rank-line">Nhà khảo cổ tập sự</div>
+        <div id="stars-line">⭐</div>
+        <button class="btn secondary" id="btn-reset-station"
+          style="width:100%; margin-top:10px; font-size:11px; padding:6px 8px;">
+          <i class="ti ti-refresh"></i> Làm lại trạm
+        </button>
       </div>
-      <div id="floor-score-badge"></div>
-    </div>
 
-    <div id="relic-drop-zone">
-      <div id="drop-zone-hint">👉 Kéo mảnh phù điêu sáng vào khung viền xanh</div>
-      <div id="final-slot"></div>
-      <div id="final-piece"></div>
-    </div>
+      <div id="station-panel" class="hidden"></div>
+      <div id="wrong-toast"></div>
 
-    <div id="ending-overlay">
-      <div id="ending-card">
-        <h2>Tinh thể Tri thức đã đánh thức</h2>
-        <div class="ending-stat">Tổng điểm: <b id="final-score">0</b></div>
-        <div class="ending-stat" id="final-rank-line">Rank: —</div>
-        <div class="ending-stat" id="final-time-line">Thời gian: —</div>
-        <div id="ending-keeper" style="margin:10px 0; font-style:italic; color:#e9d8b6;"></div>
-        <div id="name-row">
-          <input id="player-name" placeholder="Tên của ngươi..." maxlength="24">
-          <button class="btn" id="btn-save-score">Lưu điểm</button>
+      <div id="keeper-box" class="hidden">
+        <div id="keeper-name">Người Gác Đền</div>
+        <div id="keeper-text"></div>
+        <div id="keeper-buttons"></div>
+      </div>
+
+      <div id="intro-screen">
+        <div id="intro-lines"></div>
+        <div id="intro-actions" style="display:none;">
+          <button class="btn secondary" id="btn-skip-intro">Bỏ qua</button>
+          <button class="btn" id="btn-enter">Bước vào Đền thờ</button>
         </div>
-        <div id="leaderboard-list"></div>
-        <div style="margin-top:14px;">
-          <button class="btn secondary" id="btn-replay">Khám phá lại Đền thờ</button>
+        <div id="floor-score-badge"></div>
+      </div>
+
+      <div id="relic-drop-zone">
+        <div id="drop-zone-hint">👉 Kéo mảnh phù điêu sáng vào khung viền xanh</div>
+        <div id="final-slot"></div>
+        <div id="final-piece"></div>
+      </div>
+
+      <div id="ending-overlay">
+        <div id="ending-card">
+          <h2>Tinh thể Tri thức đã đánh thức</h2>
+          <div class="ending-stat">Tổng điểm: <b id="final-score">0</b></div>
+          <div class="ending-stat" id="final-rank-line">Rank: —</div>
+          <div class="ending-stat" id="final-time-line">Thời gian: —</div>
+          <div id="ending-keeper" style="margin:10px 0; font-style:italic; color:#e2e8f0;"></div>
+          <div id="name-row">
+            <input id="player-name" placeholder="Tên của ngươi..." maxlength="24">
+            <button class="btn" id="btn-save-score">Lưu điểm</button>
+          </div>
+          <div id="leaderboard-list"></div>
+          <div style="margin-top:14px;">
+            <button class="btn secondary" id="btn-replay">Khám phá lại Đền thờ</button>
+          </div>
         </div>
       </div>
+
+      <div class="flash-white" id="flash-white"></div>
     </div>
   </div>
 
-  <div class="flash-white" id="flash-white"></div>
-
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
   <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <script>
     /* =========================================================================
        ĐỀN THỜ EUCLID — HÀNH TRÌNH ĐẦU TIÊN
-       File HTML độc lập — dựa trên kịch bản "Kich_ban_Game_DenThoEuclid..."
-       Ghép ảnh: đặt 6 file ảnh cùng tên gốc vào CÙNG thư mục với file HTML này:
-         Bat_dau_vao_Tram_0.png, 1_Cong_den_Tram_1.png, 2_Hanh_lang_Tram_2.png,
-         3_Buong_trung_tam_Tram_3.png, 4_Kho_bau_Tram_4.png, 5_Dich_cuoi_Tram_5.png
+       Standalone Three.js Simulation — Chuẩn hóa hệ thống Design 3D
        ========================================================================= */
+
+    /* ---------------------- HỖ TRỢ LMS RESIZE & SAFE STORAGE ---------------------- */
+    function LMS() {
+      try { if (window.parent && window.parent !== window && window.parent.LMS) return window.parent.LMS(); } catch (e) { }
+      return null;
+    }
+    function reportHeight() {
+      const lms = LMS();
+      if (lms && typeof lms.resize === 'function') {
+        const h = Math.max(document.body.scrollHeight, document.documentElement.scrollHeight);
+        lms.resize(h);
+      }
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(reportHeight).observe(document.documentElement);
+    } else {
+      setInterval(reportHeight, 1000);
+    }
+
+    async function saveScoreToStorage(entry) {
+      try {
+        let list = [];
+        if (window.storage && typeof window.storage.get === 'function') {
+          const listRes = await window.storage.get('euclid_leaderboard', true).catch(() => null);
+          if (listRes && listRes.value) {
+            try { list = JSON.parse(listRes.value); } catch (e) { list = []; }
+          }
+        } else {
+          try {
+            const stored = localStorage.getItem('euclid_leaderboard');
+            if (stored) list = JSON.parse(stored);
+          } catch (e) { }
+        }
+        list.push(entry);
+        list.sort((a, b) => b.score - a.score);
+        list = list.slice(0, 30);
+        if (window.storage && typeof window.storage.set === 'function') {
+          await window.storage.set('euclid_leaderboard', JSON.stringify(list), true);
+        } else {
+          try { localStorage.setItem('euclid_leaderboard', JSON.stringify(list)); } catch (e) { }
+        }
+        return list;
+      } catch (e) {
+        return [];
+      }
+    }
+
+    async function loadScoreFromStorage() {
+      try {
+        let list = [];
+        if (window.storage && typeof window.storage.get === 'function') {
+          const res = await window.storage.get('euclid_leaderboard', true).catch(() => null);
+          if (res && res.value) {
+            try { list = JSON.parse(res.value); } catch (e) { list = []; }
+          }
+        } else {
+          try {
+            const stored = localStorage.getItem('euclid_leaderboard');
+            if (stored) list = JSON.parse(stored);
+          } catch (e) { }
+        }
+        return list;
+      } catch (e) {
+        return [];
+      }
+    }
 
     /* ---------------------- KIỂM TRA THƯ VIỆN ĐÃ LOAD THÀNH CÔNG ---------------------- */
     if (typeof THREE === 'undefined' || typeof THREE.OrbitControls === 'undefined') {
       document.body.innerHTML = `<div style="position:fixed;inset:0;display:flex;align-items:center;justify-content:center;
-    background:#1a1410;color:#f3e6cf;font-family:sans-serif;text-align:center;padding:30px;">
+    background:#0a1628;color:#f3e6cf;font-family:sans-serif;text-align:center;padding:30px;">
     <div>
-      <h2 style="color:#e8c27a;">Không tải được thư viện Three.js</h2>
+      <h2 style="color:#ffe3a3;">Không tải được thư viện Three.js</h2>
       <p>Vui lòng kiểm tra kết nối Internet (game cần tải Three.js từ CDN) rồi tải lại trang (F5).</p>
     </div></div>`;
       throw new Error('THREE hoặc THREE.OrbitControls chưa được load — dừng khởi tạo game.');
     }
 
-    /* ---------------------- PHẦN A — HÀM TOÁN HỌC (verify sẵn) ---------------------- */
+    /* ---------------------- PHẦN A — HÀM TOÁN HỌC (06_geometry_math.md) ---------------------- */
 
     function definePlaneFromPoints(A, B, C) {
       const AB = new THREE.Vector3().subVectors(B, A);
       const AC = new THREE.Vector3().subVectors(C, A);
       const normal = new THREE.Vector3().crossVectors(AB, AC);
-      if (normal.lengthSq() < 1e-8) return null; // 3 điểm gần thẳng hàng
+      if (normal.lengthSq() < 1e-8) return null;
       normal.normalize();
       return { normal, pointOnPlane: A.clone() };
     }
@@ -814,12 +1014,7 @@
       const d1 = n1.dot(plane1.pointOnPlane);
       const d2 = n2.dot(plane2.pointOnPlane);
       const n1n2 = n1.dot(n2);
-      // Giải hệ Cramer chuẩn cho [[1,k],[k,1]][c1;c2]=[d1;d2] với k=n1·n2:
-      // định thức = 1 - k². (Bản trước đó dùng "k²-1" — SAI DẤU, khiến điểm trả
-      // về là ẢNH ĐỐI XỨNG của điểm đúng qua gốc toạ độ, không nằm trên mặt phẳng
-      // nào cả. Đã verify lại bằng script Node độc lập: residual cũ ≈ 2.26,
-      // residual sau khi sửa ≈ 0.)
-      const denom = 1 - n1n2 * n1n2;
+      const denom = 1 - n1n2 * n1n2; // Định thức chuẩn Cramer = 1 - k^2
       if (Math.abs(denom) < 1e-8) return null;
       const c1 = (d1 - d2 * n1n2) / denom;
       const c2 = (d2 - d1 * n1n2) / denom;
@@ -843,8 +1038,6 @@
       return { H, distance: M.distanceTo(H), t };
     }
 
-    // Diện tích đa giác phẳng — fan triangulation. QUAN TRỌNG: đỉnh truyền vào
-    // PHẢI đúng thứ tự chu vi thật (không tự cắt) — xem 06_geometry_math.md PHẦN G.1
     function polygonArea(vertices) {
       if (vertices.length < 3) return 0;
       let total = 0;
@@ -857,8 +1050,6 @@
       return total;
     }
 
-    // Giao điểm 2 đoạn thẳng hữu hạn, giả định đồng phẳng (dùng cho tìm điểm
-    // chung trên mặt đáy). Trả {point,t,s} hoặc null nếu song song / ngoài đoạn.
     function segmentIntersection(p1, p2, p3, p4) {
       const plane = definePlaneFromPoints(p1, p2, p3) || definePlaneFromPoints(p1, p2, p4);
       if (!plane) return null;
@@ -878,13 +1069,20 @@
       return { point, t, s };
     }
 
-    /* ---------------------- PHẦN B — THREE.JS SCENE CƠ BẢN ---------------------- */
+    /* ---------------------- PHẦN B — THREE.JS SCENE SETUP ---------------------- */
 
     const canvas = document.getElementById('three-canvas');
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.setSize(window.innerWidth, window.innerHeight);
-    renderer.setClearColor(0x000000, 0); // trong suốt để lộ ảnh nền phía sau
+
+    function resizeCanvasToWrap() {
+      const wrap = document.getElementById('app-body');
+      const w = wrap.clientWidth;
+      const h = wrap.clientHeight;
+      renderer.setSize(w, h);
+      camera.aspect = w / h;
+      camera.updateProjectionMatrix();
+    }
 
     const scene = new THREE.Scene();
     const camera = new THREE.PerspectiveCamera(45, window.innerWidth / window.innerHeight, 0.1, 100);
@@ -905,11 +1103,8 @@
     warmPoint.position.set(0, 3, 2);
     scene.add(warmPoint);
 
-    window.addEventListener('resize', () => {
-      camera.aspect = window.innerWidth / window.innerHeight;
-      camera.updateProjectionMatrix();
-      renderer.setSize(window.innerWidth, window.innerHeight);
-    });
+    window.addEventListener('resize', resizeCanvasToWrap);
+    resizeCanvasToWrap();
 
     function animate() {
       requestAnimationFrame(animate);
@@ -929,7 +1124,6 @@
     }
 
     function clearScene3D() {
-      // Xoá mọi object động (giữ lại lights + camera + controls)
       const keep = new Set([ambient, dirLight, warmPoint]);
       [...scene.children].forEach(obj => {
         if (keep.has(obj)) return;
@@ -951,7 +1145,7 @@
       clearAllLabels();
     }
 
-    /* ---------------------- PHẦN C — HỆ THỐNG KÉO ĐIỂM TỰ DO ---------------------- */
+    /* ---------------------- PHẦN C — KÉO ĐIỂM TỰ DO (DraggablePoint) ---------------------- */
 
     let allDraggableHitMeshes = [];
     const raycaster = new THREE.Raycaster();
@@ -1023,37 +1217,33 @@
       return mesh;
     }
 
-    /* ---------------------- NHÃN CHỮ CHO ĐIỂM 3D (label overlay) ---------------------- */
-    // Nhãn HTML theo dõi vị trí 1 điểm 3D — cần để học sinh phân biệt được
-    // điểm nào là điểm nào (S, A, B, C, D, M, N, P, Q...) khi chọn mặt phẳng.
+    /* ---------------------- NHÃN ĐIỂM HTML (GPU Accelerated Transform) ---------------------- */
     let activeLabels = [];
     function createLabel3D(text, color = '#ffe3a3') {
       const el = document.createElement('div');
       el.className = 'point-label';
       el.textContent = text;
       el.style.color = color;
-      document.body.appendChild(el);
-      const activeLabels_ref = activeLabels;
+      document.getElementById('label-layer').appendChild(el);
       const entry = {
         el,
         update(worldPos) {
-          const p = worldPos.clone().project(camera);
-          if (p.z > 1 || p.z < -1) { el.style.display = 'none'; return; }
+          const labelPos = worldPos.clone().add(new THREE.Vector3(0, 0.22, 0));
+          const screenPos = labelPos.project(camera);
+          if (screenPos.z > 1 || screenPos.z < -1) { el.style.display = 'none'; return; }
           el.style.display = 'block';
-          el.style.left = ((p.x * 0.5 + 0.5) * window.innerWidth) + 'px';
-          el.style.top = ((-p.y * 0.5 + 0.5) * window.innerHeight) + 'px';
+          const rect = renderer.domElement.getBoundingClientRect();
+          const x = (screenPos.x * 0.5 + 0.5) * rect.width;
+          const y = (-screenPos.y * 0.5 + 0.5) * rect.height;
+          el.style.transform = `translate(${x}px, ${y}px) translate(-50%, -150%)`;
         }
       };
-      activeLabels_ref.push(entry);
+      activeLabels.push(entry);
       return entry;
     }
     function clearAllLabels() {
       activeLabels.forEach(l => l.el.remove());
       activeLabels = [];
-    }
-    function updateAllLabels(labelMap) {
-      // labelMap: [{entry, pos}] — gọi mỗi frame từ __frameHook của từng trạm
-      labelMap.forEach(({ entry, pos }) => entry.update(pos));
     }
 
     canvas.addEventListener('pointerdown', (e) => {
@@ -1063,7 +1253,7 @@
       const hits = raycaster.intersectObjects(allDraggableHitMeshes);
       if (hits.length > 0) {
         const pt = hits[0].object.userData.draggable;
-        if (pt.locked) return; // Khoá điểm khi đã hoàn thành
+        if (pt.locked) return;
         dragState.active = true; dragState.point = pt;
         const camDir = new THREE.Vector3(); camera.getWorldDirection(camDir);
         dragState.dragPlane = new THREE.Plane().setFromNormalAndCoplanarPoint(camDir, pt.position);
@@ -1095,12 +1285,12 @@
     canvas.addEventListener('pointerup', endDrag);
     canvas.addEventListener('pointerleave', endDrag);
 
-    /* ---------------------- PHẦN D — TRẠNG THÁI GAME & ĐIỂM ---------------------- */
+    /* ---------------------- PHẦN D — GAME STATE & SCORE ---------------------- */
 
     const FLOOR_SCORE = 250;
     const game = {
       station: 0,
-      bonuses: [0, 0, 0, 0, 0], // thưởng của trạm 1..4 (index 1..4 dùng)
+      bonuses: [0, 0, 0, 0, 0],
       relics: [false, false, false, false, false],
       badges: { planes: false, intersections: false, structures: false, sections: false },
       runStart: Date.now(),
@@ -1122,16 +1312,14 @@
     }
 
     const RELIC_ICONS = [
-      `<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="5" fill="#e8c27a"/></svg>`,
-      `<svg viewBox="0 0 40 40"><line x1="6" y1="34" x2="34" y2="6" stroke="#e8c27a" stroke-width="3"/></svg>`,
-      `<svg viewBox="0 0 40 40"><polygon points="20,6 34,30 6,30" fill="none" stroke="#e8c27a" stroke-width="3"/></svg>`,
-      `<svg viewBox="0 0 40 40"><polygon points="20,4 36,30 4,30" fill="none" stroke="#e8c27a" stroke-width="2.5"/><line x1="20" y1="4" x2="20" y2="30" stroke="#e8c27a" stroke-width="1.5"/></svg>`,
-      `<svg viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" fill="none" stroke="#e8c27a" stroke-width="2.5" transform="rotate(15 20 20)"/></svg>`,
+      `<svg viewBox="0 0 40 40"><circle cx="20" cy="20" r="5" fill="#FAC775"/></svg>`,
+      `<svg viewBox="0 0 40 40"><line x1="6" y1="34" x2="34" y2="6" stroke="#FAC775" stroke-width="3"/></svg>`,
+      `<svg viewBox="0 0 40 40"><polygon points="20,6 34,30 6,30" fill="none" stroke="#FAC775" stroke-width="3"/></svg>`,
+      `<svg viewBox="0 0 40 40"><polygon points="20,4 36,30 4,30" fill="none" stroke="#FAC775" stroke-width="2.5"/><line x1="20" y1="4" x2="20" y2="30" stroke="#FAC775" stroke-width="1.5"/></svg>`,
+      `<svg viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" fill="none" stroke="#FAC775" stroke-width="2.5" transform="rotate(15 20 20)"/></svg>`,
     ];
-    // Icon riêng cho khung trống (nền tối, viền xanh) — dùng nét sáng để tương phản
-    const FINAL_SLOT_ICON = `<svg viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" fill="none" stroke="#7de8ff" stroke-width="3" transform="rotate(15 20 20)"/></svg>`;
-    // Icon riêng cho mảnh ghép (nền sáng vàng-cam) — dùng nét đậm tối để tương phản
-    const FINAL_PIECE_ICON = `<svg viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" fill="none" stroke="#3a2410" stroke-width="4" transform="rotate(15 20 20)"/></svg>`;
+    const FINAL_SLOT_ICON = `<svg viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" fill="none" stroke="#449B74" stroke-width="3" transform="rotate(15 20 20)"/></svg>`;
+    const FINAL_PIECE_ICON = `<svg viewBox="0 0 40 40"><rect x="8" y="8" width="24" height="24" fill="none" stroke="#1F2923" stroke-width="4" transform="rotate(15 20 20)"/></svg>`;
 
     function renderSidebar() {
       const frame = document.getElementById('relic-frame');
@@ -1211,16 +1399,12 @@
       renderSidebar();
 
       const resetBtn = document.getElementById('btn-reset-station');
-      resetBtn.style.display = (n >= 1 && n <= 4) ? 'block' : 'none';
+      resetBtn.style.display = (n >= 1 && n <= 4) ? 'inline-flex' : 'none';
 
       STATION_SETUP[n]();
+      reportHeight();
     }
 
-    // "Làm lại trạm này" — reset lại vị trí điểm/tường/lựa chọn về trạng thái ban
-    // đầu của TRẠM HIỆN TẠI. KHÔNG reset game.stationStart — thời gian vẫn tính
-    // liên tục như bình thường (đúng nguyên tắc "không giới hạn số lần thử,
-    // chỉ ảnh hưởng mức thưởng tốc độ" trong kịch bản), và KHÔNG đụng tới điểm/
-    // phù điêu đã đạt được ở các trạm trước.
     function resetCurrentStation() {
       const n = game.station;
       if (n < 1 || n > 4) return;
@@ -1239,10 +1423,9 @@
       camera.position.set(0, 2.5, 9);
       orbitControls.enabled = false;
 
-      // Cổng đền xa mờ, trang trí đơn giản
       const gate = new THREE.Mesh(
         new THREE.TorusGeometry(1.6, 0.12, 12, 40, Math.PI),
-        new THREE.MeshStandardMaterial({ color: 0x6b4a24, emissive: 0x3a2410, emissiveIntensity: 0.3 })
+        new THREE.MeshStandardMaterial({ color: 0x449B74, emissive: 0x1B5E43, emissiveIntensity: 0.3 })
       );
       gate.position.set(0, 0, -2);
       gate.rotation.z = Math.PI;
@@ -1260,17 +1443,29 @@
       ];
       lines.forEach((txt, i) => {
         const d = document.createElement('div');
-        d.className = 'line'; d.textContent = txt;
+        d.className = 'line show';
+        d.style.opacity = '1';
+        d.textContent = txt;
         linesWrap.appendChild(d);
-        setTimeout(() => d.classList.add('show'), 500 + i * 1400);
       });
       document.getElementById('floor-score-badge').textContent = 'Điểm khởi đầu (mốc sàn): 250';
       const actions = document.getElementById('intro-actions');
-      actions.style.display = 'none';
-      setTimeout(() => { actions.style.display = 'flex'; }, 500 + lines.length * 1400);
+      actions.style.display = 'flex';
 
-      document.getElementById('btn-enter').onclick = () => goToStation(1);
-      document.getElementById('btn-skip-intro').onclick = () => goToStation(1);
+      const btnEnter = document.getElementById('btn-enter');
+      const btnSkip = document.getElementById('btn-skip-intro');
+      if (btnEnter) {
+        btnEnter.onclick = function (e) {
+          if (e) e.stopPropagation();
+          goToStation(1);
+        };
+      }
+      if (btnSkip) {
+        btnSkip.onclick = function (e) {
+          if (e) e.stopPropagation();
+          goToStation(1);
+        };
+      }
     }
 
     /* ======================= TRẠM 1 — CỔNG ĐỀN ======================= */
@@ -1281,13 +1476,13 @@
 
       const gateFrame = new THREE.Mesh(
         new THREE.BoxGeometry(3.2, 3.4, 0.3),
-        new THREE.MeshStandardMaterial({ color: 0x3d2c18, roughness: 0.9 })
+        new THREE.MeshStandardMaterial({ color: 0x14432F, roughness: 0.9 })
       );
       gateFrame.position.set(0, 1.4, -1.2);
       scene.add(gateFrame);
       const gateHole = new THREE.Mesh(
         new THREE.BoxGeometry(2.4, 2.8, 0.32),
-        new THREE.MeshStandardMaterial({ color: 0x140f0a })
+        new THREE.MeshStandardMaterial({ color: 0x0a1628 })
       );
       gateHole.position.set(0, 1.35, -1.19);
       scene.add(gateHole);
@@ -1295,17 +1490,17 @@
       let A = new THREE.Vector3(-1.5, 2.1, 0.5);
       let B = new THREE.Vector3(-1.6, 1.1, 0.6);
       let C = new THREE.Vector3(-0.6, 1.6, 0.35);
-      const D = new THREE.Vector3(0, 1.35, -1.0); // điểm ấn phong cố định
+      const D = new THREE.Vector3(0, 1.35, -1.0);
 
-      const pA = new DraggablePoint(A, 0xbfe3ff, 'A');
-      const pB = new DraggablePoint(B, 0xbfe3ff, 'B');
-      const pC = new DraggablePoint(C, 0xbfe3ff, 'C');
-      makeFixedMarker(D, 0xffd35c, 0.1);
+      const pA = new DraggablePoint(A, 0x9be1ff, 'A');
+      const pB = new DraggablePoint(B, 0x9be1ff, 'B');
+      const pC = new DraggablePoint(C, 0x9be1ff, 'C');
+      makeFixedMarker(D, 0xFAC775, 0.1);
 
-      const labelA = createLabel3D('A', '#bfe3ff');
-      const labelB = createLabel3D('B', '#bfe3ff');
-      const labelC = createLabel3D('C', '#bfe3ff');
-      const labelD = createLabel3D('D', '#ffd35c');
+      const labelA = createLabel3D('A', '#9be1ff');
+      const labelB = createLabel3D('B', '#9be1ff');
+      const labelC = createLabel3D('C', '#9be1ff');
+      const labelD = createLabel3D('D', '#FAC775');
       window.__frameHook = () => {
         pA.syncRing(); pB.syncRing(); pC.syncRing();
         labelA.update(pA.position); labelB.update(pB.position); labelC.update(pC.position);
@@ -1314,7 +1509,7 @@
 
       let planeMesh = null;
       let unlocked = false;
-      let stage = 'wait-plane'; // wait-plane -> plane-ok -> unlocked
+      let stage = 'wait-plane';
 
       function rebuild() {
         const plane = definePlaneFromPoints(pA.position, pB.position, pC.position);
@@ -1327,7 +1522,7 @@
         }
         const geo = new THREE.PlaneGeometry(6, 6);
         const mat = new THREE.MeshStandardMaterial({
-          color: 0x8a6a3f, roughness: 0.85, transparent: true, opacity: 0.55, side: THREE.DoubleSide
+          color: 0x3b82f6, roughness: 0.85, transparent: true, opacity: 0.22, side: THREE.DoubleSide
         });
         planeMesh = new THREE.Mesh(geo, mat);
         planeMesh.position.copy(plane.pointOnPlane);
@@ -1355,11 +1550,10 @@
         keeperSay('Cổng rung chuyển... ánh sáng khắc sâu bừng lên. Ngươi giờ có thể nhìn thấy những mặt phẳng ẩn giấu.', [
           { label: 'Tiếp tục tới Trạm 2', onClick: () => finishStation1() }
         ]);
-        gateHole.material.color.set(0xffdca0);
-        gateHole.material.emissive = new THREE.Color(0xffb35c);
+        gateHole.material.color.set(0x449B74);
+        gateHole.material.emissive = new THREE.Color(0x237A57);
         gateHole.material.emissiveIntensity = 0.6;
         dirLight.intensity += 0.3;
-        // rung nhẹ
         let t = 0;
         const shakeId = setInterval(() => {
           t += 1; gateFrame.position.x = Math.sin(t) * 0.02;
@@ -1386,7 +1580,7 @@
         <li>Ba điểm không thẳng hàng → xác định 1 mặt phẳng duy nhất.</li>
         <li>Mặt phẳng đi qua D → cổng mở.</li>
       </ul>
-      <div style="font-size:15px; font-weight:600; margin-top:10px; color:${stage === 'unlocked' ? '#9fe6b0' : '#e0b98a'}">
+      <div style="font-size:13.5px; font-weight:600; margin-top:10px; color:${stage === 'unlocked' ? '#d1fae5' : '#FAC775'}">
         Trạng thái: ${stage === 'wait-plane' ? 'Chưa dựng được phiến đá' : stage === 'plane-ok' ? 'Phiến đá đã thành hình — chưa chạm Ấn Phong' : 'Cổng đã mở ✓'}
       </div>
     `);
@@ -1402,19 +1596,16 @@
       camera.position.set(0, 2.0, 6.5);
       orbitControls.target.set(0, 1.3, -2);
 
-      // Cấu hình đã tính toán bằng script Node độc lập trước khi build (verify_station2.js):
-      // với bản lề tại x=±1.6 và bệ thờ cao 1.5, góc nghiêng cần ~46.8° — vừa phải,
-      // không quá dốc như bản cũ (từng cần 57.5°, quá khó cảm nhận bằng kéo tự do).
       const baseAx = -1.6, baseBx = 1.6;
       const wallDepthStart = -0.6, wallDepthEnd = -5.2;
       const midZ = (wallDepthStart + wallDepthEnd) / 2;
       const R_ARM = 2.6;
-      const THETA_MIN = 0.03, THETA_MAX = 1.4; // ~1.7° .. 80°, tránh suy biến 2 đầu
+      const THETA_MIN = 0.03, THETA_MAX = 1.4;
 
       const altar = new THREE.Vector3(0, 1.5, -4.6);
       const altarMesh = new THREE.Mesh(
         new THREE.OctahedronGeometry(0.22),
-        new THREE.MeshStandardMaterial({ color: 0x3a5cff, emissive: 0x3a5cff, emissiveIntensity: 0.4 })
+        new THREE.MeshStandardMaterial({ color: 0x3b82f6, emissive: 0x3b82f6, emissiveIntensity: 0.4 })
       );
       altarMesh.position.copy(altar);
       scene.add(altarMesh);
@@ -1423,31 +1614,29 @@
         return new THREE.Vector3(baseX + inward * R_ARM * Math.sin(theta), R_ARM * Math.cos(theta), midZ);
       }
 
-      // Góc khởi đầu NHỎ, cố ý gây cảm giác "gần như song song" — học sinh phải tự
-      // khám phá ra cần nghiêng NHIỀU hơn cảm giác ban đầu rất nhiều.
       let thetaA = 0.12, thetaB = 0.12;
 
       const baseBottomA = new THREE.Vector3(baseAx, 0, wallDepthStart);
       const baseFarA = new THREE.Vector3(baseAx, 0, wallDepthEnd);
       const baseBottomB = new THREE.Vector3(baseBx, 0, wallDepthStart);
       const baseFarB = new THREE.Vector3(baseBx, 0, wallDepthEnd);
-      makeFixedMarker(baseBottomA, 0x8a6a3f, 0.07);
-      makeFixedMarker(baseFarA, 0x8a6a3f, 0.07);
-      makeFixedMarker(baseBottomB, 0x8a6a3f, 0.07);
-      makeFixedMarker(baseFarB, 0x8a6a3f, 0.07);
-      const hingeLineA = new THREE.Line(new THREE.BufferGeometry().setFromPoints([baseBottomA, baseFarA]), new THREE.LineBasicMaterial({ color: 0x5c4a2e }));
-      const hingeLineB = new THREE.Line(new THREE.BufferGeometry().setFromPoints([baseBottomB, baseFarB]), new THREE.LineBasicMaterial({ color: 0x5c4a2e }));
+      makeFixedMarker(baseBottomA, 0x449B74, 0.07);
+      makeFixedMarker(baseFarA, 0x449B74, 0.07);
+      makeFixedMarker(baseBottomB, 0x449B74, 0.07);
+      makeFixedMarker(baseFarB, 0x449B74, 0.07);
+      const hingeLineA = new THREE.Line(new THREE.BufferGeometry().setFromPoints([baseBottomA, baseFarA]), new THREE.LineBasicMaterial({ color: 0x237A57 }));
+      const hingeLineB = new THREE.Line(new THREE.BufferGeometry().setFromPoints([baseBottomB, baseFarB]), new THREE.LineBasicMaterial({ color: 0x237A57 }));
       scene.add(hingeLineA); scene.add(hingeLineB);
 
-      const handleA = new DraggablePoint(handlePos(baseAx, 1, thetaA), 0xffd35c, 'Tay cầm A', 0.13);
-      const handleB = new DraggablePoint(handlePos(baseBx, -1, thetaB), 0xffd35c, 'Tay cầm B', 0.13);
+      const handleA = new DraggablePoint(handlePos(baseAx, 1, thetaA), 0xFAC775, 'Tay cầm A', 0.13);
+      const handleB = new DraggablePoint(handlePos(baseBx, -1, thetaB), 0xFAC775, 'Tay cầm B', 0.13);
 
       let wallMeshA = null, wallMeshB = null, glowLine = null, converged = false;
 
       function buildWallMesh(baseBottom, baseFar, handlePosition, color) {
         const plane = definePlaneFromPoints(baseBottom, baseFar, handlePosition);
         const geo = new THREE.PlaneGeometry(7, 7, 1, 1);
-        const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.9, side: THREE.DoubleSide, transparent: true, opacity: 0.5 });
+        const mat = new THREE.MeshStandardMaterial({ color, roughness: 0.9, side: THREE.DoubleSide, transparent: true, opacity: 0.22 });
         const mesh = new THREE.Mesh(geo, mat);
         if (plane) {
           mesh.position.copy(baseBottom).lerp(baseFar, 0.5);
@@ -1457,11 +1646,11 @@
       }
 
       function levelFor(dist) {
-        if (dist < 0.4) return { label: 'Hội tụ!', color: '#9fe6b0' };
-        if (dist < 1.0) return { label: 'Rất gần', color: '#c7e69f' };
-        if (dist < 2.2) return { label: 'Gần', color: '#e6d89f' };
-        if (dist < 3.8) return { label: 'Còn xa', color: '#e6b98a' };
-        return { label: 'Rất xa', color: '#e08a7a' };
+        if (dist < 0.4) return { label: 'Hội tụ!', color: '#d1fae5' };
+        if (dist < 1.0) return { label: 'Rất gần', color: '#a7f3d0' };
+        if (dist < 2.2) return { label: 'Gần', color: '#fef08a' };
+        if (dist < 3.8) return { label: 'Còn xa', color: '#fed7aa' };
+        return { label: 'Rất xa', color: '#fca5a5' };
       }
 
       let lastLevel = null;
@@ -1471,8 +1660,8 @@
         if (wallMeshB) scene.remove(wallMeshB);
         if (glowLine) { scene.remove(glowLine); glowLine = null; }
 
-        const rA = buildWallMesh(baseBottomA, baseFarA, handleA.position, 0x5c4a2e);
-        const rB = buildWallMesh(baseBottomB, baseFarB, handleB.position, 0x4a3c26);
+        const rA = buildWallMesh(baseBottomA, baseFarA, handleA.position, 0x3b82f6);
+        const rB = buildWallMesh(baseBottomB, baseFarB, handleB.position, 0xa78bfa);
         wallMeshA = rA.mesh; wallMeshB = rB.mesh;
         scene.add(wallMeshA); scene.add(wallMeshB);
 
@@ -1486,7 +1675,7 @@
                 inter.point.clone().sub(inter.dir.clone().multiplyScalar(7)),
                 inter.point.clone().add(inter.dir.clone().multiplyScalar(7))
               ]);
-              const mat = new THREE.LineBasicMaterial({ color: 0xffd35c, linewidth: 2 });
+              const mat = new THREE.LineBasicMaterial({ color: 0xFAC775, linewidth: 2 });
               glowLine = new THREE.Line(geo, mat);
               scene.add(glowLine);
 
@@ -1503,7 +1692,7 @@
               } else {
                 status = 'intersect-off';
                 if (distToAltar < 0.4 && (!isAngleAOk || !isAngleBOk)) {
-                  lastLevel = { label: 'Cần chỉnh CẢ HAI bức tường về 46° - 47°', color: '#e6d89f' };
+                  lastLevel = { label: 'Cần chỉnh CẢ HAI bức tường về 46° - 47°', color: '#fef08a' };
                 }
               }
             }
@@ -1531,9 +1720,6 @@
         goToStation(3);
       }
 
-      // Kéo tay cầm bằng chuột: sau khi hệ thống drag chung gán vị trí thô, TA CHIẾU
-      // LẠI vị trí đó về đúng cung tròn của bản lề (ràng buộc 1 bậc tự do — giống
-      // ConstrainedPoint nhưng trên cung tròn thay vì đoạn thẳng) rồi mới rebuild().
       function snapToHinge(pt, baseX, inward) {
         const raw = pt.mesh.position;
         const dx = inward * (raw.x - baseX);
@@ -1577,16 +1763,16 @@
       <h4>Trạm 2 · Hành lang giao nhau</h4>
       <p class="hint">Kéo tay cầm (vàng) của Tường A/B — mỗi tay cầm chỉ xoay quanh chân tường cố định. Có thể dùng thanh trượt bên dưới để chỉnh chính xác hơn.</p>
       <div style="display:flex; align-items:center; gap:8px; margin:8px 0;">
-        <span style="width:72px; font-size:14.5px; font-weight:600;">Tường A</span>
-        <input type="range" id="slider-wallA" min="0" max="80" step="0.5" value="${(thetaA * 180 / Math.PI).toFixed(0)}" style="flex:1;">
-        <span id="val-wallA" style="width:38px; font-size:14.5px; font-weight:600;">${(thetaA * 180 / Math.PI).toFixed(0)}°</span>
+        <span style="width:72px; font-size:13.5px; font-weight:600;">Tường A</span>
+        <input type="range" id="slider-wallA" min="0" max="80" step="0.5" value="${(thetaA * 180 / Math.PI).toFixed(0)}" style="flex:1; accent-color: var(--teal);">
+        <span id="val-wallA" style="width:38px; font-size:13.5px; font-weight:600;">${(thetaA * 180 / Math.PI).toFixed(0)}°</span>
       </div>
       <div style="display:flex; align-items:center; gap:8px; margin:8px 0 12px;">
-        <span style="width:72px; font-size:14.5px; font-weight:600;">Tường B</span>
-        <input type="range" id="slider-wallB" min="0" max="80" step="0.5" value="${(thetaB * 180 / Math.PI).toFixed(0)}" style="flex:1;">
-        <span id="val-wallB" style="width:38px; font-size:14.5px; font-weight:600;">${(thetaB * 180 / Math.PI).toFixed(0)}°</span>
+        <span style="width:72px; font-size:13.5px; font-weight:600;">Tường B</span>
+        <input type="range" id="slider-wallB" min="0" max="80" step="0.5" value="${(thetaB * 180 / Math.PI).toFixed(0)}" style="flex:1; accent-color: var(--teal);">
+        <span id="val-wallB" style="width:38px; font-size:13.5px; font-weight:600;">${(thetaB * 180 / Math.PI).toFixed(0)}°</span>
       </div>
-      <div style="font-size:15px; font-weight:600; margin-top:10px; color:${lastLevel ? lastLevel.color : '#e0b98a'}">
+      <div style="font-size:13.5px; font-weight:600; margin-top:10px; color:${lastLevel ? lastLevel.color : '#FAC775'}">
         ${msg}${lastLevel ? ' — ' + lastLevel.label : ''}
       </div>
     `);
@@ -1606,20 +1792,17 @@
       camera.position.set(5.5, 4.0, 7.0);
       orbitControls.target.set(0, 1, 0);
 
-      // Hình chóp tứ giác S.ABCD (base bất kỳ, đồng phẳng y=0)
       const S = new THREE.Vector3(0, 3.2, 0);
       const A = new THREE.Vector3(-1.6, 0, -1.6);
       const B = new THREE.Vector3(1.6, 0, -1.6);
       const C = new THREE.Vector3(1.8, 0, 1.7);
       const D = new THREE.Vector3(-1.7, 0, 1.6);
-      const verts = { S, A, B, C, D };
 
       function mid(P, Q) { return P.clone().lerp(Q, 0.5); }
       const M = mid(A, B), N = mid(A, C), P = mid(B, C), Q = mid(C, D);
 
-      // Khối chóp trong suốt
       const pyraGroup = new THREE.Group();
-      const faceMat = new THREE.MeshStandardMaterial({ color: 0x6b4e2c, transparent: true, opacity: 0.28, side: THREE.DoubleSide, roughness: 0.9 });
+      const faceMat = new THREE.MeshStandardMaterial({ color: 0x237A57, transparent: true, opacity: 0.18, side: THREE.DoubleSide, roughness: 0.9 });
       function faceMesh(p1, p2, p3) {
         const geo = new THREE.BufferGeometry();
         geo.setFromPoints([p1, p2, p3]);
@@ -1630,7 +1813,7 @@
       [[S, A, B], [S, B, C], [S, C, D], [S, D, A], [A, B, C], [A, C, D]].forEach(f => pyraGroup.add(faceMesh(...f)));
       scene.add(pyraGroup);
 
-      function edgeLine(p1, p2, color = 0xd8b98a) {
+      function edgeLine(p1, p2, color = 0xe6edf3) {
         const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
         return new THREE.Line(geo, new THREE.LineBasicMaterial({ color }));
       }
@@ -1638,17 +1821,14 @@
 
       const markerColor = 0x9be1ff;
       ['M', 'N', 'P', 'Q'].forEach((name, i) => makeFixedMarker([M, N, P, Q][i], markerColor, 0.085));
-      makeFixedMarker(S, 0xffe3a3, 0.09);
+      makeFixedMarker(S, 0xFAC775, 0.09);
 
-      // Nhãn chữ cho mọi điểm quan trọng — bắt buộc để học sinh phân biệt được
-      // điểm nào là điểm nào khi chọn mặt phẳng (không có nhãn thì không thể
-      // xác định (SBN) là mặt nào trên hình).
       const labelDefs = [
-        { name: 'S', pos: S, color: '#ffe3a3' },
-        { name: 'A', pos: A, color: '#d8c8a8' },
-        { name: 'B', pos: B, color: '#d8c8a8' },
-        { name: 'C', pos: C, color: '#d8c8a8' },
-        { name: 'D', pos: D, color: '#d8c8a8' },
+        { name: 'S', pos: S, color: '#FAC775' },
+        { name: 'A', pos: A, color: '#cbd5e1' },
+        { name: 'B', pos: B, color: '#cbd5e1' },
+        { name: 'C', pos: C, color: '#cbd5e1' },
+        { name: 'D', pos: D, color: '#cbd5e1' },
         { name: 'M', pos: M, color: '#9be1ff' },
         { name: 'N', pos: N, color: '#9be1ff' },
         { name: 'P', pos: P, color: '#9be1ff' },
@@ -1658,10 +1838,9 @@
         labelDefs.forEach(d => d.entry.update(d.pos));
       };
 
-      // ---- 3.2 nhận diện nhanh: click apex / 1 mặt bên (bất kỳ) / 1 cạnh đáy (bất kỳ) ----
       const apexHit = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
       apexHit.position.copy(S); apexHit.userData = { kind: 'apex' };
-      scene.add(apexHit); // chỉ dùng để click nhận diện, KHÔNG thêm vào allDraggableHitMeshes (không kéo được)
+      scene.add(apexHit);
 
       if (window.__activeCanvasClickHandler) {
         canvas.removeEventListener('click', window.__activeCanvasClickHandler);
@@ -1671,10 +1850,6 @@
       const clickables = [];
       clickables.push({ mesh: apexHit, kind: 'apex' });
 
-      // TRƯỚC ĐÂY chỉ tạo hit-mesh cho 1 mặt bên (SAB) và 1 cạnh đáy (AB) — khiến
-      // click vào mặt/cạnh khác không phản hồi được. SỬA: tạo hit-mesh vô hình
-      // cho CẢ 4 mặt bên và CẢ 4 cạnh đáy, bất kỳ cái nào trong nhóm đều tính là
-      // "đã chọn 1 mặt bên" / "đã chọn 1 cạnh đáy".
       [[S, A, B], [S, B, C], [S, C, D], [S, D, A]].forEach(f => {
         const fm = faceMesh(...f);
         fm.material = new THREE.MeshBasicMaterial({ visible: false });
@@ -1709,7 +1884,7 @@
         const kind = hits[0].object.userData.kind;
         if (!identifyDone[kind]) {
           identifyDone[kind] = true;
-          showWrongToast(''); // clear
+          showWrongToast('');
           updatePanel();
           if (identifyDone.apex && identifyDone.face && identifyDone.edge) {
             identifyComplete = true;
@@ -1720,14 +1895,12 @@
       canvas.addEventListener('click', onCanvasClick);
       window.__activeCanvasClickHandler = onCanvasClick;
 
-      // ---- 3.3 chọn cặp mặt phẳng ----
       const planeOptions = [
         { key: 'SBN', label: '(SBN)', pts: [S, B, N] },
         { key: 'SCM', label: '(SCM)', pts: [S, C, M] },
         { key: 'SBP', label: '(SBP)', pts: [S, B, P] },
         { key: 'SDQ', label: '(SDQ)', pts: [S, D, Q] },
       ];
-      // Đảo ngẫu nhiên vị trí các đáp án mỗi lần chơi Trạm 3
       for (let i = planeOptions.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1));
         [planeOptions[i], planeOptions[j]] = [planeOptions[j], planeOptions[i]];
@@ -1756,10 +1929,10 @@
           const G = segmentIntersection(B, N, C, M);
           if (G) {
             const lineGeo = new THREE.BufferGeometry().setFromPoints([S, G.point]);
-            const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0xb98cff, linewidth: 3 }));
+            const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0xFAC775, linewidth: 3 }));
             scene.add(line);
-            makeFixedMarker(G.point, 0xb98cff, 0.09);
-            const gLabel = createLabel3D('G', '#d6b8ff');
+            makeFixedMarker(G.point, 0xFAC775, 0.09);
+            const gLabel = createLabel3D('G', '#FAC775');
             labelDefs.push({ name: 'G', pos: G.point, entry: gLabel });
             intersectDone = true;
             keeperSay('Giao tuyến bí mật đã hiện ra — khối đá xoay chậm, một mảnh phù điêu lộ ra từ bên trong.', [
@@ -1819,7 +1992,6 @@
       orbitControls.target.set(0, 1.5, 0);
       orbitControls.enabled = true;
 
-      // Hình chóp tứ giác vuông S.ABCD, đáy hình vuông cạnh 3 — N,P là trung điểm SB,SC cố định
       const S = new THREE.Vector3(0, 3, 0);
       const A = new THREE.Vector3(-1.5, 0, -1.5);
       const B = new THREE.Vector3(1.5, 0, -1.5);
@@ -1827,20 +1999,16 @@
       const D = new THREE.Vector3(-1.5, 0, 1.5);
       const N = S.clone().lerp(B, 0.5);
       const P = S.clone().lerp(C, 0.5);
-      const BASE_AREA = 9; // hình vuông cạnh 3
+      const BASE_AREA = 9;
 
       function pointM(percent) { return S.clone().lerp(A, percent / 100); }
 
-      // ---------- PHA 1: Cửa đá đóng + 1 câu quiz nhỏ trước khi mở ----------
-      // Theo đúng góp ý: giữ lại cảm giác "cửa đóng" ban đầu, xoay cửa mở ra
-      // (sau khi trả lời đúng 1 câu quiz nhỏ) mới lộ hình chóp — không hiện
-      // hình chóp ngay như bản trước.
-      const doorPivot = new THREE.Group(); // xoay quanh mép trái, giống cửa thật
+      const doorPivot = new THREE.Group();
       doorPivot.position.set(-1.1, 0, 0);
-      const doorMat = new THREE.MeshStandardMaterial({ color: 0x4a3620, roughness: 0.85 });
+      const doorMat = new THREE.MeshStandardMaterial({ color: 0x14432F, roughness: 0.85 });
       const doorMesh = new THREE.Mesh(new THREE.BoxGeometry(2.2, 3.2, 0.25), doorMat);
-      doorMesh.position.set(1.1, 1.7, 0); // lệch ra khỏi pivot để pivot đúng ở mép trái
-      const runeMat = new THREE.LineBasicMaterial({ color: 0xffd35c, transparent: true, opacity: 0.8 });
+      doorMesh.position.set(1.1, 1.7, 0);
+      const runeMat = new THREE.LineBasicMaterial({ color: 0xFAC775, transparent: true, opacity: 0.8 });
       const runeWire = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.OctahedronGeometry(0.55)), runeMat);
       runeWire.position.set(1.1, 1.7, 0.15);
       doorPivot.add(doorMesh, runeWire);
@@ -1849,10 +2017,10 @@
       doorLight.position.set(0, 1.7, 1.5);
       scene.add(doorLight);
 
-      let phase = 'quiz'; // 'quiz' -> 'opening' -> 'main'
+      let phase = 'quiz';
       let doorAngle = 0;
       let runePulse = 0;
-      let onFrameLabels = null; // gán lại trong buildPyramidScene() sau khi cửa mở
+      let onFrameLabels = null;
       window.__frameHook = () => {
         runePulse += 0.03;
         runeWire.material.opacity = 0.55 + Math.sin(runePulse) * 0.2;
@@ -1870,7 +2038,7 @@
       };
 
       const QUIZ = {
-        question: 'Trước khi mở kho: Cho hình chóp tứ giác S.ABCD, đáy ABCD là hình vuông. N, P lần lượt là trung điểm SB, SC (cố định). M là điểm trên cạnh SA. Muốn dựng xong thiết diện, mặt phẳng (MNP)cần tìm thêm giao điểm của nó với cạnh nào của hình chóp?',
+        question: 'Trước khi mở kho: Cho hình chóp tứ giác S.ABCD, đáy ABCD là hình vuông. N, P lần lượt là trung điểm SB, SC (cố định). M là điểm trên cạnh SA. Muốn dựng xong thiết diện, mặt phẳng (MNP) cần tìm thêm giao điểm của nó với cạnh nào của hình chóp?',
         options: [
           { key: 'SD', label: 'Cạnh SD', correct: true },
           { key: 'AB', label: 'Cạnh AB', correct: false },
@@ -1882,7 +2050,7 @@
         setStationPanel(`
       <h4>Trạm 4 · Kho tri thức (đang đóng)</h4>
       <p class="hint">Cánh cửa đá còn phong ấn. Trả lời đúng câu hỏi sau để cửa xoay mở, lộ ra khối hình bên trong:</p>
-      <p class="hint" style="color:#ffd35c;">${QUIZ.question}</p>
+      <p class="hint" style="color:#FAC775;">${QUIZ.question}</p>
       ${QUIZ.options.map(o => `<button class="plane-choice-btn" data-key="${o.key}">${o.label}</button>`).join('')}
     `);
         document.querySelectorAll('.plane-choice-btn').forEach(btn => {
@@ -1901,39 +2069,38 @@
       renderQuizPanel();
       keeperSay('Kho tri thức chỉ mở ra cho ai trả lời đúng câu hỏi phong ấn trên cửa.');
 
-      // ---------- PHA 2: Sau khi cửa mở — dựng khối chóp + cơ chế nhập % ----------
       function buildPyramidScene() {
         const pyraGroup = new THREE.Group();
-        const faceMat = new THREE.MeshStandardMaterial({ color: 0x6b4e2c, transparent: true, opacity: 0.22, side: THREE.DoubleSide, roughness: 0.9 });
+        const faceMat = new THREE.MeshStandardMaterial({ color: 0x237A57, transparent: true, opacity: 0.18, side: THREE.DoubleSide, roughness: 0.9 });
         function faceMesh3(p1, p2, p3) {
           const geo = new THREE.BufferGeometry(); geo.setFromPoints([p1, p2, p3]); geo.setIndex([0, 1, 2]); geo.computeVertexNormals();
           return new THREE.Mesh(geo, faceMat);
         }
         [[S, A, B], [S, B, C], [S, C, D], [S, D, A], [A, B, C], [A, C, D]].forEach(f => pyraGroup.add(faceMesh3(...f)));
         scene.add(pyraGroup);
-        function edgeLine3(p1, p2, color = 0xd8b98a) {
+        function edgeLine3(p1, p2, color = 0xe6edf3) {
           const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
           return new THREE.Line(geo, new THREE.LineBasicMaterial({ color }));
         }
         [[S, A], [S, B], [S, C], [S, D], [A, B], [B, C], [C, D], [D, A]].forEach(e => scene.add(edgeLine3(...e)));
 
-        makeFixedMarker(S, 0xffe3a3, 0.09);
-        [A, B, C, D].forEach(v => makeFixedMarker(v, 0xd8c8a8, 0.075));
+        makeFixedMarker(S, 0xFAC775, 0.09);
+        [A, B, C, D].forEach(v => makeFixedMarker(v, 0xcbd5e1, 0.075));
         makeFixedMarker(N, 0x9be1ff, 0.08);
         makeFixedMarker(P, 0x9be1ff, 0.08);
         flashWhite();
 
         const staticLabels = [
-          { name: 'S', pos: S, color: '#ffe3a3' }, { name: 'A', pos: A, color: '#d8c8a8' },
-          { name: 'B', pos: B, color: '#d8c8a8' }, { name: 'C', pos: C, color: '#d8c8a8' },
-          { name: 'D', pos: D, color: '#d8c8a8' }, { name: 'N', pos: N, color: '#9be1ff' },
+          { name: 'S', pos: S, color: '#FAC775' }, { name: 'A', pos: A, color: '#cbd5e1' },
+          { name: 'B', pos: B, color: '#cbd5e1' }, { name: 'C', pos: C, color: '#cbd5e1' },
+          { name: 'D', pos: D, color: '#cbd5e1' }, { name: 'N', pos: N, color: '#9be1ff' },
           { name: 'P', pos: P, color: '#9be1ff' },
         ].map(d => ({ ...d, entry: createLabel3D(d.name, d.color) }));
 
         let sectionGroup = null;
         const mLabel = createLabel3D('M', '#9be1ff');
         const qLabel = createLabel3D('Q', '#9be1ff');
-        let currentPercent = 55; // mặc định KHÔNG phải đáp án (đáp án ~72.5%)
+        let currentPercent = 55;
         let currentArea = 0;
 
         function areaAt(percent) {
@@ -1945,10 +2112,7 @@
           return { area: polygonArea([M, N, P, qResult.point]), Q: qResult.point, M, t: qResult.t };
         }
 
-        // Mục tiêu = 40% diện tích đáy (đã verify bằng bisection Node độc lập
-        // trước khi build: percent M cần ≈ 72.54%, Q.t ≈ 0.725 — an toàn,
-        // cách biên suy biến hơn 25%, không rơi vào trường hợp cạnh biên).
-        const targetArea = 0.4 * BASE_AREA; // = 3.6
+        const targetArea = 0.4 * BASE_AREA; // 3.6
         const TOLERANCE = 0.02;
 
         function rebuildSection(percent) {
@@ -1962,10 +2126,10 @@
           secGeo.setFromPoints(sectionPts);
           secGeo.setIndex([0, 1, 2, 0, 2, 3]);
           secGeo.computeVertexNormals();
-          const secMat = new THREE.MeshStandardMaterial({ color: 0xff8a2e, emissive: 0xff8a2e, emissiveIntensity: 0.3, transparent: true, opacity: 0.75, side: THREE.DoubleSide });
+          const secMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xf59e0b, emissiveIntensity: 0.3, transparent: true, opacity: 0.75, side: THREE.DoubleSide });
           sectionGroup.add(new THREE.Mesh(secGeo, secMat));
           const borderGeo = new THREE.BufferGeometry().setFromPoints([...sectionPts, sectionPts[0]]);
-          sectionGroup.add(new THREE.Line(borderGeo, new THREE.LineBasicMaterial({ color: 0xffd35c, linewidth: 3 })));
+          sectionGroup.add(new THREE.Line(borderGeo, new THREE.LineBasicMaterial({ color: 0xFAC775, linewidth: 3 })));
           [data.M, data.Q].forEach(pt => {
             const m = new THREE.Mesh(new THREE.SphereGeometry(0.085, 16, 16), new THREE.MeshStandardMaterial({ color: 0x9be1ff, emissive: 0x9be1ff, emissiveIntensity: 0.5 }));
             m.position.copy(pt);
@@ -2017,7 +2181,7 @@
           N, P lần lượt là trung điểm SB, SC (cố định). M là điểm trên cạnh SA — mặt
           phẳng (MNP) cắt cạnh SD tại Q, tạo thiết diện MNPQ.
         </p>
-        <p class="hint" style="color:#ffd35c;">
+        <p class="hint" style="color:#FAC775;">
           <b>Yêu cầu:</b> tìm vị trí M (nhập % của MA so với SA) sao cho diện tích
           thiết diện MNPQ đúng bằng <b>40% diện tích đáy</b>.
         </p>
@@ -2026,7 +2190,7 @@
           <input id="m-percent-input" type="number" min="0" max="98" step="1" value="${currentPercent}" ${solved ? 'disabled' : ''}>
           <button class="btn" id="btn-try-m" ${solved ? 'disabled' : ''}>${solved ? 'Đã mở khoá!' : 'Xác nhận'}</button>
         </div>
-        <div id="feedback-line" style="color:${solved ? '#9fe6b0' : '#e0b98a'}">
+        <div id="feedback-line" style="color:${solved ? '#d1fae5' : '#FAC775'}">
           Diện tích hiện tại (M ở ${currentPercent}%): <b>${currentArea !== null ? currentArea.toFixed(2) : '—'}</b>
           ${solved ? ' — Chính xác! ✓' : ''}
         </div>
@@ -2064,7 +2228,7 @@
 
       const crystal = new THREE.Mesh(
         new THREE.OctahedronGeometry(0.5),
-        new THREE.MeshStandardMaterial({ color: 0xffe3a3, emissive: 0xffcf7a, emissiveIntensity: 0.8 })
+        new THREE.MeshStandardMaterial({ color: 0xFAC775, emissive: 0xFAC775, emissiveIntensity: 0.8 })
       );
       crystal.position.set(0, 2.2, 0);
       scene.add(crystal);
@@ -2072,14 +2236,11 @@
 
       keeperSay('Ngươi đã đi qua bốn thử thách. Chỉ còn một mảnh ghép cuối cùng để đánh thức Tinh thể Tri thức.');
 
-      // Nút dự phòng trong panel chữ — panel này đã hiển thị ổn định suốt game,
-      // nên dùng nó làm đường bảo đảm luôn hoàn thành được, không phụ thuộc vào
-      // việc mảnh ghép 3D/kéo-thả có render đúng trên máy người chơi hay không.
       setStationPanel(`
     <h4>Trạm 5 · Ghép mảnh cuối</h4>
     <p class="hint">Tìm 1 mảnh sáng đang nhấp nháy giữa màn hình — kéo nó vào khung viền xanh nhấp nháy.</p>
     <p class="hint">Nếu không thấy hoặc không kéo được, dùng nút dưới đây:</p>
-    <button class="btn" id="btn-fallback-assemble" style="width:100%; font-size:16px; padding:11px 16px; margin-top:6px;">🧩 Đặt mảnh ghép cuối</button>
+    <button class="btn" id="btn-fallback-assemble" style="width:100%; font-size:14px; padding:10px 14px; margin-top:6px;">🧩 Đặt mảnh ghép cuối</button>
   `);
       document.getElementById('btn-fallback-assemble').onclick = () => {
         if (piece.classList.contains('snapped')) return;
@@ -2092,17 +2253,16 @@
       const slot = document.getElementById('final-slot');
       const piece = document.getElementById('final-piece');
 
-      // Reset trạng thái snapped/near để chơi lại (Replay) mượt mà
       piece.classList.remove('snapped');
       slot.classList.remove('near');
       piece.style.boxShadow = '';
       piece.style.width = '';
       piece.style.height = '';
 
-      const sw = window.innerWidth, sh = window.innerHeight;
-      // Dùng % màn hình (an toàn với mọi độ phân giải) thay vì offset px cố định.
-      slot.style.left = (sw * 0.50 - 50) + 'px';
-      slot.style.top = (sh * 0.50 - 50) + 'px';
+      const wrap = document.getElementById('app-body');
+      const sw = wrap.clientWidth, sh = wrap.clientHeight;
+      slot.style.left = (sw * 0.50 - 45) + 'px';
+      slot.style.top = (sh * 0.50 - 45) + 'px';
       slot.innerHTML = FINAL_SLOT_ICON;
       piece.style.left = (sw * 0.74) + 'px';
       piece.style.top = (sh * 0.58) + 'px';
@@ -2119,8 +2279,9 @@
 
       function snapPieceToSlot() {
         const sr = slot.getBoundingClientRect();
-        piece.style.left = sr.left + 'px';
-        piece.style.top = sr.top + 'px';
+        const wrapR = wrap.getBoundingClientRect();
+        piece.style.left = (sr.left - wrapR.left) + 'px';
+        piece.style.top = (sr.top - wrapR.top) + 'px';
         piece.style.width = sr.width + 'px';
         piece.style.height = sr.height + 'px';
         piece.classList.add('snapped');
@@ -2146,10 +2307,9 @@
       function moveDrag(e) {
         if (!dragging) return;
         const cx = e.clientX ?? e.touches[0].clientX, cy = e.clientY ?? e.touches[0].clientY;
-        piece.style.left = (cx - offX) + 'px';
-        piece.style.top = (cy - offY) + 'px';
-        // Phản hồi trực quan SỐNG: khung sáng lên khi mảnh ghép được kéo đủ gần —
-        // để không bao giờ "im lặng" không rõ đang tương tác đúng hay sai.
+        const wrapR = wrap.getBoundingClientRect();
+        piece.style.left = (cx - wrapR.left - offX) + 'px';
+        piece.style.top = (cy - wrapR.top - offY) + 'px';
         slot.classList.toggle('near', distToSlotCenter() < 90);
       }
       function endDragPiece() {
@@ -2160,14 +2320,12 @@
           showWrongToast('Chưa đúng vị trí — kéo mảnh sáng vào giữa khung viền xanh.');
         }
       }
-      // Dự phòng: click để CHỌN mảnh ghép, rồi click vào khung để ĐẶT vào —
-      // hoạt động độc lập với kéo-thả, đảm bảo luôn có cách hoàn thành được.
       function toggleSelect() {
         if (piece.classList.contains('snapped')) return;
         selected = !selected;
         piece.style.boxShadow = selected
-          ? '0 0 34px rgba(125,232,255,0.95), 0 0 10px rgba(255,255,255,0.9)'
-          : '0 0 26px rgba(255,220,140,0.9), 0 0 8px rgba(255,255,255,0.8)';
+          ? '0 0 34px rgba(68,155,116,0.95), 0 0 10px rgba(255,255,255,0.9)'
+          : '0 0 24px rgba(255,220,140,0.9)';
       }
       function placeBySelect() {
         if (!selected || piece.classList.contains('snapped')) return;
@@ -2221,13 +2379,7 @@
         const score = currentScore();
         const rank = getRankInfo(score);
         try {
-          const listRes = await window.storage.get('euclid_leaderboard', true).catch(() => null);
-          let list = [];
-          if (listRes && listRes.value) { try { list = JSON.parse(listRes.value); } catch (e) { list = []; } }
-          list.push({ name, score, rank: rank.name, time: Date.now() });
-          list.sort((a, b) => b.score - a.score);
-          list = list.slice(0, 30);
-          await window.storage.set('euclid_leaderboard', JSON.stringify(list), true);
+          const list = await saveScoreToStorage({ name, score, rank: rank.name, time: Date.now() });
           renderLeaderboard(list, { name, score });
         } catch (e) {
           showWrongToast('Không lưu được điểm (lỗi lưu trữ) — nhưng điểm của ngươi vẫn hiển thị ở trên.');
@@ -2236,9 +2388,7 @@
 
       async function loadLeaderboard() {
         try {
-          const res = await window.storage.get('euclid_leaderboard', true).catch(() => null);
-          let list = [];
-          if (res && res.value) { try { list = JSON.parse(res.value); } catch (e) { list = []; } }
+          const list = await loadScoreFromStorage();
           renderLeaderboard(list, null);
         } catch (e) {
           document.getElementById('leaderboard-list').innerHTML = '<div>Chưa có dữ liệu bảng xếp hạng.</div>';
@@ -2246,7 +2396,7 @@
       }
       function renderLeaderboard(list, me) {
         const el = document.getElementById('leaderboard-list');
-        if (!list.length) { el.innerHTML = '<div>Chưa có ai trên bảng xếp hạng — hãy là người đầu tiên!</div>'; return; }
+        if (!list || !list.length) { el.innerHTML = '<div>Chưa có ai trên bảng xếp hạng — hãy là người đầu tiên!</div>'; return; }
         el.innerHTML = list.map((e, i) => `<div class="${me && e.name === me.name && e.score === me.score ? 'me' : ''}"><span>#${i + 1} ${e.name}</span><span>${e.score}</span></div>`).join('');
       }
 
