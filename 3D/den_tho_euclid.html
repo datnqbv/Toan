@@ -173,6 +173,38 @@
       height: 100%;
       z-index: 2;
       display: block;
+      touch-action: none !important;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    /* ---------- Range Sliders Chỉnh Nét trên Mobile / iPad ---------- */
+    input[type="range"] {
+      height: 36px;
+      touch-action: none;
+      cursor: pointer;
+      appearance: none;
+      -webkit-appearance: none;
+      background: transparent;
+    }
+
+    input[type="range"]::-webkit-slider-thumb {
+      appearance: none;
+      -webkit-appearance: none;
+      width: 22px;
+      height: 22px;
+      border-radius: 50%;
+      background: var(--jade-light);
+      border: 2px solid #ffffff;
+      box-shadow: 0 0 8px rgba(0, 0, 0, 0.5);
+      cursor: pointer;
+      margin-top: -7px;
+    }
+
+    input[type="range"]::-webkit-slider-runnable-track {
+      width: 100%;
+      height: 8px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.2);
     }
 
     #three-canvas.no-interact {
@@ -250,7 +282,31 @@
       color: var(--gold-bright);
       display: flex;
       align-items: center;
+      justify-content: space-between;
       gap: 6px;
+    }
+
+    .panel-toggle-btn {
+      background: rgba(255, 255, 255, 0.12);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      color: var(--gold-bright);
+      width: 26px;
+      height: 26px;
+      border-radius: 6px;
+      display: none !important;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 13px;
+      transition: all 0.2s ease;
+      padding: 0;
+      flex-shrink: 0;
+    }
+
+    .panel-toggle-btn:hover {
+      background: rgba(255, 255, 255, 0.28);
+      color: #ffffff;
+      transform: scale(1.05);
     }
 
     #relic-frame {
@@ -399,6 +455,41 @@
       max-height: 80vh;
       overflow-y: auto;
       color: #f3e6cf;
+    }
+
+    #station-panel .station-toggle {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      z-index: 5;
+    }
+
+    #sidebar.collapsed .panel-collapsible-content,
+    #station-panel.collapsed .panel-collapsible-content {
+      display: none !important;
+    }
+
+    #sidebar.collapsed {
+      padding: 8px 12px;
+      width: auto !important;
+    }
+
+    #sidebar.collapsed h3 {
+      margin-bottom: 0;
+    }
+
+    #station-panel.collapsed {
+      padding: 8px 40px 8px 14px;
+      width: auto !important;
+      min-width: 120px;
+      min-height: 38px;
+    }
+
+    #station-panel.collapsed::before {
+      content: 'Bảng trạm';
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--gold-bright);
     }
 
     #station-panel h4 {
@@ -778,7 +869,7 @@
       opacity: 0;
       transition: opacity .3s ease;
       pointer-events: none;
-      z-index: 9;
+      z-index: 50;
     }
 
     #wrong-toast.show {
@@ -789,10 +880,50 @@
       display: none !important;
     }
 
-    /* ---------- Responsive Media Queries (768px) ---------- */
+    /* ---------- Responsive Media Queries (1024px iPad & 768px Mobile) ---------- */
+    @media (max-width: 1024px) {
+      .panel-toggle-btn {
+        display: inline-flex !important;
+      }
+
+      #sidebar {
+        top: 12px;
+        left: 12px;
+        width: 190px;
+        padding: 10px 12px;
+      }
+
+      #sidebar h3 {
+        font-size: 13.5px;
+      }
+
+      #score-line,
+      #rank-line {
+        font-size: 12px;
+      }
+
+      #station-panel {
+        top: 12px;
+        right: 12px;
+        width: 270px;
+        padding: 12px;
+        max-height: 55vh;
+      }
+
+      #keeper-box {
+        bottom: 14px;
+        width: min(500px, 90vw);
+        padding: 10px 14px;
+      }
+
+      .point-label {
+        font-size: 12.5px;
+      }
+    }
+
     @media (max-width: 768px) {
-      header h1 {
-        font-size: 14px;
+      header {
+        padding: 8px 14px;
       }
 
       .header-badge {
@@ -800,38 +931,141 @@
         padding: 3px 8px;
       }
 
+      #app-body {
+        min-height: 480px;
+      }
+
       #sidebar {
-        top: 10px;
-        left: 10px;
-        width: 170px;
-        padding: 10px;
+        top: 8px;
+        left: 8px;
+        width: 155px;
+        padding: 8px 10px;
+        font-size: 11.5px;
+        border-radius: 10px;
       }
 
       #sidebar h3 {
-        font-size: 13px;
+        font-size: 12px;
+        margin-bottom: 6px;
+      }
+
+      #relic-frame {
+        gap: 4px;
+        margin-bottom: 6px;
+      }
+
+      #score-line {
+        font-size: 11.5px;
+        margin: 2px 0;
+      }
+
+      #rank-line {
+        font-size: 10.5px;
+        display: none;
+      }
+
+      #stars-line {
+        font-size: 12px;
+      }
+
+      #btn-reset-station {
+        margin-top: 6px !important;
+        font-size: 10px !important;
+        padding: 4px 6px !important;
+        min-height: 32px !important;
       }
 
       #station-panel {
-        top: auto;
-        bottom: 85px;
-        right: 10px;
-        left: 10px;
-        width: auto;
-        max-height: 40vh;
-        padding: 12px;
+        top: 8px;
+        right: 8px;
+        left: auto;
+        bottom: auto;
+        width: 195px;
+        max-height: 45vh;
+        padding: 10px;
+        font-size: 12px;
+        border-radius: 10px;
+      }
+
+      #station-panel h4 {
+        font-size: 13px;
+        margin-bottom: 6px;
+      }
+
+      #station-panel p.hint {
+        font-size: 11.5px;
+        line-height: 1.4;
+        margin: 4px 0 8px;
+      }
+
+      .rule-list {
+        font-size: 11px;
+        padding-left: 14px;
+        margin: 4px 0;
       }
 
       #keeper-box {
-        bottom: 10px;
-        padding: 12px 14px;
+        bottom: 8px;
+        left: 8px;
+        right: 8px;
+        transform: none;
+        width: auto;
+        padding: 8px 12px;
+        border-radius: 10px;
+      }
+
+      #keeper-name {
+        font-size: 10px;
+        letter-spacing: 1.5px;
+        margin-bottom: 2px;
       }
 
       #keeper-text {
-        font-size: 13px;
+        font-size: 12px;
+        line-height: 1.45;
+        min-height: 18px;
+      }
+
+      #keeper-buttons {
+        margin-top: 6px;
+        gap: 6px;
+      }
+
+      #keeper-buttons button.btn {
+        font-size: 11.5px;
+        padding: 6px 12px;
+        min-height: 36px;
+      }
+
+      #intro-screen {
+        padding: 16px;
       }
 
       #intro-lines {
-        font-size: 14.5px;
+        font-size: 13.5px;
+        line-height: 1.6;
+        max-width: 100%;
+      }
+
+      #intro-lines .line {
+        margin-bottom: 8px;
+      }
+
+      #intro-actions {
+        margin-top: 16px;
+        gap: 8px;
+        flex-wrap: wrap;
+        justify-content: center;
+      }
+
+      #intro-actions button.btn {
+        font-size: 13px;
+        padding: 8px 16px;
+        min-height: 44px;
+      }
+
+      .point-label {
+        font-size: 11px;
       }
     }
 
@@ -860,15 +1094,22 @@
 
     <div id="ui-layer">
       <div id="sidebar">
-        <h3><i class="ti ti-cube"></i> Hành trình</h3>
-        <div id="relic-frame"></div>
-        <div id="score-line">Điểm: <span id="score-value">250</span></div>
-        <div id="rank-line">Nhà khảo cổ tập sự</div>
-        <div id="stars-line">⭐</div>
-        <button class="btn secondary" id="btn-reset-station"
-          style="width:100%; margin-top:10px; font-size:11px; padding:6px 8px;">
-          <i class="ti ti-refresh"></i> Làm lại trạm
-        </button>
+        <h3>
+          <span><i class="ti ti-cube"></i> Hành trình</span>
+          <button class="panel-toggle-btn" id="btn-toggle-sidebar" aria-label="Thu gọn Sidebar">
+            <i class="ti ti-chevron-up"></i>
+          </button>
+        </h3>
+        <div class="panel-collapsible-content">
+          <div id="relic-frame"></div>
+          <div id="score-line">Điểm: <span id="score-value">250</span></div>
+          <div id="rank-line">Nhà khảo cổ tập sự</div>
+          <div id="stars-line">⭐</div>
+          <button class="btn secondary" id="btn-reset-station"
+            style="width:100%; margin-top:10px; font-size:11px; padding:6px 8px;">
+            <i class="ti ti-refresh"></i> Làm lại trạm
+          </button>
+        </div>
       </div>
 
       <div id="station-panel" class="hidden"></div>
@@ -1161,6 +1402,18 @@
       });
       window.__frameHook = null;
       window.__onDragUpdate = null;
+      if (window.__activeCanvasPointerDown) {
+        canvas.removeEventListener('pointerdown', window.__activeCanvasPointerDown);
+        window.__activeCanvasPointerDown = null;
+      }
+      if (window.__activeCanvasPointerUp) {
+        canvas.removeEventListener('pointerup', window.__activeCanvasPointerUp);
+        window.__activeCanvasPointerUp = null;
+      }
+      if (window.__activeCanvasClickHandler) {
+        canvas.removeEventListener('click', window.__activeCanvasClickHandler);
+        window.__activeCanvasClickHandler = null;
+      }
       allDraggableHitMeshes = [];
       clearAllLabels();
     }
@@ -1355,6 +1608,21 @@
       const rank = getRankInfo(score);
       document.getElementById('rank-line').textContent = rank.name;
       document.getElementById('stars-line').textContent = '⭐'.repeat(rank.stars);
+
+      const sbToggle = document.getElementById('btn-toggle-sidebar');
+      if (sbToggle && !sbToggle.__bound) {
+        sbToggle.__bound = true;
+        sbToggle.onclick = (e) => {
+          e.stopPropagation();
+          const sb = document.getElementById('sidebar');
+          sb.classList.toggle('collapsed');
+          const icon = sbToggle.querySelector('i');
+          if (icon) {
+            icon.className = `ti ${sb.classList.contains('collapsed') ? 'ti-chevron-down' : 'ti-chevron-up'}`;
+          }
+          reportHeight();
+        };
+      }
     }
     renderSidebar();
 
@@ -1379,6 +1647,11 @@
     function keeperHide() { document.getElementById('keeper-box').classList.add('hidden'); }
     function showWrongToast(msg) {
       const el = document.getElementById('wrong-toast');
+      if (!el) return;
+      if (!msg) {
+        el.classList.remove('show');
+        return;
+      }
       el.textContent = msg;
       el.classList.add('show');
       clearTimeout(el.__t);
@@ -1396,7 +1669,27 @@
       const p = document.getElementById('station-panel');
       if (!html) { p.classList.add('hidden'); p.innerHTML = ''; return; }
       p.classList.remove('hidden');
-      p.innerHTML = html;
+      const isCollapsed = p.classList.contains('collapsed');
+      p.innerHTML = `
+        <button class="panel-toggle-btn station-toggle" id="btn-toggle-station" aria-label="Thu gọn Bảng trạm">
+          <i class="ti ${isCollapsed ? 'ti-chevron-down' : 'ti-chevron-up'}"></i>
+        </button>
+        <div class="panel-collapsible-content">
+          ${html}
+        </div>
+      `;
+      const toggleBtn = p.querySelector('#btn-toggle-station');
+      if (toggleBtn) {
+        toggleBtn.onclick = (e) => {
+          e.stopPropagation();
+          p.classList.toggle('collapsed');
+          const icon = toggleBtn.querySelector('i');
+          if (icon) {
+            icon.className = `ti ${p.classList.contains('collapsed') ? 'ti-chevron-down' : 'ti-chevron-up'}`;
+          }
+          reportHeight();
+        };
+      }
     }
 
     const STATION_SETUP = {
@@ -1973,10 +2266,18 @@
         activeHighlights.push(mesh);
       }
 
-      const apexHit = new THREE.Mesh(new THREE.SphereGeometry(0.35, 8, 8), new THREE.MeshBasicMaterial({ visible: false }));
+      const apexHit = new THREE.Mesh(new THREE.SphereGeometry(0.45, 12, 12), new THREE.MeshBasicMaterial({ visible: false }));
       apexHit.position.copy(S); apexHit.userData = { kind: 'apex' };
       scene.add(apexHit);
 
+      if (window.__activeCanvasPointerDown) {
+        canvas.removeEventListener('pointerdown', window.__activeCanvasPointerDown);
+        window.__activeCanvasPointerDown = null;
+      }
+      if (window.__activeCanvasPointerUp) {
+        canvas.removeEventListener('pointerup', window.__activeCanvasPointerUp);
+        window.__activeCanvasPointerUp = null;
+      }
       if (window.__activeCanvasClickHandler) {
         canvas.removeEventListener('click', window.__activeCanvasClickHandler);
         window.__activeCanvasClickHandler = null;
@@ -1995,7 +2296,7 @@
       function makeEdgeHit(p1, p2) {
         const dir = new THREE.Vector3().subVectors(p2, p1);
         const len = dir.length();
-        const geo = new THREE.CylinderGeometry(0.14, 0.14, len, 6);
+        const geo = new THREE.CylinderGeometry(0.22, 0.22, len, 8);
         const mesh = new THREE.Mesh(geo, new THREE.MeshBasicMaterial({ visible: false }));
         mesh.position.copy(p1).add(p2).multiplyScalar(0.5);
         mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), dir.clone().normalize());
@@ -2010,7 +2311,10 @@
       const identifyDone = { apex: false, face: false, edge: false };
       let identifyComplete = false;
 
-      function onCanvasClick(e) {
+      let tapStartPos = { x: 0, y: 0 };
+      let tapStartTime = 0;
+
+      function handleStation3Tap(e) {
         if (identifyComplete) return;
         updateMouseNDC(e);
         raycaster.setFromCamera(mouseNDC, camera);
@@ -2020,7 +2324,6 @@
         const kind = hitObj.userData.kind;
         if (!identifyDone[kind]) {
           identifyDone[kind] = true;
-          showWrongToast('');
           if (kind === 'apex') {
             highlightApex();
           } else if (kind === 'face') {
@@ -2036,8 +2339,31 @@
           }
         }
       }
-      canvas.addEventListener('click', onCanvasClick);
-      window.__activeCanvasClickHandler = onCanvasClick;
+
+      function onCanvasPointerDown(e) {
+        const clientX = e.clientX ?? (e.touches && e.touches[0] ? e.touches[0].clientX : 0);
+        const clientY = e.clientY ?? (e.touches && e.touches[0] ? e.touches[0].clientY : 0);
+        tapStartPos = { x: clientX, y: clientY };
+        tapStartTime = Date.now();
+      }
+
+      function onCanvasPointerUp(e) {
+        const clientX = e.clientX ?? (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : 0);
+        const clientY = e.clientY ?? (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : 0);
+        const dx = Math.abs(clientX - tapStartPos.x);
+        const dy = Math.abs(clientY - tapStartPos.y);
+        const dt = Date.now() - tapStartTime;
+        if (dx < 16 && dy < 16 && dt < 600) {
+          handleStation3Tap(e);
+        }
+      }
+
+      canvas.addEventListener('pointerdown', onCanvasPointerDown);
+      canvas.addEventListener('pointerup', onCanvasPointerUp);
+      canvas.addEventListener('click', handleStation3Tap);
+      window.__activeCanvasPointerDown = onCanvasPointerDown;
+      window.__activeCanvasPointerUp = onCanvasPointerUp;
+      window.__activeCanvasClickHandler = handleStation3Tap;
 
       const planeOptions = [
         { key: 'SBN', label: '(SBN)', pts: [S, B, N] },
