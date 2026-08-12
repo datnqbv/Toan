@@ -1093,7 +1093,7 @@
     <div id="label-layer"></div>
 
     <div id="ui-layer">
-      <div id="sidebar">
+      <div id="sidebar" class="hidden">
         <h3>
           <span><i class="ti ti-cube"></i> Hành trình</span>
           <button class="panel-toggle-btn" id="btn-toggle-sidebar" aria-label="Thu gọn Sidebar">
@@ -1708,7 +1708,13 @@
       document.getElementById('intro-screen').classList.add('hidden');
       document.getElementById('ending-overlay').style.display = 'none';
       document.getElementById('relic-drop-zone').style.display = 'none';
+      const sidebarEl = document.getElementById('sidebar');
+      if (sidebarEl) {
+        if (n >= 1) sidebarEl.classList.remove('hidden');
+        else sidebarEl.classList.add('hidden');
+      }
       canvas.classList.remove('no-interact');
+      orbitControls.enabled = (n !== 0);
       renderSidebar();
 
       const resetBtn = document.getElementById('btn-reset-station');
@@ -1794,6 +1800,7 @@
     function setupStation1() {
       camera.position.set(0, 1.6, 6.5);
       orbitControls.target.set(0, 1.2, 0);
+      orbitControls.enabled = true;
 
       const gateFrame = new THREE.Mesh(
         new THREE.BoxGeometry(3.2, 3.4, 0.3),
@@ -1817,6 +1824,8 @@
       const pB = new DraggablePoint(B, 0x9be1ff, 'B');
       const pC = new DraggablePoint(C, 0x9be1ff, 'C');
       makeFixedMarker(D, 0xFAC775, 0.1);
+
+      window.__onDragUpdate = () => rebuild();
 
       const labelA = createLabel3D('A', '#9be1ff');
       const labelB = createLabel3D('B', '#9be1ff');
