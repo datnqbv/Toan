@@ -1,0 +1,1401 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 13.4 — Vận dụng định lí Thalès trong không gian</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
+
+  <!-- Three.js r128 & OrbitControls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    /* =========================================================================
+       1. CORE DESIGN TOKENS & SYSTEM (JADE & CREAM THEME)
+       ========================================================================= */
+    :root {
+      /* Jade/Cream Primary System */
+      --cream: #f7f4ee;
+      --jade-dark: #1b4d3e;
+      --jade-deep: #0f3329;
+      --jade-light: #e8f3ef;
+      --paper-line: #e2ddd3;
+      --ink: #1c2826;
+      --ink-2: #4a5855;
+      --ink-3: #7a8a86;
+
+      /* Semantic Status Colors */
+      --correct: #2e7d32;
+      --correct-bg: #e8f5e9;
+      --wrong: #c62828;
+      --wrong-bg: #ffebee;
+      --warning: #ef6c00;
+      --warning-bg: #fff3e0;
+      --info: #0288d1;
+      --info-bg: #e0f7fa;
+
+      /* Legacy Color Aliases for Compatibility */
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+      --canvas-bg: #0a1628;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* LMS ResizeObserver Compatibility Rule (§2.9b) */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      line-height: 1.5;
+    }
+
+    /* =========================================================================
+       2. HEADER & LAYOUT STRUCTURE
+       ========================================================================= */
+    header {
+      height: 50px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+      position: relative;
+      z-index: 10;
+    }
+
+    .header-badge {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    #app-body {
+      display: flex;
+      min-height: calc(100vh - 50px);
+      position: relative;
+    }
+
+    /* CANVAS 3D AREA */
+    #canvas-wrap {
+      flex: 1;
+      background-color: var(--canvas-bg);
+      position: relative;
+      min-height: 500px;
+      overflow: hidden;
+    }
+
+    #three-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+    }
+
+    /* FLOATING BUTTONS & CANVAS OVERLAYS */
+    #btn-reset-cam {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      background: rgba(15, 23, 42, 0.85);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    #btn-reset-cam:hover {
+      background: rgba(30, 41, 59, 0.95);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    #btn-handbook {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(250, 199, 117, 0.9);
+      color: #0f172a;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    #btn-handbook:hover {
+      background: #fac775;
+      transform: translateY(-1px);
+    }
+
+    #ratio-overlay {
+      position: absolute;
+      top: 16px;
+      left: 16px;
+      background: rgba(15, 23, 42, 0.85);
+      border: 1px solid rgba(250, 199, 117, 0.4);
+      border-radius: 10px;
+      padding: 10px 14px;
+      color: #ffffff;
+      backdrop-filter: blur(6px);
+      font-size: 13px;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    .ratio-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .ratio-val {
+      color: #fac775;
+      font-weight: 700;
+      font-family: monospace;
+      font-size: 14px;
+    }
+
+    /* 3D HTML LABELS LAYER */
+    #label-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .point-label {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      font-size: 13px;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* SIDEBAR CONTROL PANEL */
+    #sidebar {
+      width: 310px;
+      background-color: #ffffff;
+      border-left: 1px solid var(--paper-line);
+      display: flex;
+      flex-direction: column;
+      z-index: 5;
+    }
+
+    .tab-strip {
+      display: flex;
+      background-color: var(--cream);
+      border-bottom: 1px solid var(--paper-line);
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 6px;
+      background: none;
+      border: none;
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-2);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .tab-btn.active {
+      color: var(--teal);
+      border-bottom-color: var(--teal);
+      background-color: #ffffff;
+    }
+
+    .tab-btn.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 18px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .step-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-box {
+      background-color: var(--cream);
+      border: 1px solid var(--paper-line);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      line-height: 1.5;
+    }
+
+    .athena-box {
+      background-color: var(--jade-light);
+      border-color: rgba(27, 77, 62, 0.2);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .athena-avatar {
+      width: 28px;
+      height: 28px;
+      border-radius: 50%;
+      background-color: var(--jade-dark);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 13px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .slider-wrap {
+      margin: 16px 0;
+    }
+
+    .slider-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--ink-2);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--teal);
+      cursor: pointer;
+    }
+
+    .choice-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .choice-btn {
+      width: 100%;
+      padding: 10px 14px;
+      background-color: #ffffff;
+      border: 1.5px solid var(--paper-line);
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .choice-btn:hover {
+      border-color: var(--teal);
+      background-color: var(--cream);
+    }
+
+    .choice-btn.correct {
+      border-color: var(--correct);
+      background-color: var(--correct-bg);
+      color: var(--correct);
+    }
+
+    .choice-btn.wrong {
+      border-color: var(--wrong);
+      background-color: var(--wrong-bg);
+      color: var(--wrong);
+    }
+
+    .sub-pills {
+      display: flex;
+      gap: 6px;
+      margin-bottom: 12px;
+      background: var(--cream);
+      padding: 4px;
+      border-radius: 8px;
+      border: 1px solid var(--paper-line);
+    }
+
+    .sub-pill {
+      flex: 1;
+      padding: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      text-align: center;
+      border: none;
+      background: none;
+      border-radius: 6px;
+      cursor: pointer;
+      color: var(--ink-2);
+    }
+
+    .sub-pill.active {
+      background: #ffffff;
+      color: var(--teal);
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1);
+    }
+
+    .form-group {
+      margin-bottom: 12px;
+    }
+
+    .form-label {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-2);
+      margin-bottom: 4px;
+      display: block;
+    }
+
+    .form-input {
+      width: 100%;
+      padding: 8px 12px;
+      border: 1.5px solid var(--paper-line);
+      border-radius: 8px;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink);
+      outline: none;
+      transition: border-color 0.2s ease;
+    }
+
+    .form-input:focus {
+      border-color: var(--teal);
+    }
+
+    .form-input:disabled {
+      background-color: var(--cream);
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+    .btn {
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--teal);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--jade-dark);
+    }
+
+    .btn-outline {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+    }
+
+    .btn-outline:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-color: #fac775;
+      color: #fac775;
+    }
+
+    /* MODAL OVERLAYS (HANDBOOK & CELEBRATION) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 22, 40, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: linear-gradient(135deg, #1b2a4a, #0d1b2a);
+      border: 2px solid var(--teal);
+      border-radius: 20px;
+      padding: 28px;
+      max-width: 500px;
+      width: 90%;
+      color: #ffffff;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    /* RESPONSIVE STACKED LAYOUT FOR MOBILE */
+    @media (max-width: 768px) {
+      #app-body {
+        flex-direction: column;
+        min-height: auto;
+      }
+
+      #canvas-wrap {
+        flex: none;
+        width: 100%;
+        height: 320px;
+        min-height: 320px;
+      }
+
+      #sidebar {
+        width: 100%;
+        flex: none;
+        border-left: none;
+        border-top: 1px solid var(--paper-line);
+      }
+
+      #btn-handbook {
+        top: 8px;
+        right: 8px;
+        padding: 5px 8px;
+        font-size: 11px;
+      }
+
+      #ratio-overlay {
+        top: 8px;
+        left: 8px;
+        padding: 5px 8px;
+        font-size: 11px;
+        background: rgba(15, 23, 42, 0.88);
+        gap: 3px;
+      }
+
+      #btn-reset-cam {
+        bottom: 8px;
+        left: 8px;
+        padding: 5px 8px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER 1 DÒNG DỰA THEO KỊCH BẢN (DÒNG 53) -->
+  <header>
+    <div class="header-badge">
+      <i class="ti ti-cube"></i> 🧊 Hình học không gian
+    </div>
+  </header>
+
+  <!-- HANDBOOK DRAWER MODAL -->
+  <div class="modal-overlay" id="handbook-modal">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="margin: 0; color: #fac775; font-size: 18px;"><i class="ti ti-book"></i> Sổ tay Kiến thức Thalès 3D</h3>
+        <button id="btn-handbook-close" style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;"><i class="ti ti-x"></i></button>
+      </div>
+      <div style="font-size: 13.5px; line-height: 1.6; color: #e2e8f0;">
+        <p><b>1. Định lí Thalès trong không gian:</b><br>
+          Ba mặt phẳng đôi một song song $(P) // (Q) // (R)$ chắn trên hai cát tuyến $d, d'$ phân biệt những đoạn thẳng tương ứng tỉ lệ:
+          $$\frac{AB}{BC} = \frac{A'B'}{B'C'}$$
+        </p>
+        <p style="background: rgba(250, 199, 117, 0.15); padding: 10px; border-radius: 8px; border-left: 3px solid #fac775;">
+          ⚠️ <b>Điều kiện bắt buộc:</b> Cả 3 mặt phẳng phải <b>đôi một song song</b>. Thiếu điều kiện này thì KHÔNG được áp dụng tỉ lệ Thalès.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CELEBRATION VICTORY MODAL -->
+  <div class="modal-overlay" id="celebration-modal">
+    <div class="modal-card" style="text-align: center;">
+      <div style="background: rgba(250, 199, 117, 0.2); color: #fac775; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-block; margin-bottom: 12px;">
+        <i class="ti ti-award"></i> TỔNG KẾT BÀI HỌC
+      </div>
+      <h2 style="margin: 0 0 6px 0; font-size: 22px; color: #fac775;">🎉 Xuất sắc! Hoàn thành Module 13.4</h2>
+      <div style="font-size: 14px; color: #94a3b8;">Vận dụng định lí Thalès trong không gian</div>
+
+      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: left; font-size: 13px; line-height: 1.6;">
+        <div style="display: flex; gap: 8px; margin-bottom: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Tránh nhầm thứ tự:</b> Luôn ghép đúng đoạn tương ứng $A-B-C$ với $A'-B'-C'$.</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Kiểm tra song song:</b> 3 mặt phẳng phải đôi một song song trước khi lập tỉ lệ.</div>
+        <div style="display: flex; gap: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Tỉ lệ độc lập:</b> Áp dụng tỉ lệ $2/3$ đúng trên độ dài riêng của từng cạnh.</div>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <button class="btn btn-outline" id="btn-modal-restart" style="flex:1;"><i class="ti ti-refresh"></i> Làm lại từ đầu</button>
+        <button class="btn btn-primary" id="btn-modal-close" style="flex:1;"><i class="ti ti-eye"></i> Xem lại hình 3D</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="app-body">
+    <!-- CANVAS 3D AREA -->
+    <div id="canvas-wrap">
+      <canvas id="three-canvas"></canvas>
+      <div id="label-layer"></div>
+
+      <!-- RATIO OVERLAY FOR TAB A -->
+      <div id="ratio-overlay">
+        <div class="ratio-row">
+          <span>Tỉ số cát tuyến d (AB/BC):</span>
+          <span class="ratio-val" id="rat-d">0.60</span>
+        </div>
+        <div class="ratio-row">
+          <span>Tỉ số cát tuyến d' (A'B'/B'C'):</span>
+          <span class="ratio-val" id="rat-dp">0.60</span>
+        </div>
+      </div>
+
+      <button id="btn-reset-cam"><i class="ti ti-refresh"></i> Đặt lại góc nhìn</button>
+      <button id="btn-handbook"><i class="ti ti-book"></i> Sổ tay kiến thức</button>
+    </div>
+
+    <!-- SIDEBAR CONTROL -->
+    <div id="sidebar">
+      <div class="tab-strip">
+        <button class="tab-btn active" data-tab="1">Tab A: Khám phá</button>
+        <button class="tab-btn locked" data-tab="2" id="tab-btn-2">Tab B: Luyện tập 🔒</button>
+      </div>
+
+      <!-- TAB A CONTENT -->
+      <div class="tab-content active" id="tab-1">
+        <div class="step-title"><i class="ti ti-adjustments-horizontal"></i> Tab A: Khám phá Slider</div>
+        <div class="info-box">
+          Quan sát 3 mặt phẳng song song <b>(P), (Q), (R)</b> cắt 2 cát tuyến <b>d, d'</b> tại <b>A, B, C</b> và <b>A', B', C'</b>.
+        </div>
+
+        <div class="slider-wrap">
+          <div class="slider-label">
+            <span>Vị trí mặt phẳng (Q):</span>
+            <span id="t1-val-yq" style="color: var(--teal); font-weight: 800;">y = 1.80</span>
+          </div>
+          <input type="range" id="t1-slider-q" min="0.4" max="2.6" step="0.05" value="1.8">
+        </div>
+
+        <div class="info-box hint-box">
+          <b>Phản tư:</b> Khi kéo slider dịch chuyển (Q), hai tỉ số $\frac{AB}{BC}$ và $\frac{A'B'}{B'C'}$ ở góc màn hình có luôn bằng nhau không?
+        </div>
+
+        <div class="choice-group">
+          <button class="choice-btn" id="t1-btn-yes"><span>A. Có, hai tỉ số luôn bằng nhau</span> <i class="ti ti-circle"></i></button>
+          <button class="choice-btn" id="t1-btn-no"><span>B. Không, tỉ số thay đổi khác nhau</span> <i class="ti ti-circle"></i></button>
+        </div>
+
+        <div id="t1-feedback-a" class="info-box athena-box" style="display: none; margin-top: 14px;">
+          <div class="athena-avatar">A</div>
+          <div id="t1-athena-msg"></div>
+        </div>
+
+        <button class="btn btn-primary" id="btn-next-tab1" style="width: 100%; margin-top: 14px; display: none;">
+          Chuyển sang Tab B: Luyện tập <i class="ti ti-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- TAB B CONTENT -->
+      <div class="tab-content" id="tab-2">
+        <div class="step-title"><i class="ti ti-calculator"></i> Tab B: Luyện tập tính toán</div>
+
+        <div class="sub-pills">
+          <button class="sub-pill active" id="t2-pill-case1">Case 1: 3 MP song song</button>
+          <button class="sub-pill" id="t2-pill-case2">Case 2: Chóp S.ABCD</button>
+        </div>
+
+        <!-- CASE 1 SECTION -->
+        <div id="t2-wrap-c1">
+          <div class="info-box">
+            <b>Đề bài:</b> Cho 3 mặt phẳng song song cắt 2 cát tuyến d, d'. Biết <b>AB = 3cm</b>, <b>BC = 5cm</b>, <b>A'B' = 4.5cm</b>. Hãy tính độ dài <b>B'C'</b>.
+          </div>
+
+          <div class="form-group">
+            <label class="form-label">Nhập B'C' (cm):</label>
+            <input type="number" class="form-input" id="t2-input-bc" placeholder="Nhập số..." step="any" inputmode="decimal">
+          </div>
+
+          <button class="btn btn-primary" id="t2-btn-check-c1" style="width: 100%;">Kiểm tra kết quả</button>
+
+          <div id="t2-fb-c1" class="info-box athena-box" style="display: none; margin-top: 14px;">
+            <div class="athena-avatar">A</div>
+            <div id="t2-msg-c1"></div>
+          </div>
+        </div>
+
+        <!-- CASE 2 SECTION -->
+        <div id="t2-wrap-c2" style="display: none;">
+          <div class="info-box">
+            <b>Đề bài:</b> Cho hình chóp <b>S.ABCD (đáy hình bình hành)</b>. Điểm <b>E ∈ SC</b> sao cho <b>SE = 2EC</b>. Mặt phẳng <b>(P)</b> qua E // (ABCD) cắt SA tại F, SB tại G. Biết <b>SA = 6cm</b>, <b>SB = 12cm</b>.
+          </div>
+
+          <!-- PART 2A: SA -->
+          <div style="background: var(--cream); border: 1px solid var(--paper-line); border-radius: 8px; padding: 10px; margin-bottom: 12px;">
+            <div style="font-weight: 700; font-size: 12.5px; color: var(--navy); margin-bottom: 6px;">Phần 1: Tính trên cạnh SA (SA = 6cm)</div>
+            <div style="display: flex; gap: 8px;">
+              <div style="flex:1;">
+                <label class="form-label">SF (cm):</label>
+                <input type="number" class="form-input" id="t2-input-sf" placeholder="Nhập số..." step="any" inputmode="decimal">
+              </div>
+              <div style="flex:1;">
+                <label class="form-label">FA (cm):</label>
+                <input type="number" class="form-input" id="t2-input-fa" placeholder="Nhập số..." step="any" inputmode="decimal">
+              </div>
+            </div>
+            <button class="btn btn-primary" id="t2-btn-check-2a" style="width: 100%; margin-top: 8px;">Kiểm tra Phần 1</button>
+          </div>
+
+          <!-- PART 2B: SB -->
+          <div id="t2-wrap-2b" style="background: var(--cream); border: 1px solid var(--paper-line); border-radius: 8px; padding: 10px; opacity: 0.5; pointer-events: none;">
+            <div style="font-weight: 700; font-size: 12.5px; color: var(--navy); margin-bottom: 6px;">Phần 2: Tính trên cạnh SB (SB = 12cm) 🔒</div>
+            <div style="display: flex; gap: 8px;">
+              <div style="flex:1;">
+                <label class="form-label">SG (cm):</label>
+                <input type="number" class="form-input" id="t2-input-sg" placeholder="Nhập số..." step="any" inputmode="decimal" disabled>
+              </div>
+              <div style="flex:1;">
+                <label class="form-label">GB (cm):</label>
+                <input type="number" class="form-input" id="t2-input-gb" placeholder="Nhập số..." step="any" inputmode="decimal" disabled>
+              </div>
+            </div>
+            <button class="btn btn-primary" id="t2-btn-check-2b" style="width: 100%; margin-top: 8px;" disabled>Kiểm tra Phần 2</button>
+          </div>
+
+          <div id="t2-fb-c2" class="info-box athena-box" style="display: none; margin-top: 14px;">
+            <div class="athena-avatar">A</div>
+            <div id="t2-msg-c2"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       THREE.JS ENGINE & INTERACTIVE LOGIC
+       ========================================================================= -->
+  <script>
+    /* =========================================================================
+       1. COLOR CONSTANTS (§1.3 04_design_toan_3d.md)
+       ========================================================================= */
+    const COLOR_PLANE_1 = 0x3b82f6;  // Xanh dương - MP (P)
+    const COLOR_PLANE_2 = 0xa78bfa;  // Tím nhạt   - MP (Q)
+    const COLOR_PLANE_3 = 0x34d399;  // Xanh ngọc  - MP (R)
+    const COLOR_PLANE_BASE = 0x64748b; // Xám trung tính - Đáy
+    const COLOR_RESULT = 0xFAC775;  // Vàng cam sáng - Điểm/Giao tuyến
+    const COLOR_EDGE_SOLID = 0xe6edf3;// Cạnh thấy
+    const COLOR_EDGE_HIDDEN = 0x444d56;// Cạnh khuất (nét đứt)
+
+    /* =========================================================================
+       2. THREE.JS SCENE SETUP (§0 05_threejs_engine.md)
+       ========================================================================= */
+    const canvas = document.getElementById('three-canvas');
+    const wrap = document.getElementById('canvas-wrap');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a1628);
+
+    const camera = new THREE.PerspectiveCamera(50, wrap.clientWidth / wrap.clientHeight, 0.1, 1000);
+    camera.position.set(8, 2.5, 8);
+    camera.lookAt(0, 1.5, 0);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    orbitControls.target.set(0, 1.5, 0);
+    orbitControls.enableDamping = true;
+    orbitControls.dampingFactor = 0.08;
+    orbitControls.update();
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    dirLight.position.set(5, 10, 7);
+    scene.add(dirLight);
+
+    const gridHelper = new THREE.GridHelper(12, 12, 0x30363d, 0x21262d);
+    scene.add(gridHelper);
+
+    window.addEventListener('resize', () => {
+      camera.aspect = wrap.clientWidth / wrap.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    });
+
+    /* =========================================================================
+       3. LMS RESIZE INTEGRATION (§2.9b 04_design_toan_3d.md)
+       ========================================================================= */
+    function reportHeight() {
+      if (window.parent && window.parent !== window) {
+        const h = document.documentElement.scrollHeight;
+        window.parent.postMessage({ type: 'resize', height: h }, '*');
+      }
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(reportHeight).observe(document.body);
+    } else {
+      setInterval(reportHeight, 1000);
+    }
+
+    /* =========================================================================
+       4. 3D MATH & GRAPHICS UTILITIES
+       ========================================================================= */
+    function lerpVec(v1, v2, t) {
+      return new THREE.Vector3().lerpVectors(v1, v2, t);
+    }
+
+    let activeLabels = [];
+    function createLabel3D(text, position, color = '#ffffff') {
+      const el = document.createElement('div');
+      el.className = 'point-label';
+      el.textContent = text;
+      el.style.color = color;
+      document.getElementById('label-layer').appendChild(el);
+
+      const labelObj = {
+        element: el,
+        position: position.clone(),
+        update: () => {
+          const wp = labelObj.position.clone();
+          const camDir = new THREE.Vector3();
+          camera.getWorldDirection(camDir);
+          const toLabel = wp.clone().sub(camera.position);
+
+          if (toLabel.dot(camDir) <= 0) {
+            el.style.display = 'none';
+            return;
+          }
+
+          const projected = wp.project(camera);
+          if (projected.z > 1) {
+            el.style.display = 'none';
+            return;
+          }
+
+          const x = (projected.x * 0.5 + 0.5) * wrap.clientWidth;
+          const y = (-projected.y * 0.5 + 0.5) * wrap.clientHeight;
+
+          el.style.display = 'block';
+          el.style.left = `${x}px`;
+          el.style.top = `${y - 12}px`;
+        }
+      };
+
+      activeLabels.push(labelObj);
+      return labelObj;
+    }
+
+    function clearScene() {
+      activeLabels.forEach(l => {
+        if (l.element && l.element.parentNode) {
+          l.element.parentNode.removeChild(l.element);
+        }
+      });
+      activeLabels = [];
+
+      for (let i = scene.children.length - 1; i >= 0; i--) {
+        const obj = scene.children[i];
+        if (obj !== gridHelper && obj !== dirLight && !(obj instanceof THREE.AmbientLight)) {
+          scene.remove(obj);
+          if (obj.geometry) obj.geometry.dispose();
+          if (obj.material) {
+            if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+            else obj.material.dispose();
+          }
+        }
+      }
+      currentSolidHull = null;
+      dynamicEdges = [];
+    }
+
+    /* =========================================================================
+       DYNAMIC OCCLUSION ENGINE (05_threejs_engine.md PHẦN 4.20)
+       ========================================================================= */
+    let currentSolidHull = null;
+    let dynamicEdges = [];
+    const occlusionRaycaster = new THREE.Raycaster();
+
+    function createPolyhedronHullMesh(faces) {
+      const group = new THREE.Group();
+      faces.forEach(face => {
+        const geo = new THREE.BufferGeometry();
+        const verts = [];
+        for (let i = 1; i < face.length - 1; i++) {
+          verts.push(face[0].x, face[0].y, face[0].z);
+          verts.push(face[i].x, face[i].y, face[i].z);
+          verts.push(face[i + 1].x, face[i + 1].y, face[i + 1].z);
+        }
+        geo.setAttribute('position', new THREE.Float32BufferAttribute(verts, 3));
+        geo.computeVertexNormals();
+        const mat = new THREE.MeshBasicMaterial({ visible: false, side: THREE.DoubleSide });
+        group.add(new THREE.Mesh(geo, mat));
+      });
+      scene.add(group);
+      return group;
+    }
+
+    function isEdgeOccluded(p1, p2) {
+      if (!currentSolidHull) return false;
+      const mid = lerpVec(p1, p2, 0.5);
+      const dirToCam = camera.position.clone().sub(mid);
+      const distToCam = dirToCam.length();
+      dirToCam.normalize();
+      const testOrigin = mid.clone().addScaledVector(dirToCam, 0.04);
+
+      occlusionRaycaster.set(testOrigin, dirToCam);
+      const hits = occlusionRaycaster.intersectObjects(currentSolidHull.children, false);
+      return (hits.length > 0 && hits[0].distance < distToCam - 0.1);
+    }
+
+    function createDynamicEdge(p1, p2) {
+      const solidMat = new THREE.LineBasicMaterial({ color: COLOR_EDGE_SOLID, linewidth: 2 });
+      const solidGeo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+      const solidLine = new THREE.Line(solidGeo, solidMat);
+
+      const dashedMat = new THREE.LineDashedMaterial({
+        color: COLOR_EDGE_HIDDEN,
+        dashSize: 0.2,
+        gapSize: 0.12,
+        linewidth: 1.5,
+        transparent: true,
+        opacity: 0.75
+      });
+      const dashedGeo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+      const dashedLine = new THREE.Line(dashedGeo, dashedMat);
+      dashedLine.computeLineDistances();
+
+      scene.add(solidLine);
+      scene.add(dashedLine);
+
+      const edgeObj = { p1, p2, solidLine, dashedLine };
+      dynamicEdges.push(edgeObj);
+      return edgeObj;
+    }
+
+    function updateDynamicOcclusion() {
+      dynamicEdges.forEach(e => {
+        const hidden = isEdgeOccluded(e.p1, e.p2);
+        e.solidLine.visible = !hidden;
+        e.dashedLine.visible = hidden;
+      });
+    }
+
+    function createPolygonMesh(vertices, colorHex, opacity = 0.2) {
+      const geo = new THREE.BufferGeometry();
+      const pos = [];
+      for (let i = 1; i < vertices.length - 1; i++) {
+        pos.push(vertices[0].x, vertices[0].y, vertices[0].z);
+        pos.push(vertices[i].x, vertices[i].y, vertices[i].z);
+        pos.push(vertices[i + 1].x, vertices[i + 1].y, vertices[i + 1].z);
+      }
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      geo.computeVertexNormals();
+
+      const mat = new THREE.MeshStandardMaterial({
+        color: colorHex,
+        transparent: true,
+        opacity: opacity,
+        side: THREE.DoubleSide,
+        roughness: 0.3
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      scene.add(mesh);
+      return mesh;
+    }
+
+    function makeSpherePoint(pos, colorHex = COLOR_RESULT, radius = 0.1) {
+      const geo = new THREE.SphereGeometry(radius, 24, 24);
+      const mat = new THREE.MeshStandardMaterial({
+        color: colorHex,
+        emissive: colorHex,
+        emissiveIntensity: 0.4,
+        roughness: 0.2
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.copy(pos);
+      scene.add(mesh);
+      return mesh;
+    }
+
+    function createLineSegment(p1, p2, colorHex, opacity = 1.0, isDashed = false) {
+      const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+      let mat;
+      if (isDashed) {
+        mat = new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.2, gapSize: 0.12, transparent: true, opacity });
+      } else {
+        mat = new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity });
+      }
+      const line = new THREE.Line(geo, mat);
+      if (isDashed) line.computeLineDistances();
+      scene.add(line);
+      return line;
+    }
+
+    /* =========================================================================
+       5. TAB & SCENARIO MANAGEMENT
+       ========================================================================= */
+    let currentTab = 1;
+    let unlockedTabs = { 1: true, 2: false };
+
+    function unlockTab(n) {
+      unlockedTabs[n] = true;
+      const btn = document.querySelector(`.tab-btn[data-tab="${n}"]`);
+      if (btn) {
+        btn.classList.remove('locked');
+        if (n === 2) btn.innerHTML = 'Tab B: Luyện tập ✓';
+      }
+    }
+
+    function switchToTab(targetTab) {
+      if (!unlockedTabs[targetTab]) {
+        alert(`Athena: Bạn cần hoàn thành bài tập phản tư ở Tab A trước khi mở khóa Tab B nhé!`);
+        return;
+      }
+      if (targetTab === currentTab) return;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      const activeBtn = document.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
+      if (activeBtn) activeBtn.classList.add('active');
+      const activeContent = document.getElementById(`tab-${targetTab}`);
+      if (activeContent) activeContent.classList.add('active');
+      currentTab = targetTab;
+      loadTabScenario(targetTab);
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetTab = parseInt(btn.dataset.tab);
+        switchToTab(targetTab);
+      });
+    });
+
+    document.getElementById('btn-next-tab1').onclick = () => {
+      unlockTab(2);
+      switchToTab(2);
+    };
+
+    document.getElementById('btn-reset-cam').onclick = () => {
+      if (currentTab === 1 || (currentTab === 2 && t2Case === 1)) {
+        setCameraSideView();
+      } else {
+        setCameraStandardSGK();
+      }
+    };
+
+    const handbookModal = document.getElementById('handbook-modal');
+    document.getElementById('btn-handbook').onclick = () => {
+      handbookModal.classList.add('show');
+    };
+    document.getElementById('btn-handbook-close').onclick = () => {
+      handbookModal.classList.remove('show');
+    };
+    handbookModal.onclick = (e) => {
+      if (e.target === handbookModal) {
+        handbookModal.classList.remove('show');
+      }
+    };
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        handbookModal.classList.remove('show');
+        document.getElementById('celebration-modal').classList.remove('show');
+      }
+    });
+
+    function setCameraSideView() {
+      const isMobile = wrap.clientWidth <= 768 || (wrap.clientWidth / wrap.clientHeight) < 1.25;
+      const mult = isMobile ? 1.5 : 1.0;
+      const targetY = isMobile ? 0.9 : 1.5;
+      camera.position.set(7 * mult, 2.2 * mult, 7 * mult);
+      orbitControls.target.set(0, targetY, 0);
+      orbitControls.update();
+    }
+
+    function setCameraStandardSGK() {
+      const isMobile = wrap.clientWidth <= 768 || (wrap.clientWidth / wrap.clientHeight) < 1.25;
+      const mult = isMobile ? 1.35 : 1.0;
+      const targetY = isMobile ? 0.8 : 1.0;
+      camera.position.set(6 * mult, 4.5 * mult, 7.5 * mult);
+      orbitControls.target.set(0, targetY, 0);
+      orbitControls.update();
+    }
+
+    function autoFitCameraToScene() {
+      const box = new THREE.Box3();
+      scene.traverse(child => {
+        if (child.isMesh && child.visible && child !== gridHelper) {
+          box.expandByObject(child);
+        }
+      });
+      if (box.isEmpty()) return;
+
+      const center = new THREE.Vector3();
+      box.getCenter(center);
+      const size = new THREE.Vector3();
+      box.getSize(size);
+
+      const maxDim = Math.max(size.x, size.y, size.z);
+      const aspect = camera.aspect;
+      const fovRad = camera.fov * (Math.PI / 180);
+      let distY = maxDim / (2 * Math.tan(fovRad / 2));
+      let distX = distY;
+      if (aspect < 1.0) {
+        distX = distY / aspect;
+      }
+      let fitDist = Math.max(distX, distY) * 1.35;
+
+      const dir = camera.position.clone().sub(orbitControls.target).normalize();
+      if (dir.length() < 0.1) dir.set(0.7, 0.4, 0.7).normalize();
+      camera.position.copy(center).addScaledVector(dir, fitDist);
+      orbitControls.target.copy(center);
+      orbitControls.update();
+    }
+
+    function loadTabScenario(tabNum) {
+      clearScene();
+      if (tabNum === 1) {
+        document.getElementById('ratio-overlay').style.display = 'flex';
+        setCameraSideView();
+        initTabA();
+      } else {
+        document.getElementById('ratio-overlay').style.display = 'none';
+        initTabB();
+      }
+      setTimeout(autoFitCameraToScene, 50);
+    }
+
+    /* =========================================================================
+       6. TAB A: KHÁM PHÁ SLIDER REAL-TIME
+       ========================================================================= */
+    let planeQMesh = null, pointBMesh = null, pointBpMesh = null;
+    let labelB = null, labelBp = null;
+    let lineAB = null, lineBC = null, lineApBp = null, lineBpCp = null;
+
+    const A_pt = new THREE.Vector3(-2.0, 3.0, 0.0);
+    const C_pt = new THREE.Vector3(-0.8, 0.0, 0.5);
+    const Ap_pt = new THREE.Vector3(1.5, 3.0, -1.0);
+    const Cp_pt = new THREE.Vector3(2.4, 0.0, 1.0);
+
+    function initTabA() {
+      // 3 Mặt phẳng song song (P), (Q), (R)
+      createPolygonMesh([new THREE.Vector3(-4, 3, 3), new THREE.Vector3(4, 3, 3), new THREE.Vector3(4, 3, -3), new THREE.Vector3(-4, 3, -3)], COLOR_PLANE_1, 0.22);
+      createPolygonMesh([new THREE.Vector3(-4, 0, 3), new THREE.Vector3(4, 0, 3), new THREE.Vector3(4, 0, -3), new THREE.Vector3(-4, 0, -3)], COLOR_PLANE_3, 0.22);
+
+      updatePlaneQ(1.8);
+
+      // Cát tuyến d và d'
+      createLineSegment(A_pt, C_pt, 0xffffff, 0.8);
+      createLineSegment(Ap_pt, Cp_pt, 0xffffff, 0.8);
+
+      // Điểm A, C, A', C'
+      makeSpherePoint(A_pt, COLOR_RESULT, 0.1);
+      makeSpherePoint(C_pt, COLOR_RESULT, 0.1);
+      makeSpherePoint(Ap_pt, COLOR_RESULT, 0.1);
+      makeSpherePoint(Cp_pt, COLOR_RESULT, 0.1);
+
+      createLabel3D('A', A_pt); createLabel3D('C', C_pt);
+      createLabel3D("A'", Ap_pt); createLabel3D("C'", Cp_pt);
+
+      createLabel3D('(P)', new THREE.Vector3(-3.5, 3, -2.8), '#60a5fa');
+      createLabel3D('(R)', new THREE.Vector3(-3.5, 0, -2.8), '#34d399');
+
+      document.getElementById('t1-slider-q').oninput = (e) => {
+        const yq = parseFloat(e.target.value);
+        document.getElementById('t1-val-yq').textContent = `y = ${yq.toFixed(2)}`;
+        updatePlaneQ(yq);
+      };
+
+      document.getElementById('t1-btn-yes').onclick = () => {
+        document.getElementById('t1-btn-yes').className = 'choice-btn correct';
+        document.getElementById('t1-btn-no').className = 'choice-btn';
+        document.getElementById('t1-athena-msg').innerHTML = `<b>Athena:</b> Chính xác! Đây chính là nội dung định lí Thalès không gian. Tỉ số không phụ thuộc vị trí cụ thể của (Q), miễn giữ điều kiện song song.`;
+        document.getElementById('t1-feedback-a').style.display = 'flex';
+        document.getElementById('btn-next-tab1').style.display = 'inline-flex';
+        unlockTab(2);
+      };
+
+      document.getElementById('t1-btn-no').onclick = () => {
+        document.getElementById('t1-btn-no').className = 'choice-btn wrong';
+        document.getElementById('t1-btn-yes').className = 'choice-btn';
+        document.getElementById('t1-athena-msg').innerHTML = `<b>Athena:</b> Hãy quan sát lại 2 con số ở góc màn hình khi kéo slider — chúng luôn bằng nhau ở mọi vị trí!`;
+        document.getElementById('t1-feedback-a').style.display = 'flex';
+      };
+    }
+
+    function updatePlaneQ(yq) {
+      if (planeQMesh) scene.remove(planeQMesh);
+
+      const qVerts = [
+        new THREE.Vector3(-4, yq, 3), new THREE.Vector3(4, yq, 3),
+        new THREE.Vector3(4, yq, -3), new THREE.Vector3(-4, yq, -3)
+      ];
+      planeQMesh = createPolygonMesh(qVerts, COLOR_PLANE_2, 0.22);
+
+      // Điểm B và B' tương ứng tỉ lệ t = (3 - yq)/3
+      const t = (3.0 - yq) / 3.0;
+      const B_pt = lerpVec(A_pt, C_pt, t);
+      const Bp_pt = lerpVec(Ap_pt, Cp_pt, t);
+
+      if (pointBMesh) scene.remove(pointBMesh);
+      if (pointBpMesh) scene.remove(pointBpMesh);
+
+      pointBMesh = makeSpherePoint(B_pt, COLOR_RESULT, 0.11);
+      pointBpMesh = makeSpherePoint(Bp_pt, COLOR_RESULT, 0.11);
+
+      if (!labelB) labelB = createLabel3D('B', B_pt, '#FAC775');
+      else labelB.position.copy(B_pt);
+
+      if (!labelBp) labelBp = createLabel3D("B'", Bp_pt, '#FAC775');
+      else labelBp.position.copy(Bp_pt);
+
+      // Tính tỉ số
+      const ab = A_pt.distanceTo(B_pt);
+      const bc = B_pt.distanceTo(C_pt);
+      const apbp = Ap_pt.distanceTo(Bp_pt);
+      const bpcp = Bp_pt.distanceTo(Cp_pt);
+
+      const rat1 = (bc > 0.001) ? (ab / bc) : 0;
+      const rat2 = (bpcp > 0.001) ? (apbp / bpcp) : 0;
+
+      document.getElementById('rat-d').textContent = rat1.toFixed(2);
+      document.getElementById('rat-dp').textContent = rat2.toFixed(2);
+    }
+
+    /* =========================================================================
+       7. TAB B: LUYỆN TẬP TÍNH TOÁN (CASE 1 & CASE 2)
+       ========================================================================= */
+    let t2Case = 1;
+    function initTabB() {
+      const p1 = document.getElementById('t2-pill-case1');
+      const p2 = document.getElementById('t2-pill-case2');
+
+      p1.onclick = () => { if (t2Case !== 1) { t2Case = 1; p1.className = 'sub-pill active'; p2.className = 'sub-pill'; initTabB(); } };
+      p2.onclick = () => { if (t2Case !== 2) { t2Case = 2; p2.className = 'sub-pill active'; p1.className = 'sub-pill'; initTabB(); } };
+
+      clearScene();
+
+      if (t2Case === 1) {
+        document.getElementById('t2-wrap-c1').style.display = 'block';
+        document.getElementById('t2-wrap-c2').style.display = 'none';
+        setCameraSideView();
+        setupTabBCase1();
+      } else {
+        document.getElementById('t2-wrap-c1').style.display = 'none';
+        document.getElementById('t2-wrap-c2').style.display = 'block';
+        setCameraStandardSGK();
+        setupTabBCase2();
+      }
+    }
+
+    function setupTabBCase1() {
+      createPolygonMesh([new THREE.Vector3(-4, 3, 3), new THREE.Vector3(4, 3, 3), new THREE.Vector3(4, 3, -3), new THREE.Vector3(-4, 3, -3)], COLOR_PLANE_1, 0.2);
+      createPolygonMesh([new THREE.Vector3(-4, 1.875, 3), new THREE.Vector3(4, 1.875, 3), new THREE.Vector3(4, 1.875, -3), new THREE.Vector3(-4, 1.875, -3)], COLOR_PLANE_2, 0.2);
+      createPolygonMesh([new THREE.Vector3(-4, 0, 3), new THREE.Vector3(4, 0, 3), new THREE.Vector3(4, 0, -3), new THREE.Vector3(-4, 0, -3)], COLOR_PLANE_3, 0.2);
+
+      const B_pt = lerpVec(A_pt, C_pt, 3 / 8);
+      const Bp_pt = lerpVec(Ap_pt, Cp_pt, 3 / 8);
+
+      createLineSegment(A_pt, C_pt, 0xffffff, 0.8);
+      createLineSegment(Ap_pt, Cp_pt, 0xffffff, 0.8);
+
+      makeSpherePoint(A_pt, COLOR_RESULT, 0.1); makeSpherePoint(B_pt, COLOR_RESULT, 0.1); makeSpherePoint(C_pt, COLOR_RESULT, 0.1);
+      makeSpherePoint(Ap_pt, COLOR_RESULT, 0.1); makeSpherePoint(Bp_pt, COLOR_RESULT, 0.1); makeSpherePoint(Cp_pt, COLOR_RESULT, 0.1);
+
+      createLabel3D('A (3cm)', A_pt); createLabel3D('B (5cm)', B_pt); createLabel3D('C', C_pt);
+      createLabel3D("A' (4.5cm)", Ap_pt); createLabel3D("B'", Bp_pt); createLabel3D("C'", Cp_pt);
+
+      let attempts = 0;
+      document.getElementById('t2-btn-check-c1').onclick = () => {
+        const val = parseFloat(document.getElementById('t2-input-bc').value);
+        if (isNaN(val)) return;
+
+        if (Math.abs(val - 7.5) <= 0.15) {
+          document.getElementById('t2-msg-c1').innerHTML = `<b>Athena:</b> Chính xác! Theo Thalès: <b>AB / BC = A'B' / B'C'</b> &rArr; B'C' = (5 &times; 4.5) / 3 = <b>7.5 cm</b>.`;
+          document.getElementById('t2-fb-c1').style.display = 'flex';
+        } else {
+          attempts++;
+          if (attempts === 1) {
+            document.getElementById('t2-msg-c1').innerHTML = `<b>Athena:</b> Chưa chính xác, hãy thử lại!`;
+          } else if (attempts === 2) {
+            document.getElementById('t2-msg-c1').innerHTML = `<b>Athena:</b> Gợi ý: Lập đúng thứ tự cặp tỉ số <b>AB / BC = A'B' / B'C'</b>. Thay số: <b>3 / 5 = 4.5 / B'C'</b>.`;
+          } else {
+            document.getElementById('t2-msg-c1').innerHTML = `<b>Athena:</b> Lời giải: B'C' = (BC &times; A'B') / AB = (5 &times; 4.5) / 3 = <b>7.5 cm</b>.`;
+          }
+          document.getElementById('t2-fb-c1').style.display = 'flex';
+        }
+      };
+    }
+
+    function setupTabBCase2() {
+      const S = new THREE.Vector3(0.2, 3.6, -0.2);
+      const A = new THREE.Vector3(-2.2, 0, 1.8);
+      const B = new THREE.Vector3(1.8, 0, 1.8);
+      const C = new THREE.Vector3(2.6, 0, -1.8);
+      const D = new THREE.Vector3(-1.4, 0, -1.8);
+
+      const E = lerpVec(S, C, 2 / 3);
+      const F = lerpVec(S, A, 2 / 3);
+      const G = lerpVec(S, B, 2 / 3);
+      const H_pt = lerpVec(S, D, 2 / 3);
+
+      // Occlusion tự động (05_threejs_engine.md PHẦN 4.20)
+      currentSolidHull = createPolyhedronHullMesh([
+        [S, A, B], [S, B, C], [S, C, D], [S, D, A], [A, B, C, D]
+      ]);
+      createDynamicEdge(S, A); createDynamicEdge(S, B); createDynamicEdge(S, C); createDynamicEdge(S, D);
+      createDynamicEdge(A, B); createDynamicEdge(B, C); createDynamicEdge(C, D); createDynamicEdge(D, A);
+
+      createPolygonMesh([A, B, C, D], COLOR_PLANE_BASE, 0.18);
+      createPolygonMesh([F, G, E, H_pt], COLOR_PLANE_2, 0.25);
+
+      makeSpherePoint(S, COLOR_RESULT, 0.1);
+      makeSpherePoint(A, COLOR_RESULT, 0.1); makeSpherePoint(B, COLOR_RESULT, 0.1);
+      makeSpherePoint(C, COLOR_RESULT, 0.1); makeSpherePoint(D, COLOR_RESULT, 0.1);
+      makeSpherePoint(E, COLOR_RESULT, 0.11); makeSpherePoint(F, COLOR_RESULT, 0.11); makeSpherePoint(G, COLOR_RESULT, 0.11);
+
+      createLabel3D('S', S); createLabel3D('A', A); createLabel3D('B', B);
+      createLabel3D('C', C); createLabel3D('D', D);
+      createLabel3D('E (SE=2EC)', E, '#FAC775'); createLabel3D('F', F, '#FAC775'); createLabel3D('G', G, '#FAC775');
+
+      let step2aDone = false;
+
+      document.getElementById('t2-btn-check-2a').onclick = () => {
+        const sf = parseFloat(document.getElementById('t2-input-sf').value);
+        const fa = parseFloat(document.getElementById('t2-input-fa').value);
+
+        if (Math.abs(sf - 4.0) <= 0.1 && Math.abs(fa - 2.0) <= 0.1) {
+          step2aDone = true;
+          document.getElementById('t2-input-sf').disabled = true;
+          document.getElementById('t2-input-fa').disabled = true;
+          document.getElementById('t2-msg-c2').innerHTML = `<b>Athena:</b> Xuất sắc Phần 1! <b>SF = 4 cm, FA = 2 cm</b> do SF / SA = 2/3. Giờ hãy chuyển sang Phần 2!`;
+          document.getElementById('t2-fb-c2').style.display = 'flex';
+
+          // Unlock Part 2b
+          const wrap2b = document.getElementById('t2-wrap-2b');
+          wrap2b.style.opacity = '1';
+          wrap2b.style.pointerEvents = 'auto';
+          document.getElementById('t2-input-sg').disabled = false;
+          document.getElementById('t2-input-gb').disabled = false;
+          document.getElementById('t2-btn-check-2b').disabled = false;
+        } else {
+          document.getElementById('t2-msg-c2').innerHTML = `<b>Athena:</b> Chưa đúng. Gợi ý: SF / SA = SE / SC = 2/3. Vì SA = 6cm &rArr; SF = 6 &times; (2/3) = <b>4 cm</b>, FA = 6 - 4 = <b>2 cm</b>.`;
+          document.getElementById('t2-fb-c2').style.display = 'flex';
+        }
+      };
+
+      document.getElementById('t2-btn-check-2b').onclick = () => {
+        const sg = parseFloat(document.getElementById('t2-input-sg').value);
+        const gb = parseFloat(document.getElementById('t2-input-gb').value);
+
+        // Trap detection for copying SA's answer (4 and 2)
+        if (Math.abs(sg - 4.0) <= 0.1 && Math.abs(gb - 2.0) <= 0.1) {
+          document.getElementById('t2-msg-c2').innerHTML = `<b>Athena:</b> Số này giống hệt kết quả của SA (6cm) — nhưng SB có độ dài 12cm khác SA (6cm), thử tính lại theo đúng tỉ lệ 2/3 trên SB nhé!`;
+          document.getElementById('t2-fb-c2').style.display = 'flex';
+        } else if (Math.abs(sg - 8.0) <= 0.1 && Math.abs(gb - 4.0) <= 0.1) {
+          document.getElementById('t2-msg-c2').innerHTML = `<b>Athena:</b> Chính xác! <b>SG = 8 cm, GB = 4 cm</b>. Cả 2 cạnh đều thỏa tỉ lệ 2/3 trên độ dài riêng của từng cạnh!`;
+          document.getElementById('t2-fb-c2').style.display = 'flex';
+          setTimeout(() => {
+            document.getElementById('celebration-modal').classList.add('show');
+          }, 1200);
+        } else {
+          document.getElementById('t2-msg-c2').innerHTML = `<b>Athena:</b> Chưa đúng. Gợi ý: SG / SB = 2/3. Vì SB = 12cm &rArr; SG = 12 &times; (2/3) = <b>8 cm</b>, GB = 12 - 8 = <b>4 cm</b>.`;
+          document.getElementById('t2-fb-c2').style.display = 'flex';
+        }
+      };
+
+      document.getElementById('btn-modal-close').onclick = () => {
+        document.getElementById('celebration-modal').classList.remove('show');
+      };
+
+      document.getElementById('btn-modal-restart').onclick = () => {
+        document.getElementById('celebration-modal').classList.remove('show');
+        unlockedTabs = { 1: true, 2: false };
+        const b2 = document.querySelector('.tab-btn[data-tab="2"]');
+        if (b2) {
+          b2.classList.add('locked');
+          b2.innerHTML = 'Tab B: Luyện tập 🔒';
+        }
+        switchToTab(1);
+      };
+    }
+
+    /* =========================================================================
+       8. ANIMATION LOOP
+       ========================================================================= */
+    function animate() {
+      requestAnimationFrame(animate);
+      orbitControls.update();
+      activeLabels.forEach(l => l.update());
+      updateDynamicOcclusion();
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Khởi tạo mặc định Tab A
+    loadTabScenario(1);
+  </script>
+</body>
+
+</html>
