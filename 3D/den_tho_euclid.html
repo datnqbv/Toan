@@ -2192,15 +2192,20 @@
 
       const doorPivot = new THREE.Group();
       doorPivot.position.set(-1.1, 0, 0);
-      const doorMat = new THREE.MeshStandardMaterial({ color: 0x14432F, roughness: 0.85 });
+      const doorMat = new THREE.MeshStandardMaterial({ color: 0x14432F, roughness: 0.7 });
       const doorMesh = new THREE.Mesh(new THREE.BoxGeometry(2.2, 3.2, 0.25), doorMat);
       doorMesh.position.set(1.1, 1.7, 0);
-      const runeMat = new THREE.LineBasicMaterial({ color: 0xFAC775, transparent: true, opacity: 0.8 });
+      const doorBorderGeo = new THREE.EdgesGeometry(doorMesh.geometry);
+      const doorBorderMat = new THREE.LineBasicMaterial({ color: 0x449B74, linewidth: 3 });
+      const doorBorder = new THREE.LineSegments(doorBorderGeo, doorBorderMat);
+      doorBorder.position.copy(doorMesh.position);
+
+      const runeMat = new THREE.LineBasicMaterial({ color: 0xFFE3A3, transparent: true, opacity: 0.9, linewidth: 2 });
       const runeWire = new THREE.LineSegments(new THREE.EdgesGeometry(new THREE.OctahedronGeometry(0.55)), runeMat);
       runeWire.position.set(1.1, 1.7, 0.15);
-      doorPivot.add(doorMesh, runeWire);
+      doorPivot.add(doorMesh, doorBorder, runeWire);
       scene.add(doorPivot);
-      const doorLight = new THREE.PointLight(0xffb763, 0.7, 8);
+      const doorLight = new THREE.PointLight(0xffb763, 0.9, 8);
       doorLight.position.set(0, 1.7, 1.5);
       scene.add(doorLight);
 
