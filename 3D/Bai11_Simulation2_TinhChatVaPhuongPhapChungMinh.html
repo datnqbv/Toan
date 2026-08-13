@@ -574,6 +574,9 @@ const dirLight = new THREE.DirectionalLight(0xffffff, 0.5);
 dirLight.position.set(5, 10, 7);
 scene.add(dirLight);
 
+const gridHelper = new THREE.GridHelper(20, 20, 0x30363d, 0x21262d);
+scene.add(gridHelper);
+
 const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
 orbitControls.target.set(2, 1.5, 1.5);
 orbitControls.enableDamping = true;
