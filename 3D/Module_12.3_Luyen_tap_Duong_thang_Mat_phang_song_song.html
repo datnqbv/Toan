@@ -751,6 +751,9 @@
     dirLight.position.set(6, 10, 8);
     scene.add(dirLight);
 
+    const gridHelper = new THREE.GridHelper(16, 16, 0x30363d, 0x21262d);
+    scene.add(gridHelper);
+
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
@@ -791,7 +794,7 @@
         activePointerUpHandler = null;
       }
       clearAllLabels();
-      const keep = new Set([ambientLight, dirLight]);
+      const keep = new Set([ambientLight, dirLight, gridHelper]);
       [...scene.children].forEach(obj => {
         if (keep.has(obj)) return;
         scene.remove(obj);
@@ -856,6 +859,7 @@
       const mat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, emissiveIntensity: 0.5 });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.copy(pos);
+      mesh.renderOrder = 10;
       scene.add(mesh);
       return mesh;
     }
@@ -870,6 +874,7 @@
       }
       const line = new THREE.Line(geo, mat);
       if (dashed) line.computeLineDistances();
+      line.renderOrder = 10;
       scene.add(line);
       return line;
     }
@@ -892,9 +897,11 @@
         emissiveIntensity: 0.3,
         side: THREE.DoubleSide,
         transparent: true,
-        opacity: opacity
+        opacity: opacity,
+        depthWrite: false
       });
       const mesh = new THREE.Mesh(geo, mat);
+      mesh.renderOrder = 1;
       scene.add(mesh);
       return mesh;
     }

@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Em có biết? — Phép chiếu song song, phép chiếu xuyên tâm & Ảo giác thị giác</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
+
+  <!-- Three.js r128 & OrbitControls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    /* =========================================================================
+       1. CORE DESIGN TOKENS & SYSTEM (JADE & CREAM THEME)
+       ========================================================================= */
+    :root {
+      /* Jade/Cream Primary System */
+      --cream: #f7f4ee;
+      --jade-dark: #1b4d3e;
+      --jade-deep: #0f3329;
+      --jade-light: #e8f3ef;
+      --paper-line: #e2ddd3;
+      --ink: #1c2826;
+      --ink-2: #4a5855;
+      --ink-3: #7a8a86;
+
+      /* Semantic Status Colors */
+      --correct: #2e7d32;
+      --correct-bg: #e8f5e9;
+      --wrong: #c62828;
+      --wrong-bg: #ffebee;
+      --warning: #ef6c00;
+      --warning-bg: #fff3e0;
+      --info: #0288d1;
+      --info-bg: #e0f7fa;
+
+      /* Legacy Color Aliases */
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+      --canvas-bg: #0a1628;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    /* LMS ResizeObserver Compatibility Rule (§2.9b) */
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--ink);
+      font-family: 'Plus Jakarta Sans', sans-serif;
+      line-height: 1.5;
+    }
+
+    /* =========================================================================
+       2. HEADER & LAYOUT STRUCTURE
+       ========================================================================= */
+    header {
+      height: 50px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+      position: relative;
+      z-index: 10;
+    }
+
+    .header-badge {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    #app-body {
+      display: flex;
+      min-height: calc(100vh - 50px);
+      position: relative;
+    }
+
+    /* CANVAS 3D AREA */
+    #canvas-wrap {
+      flex: 1;
+      background-color: var(--canvas-bg);
+      position: relative;
+      min-height: 500px;
+      overflow: hidden;
+    }
+
+    #three-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+    }
+
+    /* FLOATING BUTTONS & CANVAS OVERLAYS */
+    #btn-reset-cam {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      background: rgba(15, 23, 42, 0.85);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    #btn-reset-cam:hover {
+      background: rgba(30, 41, 59, 0.95);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* HANDBOOK BUTTON — VISIBLE ACROSS ALL STATIONS */
+    #btn-handbook {
+      position: absolute;
+      top: 16px;
+      right: 16px;
+      background: rgba(250, 199, 117, 0.9);
+      color: #0f172a;
+      border: none;
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    #btn-handbook:hover {
+      background: #fac775;
+      transform: translateY(-1px);
+    }
+
+    /* 3D HTML LABELS LAYER */
+    #label-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .point-label {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      font-size: 13px;
+      font-weight: 800;
+      color: #ffffff;
+      text-shadow: 0 1px 3px rgba(0, 0, 0, 0.9), 0 0 6px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* SIDEBAR CONTROL PANEL */
+    #sidebar {
+      width: 340px;
+      background-color: #ffffff;
+      border-left: 1px solid var(--paper-line);
+      display: flex;
+      flex-direction: column;
+      z-index: 5;
+    }
+
+    .tab-strip {
+      display: flex;
+      background-color: var(--cream);
+      border-bottom: 1px solid var(--paper-line);
+      overflow-x: auto;
+    }
+
+    .tab-btn {
+      flex: 1;
+      padding: 12px 6px;
+      background: none;
+      border: none;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-2);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      transition: all 0.2s ease;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .tab-btn.active {
+      color: var(--teal);
+      border-bottom-color: var(--teal);
+      background-color: #ffffff;
+    }
+
+    .tab-btn.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .tab-content {
+      display: none;
+      padding: 16px;
+      flex: 1;
+      overflow-y: auto;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .step-title {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .info-box {
+      background-color: var(--cream);
+      border: 1px solid var(--paper-line);
+      border-radius: 10px;
+      padding: 12px;
+      font-size: 12.5px;
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+
+    .athena-box {
+      background-color: var(--jade-light);
+      border-color: rgba(27, 77, 62, 0.2);
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .athena-avatar {
+      width: 26px;
+      height: 26px;
+      border-radius: 50%;
+      background-color: var(--jade-dark);
+      color: #ffffff;
+      font-weight: 800;
+      font-size: 12px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .btn {
+      min-height: 42px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background-color: var(--teal);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background-color: var(--jade-dark);
+    }
+
+    .btn-outline {
+      background-color: rgba(255, 255, 255, 0.1);
+      border: 1.5px solid rgba(255, 255, 255, 0.35);
+      color: #ffffff;
+    }
+
+    .btn-outline:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+      border-color: #fac775;
+      color: #fac775;
+    }
+
+    .control-card {
+      background: var(--cream);
+      border: 1px solid var(--paper-line);
+      border-radius: 8px;
+      padding: 10px;
+      margin-bottom: 10px;
+    }
+
+    .slider-label {
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--ink-2);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 4px;
+    }
+
+    input[type="range"] {
+      width: 100%;
+      accent-color: var(--teal);
+      cursor: pointer;
+    }
+
+    /* MODAL OVERLAYS (HANDBOOK & CELEBRATION) */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 22, 40, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: linear-gradient(135deg, #1b2a4a, #0d1b2a);
+      border: 2px solid var(--teal);
+      border-radius: 20px;
+      padding: 24px;
+      max-width: 520px;
+      width: 92%;
+      color: #ffffff;
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.5);
+    }
+
+    /* RESPONSIVE STACKED LAYOUT FOR MOBILE (50% / 50% INITIAL VIEWPORT) */
+    @media (max-width: 768px) {
+      #app-body {
+        flex-direction: column;
+        min-height: auto;
+      }
+
+      #canvas-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        flex: none;
+        width: 100%;
+        height: calc((100vh - 50px) * 0.5);
+        height: calc((100dvh - 50px) * 0.5);
+        min-height: 220px;
+        box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
+      }
+
+      #sidebar {
+        width: 100%;
+        flex: none;
+        border-left: none;
+        border-top: 1px solid var(--paper-line);
+      }
+
+      #btn-handbook {
+        top: 6px;
+        right: 6px;
+        padding: 5px 8px;
+        font-size: 11px;
+      }
+
+      #btn-reset-cam {
+        bottom: 6px;
+        left: 6px;
+        padding: 5px 8px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER 1 DÒNG DỰA THEO KỊCH BẢN & DESIGN RULE -->
+  <header>
+    <div class="header-badge">
+      <i class="ti ti-cube"></i> 🧊 Em có biết? — Phép chiếu & Ảo giác thị giác
+    </div>
+  </header>
+
+  <!-- HANDBOOK DRAWER MODAL -->
+  <div class="modal-overlay" id="handbook-modal">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
+        <h3 style="margin: 0; color: #fac775; font-size: 18px;"><i class="ti ti-book"></i> Sổ tay Kiến thức Khám phá</h3>
+        <button id="btn-handbook-close" style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;"><i class="ti ti-x"></i></button>
+      </div>
+      <div style="font-size: 13px; line-height: 1.6; color: #e2e8f0; max-height: 60vh; overflow-y: auto; padding-right: 6px;">
+        <p><b>1. Phép chiếu song song & Xuyên tâm:</b><br>
+          Trong phép chiếu song song, các tia chiếu song song nhau theo một phương $\Delta$ cho trước. Trong phép chiếu xuyên tâm, mọi tia chiếu xuất phát từ một điểm tâm $C$ cố định.
+        </p>
+        <p><b>2. Giới hạn toán học ($C \to \infty$):</b><br>
+          Khi tâm chiếu $C$ lùi ra xa vô tận, phép chiếu xuyên tâm dần biến thành phép chiếu song song. Phép chiếu song song chính là trường hợp giới hạn của phép chiếu xuyên tâm.
+        </p>
+        <p><b>3. Ảo giác thị giác & Góc chiếu bí mật:</b><br>
+          Các cấu trúc bất khả thi (như Tam giác Penrose) lợi dụng phép chiếu lên mặt phẳng 2D: ở đúng 1 góc nhìn cụ thể, các đối tượng nằm ở độ sâu khác nhau trông như khép kín thành 1 hình duy nhất.
+        </p>
+      </div>
+    </div>
+  </div>
+
+  <!-- CELEBRATION VICTORY MODAL -->
+  <div class="modal-overlay" id="celebration-modal">
+    <div class="modal-card" style="text-align: center;">
+      <div style="background: rgba(250, 199, 117, 0.2); color: #fac775; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-block; margin-bottom: 12px;">
+        <i class="ti ti-sparkles"></i> HOÀN THÀNH KHÁM PHÁ
+      </div>
+      <h2 style="margin: 0 0 6px 0; font-size: 22px; color: #fac775;">🎉 Chúc mừng! Bạn đã khám phá xong 3 Trạm!</h2>
+      <div style="font-size: 14px; color: #94a3b8;">Phép chiếu song song, xuyên tâm & ảo giác thị giác</div>
+
+      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: left; font-size: 13px; line-height: 1.6;">
+        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Trạm A:</b> Đường ray song song thật, sự hội tụ chỉ là hiệu ứng phối cảnh.</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Trạm B:</b> Phép chiếu song song là giới hạn của phép chiếu xuyên tâm khi $C \to \infty$.</div>
+        <div style="display: flex; gap: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Trạm C:</b> Ảo giác thị giác 3D chỉ xuất hiện ở đúng 1 góc nhìn góc phối cảnh đặc biệt.</div>
+      </div>
+
+      <div style="display: flex; gap: 12px;">
+        <button class="btn btn-outline" id="btn-modal-restart" style="flex:1;"><i class="ti ti-refresh"></i> Xem lại từ đầu</button>
+        <button class="btn btn-primary" id="btn-modal-close" style="flex:1;"><i class="ti ti-eye"></i> Xem tự do 3D</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="app-body">
+    <!-- CANVAS 3D AREA -->
+    <div id="canvas-wrap">
+      <canvas id="three-canvas"></canvas>
+      <div id="label-layer"></div>
+
+      <button id="btn-reset-cam"><i class="ti ti-refresh"></i> Đặt lại góc nhìn</button>
+      <button id="btn-handbook"><i class="ti ti-book"></i> Sổ tay kiến thức</button>
+    </div>
+
+    <!-- SIDEBAR CONTROL -->
+    <div id="sidebar">
+      <div class="tab-strip">
+        <button class="tab-btn active" data-tab="1">Trạm A: Đường ray</button>
+        <button class="tab-btn locked" data-tab="2" id="tab-btn-2">Trạm B: So sánh 🔒</button>
+        <button class="tab-btn locked" data-tab="3" id="tab-btn-3">Trạm C: Ảo giác 🔒</button>
+      </div>
+
+      <!-- TRẠM A CONTENT -->
+      <div class="tab-content active" id="tab-1">
+        <div class="step-title"><i class="ti ti-train"></i> Trạm A — Đường ray "Hội tụ ở vô tận"</div>
+        <div class="info-box">
+          Hai đường ray này <b>song song thật trong không gian 3D</b> — khoảng cách giữa chúng hoàn toàn không đổi ở mọi vị trí!
+        </div>
+
+        <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;">
+          <button class="btn btn-primary" id="btn-t1-animate"><i class="ti ti-player-play"></i> 1. Bay dọc đường ray</button>
+          <button class="btn btn-outline" id="btn-t1-measure" style="color: var(--navy); border-color: var(--teal);"><i class="ti ti-ruler-2"></i> 2. Đo khoảng cách thật</button>
+        </div>
+
+        <div id="t1-feedback" class="info-box athena-box" style="display: none;">
+          <div class="athena-avatar">A</div>
+          <div id="t1-msg"></div>
+        </div>
+
+        <button class="btn btn-primary" id="btn-next-tab1" style="width: 100%; margin-top: 14px; display: none;">
+          Chuyển sang Trạm B: So sánh phép chiếu <i class="ti ti-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- TRẠM B CONTENT -->
+      <div class="tab-content" id="tab-2">
+        <div class="step-title"><i class="ti ti-git-compare"></i> Trạm B — Song song vs Xuyên tâm</div>
+        <div class="info-box">
+          Bên trái là <b>Phép chiếu Song song</b> (phương chiếu cố định). Bên phải là <b>Phép chiếu Xuyên tâm</b> (từ tâm chiếu C). Hãy kéo tâm C ra xa!
+        </div>
+
+        <div class="control-card">
+          <div class="slider-label">
+            <span>Khoảng cách tâm chiếu C (X):</span>
+            <span id="txt-xc-val" style="color: var(--teal);">4.5 m (Gần)</span>
+          </div>
+          <input type="range" id="sld-xc" min="4.5" max="24.0" step="0.5" value="4.5">
+        </div>
+
+        <div id="t2-feedback" class="info-box athena-box" style="display: flex;">
+          <div class="athena-avatar">A</div>
+          <div id="t2-msg">Athena: Khi C ở gần, các cạnh chiếu toè ra rõ rệt. Thử kéo thanh trượt Slider đưa tâm C ra thật xa!</div>
+        </div>
+
+        <button class="btn btn-primary" id="btn-next-tab2" style="width: 100%; margin-top: 14px; display: none;">
+          Chuyển sang Trạm C: Ảo giác thị giác <i class="ti ti-arrow-right"></i>
+        </button>
+      </div>
+
+      <!-- TRẠM C CONTENT -->
+      <div class="tab-content" id="tab-3">
+        <div class="step-title"><i class="ti ti-eye-off"></i> Trạm C — Hình bất khả thi (Tam giác Penrose)</div>
+        <div class="info-box">
+          Ở góc nhìn bí mật hiện tại, 3 thanh gỗ trông như <b>nối liền thành 1 tam giác khép kín</b>. Nhưng đây là ẢO GIÁC THỊ GIÁC!
+        </div>
+
+        <div style="margin-bottom: 12px;">
+          <button class="btn btn-primary" id="btn-t3-reveal" style="width: 100%;"><i class="ti ti-perspective"></i> Xoay ra xem sự thật 3D</button>
+        </div>
+
+        <div id="t3-feedback" class="info-box athena-box" style="display: flex;">
+          <div class="athena-avatar">A</div>
+          <div id="t3-msg">Athena: Nhìn kỹ ở góc nhìn bí mật này — 3 thanh gỗ trông khép kín. Bấm "Xoay ra xem sự thật" để mở khóa camera!</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       THREE.JS ENGINE & INTERACTIVE LOGIC
+       ========================================================================= -->
+  <script>
+    /* =========================================================================
+       1. COLOR CONSTANTS (§1.3 04_design_toan_3d.md)
+       ========================================================================= */
+    const COLOR_PLANE_1 = 0x3b82f6;
+    const COLOR_PLANE_2 = 0xa78bfa;
+    const COLOR_PLANE_3 = 0x34d399;
+    const COLOR_PLANE_BASE = 0x64748b;
+    const COLOR_RESULT = 0xFAC775;
+    const COLOR_EDGE_SOLID = 0xe6edf3;
+    const COLOR_EDGE_HIDDEN = 0x8899a6;
+
+    /* =========================================================================
+       2. THREE.JS SCENE SETUP (§0 05_threejs_engine.md)
+       ========================================================================= */
+    const canvas = document.getElementById('three-canvas');
+    const wrap = document.getElementById('canvas-wrap');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a1628);
+
+    const camera = new THREE.PerspectiveCamera(50, wrap.clientWidth / wrap.clientHeight, 0.1, 1000);
+    camera.position.set(7, 4.5, 7.5);
+    camera.lookAt(0, 1.0, 0);
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    orbitControls.target.set(0, 1.0, 0);
+    orbitControls.enableDamping = true;
+    orbitControls.dampingFactor = 0.08;
+    orbitControls.update();
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.6);
+    dirLight.position.set(5, 10, 7);
+    scene.add(dirLight);
+
+    const gridHelper = new THREE.GridHelper(20, 20, 0x30363d, 0x21262d);
+    scene.add(gridHelper);
+
+    window.addEventListener('resize', () => {
+      camera.aspect = wrap.clientWidth / wrap.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+      setCameraStandardSGK();
+    });
+
+    /* =========================================================================
+       3. LMS RESIZE INTEGRATION (§2.9b 04_design_toan_3d.md)
+       ========================================================================= */
+    function reportHeight() {
+      if (window.parent && window.parent !== window) {
+        const h = document.documentElement.scrollHeight;
+        window.parent.postMessage({ type: 'resize', height: h }, '*');
+      }
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(reportHeight).observe(document.body);
+    } else {
+      setInterval(reportHeight, 1000);
+    }
+
+    /* =========================================================================
+       4. 3D MATH & GRAPHICS UTILITIES
+       ========================================================================= */
+    function lerpVec(v1, v2, t) {
+      return new THREE.Vector3().lerpVectors(v1, v2, t);
+    }
+
+    let activeLabels = [];
+    function createLabel3D(text, position, color = '#ffffff') {
+      const el = document.createElement('div');
+      el.className = 'point-label';
+      el.textContent = text;
+      el.style.color = color;
+      document.getElementById('label-layer').appendChild(el);
+
+      const labelObj = {
+        element: el,
+        position: position.clone(),
+        update: () => {
+          const wp = labelObj.position.clone();
+          const camDir = new THREE.Vector3();
+          camera.getWorldDirection(camDir);
+          const toLabel = wp.clone().sub(camera.position);
+
+          if (toLabel.dot(camDir) <= 0) {
+            el.style.display = 'none';
+            return;
+          }
+
+          const projected = wp.project(camera);
+          if (projected.z > 1) {
+            el.style.display = 'none';
+            return;
+          }
+
+          const x = (projected.x * 0.5 + 0.5) * wrap.clientWidth;
+          const y = (-projected.y * 0.5 + 0.5) * wrap.clientHeight;
+
+          el.style.display = 'block';
+          el.style.left = `${x}px`;
+          el.style.top = `${y - 12}px`;
+        }
+      };
+
+      activeLabels.push(labelObj);
+      return labelObj;
+    }
+
+    function clearScene() {
+      activeLabels.forEach(l => {
+        if (l.element && l.element.parentNode) {
+          l.element.parentNode.removeChild(l.element);
+        }
+      });
+      activeLabels = [];
+
+      for (let i = scene.children.length - 1; i >= 0; i--) {
+        const obj = scene.children[i];
+        if (obj !== gridHelper && obj !== dirLight && !(obj instanceof THREE.AmbientLight)) {
+          scene.remove(obj);
+          if (obj.geometry) obj.geometry.dispose();
+          if (obj.material) {
+            if (Array.isArray(obj.material)) obj.material.dispose();
+            else obj.material.dispose();
+          }
+        }
+      }
+      interactiveMeshes = [];
+      if (animId) {
+        cancelAnimationFrame(animId);
+        animId = null;
+      }
+    }
+
+    function createLineSegment(p1, p2, colorHex, opacity = 1, dashed = false) {
+      const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
+      let mat;
+      if (dashed) {
+        mat = new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.15, gapSize: 0.08, transparent: true, opacity });
+      } else {
+        mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 2, transparent: true, opacity });
+      }
+      const line = new THREE.Line(geo, mat);
+      if (dashed) line.computeLineDistances();
+      line.renderOrder = 10;
+      scene.add(line);
+      return line;
+    }
+
+    function createPolygonMesh(vertices, colorHex, opacity = 0.25, name = '') {
+      const geo = new THREE.BufferGeometry();
+      const pos = [];
+      for (let i = 1; i < vertices.length - 1; i++) {
+        pos.push(vertices[0].x, vertices[0].y, vertices[0].z);
+        pos.push(vertices[i].x, vertices[i].y, vertices[i].z);
+        pos.push(vertices[i + 1].x, vertices[i + 1].y, vertices[i + 1].z);
+      }
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      geo.computeVertexNormals();
+
+      const mat = new THREE.MeshBasicMaterial({
+        color: colorHex,
+        transparent: true,
+        opacity: opacity,
+        side: THREE.DoubleSide,
+        depthWrite: false
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.name = name;
+      mesh.renderOrder = 1;
+      scene.add(mesh);
+      return mesh;
+    }
+
+    function makeSpherePoint(pos, colorHex = COLOR_RESULT, radius = 0.1) {
+      const geo = new THREE.SphereGeometry(radius, 24, 24);
+      const mat = new THREE.MeshStandardMaterial({
+        color: colorHex,
+        emissive: colorHex,
+        emissiveIntensity: 0.4,
+        roughness: 0.2
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      mesh.position.copy(pos);
+      mesh.renderOrder = 10;
+      scene.add(mesh);
+      return mesh;
+    }
+
+    /* =========================================================================
+       5. TAB & SCENARIO MANAGEMENT
+       ========================================================================= */
+    let currentTab = 1;
+    let unlockedTabs = { 1: true, 2: false, 3: false };
+
+    function unlockTab(n) {
+      unlockedTabs[n] = true;
+      const btn = document.querySelector(`.tab-btn[data-tab="${n}"]`);
+      if (btn) {
+        btn.classList.remove('locked');
+        btn.innerHTML = `Trạm ${getTabLetter(n)}: ${getTabTitle(n)} ✓`;
+      }
+    }
+
+    function getTabLetter(n) {
+      return n === 1 ? 'A' : n === 2 ? 'B' : 'C';
+    }
+
+    function getTabTitle(n) {
+      const titles = { 1: 'Đường ray', 2: 'So sánh', 3: 'Ảo giác' };
+      return titles[n] || '';
+    }
+
+    function switchToTab(targetTab) {
+      if (!unlockedTabs[targetTab]) {
+        alert(`Athena: Bạn cần hoàn thành bước khám phá ở Trạm trước để mở khóa nhé!`);
+        return;
+      }
+      if (targetTab === currentTab) return;
+      document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+      document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+      const activeBtn = document.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
+      const activeContent = document.getElementById(`tab-${targetTab}`);
+      if (activeContent) {
+        activeContent.classList.add('active');
+        activeContent.scrollTop = 0;
+      }
+      currentTab = targetTab;
+      loadTabScenario(targetTab);
+    }
+
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        const targetTab = parseInt(btn.dataset.tab);
+        switchToTab(targetTab);
+      });
+    });
+
+    document.getElementById('btn-reset-cam').onclick = () => {
+      setCameraStandardSGK();
+    };
+
+    document.getElementById('btn-next-tab1').onclick = () => {
+      unlockTab(2);
+      switchToTab(2);
+    };
+    document.getElementById('btn-next-tab2').onclick = () => {
+      unlockTab(3);
+      switchToTab(3);
+    };
+
+    /* HANDBOOK MODAL DRAWER CONTROL */
+    const handbookModal = document.getElementById('handbook-modal');
+    document.getElementById('btn-handbook').onclick = () => {
+      handbookModal.classList.add('show');
+    };
+    document.getElementById('btn-handbook-close').onclick = () => {
+      handbookModal.classList.remove('show');
+    };
+    handbookModal.onclick = (e) => {
+      if (e.target === handbookModal) {
+        handbookModal.classList.remove('show');
+      }
+    };
+
+    window.addEventListener('keydown', (e) => {
+      if (e.key === 'Escape') {
+        handbookModal.classList.remove('show');
+        document.getElementById('celebration-modal').classList.remove('show');
+      }
+    });
+
+    function setCameraStandardSGK() {
+      orbitControls.enabled = true;
+      camera.fov = 50;
+      camera.updateProjectionMatrix();
+
+      if (currentTab === 1) {
+        camera.position.set(0, 1.6, 12);
+        orbitControls.target.set(0, 1.0, -10);
+      } else if (currentTab === 2) {
+        const centerX = (sldXcVal - 3.2) / 2;
+        const distRatio = (sldXcVal - 4.5) / (24.0 - 4.5);
+        camera.position.set(centerX, 7.5 + distRatio * 5.5, 14.0 + distRatio * 16.0);
+        orbitControls.target.set(centerX, 1.0, 0);
+      } else if (currentTab === 3) {
+        // Secret angle for Penrose triangle - Wide Overview Perspective
+        camera.position.set(13.5, 11.16, 13.5);
+        camera.fov = 28;
+        camera.updateProjectionMatrix();
+        orbitControls.target.set(0, 1.2, -1.8);
+      }
+      orbitControls.update();
+    }
+
+    function loadTabScenario(tabNum) {
+      clearScene();
+      document.getElementById('btn-handbook').style.display = 'flex';
+
+      if (tabNum === 1) initTab1();
+      else if (tabNum === 2) initTab2();
+      else if (tabNum === 3) initTab3();
+
+      setCameraStandardSGK();
+    }
+
+    let interactiveMeshes = [];
+    let animId = null;
+
+    /* =========================================================================
+       6. TRẠM A: ĐƯỜNG RAY "HỘI TỤ Ở VÔ TẬN"
+       ========================================================================= */
+    function initTab1() {
+      clearScene();
+      const trackDist = 1.6; const trackLen = 40;
+      const leftRailPoints = [new THREE.Vector3(-trackDist / 2, 0.05, 10), new THREE.Vector3(-trackDist / 2, 0.05, -trackLen)];
+      const rightRailPoints = [new THREE.Vector3(trackDist / 2, 0.05, 10), new THREE.Vector3(trackDist / 2, 0.05, -trackLen)];
+
+      createLineSegment(leftRailPoints[0], leftRailPoints[1], 0xFAC775);
+      createLineSegment(rightRailPoints[0], rightRailPoints[1], 0xFAC775);
+
+      // Sleepers / Ties along railway
+      for (let z = 8; z >= -trackLen; z -= 1.5) {
+        createLineSegment(new THREE.Vector3(-trackDist / 2 - 0.2, 0.02, z), new THREE.Vector3(trackDist / 2 + 0.2, 0.02, z), 0x94a3b8);
+      }
+
+      createLabel3D('Đường ray trái', new THREE.Vector3(-trackDist / 2, 0.2, 5), '#FAC775');
+      createLabel3D('Đường ray phải', new THREE.Vector3(trackDist / 2, 0.2, 5), '#FAC775');
+
+      const fb = document.getElementById('t1-feedback');
+      fb.style.display = 'none';
+
+      document.getElementById('btn-t1-animate').onclick = () => {
+        let startTime = performance.now();
+        const duration = 4000;
+        const startZ = 12; const endZ = -25;
+
+        function stepCam(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1.0);
+          const currentZ = startZ + (endZ - startZ) * progress;
+
+          camera.position.set(0, 1.6, currentZ);
+          orbitControls.target.set(0, 1.0, currentZ - 20);
+          orbitControls.update();
+
+          if (progress < 1.0) {
+            animId = requestAnimationFrame(stepCam);
+          } else {
+            document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Bạn vừa bay dọc đường ray! Khoảng cách trên hình ảnh có vẻ thu hẹp lại khi ra xa, nhưng thực tế khoảng cách giữa 2 ray có đổi không? Bấm nút <b>2. Đo khoảng cách thật</b> để kiểm tra!`;
+            fb.style.display = 'flex';
+          }
+        }
+        animId = requestAnimationFrame(stepCam);
+      };
+
+      document.getElementById('btn-t1-measure').onclick = () => {
+        makeSpherePoint(new THREE.Vector3(-trackDist / 2, 0.05, 5), 0x34d399, 0.12);
+        makeSpherePoint(new THREE.Vector3(trackDist / 2, 0.05, 5), 0x34d399, 0.12);
+        createLineSegment(new THREE.Vector3(-trackDist / 2, 0.05, 5), new THREE.Vector3(trackDist / 2, 0.05, 5), 0x34d399);
+        createLabel3D('d1 = 1.60m', new THREE.Vector3(0, 0.3, 5), '#34d399');
+
+        makeSpherePoint(new THREE.Vector3(-trackDist / 2, 0.05, -12), 0x34d399, 0.12);
+        makeSpherePoint(new THREE.Vector3(trackDist / 2, 0.05, -12), 0x34d399, 0.12);
+        createLineSegment(new THREE.Vector3(-trackDist / 2, 0.05, -12), new THREE.Vector3(trackDist / 2, 0.05, -12), 0x34d399);
+        createLabel3D('d2 = 1.60m', new THREE.Vector3(0, 0.3, -12), '#34d399');
+
+        makeSpherePoint(new THREE.Vector3(-trackDist / 2, 0.05, -26), 0x34d399, 0.12);
+        makeSpherePoint(new THREE.Vector3(trackDist / 2, 0.05, -26), 0x34d399, 0.12);
+        createLineSegment(new THREE.Vector3(-trackDist / 2, 0.05, -26), new THREE.Vector3(trackDist / 2, 0.05, -26), 0x34d399);
+        createLabel3D('d3 = 1.60m', new THREE.Vector3(0, 0.3, -26), '#34d399');
+
+        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> 🎉 Số đo thực tế d1 = d2 = d3 = <b>1.60m không đổi</b>! Sự "hội tụ" chỉ là hiệu ứng thị giác của mắt/phối cảnh. Bạn đã hoàn thành Trạm A!`;
+        fb.style.display = 'flex';
+        document.getElementById('btn-next-tab1').style.display = 'inline-flex';
+        unlockTab(2);
+      };
+    }
+
+    /* =========================================================================
+       7. TRẠM B: SO SÁNH PHÉP CHIẾU SONG SONG VS XUYÊN TÂM
+       ========================================================================= */
+    let sldXcVal = 4.5;
+
+    function initTab2() {
+      clearScene();
+      sldXcVal = 4.5;
+      document.getElementById('sld-xc').value = 4.5;
+      document.getElementById('txt-xc-val').textContent = '4.5 m (Gần)';
+
+      document.getElementById('sld-xc').oninput = (e) => {
+        sldXcVal = parseFloat(e.target.value);
+        const textDist = sldXcVal >= 18.0 ? `${sldXcVal.toFixed(1)} m (Rất xa → Giới hạn Song song)` : `${sldXcVal.toFixed(1)} m`;
+        document.getElementById('txt-xc-val').textContent = textDist;
+        updateTab2Projection();
+      };
+
+      updateTab2Projection();
+    }
+
+    function updateTab2Projection() {
+      // Clear dynamically created projection lines/labels
+      for (let i = scene.children.length - 1; i >= 0; i--) {
+        const obj = scene.children[i];
+        if (obj !== gridHelper && obj !== dirLight && !(obj instanceof THREE.AmbientLight)) {
+          scene.remove(obj);
+        }
+      }
+      activeLabels.forEach(l => {
+        if (l.element && l.element.parentNode) {
+          l.element.parentNode.removeChild(l.element);
+        }
+      });
+      activeLabels = [];
+
+      // Center cube solid at X = 0
+      const cubeSize = 1.2;
+      const s = cubeSize / 2;
+      const v = [
+        new THREE.Vector3(-s, 0.5 - s, s), new THREE.Vector3(s, 0.5 - s, s),
+        new THREE.Vector3(s, 0.5 + s, s), new THREE.Vector3(-s, 0.5 + s, s),
+        new THREE.Vector3(-s, 0.5 - s, -s), new THREE.Vector3(s, 0.5 - s, -s),
+        new THREE.Vector3(s, 0.5 + s, -s), new THREE.Vector3(-s, 0.5 + s, -s)
+      ];
+
+      // Draw cube
+      createPolygonMesh([v[0], v[1], v[2], v[3]], COLOR_PLANE_BASE, 0.35);
+      createPolygonMesh([v[4], v[5], v[6], v[7]], COLOR_PLANE_BASE, 0.35);
+      const edges = [[0,1],[1,2],[2,3],[3,0],[4,5],[5,6],[6,7],[7,4],[0,4],[1,5],[2,6],[3,7]];
+      edges.forEach(e => createLineSegment(v[e[0]], v[e[1]], COLOR_EDGE_SOLID));
+      createLabel3D('Khối lập phương', new THREE.Vector3(0, 0.5 + s + 0.2, 0), '#ffffff');
+
+      // Left Plane (X = -3.2): Parallel Projection along direction d = (-1, 0, 0)
+      const planeLeftX = -3.2;
+      const plVerts = [
+        new THREE.Vector3(planeLeftX, -0.5, 2.5), new THREE.Vector3(planeLeftX, 2.5, 2.5),
+        new THREE.Vector3(planeLeftX, 2.5, -2.5), new THREE.Vector3(planeLeftX, -0.5, -2.5)
+      ];
+      createPolygonMesh(plVerts, COLOR_PLANE_1, 0.4);
+      createLineSegment(plVerts[0], plVerts[1], COLOR_PLANE_1); createLineSegment(plVerts[1], plVerts[2], COLOR_PLANE_1);
+      createLineSegment(plVerts[2], plVerts[3], COLOR_PLANE_1); createLineSegment(plVerts[3], plVerts[0], COLOR_PLANE_1);
+      createLabel3D('Mặt chiếu (P) — SONG SONG', new THREE.Vector3(planeLeftX, 2.6, 0), '#60a5fa');
+
+      // Projected vertices on Left Plane (X = -3.2)
+      const vLeft = v.map(p => new THREE.Vector3(planeLeftX, p.y, p.z));
+      edges.forEach(e => createLineSegment(vLeft[e[0]], vLeft[e[1]], COLOR_PLANE_1));
+      v.forEach((p, idx) => createLineSegment(p, vLeft[idx], 0x60a5fa, 0.4, true));
+
+      // Right Plane (X = +3.2): Central Projection from Center C(X_c, 1.0, 0)
+      const planeRightX = 3.2;
+      const prVerts = [
+        new THREE.Vector3(planeRightX, -0.5, 2.5), new THREE.Vector3(planeRightX, 2.5, 2.5),
+        new THREE.Vector3(planeRightX, 2.5, -2.5), new THREE.Vector3(planeRightX, -0.5, -2.5)
+      ];
+      createPolygonMesh(prVerts, COLOR_PLANE_2, 0.4);
+      createLineSegment(prVerts[0], prVerts[1], COLOR_PLANE_2); createLineSegment(prVerts[1], prVerts[2], COLOR_PLANE_2);
+      createLineSegment(prVerts[2], prVerts[3], COLOR_PLANE_2); createLineSegment(prVerts[3], prVerts[0], COLOR_PLANE_2);
+      createLabel3D('Mặt chiếu (Q) — XUYÊN TÂM', new THREE.Vector3(planeRightX, 2.6, 0), '#c084fc');
+
+      // Center Point C
+      const ptC = new THREE.Vector3(sldXcVal, 0.5, 0);
+      makeSpherePoint(ptC, COLOR_RESULT, 0.14);
+      createLabel3D('Tâm C', ptC, '#FAC775');
+
+      // Ray-Plane Intersection Math for Central Projection (§06_geometry_math.md)
+      // Line from C to M(x_m, y_m, z_m) intersects plane X = planeRightX at t = (planeRightX - x_c) / (x_m - x_c)
+      const vRight = v.map(p => {
+        const t = (planeRightX - ptC.x) / (p.x - ptC.x);
+        const y = ptC.y + t * (p.y - ptC.y);
+        const z = ptC.z + t * (p.z - ptC.z);
+        return new THREE.Vector3(planeRightX, y, z);
+      });
+
+      edges.forEach(e => createLineSegment(vRight[e[0]], vRight[e[1]], COLOR_PLANE_2));
+      v.forEach((p, idx) => createLineSegment(ptC, vRight[idx], 0xc084fc, 0.35, true));
+
+      // Dynamic camera auto-fit scaling based on Center C distance (sldXcVal)
+      const centerX = (sldXcVal - 3.2) / 2;
+      const distRatio = (sldXcVal - 4.5) / (24.0 - 4.5);
+      const camX = centerX;
+      const camY = 7.5 + distRatio * 5.5;
+      const camZ = 14.0 + distRatio * 16.0;
+
+      orbitControls.target.set(centerX, 1.0, 0);
+      camera.position.set(camX, camY, camZ);
+      orbitControls.update();
+
+      const fb = document.getElementById('t2-feedback');
+      if (sldXcVal >= 18.0) {
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Tuyệt vời! Khi C ở rất xa (${sldXcVal.toFixed(1)}m), các tia chiếu CM gần như song song nhau $\\rightarrow$ Chứng minh <b>Phép chiếu song song là trường hợp giới hạn của Phép chiếu xuyên tâm khi $C \\to \\infty$</b>!`;
+        fb.style.display = 'flex';
+        document.getElementById('btn-next-tab2').style.display = 'inline-flex';
+        unlockTab(3);
+      } else {
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Tâm C đang ở khoảng cách ${sldXcVal.toFixed(1)}m. Hãy tiếp tục kéo thanh Slider đưa C ra xa hơn (trên 18m) để thấy sự biến đổi giới hạn!`;
+        fb.style.display = 'flex';
+      }
+    }
+
+    /* =========================================================================
+       8. TRẠM C: ẢO GIÁC THỊ GIÁC & HÌNH BẤT KHẢ THI (TAM GIÁC PENROSE)
+       ========================================================================= */
+    function initTab3() {
+      clearScene();
+
+      // 3 L-shaped bars placed at 3 different Z-depths (Z = 0, Z = -1.8, Z = -3.6)
+      // Bar 1 (Vertical left): Base at X = -1.5, Y = 0 to 3.0, Z = 0
+      const bar1 = createPolygonMesh([
+        new THREE.Vector3(-1.8, 0, 0), new THREE.Vector3(-1.2, 0, 0),
+        new THREE.Vector3(-1.2, 2.8, 0), new THREE.Vector3(-1.8, 2.8, 0)
+      ], COLOR_PLANE_1, 0.7);
+      createLineSegment(new THREE.Vector3(-1.8, 0, 0), new THREE.Vector3(-1.8, 2.8, 0), COLOR_PLANE_1);
+      createLineSegment(new THREE.Vector3(-1.2, 0, 0), new THREE.Vector3(-1.2, 2.8, 0), COLOR_PLANE_1);
+
+      // Bar 2 (Horizontal top): Y = 2.8, X = -1.5 to 1.5, Z = -1.8 (Different depth!)
+      const bar2 = createPolygonMesh([
+        new THREE.Vector3(-1.5, 2.5, -1.8), new THREE.Vector3(1.5, 2.5, -1.8),
+        new THREE.Vector3(1.5, 3.1, -1.8), new THREE.Vector3(-1.5, 3.1, -1.8)
+      ], COLOR_PLANE_2, 0.7);
+      createLineSegment(new THREE.Vector3(-1.5, 2.5, -1.8), new THREE.Vector3(1.5, 2.5, -1.8), COLOR_PLANE_2);
+      createLineSegment(new THREE.Vector3(-1.5, 3.1, -1.8), new THREE.Vector3(1.5, 3.1, -1.8), COLOR_PLANE_2);
+
+      // Bar 3 (Slanted right): X = 1.5 down to 0, Z = -3.6 (Different depth!)
+      const bar3 = createPolygonMesh([
+        new THREE.Vector3(1.2, 2.8, -3.6), new THREE.Vector3(1.8, 2.8, -3.6),
+        new THREE.Vector3(-0.3, -0.2, -3.6), new THREE.Vector3(-0.9, -0.2, -3.6)
+      ], COLOR_PLANE_3, 0.7);
+      createLineSegment(new THREE.Vector3(1.2, 2.8, -3.6), new THREE.Vector3(-0.9, -0.2, -3.6), COLOR_PLANE_3);
+      createLineSegment(new THREE.Vector3(1.8, 2.8, -3.6), new THREE.Vector3(-0.3, -0.2, -3.6), COLOR_PLANE_3);
+
+      createLabel3D('Thanh A (Độ sâu Z = 0)', new THREE.Vector3(-1.5, 1.4, 0), '#60a5fa');
+      createLabel3D('Thanh B (Độ sâu Z = -1.8m)', new THREE.Vector3(0, 2.8, -1.8), '#c084fc');
+      createLabel3D('Thanh C (Độ sâu Z = -3.6m)', new THREE.Vector3(0.5, 1.3, -3.6), '#34d399');
+
+      // Lock Camera to Secret Perspective Angle initially (Wide Overview)
+      orbitControls.enabled = false;
+      camera.position.set(13.5, 11.16, 13.5);
+      camera.fov = 28;
+      camera.updateProjectionMatrix();
+      orbitControls.target.set(0, 1.2, -1.8);
+      orbitControls.update();
+
+      const fb = document.getElementById('t3-feedback');
+
+      document.getElementById('btn-t3-reveal').onclick = () => {
+        let startTime = performance.now();
+        const duration = 3000;
+        const startPos = camera.position.clone();
+        const endPos = new THREE.Vector3(-4.0, 5.0, 9.0);
+
+        function stepReveal(now) {
+          const elapsed = now - startTime;
+          const progress = Math.min(elapsed / duration, 1.0);
+
+          camera.position.lerpVectors(startPos, endPos, progress);
+          camera.fov = 28 + (50 - 28) * progress;
+          camera.updateProjectionMatrix();
+          orbitControls.target.set(0, 1.0, -1.8);
+          orbitControls.update();
+
+          if (progress < 1.0) {
+            animId = requestAnimationFrame(stepReveal);
+          } else {
+            orbitControls.enabled = true;
+            document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> 🎉 Sự thật lộ diện! 3 thanh gỗ <b>nằm ở 3 độ sâu Z hoàn toàn khác nhau</b> và không hề chạm nhau. Ảo giác khép kín chỉ xảy ra ở 1 góc nhìn phối cảnh bí mật duy nhất! Bạn đã hoàn thành bài khám phá!`;
+            fb.style.display = 'flex';
+            setTimeout(() => {
+              document.getElementById('celebration-modal').classList.add('show');
+            }, 1200);
+          }
+        }
+        animId = requestAnimationFrame(stepReveal);
+      };
+    }
+
+    /* RESTART BUTTON IN MODAL */
+    document.getElementById('btn-modal-close').onclick = () => {
+      document.getElementById('celebration-modal').classList.remove('show');
+    };
+
+    document.getElementById('btn-modal-restart').onclick = () => {
+      document.getElementById('celebration-modal').classList.remove('show');
+      unlockedTabs = { 1: true, 2: false, 3: false };
+      for (let i = 2; i <= 3; i++) {
+        const btn = document.querySelector(`.tab-btn[data-tab="${i}"]`);
+        if (btn) {
+          btn.classList.add('locked');
+          btn.innerHTML = `Trạm ${getTabLetter(i)}: ${getTabTitle(i)} 🔒`;
+        }
+      }
+      switchToTab(1);
+    };
+
+    /* =========================================================================
+       9. ANIMATION LOOP
+       ========================================================================= */
+    function animate() {
+      requestAnimationFrame(animate);
+      orbitControls.update();
+      activeLabels.forEach(l => l.update());
+      renderer.render(scene, camera);
+    }
+    animate();
+
+    // Default Scenario Load
+    loadTabScenario(1);
+  </script>
+</body>
+
+</html>

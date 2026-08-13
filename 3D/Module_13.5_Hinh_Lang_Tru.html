@@ -1021,11 +1021,12 @@
       }
       const line = new THREE.Line(geo, mat);
       if (dashed) line.computeLineDistances();
+      line.renderOrder = 10;
       scene.add(line);
       return line;
     }
 
-    function createPolygonMesh(vertices, colorHex, opacity = 0.2, name = '') {
+    function createPolygonMesh(vertices, colorHex, opacity = 0.25, name = '') {
       const geo = new THREE.BufferGeometry();
       const pos = [];
       for (let i = 1; i < vertices.length - 1; i++) {
@@ -1041,10 +1042,12 @@
         transparent: true,
         opacity: opacity,
         side: THREE.DoubleSide,
-        roughness: 0.3
+        roughness: 0.3,
+        depthWrite: false
       });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.name = name;
+      mesh.renderOrder = 1;
       scene.add(mesh);
       return mesh;
     }
@@ -1059,6 +1062,7 @@
       });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.copy(pos);
+      mesh.renderOrder = 10;
       scene.add(mesh);
       return mesh;
     }
