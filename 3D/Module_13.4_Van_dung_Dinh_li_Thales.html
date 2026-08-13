@@ -963,7 +963,8 @@
         transparent: true,
         opacity: opacity,
         side: THREE.DoubleSide,
-        roughness: 0.3
+        roughness: 0.3,
+        depthWrite: false
       });
       const mesh = new THREE.Mesh(geo, mat);
       scene.add(mesh);
@@ -980,6 +981,7 @@
       });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.copy(pos);
+      mesh.renderOrder = 10;
       scene.add(mesh);
       return mesh;
     }
@@ -994,6 +996,7 @@
       }
       const line = new THREE.Line(geo, mat);
       if (isDashed) line.computeLineDistances();
+      line.renderOrder = 10;
       scene.add(line);
       return line;
     }
@@ -1017,6 +1020,7 @@
       }
       const line = new THREE.Line(geo, mat);
       if (isDashed) line.computeLineDistances();
+      line.renderOrder = 10;
       scene.add(line);
       function tick() {
         const elapsed = performance.now() - startTime;
