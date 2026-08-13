@@ -401,8 +401,9 @@
         z-index: 50;
         flex: none;
         width: 100%;
-        height: 250px;
-        min-height: 250px;
+        height: calc((100vh - 50px) * 0.5);
+        height: calc((100dvh - 50px) * 0.5);
+        min-height: 220px;
         box-shadow: 0 4px 14px rgba(0, 0, 0, 0.4);
       }
 
@@ -879,11 +880,12 @@
       }
       const line = new THREE.Line(geo, mat);
       if (dashed) line.computeLineDistances();
+      line.renderOrder = 10;
       scene.add(line);
       return line;
     }
 
-    function createPolygonMesh(vertices, colorHex, opacity = 0.2, name = '') {
+    function createPolygonMesh(vertices, colorHex, opacity = 0.25, name = '') {
       const geo = new THREE.BufferGeometry();
       const pos = [];
       for (let i = 1; i < vertices.length - 1; i++) {
@@ -897,11 +899,13 @@
       const mat = new THREE.MeshBasicMaterial({
         color: colorHex,
         transparent: true,
-        opacity: Math.max(opacity, 0.35),
-        side: THREE.DoubleSide
+        opacity: opacity,
+        side: THREE.DoubleSide,
+        depthWrite: false
       });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.name = name;
+      mesh.renderOrder = 1;
       scene.add(mesh);
       return mesh;
     }
@@ -916,6 +920,7 @@
       });
       const mesh = new THREE.Mesh(geo, mat);
       mesh.position.copy(pos);
+      mesh.renderOrder = 10;
       scene.add(mesh);
       return mesh;
     }
@@ -949,9 +954,15 @@
       document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
       document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
       const activeBtn = document.querySelector(`.tab-btn[data-tab="${targetTab}"]`);
-      if (activeBtn) activeBtn.classList.add('active');
+      if (activeBtn) {
+        activeBtn.classList.add('active');
+        activeBtn.scrollIntoView({ behavior: 'smooth', block: 'nearest', inline: 'center' });
+      }
       const activeContent = document.getElementById(`tab-${targetTab}`);
-      if (activeContent) activeContent.classList.add('active');
+      if (activeContent) {
+        activeContent.classList.add('active');
+        activeContent.scrollTop = 0;
+      }
       currentTab = targetTab;
       loadTabScenario(targetTab);
     }
@@ -965,6 +976,27 @@
 
     document.getElementById('btn-reset-cam').onclick = () => {
       setCameraStandardSGK();
+    };
+
+    document.getElementById('btn-next-tab1').onclick = () => {
+      unlockTab(2);
+      switchToTab(2);
+    };
+    document.getElementById('btn-next-tab2').onclick = () => {
+      unlockTab(3);
+      switchToTab(3);
+    };
+    document.getElementById('btn-next-tab3').onclick = () => {
+      unlockTab(4);
+      switchToTab(4);
+    };
+    document.getElementById('btn-next-tab4').onclick = () => {
+      unlockTab(5);
+      switchToTab(5);
+    };
+    document.getElementById('btn-next-tab5').onclick = () => {
+      unlockTab(6);
+      switchToTab(6);
     };
 
     /* HANDBOOK MODAL DRAWER CONTROL (VISIBLE ACROSS ALL 6 TABS FOR REVIEW MODULE) */
@@ -1128,32 +1160,95 @@
       const prop = tab1Propositions[t1Idx];
       document.getElementById('t1-prop-text').textContent = prop.text;
 
-      // 3D Scene setup for current proposition
-      const P1 = new THREE.Vector3(-2.5, 0, 2); const P2 = new THREE.Vector3(2.5, 0, 2);
-      const P3 = new THREE.Vector3(2.5, 0, -2); const P4 = new THREE.Vector3(-2.5, 0, -2);
-      createPolygonMesh([P1, P2, P3, P4], COLOR_PLANE_1, 0.4);
-      createLineSegment(P1, P2, COLOR_PLANE_1); createLineSegment(P2, P3, COLOR_PLANE_1);
-      createLineSegment(P3, P4, COLOR_PLANE_1); createLineSegment(P4, P1, COLOR_PLANE_1);
-      createLabel3D('(P)', P2, '#60a5fa');
-
-      const Q1 = new THREE.Vector3(-2.5, 2.5, 2); const Q2 = new THREE.Vector3(2.5, 2.5, 2);
-      const Q3 = new THREE.Vector3(2.5, 2.5, -2); const Q4 = new THREE.Vector3(-2.5, 2.5, -2);
-      createPolygonMesh([Q1, Q2, Q3, Q4], COLOR_PLANE_2, 0.4);
-      createLineSegment(Q1, Q2, COLOR_PLANE_2); createLineSegment(Q2, Q3, COLOR_PLANE_2);
-      createLineSegment(Q3, Q4, COLOR_PLANE_2); createLineSegment(Q4, Q1, COLOR_PLANE_2);
-      createLabel3D('(Q)', Q2, '#c084fc');
-
+      // 3D Scene setup for current proposition matching scenario script
       if (prop.id === 1) {
-        createLineSegment(new THREE.Vector3(-1.5, 0, -1), new THREE.Vector3(1.5, 0, 1), 0xFAC775);
-        createLineSegment(new THREE.Vector3(-1.5, 0, 1), new THREE.Vector3(1.5, 0, -1), 0xFAC775);
+        // Prop 1: (P) // (Q) with 2 intersecting lines a, b in (P)
+        const P1 = new THREE.Vector3(-2.5, 0, 2); const P2 = new THREE.Vector3(2.5, 0, 2);
+        const P3 = new THREE.Vector3(2.5, 0, -2); const P4 = new THREE.Vector3(-2.5, 0, -2);
+        createPolygonMesh([P1, P2, P3, P4], COLOR_PLANE_1, 0.4);
+        createLineSegment(P1, P2, COLOR_PLANE_1); createLineSegment(P2, P3, COLOR_PLANE_1);
+        createLineSegment(P3, P4, COLOR_PLANE_1); createLineSegment(P4, P1, COLOR_PLANE_1);
+        createLabel3D('(P)', P2, '#60a5fa');
+
+        const Q1 = new THREE.Vector3(-2.5, 2.5, 2); const Q2 = new THREE.Vector3(2.5, 2.5, 2);
+        const Q3 = new THREE.Vector3(2.5, 2.5, -2); const Q4 = new THREE.Vector3(-2.5, 2.5, -2);
+        createPolygonMesh([Q1, Q2, Q3, Q4], COLOR_PLANE_2, 0.4);
+        createLineSegment(Q1, Q2, COLOR_PLANE_2); createLineSegment(Q2, Q3, COLOR_PLANE_2);
+        createLineSegment(Q3, Q4, COLOR_PLANE_2); createLineSegment(Q4, Q1, COLOR_PLANE_2);
+        createLabel3D('(Q)', Q2, '#c084fc');
+
+        createLineSegment(new THREE.Vector3(-1.8, 0, -1.2), new THREE.Vector3(1.8, 0, 1.2), 0xFAC775);
+        createLineSegment(new THREE.Vector3(-1.8, 0, 1.2), new THREE.Vector3(1.8, 0, -1.2), 0xFAC775);
+        makeSpherePoint(new THREE.Vector3(0, 0, 0), 0xFAC775, 0.1);
+        createLabel3D('đường a', new THREE.Vector3(1.8, 0, 1.2), '#FAC775');
+        createLabel3D('đường b', new THREE.Vector3(1.8, 0, -1.2), '#FAC775');
+
+      } else if (prop.id === 2) {
+        // Prop 2: (P) // (Q) with skew lines a (in P) and b (in Q)
+        const P1 = new THREE.Vector3(-2.5, 0, 2); const P2 = new THREE.Vector3(2.5, 0, 2);
+        const P3 = new THREE.Vector3(2.5, 0, -2); const P4 = new THREE.Vector3(-2.5, 0, -2);
+        createPolygonMesh([P1, P2, P3, P4], COLOR_PLANE_1, 0.4);
+        createLineSegment(P1, P2, COLOR_PLANE_1); createLineSegment(P2, P3, COLOR_PLANE_1);
+        createLineSegment(P3, P4, COLOR_PLANE_1); createLineSegment(P4, P1, COLOR_PLANE_1);
+        createLabel3D('(P)', P2, '#60a5fa');
+
+        const Q1 = new THREE.Vector3(-2.5, 2.5, 2); const Q2 = new THREE.Vector3(2.5, 2.5, 2);
+        const Q3 = new THREE.Vector3(2.5, 2.5, -2); const Q4 = new THREE.Vector3(-2.5, 2.5, -2);
+        createPolygonMesh([Q1, Q2, Q3, Q4], COLOR_PLANE_2, 0.4);
+        createLineSegment(Q1, Q2, COLOR_PLANE_2); createLineSegment(Q2, Q3, COLOR_PLANE_2);
+        createLineSegment(Q3, Q4, COLOR_PLANE_2); createLineSegment(Q4, Q1, COLOR_PLANE_2);
+        createLabel3D('(Q)', Q2, '#c084fc');
+
+        createLineSegment(new THREE.Vector3(-2.0, 0, 0), new THREE.Vector3(2.0, 0, 0), 0xFAC775);
+        createLineSegment(new THREE.Vector3(0, 2.5, -1.8), new THREE.Vector3(0, 2.5, 1.8), 0x38bdf8);
+        createLabel3D('đường a (trong P)', new THREE.Vector3(2.0, 0, 0), '#FAC775');
+        createLabel3D('đường b (trong Q — Chéo nhau!)', new THREE.Vector3(0, 2.5, 1.8), '#38bdf8');
+
       } else if (prop.id === 3) {
-        // Intersecting plane R
-        const R1 = new THREE.Vector3(-2, -1, -2); const R2 = new THREE.Vector3(2, 3.5, -2);
-        const R3 = new THREE.Vector3(2, 3.5, 2); const R4 = new THREE.Vector3(-2, -1, 2);
+        // Prop 3: 2 Planes (P) and (Q) intersecting along line i, both parallel to line d (Book model)
+        const P1 = new THREE.Vector3(0, 0, -2); const P2 = new THREE.Vector3(-2.2, 2.5, -2);
+        const P3 = new THREE.Vector3(-2.2, 2.5, 2); const P4 = new THREE.Vector3(0, 0, 2);
+        createPolygonMesh([P1, P2, P3, P4], COLOR_PLANE_1, 0.4);
+        createLineSegment(P1, P2, COLOR_PLANE_1); createLineSegment(P2, P3, COLOR_PLANE_1);
+        createLineSegment(P3, P4, COLOR_PLANE_1); createLineSegment(P4, P1, COLOR_PLANE_1);
+        createLabel3D('(P)', P3, '#60a5fa');
+
+        const Q1 = new THREE.Vector3(0, 0, -2); const Q2 = new THREE.Vector3(2.2, 2.5, -2);
+        const Q3 = new THREE.Vector3(2.2, 2.5, 2); const Q4 = new THREE.Vector3(0, 0, 2);
+        createPolygonMesh([Q1, Q2, Q3, Q4], COLOR_PLANE_2, 0.4);
+        createLineSegment(Q1, Q2, COLOR_PLANE_2); createLineSegment(Q2, Q3, COLOR_PLANE_2);
+        createLineSegment(Q3, Q4, COLOR_PLANE_2); createLineSegment(Q4, Q1, COLOR_PLANE_2);
+        createLabel3D('(Q)', Q3, '#c084fc');
+
+        createLineSegment(P1, P4, 0xef4444);
+        createLineSegment(new THREE.Vector3(0, 3.2, -2.2), new THREE.Vector3(0, 3.2, 2.2), 0xFAC775);
+        createLabel3D('đường d (gáy sách)', new THREE.Vector3(0, 3.2, 2.2), '#FAC775');
+
+      } else if (prop.id === 4) {
+        // Prop 4: (R) intersects (P) and (Q) where (P) // (Q)
+        const P1 = new THREE.Vector3(-2.5, 0, 2); const P2 = new THREE.Vector3(2.5, 0, 2);
+        const P3 = new THREE.Vector3(2.5, 0, -2); const P4 = new THREE.Vector3(-2.5, 0, -2);
+        createPolygonMesh([P1, P2, P3, P4], COLOR_PLANE_1, 0.4);
+        createLineSegment(P1, P2, COLOR_PLANE_1); createLineSegment(P2, P3, COLOR_PLANE_1);
+        createLineSegment(P3, P4, COLOR_PLANE_1); createLineSegment(P4, P1, COLOR_PLANE_1);
+        createLabel3D('(P)', P2, '#60a5fa');
+
+        const Q1 = new THREE.Vector3(-2.5, 2.5, 2); const Q2 = new THREE.Vector3(2.5, 2.5, 2);
+        const Q3 = new THREE.Vector3(2.5, 2.5, -2); const Q4 = new THREE.Vector3(-2.5, 2.5, -2);
+        createPolygonMesh([Q1, Q2, Q3, Q4], COLOR_PLANE_2, 0.4);
+        createLineSegment(Q1, Q2, COLOR_PLANE_2); createLineSegment(Q2, Q3, COLOR_PLANE_2);
+        createLineSegment(Q3, Q4, COLOR_PLANE_2); createLineSegment(Q4, Q1, COLOR_PLANE_2);
+        createLabel3D('(Q)', Q2, '#c084fc');
+
+        const R1 = new THREE.Vector3(-1.8, -0.8, -2); const R2 = new THREE.Vector3(1.8, 3.3, -2);
+        const R3 = new THREE.Vector3(1.8, 3.3, 2); const R4 = new THREE.Vector3(-1.8, -0.8, 2);
         createPolygonMesh([R1, R2, R3, R4], COLOR_PLANE_3, 0.45);
         createLineSegment(R1, R2, COLOR_PLANE_3); createLineSegment(R2, R3, COLOR_PLANE_3);
         createLineSegment(R3, R4, COLOR_PLANE_3); createLineSegment(R4, R1, COLOR_PLANE_3);
         createLabel3D('(R)', R2, '#34d399');
+
+        createLineSegment(new THREE.Vector3(-0.9, 0, -2), new THREE.Vector3(-0.9, 0, 2), 0xFAC775);
+        createLineSegment(new THREE.Vector3(1.0, 2.5, -2), new THREE.Vector3(1.0, 2.5, 2), 0xFAC775);
       }
 
       document.getElementById('t1-btn-true').onclick = () => handleTab1Answer(true);
@@ -1175,8 +1270,12 @@
       }
 
       if (isCorrect) {
-        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> ${prop.correctMsg}`;
-        setTimeout(() => {
+        let timer = null;
+        const advance = () => {
+          if (timer) {
+            clearTimeout(timer);
+            timer = null;
+          }
           t1Idx++;
           if (t1Idx < tab1Propositions.length) {
             renderTab1Step();
@@ -1185,7 +1284,16 @@
             document.getElementById('btn-next-tab1').style.display = 'inline-flex';
             unlockTab(2);
           }
-        }, 1500);
+        };
+
+        document.getElementById('t1-msg').innerHTML = `
+          <div><b>Athena:</b> ${prop.correctMsg}</div>
+          <button class="btn btn-outline" id="btn-t1-skip" style="margin-top: 8px; font-size: 11.5px; padding: 4px 10px; color: var(--navy); border-color: var(--teal);">
+            Câu tiếp theo <i class="ti ti-arrow-right"></i>
+          </button>
+        `;
+        document.getElementById('btn-t1-skip').onclick = advance;
+        timer = setTimeout(advance, 4000);
       } else {
         document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> ${prop.wrongMsg}`;
       }
@@ -1195,6 +1303,8 @@
        7. TAB 2: CHỨNG MINH SONG SONG QUA TỈ LỆ & ĐƯỜNG TRUNG GIAN (2 CASES)
        ========================================================================= */
     let t2Case = 'A';
+    let t2CaseADone = false;
+    let t2CaseBDone = false;
 
     function initTab2() {
       t2Case = 'A';
@@ -1212,6 +1322,8 @@
       const btn2 = document.getElementById('t2-sub-c2');
       btn1.style.borderColor = c === 'A' ? 'var(--teal)' : 'var(--paper-line)';
       btn2.style.borderColor = c === 'B' ? 'var(--teal)' : 'var(--paper-line)';
+      btn1.innerHTML = `Case A: Tỉ lệ 1/3 ${t2CaseADone ? '✓' : ''}`;
+      btn2.innerHTML = `Case B: HBH ${t2CaseBDone ? '✓' : ''}`;
 
       const wrapQ = document.getElementById('t2-questions-wrap');
       if (c === 'A') {
@@ -1268,10 +1380,17 @@
         document.getElementById('t2-q2').className = 'choice-btn correct';
         createLineSegment(N, P, 0xFAC775); createLineSegment(P, Q, 0xFAC775); createLineSegment(Q, M, 0xFAC775);
         createPolygonMesh([M, N, P, Q], COLOR_PLANE_2, 0.35);
-        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Chính xác! Vì MN // AB và NP // BC là 2 đường cắt nhau cùng song song mp(ABCD) $\\rightarrow$ <b>mp(MNPQ) // mp(ABCD)</b>!`;
+        t2CaseADone = true;
+        document.getElementById('t2-sub-c1').innerHTML = 'Case A: Tỉ lệ 1/3 ✓';
+
+        if (t2CaseADone && t2CaseBDone) {
+          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Xuất sắc! Bạn đã hoàn thành cả 2 Case (A & B) của Tab 2. Hãy chuyển sang Tab 3 bên dưới!`;
+          document.getElementById('btn-next-tab2').style.display = 'inline-flex';
+          unlockTab(3);
+        } else {
+          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Bạn đã hoàn thành <b>Case A</b>! Hãy bấm nút <b>Case B: HBH</b> phía trên để làm tiếp Case B và mở khóa Tab 3 nhé!`;
+        }
         fb.style.display = 'flex';
-        document.getElementById('btn-next-tab2').style.display = 'inline-flex';
-        unlockTab(3);
       };
     }
 
@@ -1301,10 +1420,17 @@
 
       document.getElementById('t2-q2').onclick = () => {
         document.getElementById('t2-q2').className = 'choice-btn correct';
-        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Xuất sắc! mp(A,p) chứa AB & p; mp(D,q) chứa DC & q. Vì AB//DC và p//q $\\rightarrow$ <b>mp(A,p) // mp(D,q)</b>!`;
+        t2CaseBDone = true;
+        document.getElementById('t2-sub-c2').innerHTML = 'Case B: HBH ✓';
+
+        if (t2CaseADone && t2CaseBDone) {
+          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Xuất sắc! Bạn đã hoàn thành cả 2 Case (A & B) của Tab 2. Hãy chuyển sang Tab 3 bên dưới!`;
+          document.getElementById('btn-next-tab2').style.display = 'inline-flex';
+          unlockTab(3);
+        } else {
+          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Bạn đã hoàn thành <b>Case B</b>! Hãy bấm nút <b>Case A: Tỉ lệ 1/3</b> phía trên để làm tiếp Case A và mở khóa Tab 3 nhé!`;
+        }
         fb.style.display = 'flex';
-        document.getElementById('btn-next-tab2').style.display = 'inline-flex';
-        unlockTab(3);
       };
     }
 
