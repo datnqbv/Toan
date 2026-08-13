@@ -430,6 +430,91 @@ Sau khi build xong, dùng đúng câu hỏi post-build như Nhánh A (Duyệt / 
 /* Canvas bg: #0a1628 */
 ```
 
+**Preset 4 — Cream & Green** (thêm 08/2026, dùng cho nội dung "Em có biết" /
+phần mở rộng khám phá — KHÔNG dùng cho bài học chính, xem lý do ở dưới)
+
+```css
+:root {
+  --cream:      #FAF7F0;   /* Nền canvas + nền trang */
+  --cream-2:    #F0EAD8;   /* Nền panel/card phụ, thumbnail card */
+  --green-deep: #0E5C38;   /* Header, text nhấn, viền wireframe */
+  --green:      #159957;   /* Màu thương hiệu chính — dùng cho UI (badge, nút, active tab) */
+  --ink:        #2A3B33;   /* Chữ chính — tương phản tốt trên cream */
+  --sub:        #5B6E63;
+  --border:     #DDD5BE;
+}
+/* Header: linear-gradient(135deg, #0E5C38 0%, #159957 100%) */
+/* Canvas bg: #FAF7F0 */
+```
+
+> ⚠️ **Vì sao đây KHÔNG phải preset thay thế Preset 1/2/3, mà là nhóm riêng
+> cho nội dung khám phá/mở rộng:**
+> - Đây là bộ nhận diện thương hiệu chính thức của **Sinh học** (Aiducation
+>   Green & Cream, xem `02_design_toan_final.md`/tài liệu Sinh học). Dùng
+>   trong Toán chỉ cho phần "Em có biết"/mở rộng thú vị (không chấm điểm,
+>   không phải bài học chính) để tránh học sinh nhầm lẫn môn học khi thấy
+>   cùng tông màu xuất hiện ở nội dung luyện tập chính thức.
+> - **Trên nền sáng, cơ chế tạo cảm giác chiều sâu KHÁC hẳn nền tối
+>   (Preset 1-3)** — xem chi tiết bắt buộc đọc ở PHẦN 1.3-BIS và PHẦN
+>   3.8 trước khi build bất kỳ mặt cong nào với preset này. Nền tối tạo
+>   depth chủ yếu từ độ tương phản của mặt phẳng trong suốt với nền gần
+>   đen; nền cream KHÔNG có cơ chế này — depth phải dựa vào ánh sáng
+>   hướng (DirectionalLight) đổ trên mặt cong + motion parallax khi xoay.
+>   Nếu build mặt phẳng phẳng (kiểu Preset 1-3 vẫn dùng AmbientLight đơn)
+>   trên nền cream mà không thêm DirectionalLight, mặt sẽ trông "phẳng lì"
+>   mất hẳn cảm giác 3D.
+
+### 1.3-BIS Bảng màu đối tượng — biến thể Cream & Green (mặt cong/mặt bậc hai)
+
+> Bổ sung riêng cho Preset 4. Bảng màu gốc ở 1.3 (xanh dương/tím/vàng cam)
+> được tune cho nền tối — dùng thẳng trên nền cream sẽ mất tương phản
+> hoàn toàn (màu sáng trên nền sáng). Dùng bảng dưới đây khi build với
+> Preset 4, đặc biệt cho các mặt bậc hai (ellipsoid, hyperboloid, nón
+> elliptic, paraboloid...) — không dùng bảng 1.3 gốc.
+
+```javascript
+// 6 SẮC XANH LÁ ĐA CẤP ĐỘ — dùng để phân biệt nhiều khối cong cùng lúc
+// (VD lưới nhiều mặt bậc hai). Đi từ nhạt → đậm theo thứ tự độ phức tạp
+// hình học, không bắt buộc nhưng giúp nhất quán khi có ≥ 2 khối trên
+// cùng 1 màn hình (VD grid chọn khối).
+const COLOR_QUADRIC_1 = 0x7FCBA4;  // Xanh bạc hà nhạt
+const COLOR_QUADRIC_2 = 0x4CAF7D;  // Xanh lá trung
+const COLOR_QUADRIC_3 = 0x2E8B57;  // Xanh lá đậm hơn
+const COLOR_QUADRIC_4 = 0x159957;  // Xanh thương hiệu gốc
+const COLOR_QUADRIC_5 = 0x1B7A4D;  // Xanh rừng
+const COLOR_QUADRIC_6 = 0x0E5C38;  // Xanh rừng đậm nhất
+
+const COLOR_WIREFRAME_CREAM = 0x0E5C38;  // Viền lưới kinh-vĩ trên mặt cong, opacity ~0.3-0.35
+const COLOR_GRID_CREAM      = 0x159957;  // GridHelper mặt Oxy tham chiếu, opacity ~0.25
+
+// TRỤC TOẠ ĐỘ — đổi từ đỏ/lá/xanh dương mặc định (PHẦN 1.3) sang tông đất
+// ấm để hợp với cream + xanh lá, tránh chói/lệch tông
+const COLOR_AXIS_X_CREAM = 0xB5651D;  // Nâu cam đất
+const COLOR_AXIS_Y_CREAM = 0x8A9A5B;  // Xanh ô liu
+const COLOR_AXIS_Z_CREAM = 0x5B7B9A;  // Xanh lam xám nhạt
+```
+
+**Opacity & vật liệu — khác quy tắc mặc định ở PHẦN 1.3:**
+```javascript
+// Mặt cong/khối đặc trên Preset 4: opacity 0.85-0.90 (gần đặc), KHÁC mặt
+// phẳng trong suốt 0.18-0.25 ở Preset 1-3 — vì đây là khối cần thấy rõ
+// hình dạng cong, không phải mặt phẳng chỉ cần gợi ý vị trí trong không gian.
+
+// Vật liệu: dùng MeshPhongMaterial (KHÁC quy tắc "flat, tránh phản chiếu"
+// áp dụng cho mặt phẳng/đường ở các bài trước) — specular NHẸ giúp lộ rõ
+// độ cong của mặt bậc hai dưới ánh sáng hướng. Đây là ngoại lệ có lý do
+// hình học, không phải phá vỡ nguyên tắc flat tuỳ tiện.
+const material = new THREE.MeshPhongMaterial({
+  color: COLOR_QUADRIC_1,
+  transparent: true,
+  opacity: 0.88,
+  side: THREE.DoubleSide,
+  shininess: 25,
+  specular: 0x336644,   // specular tông xanh rừng nhạt, KHÔNG dùng trắng
+                          // thuần (sẽ tạo highlight chói lệch tông ấm)
+});
+```
+
 ### 1.3 Bảng màu đối tượng hình học 3D
 
 > Đây là phần MỚI, không có trong `02_design_toan_2.md`.
@@ -1252,6 +1337,63 @@ scene.add(new THREE.AmbientLight(0xffffff, 0.8));
 - Nhớ kiểm tra screenPos.z > 1 để ẩn label khi điểm ở sau camera
 ```
 
+### 3.3b Trục Oxyz có đơn vị đo — CHỈ áp dụng bài dùng toạ độ số cụ thể
+
+> Khác với đa số bài hình không gian tổng hợp (song song, vuông góc, hình
+> chóp...) chỉ cần `AxesHelper` màu (xem §1.3) làm mốc phương hướng, KHÔNG
+> cần số — các bài thuộc nhóm "biểu thức toạ độ" / "hệ trục toạ độ trong
+> không gian" (VD Bài 7, Bài 8 — vectơ theo toạ độ, mô hình hoá thực tiễn
+> bằng Oxyz) cần học sinh ĐỌC ĐƯỢC giá trị số trên trục, không chỉ thấy
+> hướng. Mục này bổ sung cho §1.3 (đã có màu trục) phần còn thiếu: cách
+> đánh số và chọn tỉ lệ lưới.
+
+**Khi nào dùng:** kịch bản có toạ độ điểm/vectơ bằng số cụ thể mà học sinh
+cần đối chiếu trực tiếp trên scene (không chỉ dùng số để tính, mà còn cần
+"nhìn thấy" vị trí số đó trong không gian — VD bài toán mô hình hoá thực
+tiễn như flycam, giàn khoan, radar).
+
+**Cách dựng:**
+```javascript
+// 1) AxesHelper màu chuẩn — xem COLOR_AXIS_X/Y/Z ở §1.3, không đổi lại ở đây
+const axesHelper = new THREE.AxesHelper(AXIS_LENGTH); // AXIS_LENGTH = phạm vi toạ độ lớn nhất của bài + 20% lề
+
+// 2) GridHelper — TỈ LỆ LƯỚI PHẢI KHỚP THANG ĐO CỦA BÀI, không dùng mặc định 10x10
+//    VD bài đơn vị mét, toạ độ chạy 0–7 → mỗi ô lưới = 1 đơn vị, tổng lưới ~8-10 ô/cạnh
+const gridHelper = new THREE.GridHelper(GRID_SIZE, GRID_DIVISIONS); // GRID_DIVISIONS = GRID_SIZE / 1 đơn vị của bài
+
+// 3) Nhãn số tại mỗi mốc đơn vị — dùng HTML overlay giống pattern label điểm ở §3.3,
+//    KHÔNG dùng Sprite (cùng lý do: chữ số cần rõ, đồng bộ font với sidebar)
+//    Đặt label tại các mốc nguyên trên mỗi trục trong phạm vi bài (không cần dày đặc mọi giá trị --
+//    chỉ mốc 1, 2, 3... đơn vị là đủ, tránh rối canvas)
+function buildAxisTickLabels(maxRange, axis /* 'x'|'y'|'z' */) {
+  const labels = [];
+  for (let i = 1; i <= maxRange; i++) {
+    const pos = new THREE.Vector3(
+      axis === 'x' ? i : 0,
+      axis === 'y' ? i : 0,
+      axis === 'z' ? i : 0
+    );
+    labels.push({ pos, text: String(i) });
+  }
+  return labels; // render qua cùng syncHtmlLabel() ở label-layer, style nhỏ hơn label tên điểm
+}
+```
+
+**CSS cho nhãn tick (nhỏ hơn và mờ hơn label tên điểm/kết quả, tránh rối canvas):**
+```css
+.axis-tick-label {
+  position: absolute; font-size: 10.5px; font-weight: 500;
+  color: rgba(230,237,243,0.55); /* mờ hơn hẳn pt-label và dist-label */
+  pointer-events: none; transform: translate(-50%, -50%);
+}
+```
+
+**Checklist khi bài cần trục có đơn vị:**
+- [ ] `GRID_DIVISIONS` tính đúng theo đơn vị thật của bài (không copy nguyên 10x10 mặc định)
+- [ ] Chỉ đánh nhãn số tại mốc nguyên (1, 2, 3...), không dán số dày đặc gây rối
+- [ ] Nhãn tick dùng màu mờ hơn nhãn tên điểm — người học phân biệt được đâu là "thước đo nền", đâu là dữ liệu chính của bài
+- [ ] Nếu bài có nhiều điểm mốc cách xa gốc O, kiểm tra `AXIS_LENGTH`/`GRID_SIZE` đủ phủ hết phạm vi, không để điểm nằm ngoài lưới
+
 ### 3.4 (Nhánh A) Step tabs đồng bộ với Three.js scene
 
 > Chỉ áp dụng Nhánh A. Nhánh B không có step-tabs — xem 3.7 cho pattern tương ứng.
@@ -1399,6 +1541,162 @@ function clearScene() {
 > đã verify, như trường hợp `buildRightAngleMark` từng có 2 signature khác
 > nhau giữa các file test).
 
+### 3.7-BIS Hàm còn thiếu phát hiện khi build Bài 15-16 (08/2026) — bổ sung vào `06_geometry_math.md`
+
+> Phát hiện khi viết kịch bản Bài 15 Module 5a (phân loại 4 vị trí tương
+> đối 2 đường thẳng) và Bài 16 Module 1-2 (góc giữa 2 đường thẳng, góc
+> giữa 2 mặt phẳng) — Bảng PHỤ LỤC A (`01_scenario_builder_3d_addendum.md`)
+> có `angleLineToPlane` và `dihedralAngle`, nhưng **không có** hàm tính góc
+> giữa 2 đường thẳng/2 mặt phẳng theo đúng quy ước SGK (luôn lấy trị tuyệt
+> đối, kết quả trong [0°;90°] — khác `dihedralAngle` là góc nhị diện thật,
+> có thể tù, không tự động lấy trị tuyệt đối), và không có hàm phân loại 4
+> vị trí tương đối giữa 2 đường thẳng. Cả 2 hàm dưới đây đã ✅ verify bằng
+> script Node độc lập, đối chiếu với toàn bộ số liệu đã dùng ở Module 5a,
+> 5b (Bài 15) và Module 1-2 (Bài 16) — khớp 100%.
+
+```javascript
+// Góc giữa 2 đường thẳng (2 VTCP) HOẶC góc giữa 2 mặt phẳng (2 VTPT) —
+// CÙNG 1 công thức (cos + trị tuyệt đối), chỉ khác ý nghĩa vectơ đầu vào.
+// Luôn trả về góc trong [0°;90°] theo đúng quy ước SGK — KHÁC dihedralAngle
+// (góc nhị diện thật, có thể tù, không tự lấy trị tuyệt đối).
+function angleBetweenVectorsAbs(v1, v2) {
+  const dot = v1[0]*v2[0] + v1[1]*v2[1] + v1[2]*v2[2];
+  const norm1 = Math.sqrt(v1[0]**2 + v1[1]**2 + v1[2]**2);
+  const norm2 = Math.sqrt(v2[0]**2 + v2[1]**2 + v2[2]**2);
+  const cosVal = Math.abs(dot) / (norm1 * norm2);
+  const clamped = Math.min(1, Math.max(-1, cosVal)); // chống lỗi làm tròn float vượt 1
+  return Math.acos(clamped) * 180 / Math.PI; // trả về ĐỘ, không phải radian
+}
+// Dùng cho "góc giữa 2 đường thẳng": angleBetweenVectorsAbs(u1, u2)
+// Dùng cho "góc giữa 2 mặt phẳng": angleBetweenVectorsAbs(n1, n2)
+// KHÔNG dùng cho "góc giữa đường thẳng và mặt phẳng" — trường hợp đó vẫn
+// dùng angleLineToPlane (công thức sin, đã có sẵn), không phải hàm này.
+
+// Phân loại 4 vị trí tương đối giữa 2 đường thẳng: song song / trùng /
+// cắt / chéo. A1, A2 là điểm bất kỳ trên mỗi đường; u1, u2 là VTCP.
+function classifyTwoLines(A1, u1, A2, u2, eps = 1e-9) {
+  function cross(a, b) {
+    return [a[1]*b[2]-a[2]*b[1], a[2]*b[0]-a[0]*b[2], a[0]*b[1]-a[1]*b[0]];
+  }
+  function sub(a, b) { return [a[0]-b[0], a[1]-b[1], a[2]-b[2]]; }
+  function dot(a, b) { return a[0]*b[0] + a[1]*b[1] + a[2]*b[2]; }
+  function norm(a) { return Math.sqrt(dot(a, a)); }
+
+  const cr = cross(u1, u2);
+  const isParallel = norm(cr) < eps;
+
+  if (isParallel) {
+    const diff = sub(A2, A1);
+    const crDiff = cross(diff, u1);
+    return norm(crDiff) < eps ? 'trùng' : 'song song';
+  } else {
+    const diff = sub(A2, A1);
+    const scalarTriple = dot(diff, cr); // tích hỗn hợp — kiểm tra đồng phẳng
+    return Math.abs(scalarTriple) < eps ? 'cắt' : 'chéo';
+  }
+}
+```
+
+**Test case đã verify (chạy thật bằng Node, không phải suy đoán):**
+```
+angleBetweenVectorsAbs([2,1,0],[1,-1,2])   → 79.48°  (khớp Bài 16 M1 BT1)
+angleBetweenVectorsAbs([2,1,0],[-1,-1,2])  → 56.79°  (khớp Bài 16 M1 BT2)
+angleBetweenVectorsAbs([2,1,2],[1,-1,1])   → 54.74°  (khớp Bài 16 M2 BT1)
+angleBetweenVectorsAbs([1,-1,1],[-3,1,2])  → 72.02°  (khớp Bài 16 M2 BT2)
+
+classifyTwoLines(A(0,1,-2),u1(1,2,-1), B(3,0,4),u2(2,4,-2))   → 'song song'
+classifyTwoLines(A(0,1,-2),u1(1,2,-1), B'(2,5,-4),u2(2,4,-2)) → 'trùng'
+classifyTwoLines(A(0,1,-2),u1(1,2,-1), C(-1,5,-5),u3(1,-1,1)) → 'cắt'
+classifyTwoLines(A(0,1,-2),u1(1,2,-1), D(4,4,4),u4(1,0,1))    → 'chéo'
+```
+
+> ⚠️ **Lưu ý khi build:** hàm này nên được copy chính thức vào
+> `06_geometry_math.md` (không phải file này — file này chỉ là bridge/design
+> token). Ghi tạm ở đây vì đó là file duy nhất đang chỉnh sửa được trong
+> phiên làm việc này. Khi merge vào project, nhớ chuyển đúng 2 hàm này sang
+> `06_geometry_math.md` PHẦN tương ứng (cạnh `angleLineToPlane`,
+> `dihedralAngle`) và xoá khỏi đây, chỉ giữ lại dòng tham chiếu — tránh 2 nơi
+> cùng định nghĩa 1 hàm, dễ lệch nếu sau này sửa 1 chỗ mà quên chỗ kia.
+
+### 3.8 Mặt bậc hai (parametric surface) — mặt cong KHÔNG có geometry dựng sẵn
+
+> **Thêm 08/2026**, sau module "Em có biết — 6 mặt bậc hai" (Toán 12, Bài
+> 14 mở rộng). Đây là pattern MỚI — `SOLID_LIBRARY` (05 PHẦN 7) chỉ có đa
+> diện (đỉnh-cạnh-mặt rời rạc) + 3 khối tròn xoay cơ bản dùng geometry có
+> sẵn của Three.js (`SphereGeometry`, `CylinderGeometry`, `ConeGeometry`).
+> Ellipsoid, hyperboloid (1 và 2 tầng), nón elliptic, paraboloid elliptic,
+> paraboloid hyperbolic (mặt yên ngựa) đều là **mặt cong liên tục** không
+> có geometry dựng sẵn tương ứng — phải tự dựng lưới đỉnh từ phương trình
+> tham số. Trạng thái: ✅ đã prototype + verify toán bằng script Python/Node
+> độc lập trước khi build (08/2026), nhưng đây vẫn là pattern MỚI, chưa có
+> nhiều lần dùng lại — áp dụng đúng nguyên tắc "dấu ✅ chỉ đảm bảo tại thời
+> điểm verify, không đảm bảo tuyệt đối cho bộ số liệu khác hẳn" (xem
+> `01_scenario_builder_3d_addendum.md` PHỤ LỤC A).
+
+**Nguyên tắc dựng:** phần lớn mặt bậc hai dựng bằng lưới `(u,v)` hai chiều
+→ tính toạ độ `(x,y,z)` theo phương trình tham số → build `BufferGeometry`
+tay bằng `positions` (mảng float) + `index` (tam giác hoá theo lưới) →
+`computeVertexNormals()` để có shading đúng.
+
+```javascript
+// Khung tam giác hoá CHUẨN cho mọi lưới (segU × segV) — dùng lại nguyên
+// vẹn cho cả 5 mặt tham số dưới đây, chỉ đổi công thức tính x,y,z
+function triangulateGrid(segU, segV) {
+  const idx = [];
+  for (let i = 0; i < segV; i++) {
+    for (let j = 0; j < segU; j++) {
+      const a0 = i * (segU + 1) + j;
+      const b0 = a0 + 1;
+      const c0 = a0 + (segU + 1);
+      const d0 = c0 + 1;
+      idx.push(a0, c0, b0, b0, c0, d0);
+    }
+  }
+  return idx;
+}
+```
+
+**Bảng công thức tham số đã verify (a, b, c là bán trục theo SGK):**
+
+| Mặt | Phương trình chuẩn | Tham số hoá `(u,v)` hoặc `(θ,v)` | Ghi chú dựng |
+|---|---|---|---|
+| Ellipsoid | x²/a²+y²/b²+z²/c²=1 | **Không cần tham số tay** — `SphereGeometry(1,48,32)` rồi `geo.scale(a,c,b)` | Cách rẻ nhất — ellipsoid = hình cầu scale không đều 3 trục |
+| Hyperboloid 1 tầng | x²/a²+y²/b²−z²/c²=1 | x=a·cosh(v)·cosθ, y=c·sinh(v) *(trục cao)*, z=b·cosh(v)·sinθ, v∈[−vmax,vmax] | 1 mảng lưới liên tục |
+| Hyperboloid 2 tầng | x²/a²+y²/b²−z²/c²=−1 | x=a·sinh(v)·cosθ, y=±c·cosh(v), z=b·sinh(v)·sinθ, v∈[0,vmax] | **2 lưới riêng** (dấu ±), KHÔNG nối 2 tấm — chúng không chạm nhau |
+| Nón elliptic | x²/a²+y²/b²−z²/c²=0 | x=a·s·cosθ, y=s, z=b·s·sinθ, s∈[−smax,smax] | Dựng **2 lớp riêng** (trên/dưới đỉnh s=0) — nối chung 1 lớp qua đỉnh sẽ tạo tam giác suy biến tại điểm 0 |
+| Paraboloid elliptic | z=x²/a²+y²/b² | x=a·r·cosθ, y=r² *(trục cao)*, z=b·r·sinθ, r∈[0,rmax] | 1 mảng lưới, đỉnh tại r=0 |
+| Paraboloid hyperbolic (yên ngựa) | z=x²/a²−y²/b² | Lưới trực tiếp trên x,z: y=x²/a²−z²/b² | Không cần tham số θ — map thẳng lưới Đề-các |
+
+> **Quy ước trục:** SGK dùng z là "trục cao" trong các công thức trên,
+> nhưng Three.js coi **Y** là trục lên màn hình. Toàn bộ công thức ở bảng
+> trên đã đổi sẵn — biến vốn là "z" trong SGK được gán vào tọa độ Y khi
+> dựng mesh. Khi build, LUÔN ghi rõ trong code bằng comment `// trục cao
+> = Y` ngay tại dòng gán, để người đọc sau không tưởng lầm đây là lỗi.
+
+**Vật liệu & ánh sáng:** dùng đúng PHẦN 1.3-BIS (Preset 4 Cream & Green) —
+`MeshPhongMaterial` opacity 0.85-0.90 + `DirectionalLight` bắt buộc (không
+chỉ AmbientLight) để lộ gradient trên mặt cong. Thêm 1 lớp
+`LineSegments(new THREE.WireframeGeometry(geo), ...)` màu `COLOR_WIREFRAME_CREAM`
+opacity ~0.3 đè lên mặt chính — giữ rõ lưới kinh-vĩ khi xoay, đặc biệt cần
+trên nền sáng vì độ tương phản mặt-nền thấp hơn nền tối.
+
+**Rủi ro đã gặp khi prototype (08/2026):**
+- Nón elliptic nối 2 lớp trên/dưới đỉnh thành 1 lưới liên tục → tam giác
+  "xoắn" qua điểm s=0 (2 vòng tròn bán kính 0 và bán kính khác 0 nối trực
+  tiếp tạo mặt méo tại đỉnh). Sửa: dựng 2 lớp hoàn toàn tách biệt, mỗi lớp
+  tự tam giác hoá riêng bằng `triangulateGrid`, không share index qua đỉnh.
+- Hyperboloid 2 tầng: nếu dùng chung 1 `BufferGeometry` cho cả 2 tấm (thay
+  vì 2 geometry riêng trong 1 `Group`), `computeVertexNormals()` sẽ tính
+  sai pháp tuyến ở biên giữa 2 tấm dù chúng không thực sự nối nhau trong
+  không gian (vì vẫn chung 1 mảng `positions` liên tục về chỉ số, dù toạ độ
+  cách xa). Bắt buộc 2 `BufferGeometry` độc lập, gộp bằng `THREE.Group`.
+
+**Trước khi build đại trà 1 mặt bậc hai mới (khác 6 mặt đã có công thức
+trên), luôn verify bằng script Python/Node độc lập trước** (kiểm tra không
+NaN, khoảng giá trị x/y/z hợp lý, không suy biến tại điểm đặc biệt như đỉnh
+nón) — đúng quy trình đã áp dụng cho các pattern rủi ro khác trong
+`01_scenario_builder_3d_addendum.md` PHỤ LỤC E.
+
 ---
 
 ## PHẦN 4 — NAMING CONVENTION
@@ -1540,3 +1838,12 @@ CSS class prefix:
 > nhân vật "Athena", bỏ "robot") của `02_design_toan_final.md` — dòng "Kế
 > thừa" ở trên trỏ vào `02_design_toan_2.md` (tên file cũ, trước khi 3 mục
 > này được thêm vào doc 2D ở bản v2.2/v2.3.1) nên chưa có trong file 3D.
+
+> **Phiên bản 2.2 — 08/2026:** thêm §3.3b (Trục Oxyz có đơn vị đo) — phát
+> sinh từ kịch bản Bài 8 "Biểu thức toạ độ của các phép toán vectơ" (Module
+> 6, bài toán flycam mô hình hoá thực tiễn), vì §1.3 trước đó chỉ có màu
+> `AxesHelper` chứ chưa có quy tắc đánh số/tỉ lệ lưới cho nhóm bài dùng toạ
+> độ số cụ thể (khác đa số bài hình không gian tổng hợp chỉ cần trục làm
+> mốc hướng, không cần đọc số). Áp dụng cho mọi bài tương tự sau này thuộc
+> Bài 7/8 (Chương Vectơ và hệ trục toạ độ) hoặc bài mô hình hoá thực tiễn
+> bằng Oxyz có số liệu cụ thể.

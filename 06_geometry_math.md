@@ -358,6 +358,56 @@ function segmentIntersection(p1, p2, p3, p4, epsilon = 0.05) {
 > của 2 đường thẳng nằm trong 1 mặt phẳng đáy (VD tìm giao điểm BN và CM
 > trên mặt đáy hình chóp để xác định giao tuyến 2 mặt phẳng chứa chúng).
 
+### B.4 Giao điểm của 2 đường thẳng VÔ HẠN (biến thể của B.3 — bỏ bước kẹp
+### đoạn, vì công cụ "Đường thẳng song song" trong GeoGebra dựng đường vô hạn)
+
+```javascript
+// P1,dir1 / P2,dir2: điểm bất kỳ trên đường + hướng (dir KHÔNG cần normalize trước)
+// Trả { intersects, point, t, s, distance, reason }
+// reason: 'ok' | 'parallel' | 'skew' (2 đường chéo nhau, không đồng phẳng —
+// đây là trường hợp GIỐNG HỆT gotcha ở A.6/B.3: 2 đường trong không gian
+// luôn có 1 cặp điểm "gần nhau nhất" dù không hề đồng phẳng — PHẢI kiểm tra
+// distance giữa 2 điểm gần nhau nhất đó ≈ 0 mới được công nhận là giao điểm
+// thật, không được chỉ dựa vào việc denom giải được là đủ)
+function intersectionOfTwoLines(P1, dir1, P2, dir2, epsilon = 1e-4) {
+  const d1 = dir1.clone().normalize();
+  const d2 = dir2.clone().normalize();
+  const r = new THREE.Vector3().subVectors(P1, P2);
+
+  const a = d1.dot(d1), e = d2.dot(d2), f = d2.dot(r);
+  const c = d1.dot(r), b = d1.dot(d2);
+  const denom = a * e - b * b;
+
+  if (Math.abs(denom) < 1e-8) {
+    return { intersects: false, point: null, t: null, s: null, distance: null, reason: 'parallel' };
+  }
+  const t = (b * f - c * e) / denom;
+  const s = (a * f - b * c) / denom;
+
+  const ptOnLine1 = P1.clone().add(d1.clone().multiplyScalar(t));
+  const ptOnLine2 = P2.clone().add(d2.clone().multiplyScalar(s));
+  const distance = ptOnLine1.distanceTo(ptOnLine2);
+
+  if (distance > epsilon) {
+    return { intersects: false, point: null, t, s, distance, reason: 'skew' };
+  }
+  const point = ptOnLine1.clone().lerp(ptOnLine2, 0.5);
+  return { intersects: true, point, t, s, distance, reason: 'ok' };
+}
+```
+
+> **Verify đã làm (script Node, cài `three` thật qua npm — không dùng object
+> `{x,y,z}` tự chế để tránh lệch API):** dựng lại đúng quy trình SGK "Vẽ
+> vectơ tổng của ba vectơ trong không gian" — 4 điểm A,B,C,D bất kỳ (không
+> đồng phẳng), dựng E theo quy tắc hình bình hành ABEC (từ B.4 + H.2), rồi
+> dựng F từ E (cũng bằng B.4 + H.2) — kiểm tra bằng đại số độc lập
+> `AF = AB+AC+AD` khớp chính xác. Cộng 3 case đối chứng: 2 đường chéo nhau
+> → `reason:'skew'`, 2 đường song song → `reason:'parallel'`, và 1 cặp cắt
+> nhau thật trong mặt phẳng nghiêng bất kỳ (không phải mặt toạ độ) → đúng.
+> Toàn bộ 6/6 pass. Dùng khi: dựng đỉnh còn lại của hình bình hành/hình hộp
+> từ các đỉnh đã có (quy tắc cộng vectơ bằng hình học dựng hình, không phải
+> chỉ cộng toạ độ) — xem PHẦN H bên dưới cho quy trình đầy đủ.
+
 ---
 
 ## PHẦN C — GÓC
@@ -627,6 +677,129 @@ function polygonArea(vertices) {
 > hình khối đang chọn có ràng buộc hình học ngăn cản bài toán, cần đổi
 > khối nền chứ không phải sửa công thức.
 
+### G.4 Dựng đa giác thiết diện TỪ MẶT PHẲNG (không cần biết trước thứ tự đỉnh)
+
+> **Verify trong `solid_library.html` (07/2026)**, giải quyết đúng cái bẫy
+> đã cảnh báo ở G.1 ("`polygonArea` không tự phát hiện đỉnh sai thứ tự") —
+> nhưng bằng cách khác: thay vì yêu cầu người gọi hàm tự suy luận đúng thứ
+> tự chu vi (dễ sai như G.1/G.2 đã gặp), hàm này tự tính lại thứ tự từ
+> hình học, không phụ thuộc thứ tự đầu vào.
+
+```javascript
+function computeSectionPolygon(p0, p1, p2, vertices, edges) {
+  const v1 = new THREE.Vector3().subVectors(p1, p0);
+  const v2 = new THREE.Vector3().subVectors(p2, p0);
+  const normal = new THREE.Vector3().crossVectors(v1, v2);
+  if (normal.lengthSq() < 1e-8) return null;
+  normal.normalize();
+  const d0 = -normal.dot(p0);
+  const signedDist = (v) => normal.dot(v) + d0;
+
+  const EPS = 1e-4;
+  const raw = [];
+  edges.forEach(([na, nb]) => {
+    const A = vertices[na], B = vertices[nb];
+    const dA = signedDist(A), dB = signedDist(B);
+    if (Math.abs(dA) < EPS)      raw.push(A.clone());
+    else if (Math.abs(dB) < EPS) raw.push(B.clone());
+    else if ((dA > 0) !== (dB > 0)) {
+      const t = dA / (dA - dB);
+      raw.push(new THREE.Vector3().lerpVectors(A, B, t));
+    }
+  });
+
+  const pts = [];
+  raw.forEach(p => { if (!pts.some(q => q.distanceTo(p) < 1e-3)) pts.push(p); });
+  if (pts.length < 3) return null;
+
+  const centroid = pts.reduce((s, p) => s.add(p), new THREE.Vector3()).multiplyScalar(1 / pts.length);
+  const u = new THREE.Vector3().subVectors(pts[0], centroid).normalize();
+  const v = new THREE.Vector3().crossVectors(normal, u).normalize();
+  pts.sort((a, b) => {
+    const da = new THREE.Vector3().subVectors(a, centroid);
+    const db = new THREE.Vector3().subVectors(b, centroid);
+    return Math.atan2(da.dot(v), da.dot(u)) - Math.atan2(db.dot(v), db.dot(u));
+  });
+  return pts; // sẵn sàng truyền thẳng vào polygonArea() (G.1) hoặc dựng mesh tam giác quạt
+}
+```
+
+> **Điều kiện áp dụng — CHỈ đúng với khối LỒI.** Với khối lõm, 1 mặt phẳng
+> có thể cắt tạo ra NHIỀU đa giác tách rời — sort-theo-góc-quanh-1-tâm sẽ
+> ghép nhầm các mảnh rời thành 1 vòng. Mọi khối trong `SOLID_LIBRARY` hiện
+> tại đều lồi nên chưa gặp vấn đề này.
+>
+> **Chưa áp dụng được cho mặt cong** (cầu/trụ/nón) — giao tuyến với mặt
+> cong là đường conic (tròn/elip/parabol/hyperbol tuỳ góc cắt), cần thuật
+> toán riêng, chưa viết.
+
+---
+
+## PHẦN H — VECTƠ
+
+> Dùng cho các bài dựng vectơ tổng/hiệu bằng CÁCH DỰNG HÌNH (quy tắc hình
+> bình hành / hình hộp), khác với việc chỉ cộng toạ độ 2 vectơ bằng số —
+> mục tiêu sư phạm của hoạt động "Vẽ vectơ tổng của ba vectơ trong không
+> gian bằng GeoGebra" là học sinh tự tay dựng, không phải xem kết quả có
+> sẵn.
+
+### H.1 Dựng vectơ từ 2 điểm
+
+```javascript
+// Trả { origin, dir (đã normalize), length, raw } — dùng dựng THREE.ArrowHelper
+// trong 05_threejs_engine.md: new THREE.ArrowHelper(dir, origin, length, color)
+function vectorFromPoints(A, B) {
+  const raw = new THREE.Vector3().subVectors(B, A);
+  const length = raw.length();
+  const dir = length < 1e-9 ? new THREE.Vector3(0, 0, 0) : raw.clone().normalize();
+  return { origin: A.clone(), dir, length, raw };
+}
+```
+
+### H.2 Đường thẳng qua 1 điểm, song song 1 vectơ cho trước
+
+```javascript
+// Trả { P0, dir (đã normalize) } — dùng làm input trực tiếp cho
+// intersectionOfTwoLines (B.4) để tìm giao điểm 2 đường song song vừa dựng
+function lineThroughPointParallelTo(P, v) {
+  return { P0: P.clone(), dir: v.clone().normalize() };
+}
+```
+
+### H.3 Quy trình dựng vectơ tổng 3 vectơ bằng quy tắc hình hộp (2 bước lặp lại)
+
+> Ghép H.1 + H.2 + B.4 thành đúng quy trình 6 bước SGK (trang 92-93): với
+> 4 điểm A, B, C, D không đồng phẳng, dựng $\vec{AF} = \vec{AB}+\vec{AC}+\vec{AD}$.
+
+```javascript
+// Bước 1 — dựng E theo quy tắc hình bình hành ABEC: AE = AB + AC
+function buildParallelogramSum(A, B, C) {
+  const vAB = new THREE.Vector3().subVectors(B, A);
+  const vAC = new THREE.Vector3().subVectors(C, A);
+  const lineFromB = lineThroughPointParallelTo(B, vAC); // qua B, song song AC
+  const lineFromC = lineThroughPointParallelTo(C, vAB); // qua C, song song AB
+  const res = intersectionOfTwoLines(lineFromB.P0, lineFromB.dir, lineFromC.P0, lineFromC.dir);
+  return res.intersects ? res.point : null; // null nếu A,B,C thẳng hàng (suy biến)
+}
+
+// Bước 2 — gọi lại ĐÚNG hàm bước 1 với (A, E, D) thay vì viết logic mới:
+// buildParallelogramSum(A, E, D) → dựng F sao cho AF = AE + AD = AB+AC+AD
+```
+
+> **Verify:** xem khối verify ở B.4 — đã dựng đúng quy trình 2 bước này và
+> đối chiếu bằng đại số `AF = AB+AC+AD`, khớp chính xác (6/6 test pass, gồm
+> cả 2 case đối chứng "không được có giao điểm" — xem B.4).
+>
+> **Gotcha giống hệt G.3 (chọn cấu hình khối vi phạm định lý, khiến bài
+> toán vô nghiệm):** nếu 3 điểm dùng để dựng hình bình hành THẲNG HÀNG (VD
+> lỡ chọn A, B, D cùng nằm trên 1 đường vừa dựng ở bước trước), `dir` của 2
+> đường sẽ song song nhau → `intersectionOfTwoLines` trả `reason:'parallel'`,
+> `buildParallelogramSum` trả `null` — không phải lỗi code, là hệ quả hình
+> học tất yếu của việc chọn 3 điểm thẳng hàng. Khi ràng buộc học sinh kéo
+> điểm A,B,C,D tự do trên mặt phẳng nền (theo đúng SGK), PHẢI xử lý
+> `null` bằng cách báo học sinh "3 điểm đang thẳng hàng, hãy kéo lại" thay
+> vì để giao diện đơ hoặc vẽ nhầm điểm `(0,0,0)`.
+
 ---
 
 ## PHỤ LỤC — BẢNG QUY CHIẾU: hàm nào dùng ở đâu
@@ -651,6 +824,10 @@ function polygonArea(vertices) {
 | `barycentricCoords` | solid_library.html | — |
 | `rotateLineAroundNormal` | test_b_parallel.html | — |
 | `pointOnSphere/Cylinder/ConeSide` + nghịch | tổng quát hoá từ `calcSphereSurfPos` v.v. trong solid_library.html | — |
+| `intersectionOfTwoLines` (B.4) | verify Node độc lập, cài `three` qua npm (08/2026) | Hoạt động thực hành "Vẽ vectơ tổng ba vectơ" |
+| `vectorFromPoints` (H.1) | verify Node độc lập, cài `three` qua npm (08/2026) | Hoạt động thực hành "Vẽ vectơ tổng ba vectơ" |
+| `lineThroughPointParallelTo` (H.2) | verify Node độc lập, cài `three` qua npm (08/2026) | Hoạt động thực hành "Vẽ vectơ tổng ba vectơ" |
+| `buildParallelogramSum` (H.3) | verify Node độc lập, cài `three` qua npm (08/2026) | Hoạt động thực hành "Vẽ vectơ tổng ba vectơ" |
 
 > Các hàm **vẽ** cùng tên/chủ đề (không thuộc file này) — `buildPlaneMesh`,
 > `buildRightAngleMark`, `buildArc`, `buildDihedralArc`, `buildMHSegment` —
@@ -659,7 +836,7 @@ function polygonArea(vertices) {
 
 ---
 
-> **Phiên bản:** 1.2
+> **Phiên bản:** 1.4
 > **Ngày tạo:** 07/2026 — viết sau khi đã có 4+ file test/tool thực tế
 > (`test_b_parallel.html`, `test_c_angles.html`, `test_d_distances.html`,
 > `solid_library.html`), tách các hàm toán thuần trùng lặp giữa chúng thành
@@ -691,4 +868,14 @@ function polygonArea(vertices) {
 > phẳng không thể nào giao đúng bệ thờ bất kể chỉnh góc thế nào). Xem đầy
 > đủ: `01_scenario_builder_3d_addendum.md` PHỤ LỤC E.11. **Nếu đã copy hàm
 > A.6 sang bất kỳ file/prototype nào trước mốc này, phải rà lại và sửa.**
+> **Cập nhật 08/2026 (v1.4):** thêm B.4 `intersectionOfTwoLines` (giao điểm
+> 2 đường thẳng VÔ HẠN — biến thể của B.3 bỏ kẹp đoạn [0,1]) và PHẦN H —
+> VECTƠ (`vectorFromPoints`, `lineThroughPointParallelTo`,
+> `buildParallelogramSum`), phục vụ hoạt động thực hành "Vẽ vectơ tổng của
+> ba vectơ trong không gian". Verify bằng script Node **cài `three` thật
+> qua npm** (không dùng object `{x,y,z}` tự chế như các lần verify trước —
+> để tránh lệch API `.clone()/.sub()/.normalize()` giữa bản test và bản
+> thật), dựng đúng quy trình 2 bước SGK và đối chiếu đại số
+> `AF = AB+AC+AD`, cộng 3 case đối chứng (skew/parallel/cắt nhau trong mặt
+> phẳng nghiêng) — 6/6 pass.
 > **Dùng cùng:** `05_threejs_engine.md` (pattern dựng mesh + tương tác)

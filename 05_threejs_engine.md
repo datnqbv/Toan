@@ -1893,6 +1893,19 @@ updateVisibility() {
 
 ### 7.4 EXPLORE mode — kéo đỉnh với ràng buộc floor/free
 
+> **Ghi chú phạm vi áp dụng (thêm 07/2026):** Pattern này vẫn là 1 tính
+> năng hợp lệ và nên giữ trong tài liệu dùng chung cho Hình học không
+> gian — không phải lỗi thời, không xoá. Tuy nhiên **công cụ
+> `solid_library.html` (Kho Khối Hình) hiện KHÔNG dùng pattern này** và
+> đã gỡ bỏ mode này khỏi toolbar của nó. Lý do: Kho Khối Hình phục vụ
+> mục đích dựng lại CHÍNH XÁC hình theo số liệu đề bài cho sẵn (SGK/đề
+> thi) — kéo tự do dễ làm sai tỉ lệ so với đề, nên công cụ đó thay bằng
+> sửa toạ độ trực tiếp qua ô nhập số (xem 7.10 bên dưới) thay vì kéo
+> chuột. EXPLORE mode vẫn phù hợp cho một công cụ khác có mục tiêu khác:
+> cho học sinh **tập vẽ hình tự do, rèn cảm giác không gian 3D** (không
+> ràng buộc đúng-sai theo đề bài, không phải công cụ dạy/kiểm tra) — nếu
+> về sau xây công cụ dạng đó, dùng lại nguyên pattern này.
+
 > Không phải mọi đỉnh kéo tự do đều hợp lý sư phạm — kéo đỉnh ĐÁY của hình
 > chóp lên khỏi mặt đáy sẽ phá vỡ khái niệm "đáy". Field `explore` trong
 > config quy định từng đỉnh dùng constraint nào.
@@ -2070,6 +2083,40 @@ raycaster.params.Line = { threshold: 0.05 };
 > góc nhìn thẳng theo cạnh): luôn xử lý cạnh TRƯỚC, mặt SAU — vì đặt điểm
 > đúng trên cạnh có giá trị sư phạm cao hơn (dễ tính tỉ lệ AM/AB) so với đặt
 > gần cạnh nhưng trên mặt.
+
+### 7.10 Sửa toạ độ đỉnh gốc trực tiếp qua ô nhập số (khác EXPLORE — không kéo chuột)
+
+> **Verify trong `solid_library.html` (07/2026).** Đây là lựa chọn thay thế
+> cho EXPLORE (7.4) khi công cụ cần độ chính xác tuyệt đối thay vì thao tác
+> kéo tự do: học sinh gõ thẳng số x/y/z vào 3 ô input trong bảng điểm, không
+> dùng chuột. Ghi đè trực tiếp lên `vertices` rồi gọi lại `rebuildFromVertices()`
+> (đã có sẵn ở 7.5, tái dùng nguyên hàm — không viết hàm rebuild riêng).
+
+```javascript
+function applyVertexXYZ(vertexName, axis, rawVal) {
+  const num = parseFloat(rawVal);
+  if (Number.isNaN(num)) { updatePtsSidebar(); return; } // gõ dở/rỗng → bỏ qua, vẽ lại UI cũ
+  const v = solidRenderer.vertices[vertexName];
+  if (!v) return;
+  v[axis] = num;                    // ghi đè trực tiếp 1 trục (x/y/z)
+  solidRenderer.rebuildFromVertices(); // dùng lại hàm ở 7.5 — không dispose/tạo lại
+  buildInteractionMeshes();         // cạnh/mặt hit-mesh phải dựng lại theo vị trí đỉnh mới
+  updatePtsSidebar();
+}
+```
+
+> **Đánh đổi cần biết trước khi dùng pattern này:** vì `vertices` vốn được
+> TÍNH LẠI từ công thức + tham số slider mỗi khi slider đổi (xem PHẦN 7.1),
+> sửa tay 1 đỉnh sẽ bị **ghi đè mất** ngay khi người dùng kéo slider kích
+> thước lần tiếp theo — y hệt hạn chế của EXPLORE. Khác biệt duy nhất so với
+> EXPLORE là INPUT (gõ số vs kéo chuột), không phải kiến trúc lưu trữ bên
+> dưới — cả 2 đều là "override tạm thời lên vertices, mất khi rebuild từ
+> params". Nếu cần giữ chỉnh tay qua nhiều lần đổi slider, phải tách hẳn
+> một field `vertexOverrides` độc lập khỏi luồng tính từ params — chưa làm,
+> ghi chú lại để tránh nhầm là đã có.
+>
+> Đi kèm bắt buộc: có nút "↺ Reset" gọi lại `loadSolid()` để đưa khối về
+> đúng công thức gốc khi học sinh chỉnh nhầm.
 
 ---
 
