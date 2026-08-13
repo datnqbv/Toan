@@ -2373,6 +2373,273 @@ function buildCatalog(query) {
 
 ---
 
+## PHẦN 10 — MẶT BẬC HAI (QuadricRenderer) — mặt cong tham số, KHÔNG dùng geometry dựng sẵn
+
+> **Thêm 08/2026**, code trích thật từ module "Em có biết — 6 mặt bậc hai"
+> (Toán 12, Bài 14 mở rộng) — đã build, verify, và chạy được. Khác biệt gốc
+> rễ với cả PHẦN 7 và PHẦN 9: mặt bậc hai (ellipsoid, hyperboloid, nón
+> elliptic, paraboloid...) là **mặt cong liên tục theo phương trình tham
+> số** — không có đỉnh-cạnh-mặt rời rạc như PHẦN 7, và cũng KHÔNG có
+> geometry dựng sẵn của Three.js như PHẦN 9 (`SphereGeometry` chỉ dùng
+> được cho riêng ellipsoid qua phép scale, 5 mặt còn lại phải tự dựng lưới
+> đỉnh bằng tay). Vì vậy đây là **hệ renderer thứ 3** (tạm gọi "Nhánh C"),
+> không tái sử dụng được state machine của PHẦN 7 hay ROUND_LIBRARY của
+> PHẦN 9.
+
+### 10.1 QUADRIC_LIBRARY — mỗi khối tự định nghĩa hàm `build()` riêng
+
+> Khác PHẦN 7 (`vertices()/edges/faces` dùng chung 1 khuôn) và PHẦN 9
+> (`type` dùng để switch trong 1 renderer chung) — ở đây mỗi mặt bậc hai
+> có công thức tham số khác nhau hoàn toàn, nên để mỗi entry tự định nghĩa
+> hàm `build(params)` riêng, trả về `BufferGeometry` (hoặc `Group` nếu cần
+> nhiều lưới tách biệt — xem 10.3).
+
+```javascript
+const QUADRIC_LIBRARY = {
+  ellipsoid: {
+    name: 'Mặt Ellipsoid (mặt trái xoan)',
+    notation: 'x²/a² + y²/b² + z²/c² = 1',
+    params: { a: 1.6, b: 1.1, c: 1.3 },
+    color: 0x7FCBA4,
+    build(p) {
+      // Cách rẻ nhất — KHÔNG tự dựng lưới tham số. Ellipsoid = hình cầu
+      // scale không đều 3 trục.
+      const geo = new THREE.SphereGeometry(1, 48, 32);
+      geo.scale(p.a, p.c, p.b); // trục cao SGK (z) map vào Y của Three.js
+      return geo;
+    }
+  },
+  hyperboloid1: {
+    name: 'Mặt Hyperboloid một tầng',
+    notation: 'x²/a² + y²/b² − z²/c² = 1',
+    params: { a: 1.1, b: 1.1, c: 1, vmax: 1.1 },
+    color: 0x4CAF7D,
+    build(p) {
+      const segU = 48, segV = 24;
+      const positions = []; const idx = [];
+      for (let i = 0; i <= segV; i++) {
+        const v = -p.vmax + (2 * p.vmax * i) / segV;
+        for (let j = 0; j <= segU; j++) {
+          const theta = (2 * Math.PI * j) / segU;
+          positions.push(
+            p.a * Math.cosh(v) * Math.cos(theta),  // x
+            p.c * Math.sinh(v),                     // y (= trục cao SGK)
+            p.b * Math.cosh(v) * Math.sin(theta)    // z
+          );
+        }
+      }
+      idx.push(...triangulateGrid(segU, segV));
+      const geo = new THREE.BufferGeometry();
+      geo.setIndex(idx);
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geo.computeVertexNormals();
+      return geo;
+    }
+  },
+  // hyperboloid2 (2 tầng), cone, paraboloidE, paraboloidH: xem PHẦN 10.3 —
+  // các hàm build() còn lại theo đúng công thức đã verify ở
+  // 04_design_toan_3d.md PHẦN 3.8.
+};
+const QUADRIC_ORDER = ['ellipsoid','hyperboloid1','hyperboloid2','cone','paraboloidE','paraboloidH'];
+```
+
+### 10.2 Khung tam giác hoá dùng chung — `triangulateGrid`
+
+> Hàm DUY NHẤT dùng lại cho cả 5 mặt tham số (không dùng cho ellipsoid vì
+> đó là `SphereGeometry` có sẵn). Copy nguyên vẹn từ `04_design_toan_3d.md`
+> PHẦN 3.8 — không viết lại khác đi.
+
+```javascript
+function triangulateGrid(segU, segV) {
+  const idx = [];
+  for (let i = 0; i < segV; i++) {
+    for (let j = 0; j < segU; j++) {
+      const a0 = i * (segU + 1) + j;
+      const b0 = a0 + 1;
+      const c0 = a0 + (segU + 1);
+      const d0 = c0 + 1;
+      idx.push(a0, c0, b0, b0, c0, d0);
+    }
+  }
+  return idx;
+}
+```
+
+### 10.3 Trường hợp đặc biệt — khi KHÔNG được dùng 1 lưới liên tục
+
+> 2 lỗi thực tế đã gặp khi build — cả 2 đều do cố dùng 1
+> `BufferGeometry`/1 `triangulateGrid()` liên tục cho thứ vốn KHÔNG liên
+> tục về mặt hình học:
+
+**Nón elliptic — PHẢI tách 2 lớp trên/dưới đỉnh, không nối chung:**
+```javascript
+cone: {
+  name: 'Mặt nón Elliptic',
+  notation: 'x²/a² + y²/b² − z²/c² = 0',
+  params: { a: 1, b: 0.7, smax: 1.6 },
+  color: 0x159957,
+  build(p) {
+    const segU = 40;
+    const positions = []; const idx = [];
+    const sVals = [-p.smax, 0, p.smax]; // 3 lớp: dưới đỉnh, đỉnh, trên đỉnh
+    for (const s of sVals) {
+      for (let j = 0; j <= segU; j++) {
+        const theta = (2 * Math.PI * j) / segU;
+        positions.push(p.a * s * Math.cos(theta), s, p.b * s * Math.sin(theta));
+      }
+    }
+    // 2 lớp riêng (layer 0-1 và layer 1-2), KHÔNG nối layer 0 thẳng qua layer 2
+    for (let layer = 0; layer < 2; layer++) {
+      const base = layer * (segU + 1);
+      for (let j = 0; j < segU; j++) {
+        const a0 = base + j, b0 = base + j + 1;
+        const c0 = base + (segU + 1) + j, d0 = c0 + 1;
+        idx.push(a0, c0, b0, b0, c0, d0);
+      }
+    }
+    const geo = new THREE.BufferGeometry();
+    geo.setIndex(idx);
+    geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+    geo.computeVertexNormals();
+    return geo;
+  }
+}
+```
+> **Lỗi nếu làm sai:** nối lưới bán kính 0 (đỉnh, s=0) thẳng vào lưới bán
+> kính khác 0 (s=±smax) qua CÙNG 1 `triangulateGrid()` liên tục sẽ tạo tam
+> giác "xoắn" quanh điểm suy biến — mặt nón bị méo tại đỉnh.
+
+**Hyperboloid 2 tầng — PHẢI 2 `BufferGeometry` độc lập trong 1 `Group`:**
+```javascript
+hyperboloid2: {
+  name: 'Mặt Hyperboloid hai tầng',
+  notation: 'x²/a² + y²/b² − z²/c² = −1',
+  params: { a: 1, b: 1, c: 1.2, vmax: 1.15 },
+  color: 0x2E8B57,
+  isGroup: true,
+  build(p) {
+    const group = new THREE.Group();
+    const segU = 40, segV = 18;
+    [1, -1].forEach(sign => {
+      const positions = [];
+      for (let i = 0; i <= segV; i++) {
+        const v = (p.vmax * i) / segV;
+        for (let j = 0; j <= segU; j++) {
+          const theta = (2 * Math.PI * j) / segU;
+          positions.push(
+            p.a * Math.sinh(v) * Math.cos(theta),
+            sign * p.c * Math.cosh(v),
+            p.b * Math.sinh(v) * Math.sin(theta)
+          );
+        }
+      }
+      const geo = new THREE.BufferGeometry();
+      geo.setIndex(triangulateGrid(segU, segV));
+      geo.setAttribute('position', new THREE.Float32BufferAttribute(positions, 3));
+      geo.computeVertexNormals(); // tính riêng cho MỖI geometry — xem lỗi dưới
+      const mat = new THREE.MeshPhongMaterial({ color: p.color ?? 0x2E8B57, transparent: true, opacity: 0.88, side: THREE.DoubleSide });
+      group.add(new THREE.Mesh(geo, mat));
+    });
+    return group;
+  }
+}
+```
+> **Lỗi nếu làm sai:** dùng CHUNG 1 `BufferGeometry` cho cả 2 tấm (nối
+> `positions` của tấm trên và tấm dưới vào 1 mảng liên tục) khiến
+> `computeVertexNormals()` tính sai pháp tuyến ở biên giữa 2 tấm — dù 2
+> tấm không thực sự chạm nhau trong không gian, chúng vẫn liên tiếp nhau
+> VỀ CHỈ SỐ mảng, nên thuật toán tính normal coi chúng là 1 mặt liên tục.
+> Bắt buộc 2 `BufferGeometry` tách biệt, gộp bằng `THREE.Group`.
+
+### 10.4 buildMesh() — dispatch build() + material + wireframe, xử lý cả trường hợp Group
+
+```javascript
+function buildQuadricMesh(key, params) {
+  const cfg = QUADRIC_LIBRARY[key];
+  const built = cfg.build(params);
+
+  function makeMeshWithWireframe(geo, color) {
+    const mat = new THREE.MeshPhongMaterial({
+      color, transparent: true, opacity: 0.88,
+      side: THREE.DoubleSide, shininess: 25, specular: 0x336644,
+    });
+    const mesh = new THREE.Mesh(geo, mat);
+    const wire = new THREE.LineSegments(
+      new THREE.WireframeGeometry(geo),
+      new THREE.LineBasicMaterial({ color: 0x0E5C38, transparent: true, opacity: 0.3 })
+    );
+    const group = new THREE.Group();
+    group.add(mesh); group.add(wire);
+    return group;
+  }
+
+  if (cfg.isGroup) return built; // hyperboloid2 tự tạo Group kèm material trong build()
+  return makeMeshWithWireframe(built, cfg.color);
+}
+```
+
+### 10.5 Cleanup — `clearScene()` dispose đúng cả trường hợp Group lồng nhau
+
+```javascript
+let currentQuadricMesh = null;
+function clearQuadricScene() {
+  if (!currentQuadricMesh) return;
+  currentQuadricMesh.traverse(o => {
+    if (o.geometry) o.geometry.dispose();
+    if (o.material) o.material.dispose();
+  });
+  scene.remove(currentQuadricMesh);
+  currentQuadricMesh = null;
+}
+```
+> `traverse()` là bắt buộc (không phải `.geometry?.dispose()` đơn lẻ) vì
+> kết quả `buildQuadricMesh()` luôn là `Group` (dù chứa 1 hay nhiều mesh
+> con) — dispose trực tiếp trên `Group` không làm gì cả vì `Group` không
+> có `.geometry`/`.material` của riêng nó.
+
+### 10.6 Ánh sáng & vật liệu bắt buộc — KHÁC quy tắc mặc định PHẦN 0
+
+> Mặt bậc hai thường dùng với Preset 4 (Cream & Green,
+> `04_design_toan_3d.md` PHẦN 1.3-BIS) — nền sáng cần ánh sáng hướng để
+> lộ gradient trên mặt cong, khác quy tắc "chỉ AmbientLight" cho mặt
+> phẳng/đường ở các PHẦN trước.
+
+```javascript
+scene.add(new THREE.AmbientLight(0xffffff, 0.55));
+const dirLight = new THREE.DirectionalLight(0xFFF4E0, 0.95); // ánh sáng ấm
+dirLight.position.set(4, 6, 5);
+scene.add(dirLight);
+```
+
+### 10.7 Dispatch 3 hệ renderer — thêm cờ `quadric` vào CATALOG
+
+```javascript
+const CATALOG = [
+  { label: 'Hình chóp',        keys: ['pyramid_tri', 'pyramid_quad'] },                      // → SOLID_LIBRARY (PHẦN 7)
+  { label: 'Khối tròn xoay',   keys: ['khoi_cau','khoi_tru','khoi_non'], round: true },        // → ROUND_LIBRARY (PHẦN 9)
+  { label: 'Mặt bậc hai',      keys: QUADRIC_ORDER, quadric: true },                           // → QUADRIC_LIBRARY (PHẦN 10)
+];
+
+function buildCatalog(query) {
+  CATALOG.forEach(g => {
+    const lib = g.round ? ROUND_LIBRARY : g.quadric ? QUADRIC_LIBRARY : SOLID_LIBRARY;
+    // ...
+    btn.onclick = () => {
+      if (g.round) return loadRoundSolid(key);
+      if (g.quadric) return loadQuadricSolid(key); // dọn sạch 2 hệ còn lại trước khi load
+      return loadSolid(key);
+    };
+  });
+}
+```
+> Áp dụng đúng nguyên tắc đã cảnh báo ở PHẦN 9.4 (lỗi thực tế
+> `isRoundActive`) — với 3 hệ, cần 1 biến trạng thái duy nhất
+> (`activeSystem: 'solid' | 'round' | 'quadric'`) thay vì 1 cờ boolean,
+> và MỌI hàm rebuild phải guard theo đúng biến này trước khi chạy, để
+> tránh 1 trong 3 hệ vô tình rebuild đè lên hệ đang hiển thị.
+
+---
+
 ## PHỤ LỤC — LỖI HAY GẶP
 
 ```
@@ -2398,6 +2665,21 @@ function buildCatalog(query) {
 - Hiệu năng giảm dần sau khi kéo nhiều phút (memory leak)
   → Kiểm tra mọi mesh bị remove khỏi scene đều gọi .geometry.dispose()
     và .material.dispose() trước khi tạo mesh thay thế
+
+- Mặt nón elliptic bị méo/xoắn tại đỉnh (PHẦN 10.3)
+  → Kiểm tra đỉnh (s=0) và 2 lớp bán kính khác 0 có đang bị tam giác hoá
+    LIÊN TỤC bằng 1 triangulateGrid() duy nhất không — phải tách 2 lớp
+    riêng, mỗi lớp tự tam giác hoá, KHÔNG share index qua điểm đỉnh
+
+- Hyperboloid 2 tầng: pháp tuyến sai ở gần "khoảng trống" giữa 2 tầng
+  (dù 2 tầng không hề chạm nhau trong không gian) (PHẦN 10.3)
+  → Kiểm tra có đang dùng CHUNG 1 BufferGeometry cho cả 2 tầng không —
+    computeVertexNormals() coi 2 mảng positions nối tiếp là 1 mặt liên
+    tục dù toạ độ cách xa. Bắt buộc 2 BufferGeometry độc lập trong 1 Group
+
+- clearScene() không xoá hết mesh khi chuyển giữa mặt bậc hai (PHẦN 10.5)
+  → Kiểm tra đang gọi .traverse() để dispose từng mesh CON, không gọi
+    .geometry.dispose() trực tiếp trên Group (Group không có .geometry)
 
 - Mesh rebuild real-time mỗi frame khi kéo (VD thiết diện đổi hình dạng
   theo điểm đang kéo) để lại "vệt" nhiều lớp chồng lên nhau, không xoá
