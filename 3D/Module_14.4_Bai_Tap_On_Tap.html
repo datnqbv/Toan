@@ -1245,7 +1245,30 @@
         actBtn.innerHTML = '<i class="ti ti-player-play"></i> Chiếu cả hình sang E\'F\'G\'';
         actBtn.onclick = () => { t1CStepIdx = 4; renderTab1PartCStep(); };
       } else if (t1CStepIdx === 4) {
-        desc.innerHTML = `<b>Bước 4:</b> Đã chiếu đồng thời sang E'F'G'. Hãy xác nhận: <b>M' có phải là trung điểm F'G' không?</b>`;
+        desc.innerHTML = `<b>Bước 4:</b> Đã chiếu đồng thời sang E'F'G'. <b>Bước 5: M có phải là trung điểm của FG không?</b>`;
+        actBtn.style.display = 'none';
+
+        const qWrap = document.getElementById('t1-c-quiz-wrap');
+        qWrap.style.display = 'block';
+        qWrap.innerHTML = `
+          <div class="choice-group">
+            <button class="choice-btn" id="btn-t1c-q0-yes"><span>Có — M được dựng là trung điểm FG ở Bước 2</span> <i class="ti ti-circle"></i></button>
+            <button class="choice-btn" id="btn-t1c-q0-no"><span>Không — M không phải trung điểm</span> <i class="ti ti-circle"></i></button>
+          </div>
+        `;
+
+        document.getElementById('btn-t1c-q0-yes').onclick = () => {
+          document.getElementById('btn-t1c-q0-yes').className = 'choice-btn correct';
+          t1CStepIdx = 5;
+          renderTab1PartCStep();
+        };
+        document.getElementById('btn-t1c-q0-no').onclick = () => {
+          document.getElementById('btn-t1c-q0-no').className = 'choice-btn wrong';
+          document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Ở Bước 2 ta đã dựng M chính là trung điểm của cạnh FG!`;
+          document.getElementById('t1-feedback').style.display = 'flex';
+        };
+      } else if (t1CStepIdx === 5) {
+        desc.innerHTML = `<b>Bước 6:</b> M là trung điểm FG. <b>M' (ảnh của M) có phải là trung điểm của F'G' không?</b>`;
         actBtn.style.display = 'none';
 
         const qWrap = document.getElementById('t1-c-quiz-wrap');
@@ -1259,7 +1282,7 @@
 
         document.getElementById('btn-t1c-q1-yes').onclick = () => {
           document.getElementById('btn-t1c-q1-yes').className = 'choice-btn correct';
-          t1CStepIdx = 5;
+          t1CStepIdx = 6;
           renderTab1PartCStep();
         };
         document.getElementById('btn-t1c-q1-no').onclick = () => {
@@ -1267,8 +1290,8 @@
           document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Phép chiếu song song bảo toàn tỉ lệ trên đoạn thẳng, nên M chia FG theo tỉ lệ 1:1 thì M' cũng chia F'G' theo đúng tỉ lệ 1:1 (trung điểm)!`;
           document.getElementById('t1-feedback').style.display = 'flex';
         };
-      } else if (t1CStepIdx === 5) {
-        desc.innerHTML = `<b>Bước 5:</b> M' là trung điểm F'G'. Tiếp theo: <b>K' có chia E'M' theo tỉ lệ E'K':K'M' = 2:1 không?</b>`;
+      } else if (t1CStepIdx === 6) {
+        desc.innerHTML = `<b>Bước 7:</b> K chia EM theo tỉ lệ 2:1. <b>K' có chia E'M' theo đúng tỉ lệ 2:1 không?</b>`;
         actBtn.style.display = 'none';
 
         const qWrap = document.getElementById('t1-c-quiz-wrap');
@@ -1282,7 +1305,7 @@
 
         document.getElementById('btn-t1c-q2-yes').onclick = () => {
           document.getElementById('btn-t1c-q2-yes').className = 'choice-btn correct';
-          document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> 🎉 Tuyệt vời! M' là trung điểm F'G' VÀ K' chia E'M' theo tỉ lệ 2:1 → K' CHÍNH LÀ <b>trọng tâm của tam giác E'F'G'</b>! Bạn đã hoàn thành Tab 1!`;
+          document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> 🎉 Tuyệt vời! <b>Bước 8 Kết luận:</b> M' là trung điểm F'G' VÀ K' chia E'M' theo tỉ lệ 2:1 → K' CHÍNH LÀ <b>trọng tâm của tam giác E'F'G'</b>! Bạn đã hoàn thành Tab 1!`;
           document.getElementById('t1-feedback').style.display = 'flex';
           document.getElementById('btn-next-tab1').style.display = 'inline-flex';
           unlockTab(2);
