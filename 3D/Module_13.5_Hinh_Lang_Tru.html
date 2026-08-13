@@ -1026,6 +1026,43 @@
       return line;
     }
 
+    /* =========================================================================
+       4b. ANIMATE LINE UTILITY (ease-out cubic, §A1 05_threejs_engine.md)
+       Vẽ dần đường thẳng từ p1 → p2 trong durationMs ms.
+       ========================================================================= */
+    function animateLine(p1, p2, colorHex, durationMs = 900, onComplete = null, opacity = 1, dashed = false) {
+      const startTime = performance.now();
+      const posArr = new Float32Array(6);
+      posArr[0] = p1.x; posArr[1] = p1.y; posArr[2] = p1.z;
+      posArr[3] = p1.x; posArr[4] = p1.y; posArr[5] = p1.z;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+      let mat;
+      if (dashed) {
+        mat = new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.15, gapSize: 0.08, transparent: true, opacity });
+      } else {
+        mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 2, transparent: true, opacity });
+      }
+      const line = new THREE.Line(geo, mat);
+      if (dashed) line.computeLineDistances();
+      line.renderOrder = 10;
+      scene.add(line);
+      function tick() {
+        const elapsed = performance.now() - startTime;
+        const raw = Math.min(elapsed / durationMs, 1);
+        const t = 1 - Math.pow(1 - raw, 3); // ease-out cubic
+        const cur = p1.clone().lerp(p2, t);
+        const arr = geo.attributes.position.array;
+        arr[3] = cur.x; arr[4] = cur.y; arr[5] = cur.z;
+        geo.attributes.position.needsUpdate = true;
+        if (dashed) line.computeLineDistances();
+        if (raw < 1) { requestAnimationFrame(tick); }
+        else if (onComplete) { onComplete(); }
+      }
+      tick();
+      return line;
+    }
+
     function createPolygonMesh(vertices, colorHex, opacity = 0.25, name = '') {
       const geo = new THREE.BufferGeometry();
       const pos = [];
@@ -1307,7 +1344,7 @@
           if (intersects.length > 0) {
             const fb = document.getElementById('t3-feedback');
             fb.style.display = 'flex';
-            document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Bạn vừa click vào <b>Mặt đáy ABCD</b>. Đếm số cạnh: AB, BC, CD, DA $\rightarrow$ Đáy có đúng <b>4 cạnh</b>! Chọn tên lăng trụ tương ứng bên dưới.`;
+            document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Bạn vừa click vào <b>Mặt đáy ABCD</b>. Đếm số cạnh: AB, BC, CD, DA <b>→</b> Đáy có đúng <b>4 cạnh</b>! Chọn tên lăng trụ tương ứng bên dưới.`;
           }
         }
       }
@@ -1434,7 +1471,13 @@
         };
 
         document.getElementById('t2-btn-test-coplanar').onclick = () => {
-          createPolygonMesh([App, Bpp, Cpp, Dpp], 0xef4444, 0.45);
+          animateLine(App, Bpp, 0xef4444, 600);
+          setTimeout(() => animateLine(Bpp, Cpp, 0xef4444, 600), 180);
+          setTimeout(() => animateLine(Cpp, Dpp, 0xef4444, 600), 360);
+          setTimeout(() => animateLine(Dpp, App, 0xef4444, 600), 540);
+          setTimeout(() => {
+            createPolygonMesh([App, Bpp, Cpp, Dpp], 0xef4444, 0.45);
+          }, 720);
           document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Mô phỏng thử vẽ mặt phẳng qua 4 điểm (đèn đỏ): Mặt phẳng bị méo lệch do 4 điểm không đồng phẳng.`;
           fb.style.display = 'flex';
         };
@@ -1449,7 +1492,13 @@
         const Cpp = lerpVec(C, Cp, 0.45);
         const Dpp = lerpVec(D, Dp, 0.45);
 
-        createPolygonMesh([App, Bpp, Cpp, Dpp], COLOR_PLANE_2, 0.3);
+        animateLine(App, Bpp, COLOR_PLANE_2, 600);
+        setTimeout(() => animateLine(Bpp, Cpp, COLOR_PLANE_2, 600), 180);
+        setTimeout(() => animateLine(Cpp, Dpp, COLOR_PLANE_2, 600), 360);
+        setTimeout(() => animateLine(Dpp, App, COLOR_PLANE_2, 600), 540);
+        setTimeout(() => {
+          createPolygonMesh([App, Bpp, Cpp, Dpp], COLOR_PLANE_2, 0.3);
+        }, 720);
 
         makeSpherePoint(App, COLOR_RESULT, 0.11); makeSpherePoint(Bpp, COLOR_RESULT, 0.11);
         makeSpherePoint(Cpp, COLOR_RESULT, 0.11); makeSpherePoint(Dpp, COLOR_RESULT, 0.11);

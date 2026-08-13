@@ -584,8 +584,7 @@
 
         <div id="t1-step3" style="display: none;">
           <div class="info-box hint-box">
-            <b>Nhận xét:</b> Trong $\Delta SMN$, ta có $\frac{SI}{SM} = \frac{SK}{SN} = \frac{1}{3}$. Theo định lý Ta-lét
-            đảo $\Rightarrow IK // MN$.
+            <b>Nhận xét:</b> Trong ΔSMN, ta có SI / SM = SK / SN = ⅓. Theo định lý Ta-lét đảo <b>→</b> IK // MN.
           </div>
           <div class="choice-group">
             <div style="font-weight: 700; font-size: 12px; margin-bottom: 4px;">Nhận định sau ĐÚNG hay SAI?</div>
@@ -601,9 +600,9 @@
 
         <div id="t1-conclusion" class="info-box" style="display: none; background-color: var(--correct-bg); border-color: #a5d6a7;">
           <b>Kết luận quy trình 3 bước:</b><br>
-          1. $MN \subset (MNP)$<br>
-          2. $IK // MN$ (do Ta-lét đảo trong $\Delta SMN$)<br>
-          3. $IK \not\subset (MNP) \Rightarrow IK // (MNP)$.
+          1. MN ⊂ (MNP)<br>
+          2. IK // MN (do Ta-lét đảo trong ΔSMN)<br>
+          3. IK ⊄ (MNP) <b>→</b> IK // (MNP).
           <button class="btn btn-primary" id="btn-next-tab1" style="width: 100%; margin-top: 10px;">
             Chuyển sang Tab 2: Giao tuyến <i class="ti ti-arrow-right"></i>
           </button>
@@ -1000,6 +999,43 @@
     }
 
     /* =========================================================================
+       4b. ANIMATE LINE UTILITY (ease-out cubic, §A1 05_threejs_engine.md)
+       Vẽ dần đường thẳng từ p1 → p2 trong durationMs ms.
+       ========================================================================= */
+    function animateLine(p1, p2, colorHex, durationMs = 900, onComplete = null, opacity = 1, dashed = false) {
+      const startTime = performance.now();
+      const posArr = new Float32Array(6);
+      posArr[0] = p1.x; posArr[1] = p1.y; posArr[2] = p1.z;
+      posArr[3] = p1.x; posArr[4] = p1.y; posArr[5] = p1.z;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+      let mat;
+      if (dashed) {
+        mat = new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.2, gapSize: 0.1, transparent: true, opacity });
+      } else {
+        mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 2, transparent: true, opacity });
+      }
+      const line = new THREE.Line(geo, mat);
+      if (dashed) line.computeLineDistances();
+      line.renderOrder = 10;
+      scene.add(line);
+      function tick() {
+        const elapsed = performance.now() - startTime;
+        const raw = Math.min(elapsed / durationMs, 1);
+        const t = 1 - Math.pow(1 - raw, 3); // ease-out cubic
+        const cur = p1.clone().lerp(p2, t);
+        const arr = geo.attributes.position.array;
+        arr[3] = cur.x; arr[4] = cur.y; arr[5] = cur.z;
+        geo.attributes.position.needsUpdate = true;
+        if (dashed) line.computeLineDistances();
+        if (raw < 1) { requestAnimationFrame(tick); }
+        else if (onComplete) { onComplete(); }
+      }
+      tick();
+      return line;
+    }
+
+    /* =========================================================================
        5. QUẢN LÝ TAB & CHUYỂN CẢNH SIMULATION
        ========================================================================= */
     let currentTab = 1;
@@ -1128,6 +1164,7 @@
 
       document.getElementById('t1-btn-build').onclick = () => {
         if (!auxLine) {
+          animateLine(M, N, COLOR_RESULT, 750);
           auxLine = createGlowingHighlightSegment(M, N, COLOR_RESULT, 0.045);
         }
         document.getElementById('t1-step3').style.display = 'block';
@@ -1237,6 +1274,7 @@
           const hit = intersects[0].object;
           if (hit.userData.isCorrect) {
             builtF = makeSpherePoint(targetF, COLOR_RESULT, 0.12);
+            animateLine(E, targetF, COLOR_RESULT, 750);
             builtLine = createGlowingHighlightSegment(E, targetF, COLOR_RESULT, 0.045);
             createLabel3D('F', targetF, '#FAC775');
             document.getElementById('t2-athena-msg').innerHTML = `<b>Athena:</b> Xuất sắc! Giao tuyến EF // AD vì (P) // AD.`;
@@ -1369,18 +1407,22 @@
           if (dir === 'SA' && !stepState.SA) {
             stepState.SA = true;
             ensurePointH();
+            animateLine(G, H, COLOR_RESULT, 700);
             createGlowingHighlightSegment(G, H, COLOR_RESULT, 0.04);
             document.getElementById('t3-ck-1').className = 'checklist-item done';
           } else if (dir === 'AD' && !stepState.AD) {
             stepState.AD = true;
             ensurePointH();
             ensurePointK();
+            animateLine(H, K, COLOR_RESULT, 700);
             createGlowingHighlightSegment(H, K, COLOR_RESULT, 0.04);
             document.getElementById('t3-ck-2').className = 'checklist-item done';
           } else if (dir === 'SD' && !stepState.SD) {
             stepState.SD = true;
             ensurePointK();
             ensurePointL();
+            animateLine(G, L, COLOR_RESULT, 700);
+            setTimeout(() => animateLine(L, K, COLOR_RESULT, 700), 200);
             createGlowingHighlightSegment(G, L, COLOR_RESULT, 0.04);
             createGlowingHighlightSegment(L, K, COLOR_RESULT, 0.04);
             document.getElementById('t3-ck-3').className = 'checklist-item done';
@@ -1462,18 +1504,22 @@
           if (dir === 'BD' && !stepState.BD) {
             stepState.BD = true;
             ensurePointN();
+            animateLine(M, N, COLOR_RESULT, 700);
             createGlowingHighlightSegment(M, N, COLOR_RESULT, 0.04);
             document.getElementById('t3-ck-1').className = 'checklist-item done';
           } else if (dir === 'BBp' && !stepState.BBp) {
             stepState.BBp = true;
             ensurePointN();
             ensurePointP();
+            animateLine(N, P, COLOR_RESULT, 700);
             createGlowingHighlightSegment(N, P, COLOR_RESULT, 0.04);
             document.getElementById('t3-ck-2').className = 'checklist-item done';
           } else if (dir === 'BpDp' && !stepState.BpDp) {
             stepState.BpDp = true;
             ensurePointP();
             ensurePointQ();
+            animateLine(P, Q, COLOR_RESULT, 700);
+            setTimeout(() => animateLine(Q, M, COLOR_RESULT, 700), 200);
             createGlowingHighlightSegment(P, Q, COLOR_RESULT, 0.04);
             createGlowingHighlightSegment(Q, M, COLOR_RESULT, 0.04);
             document.getElementById('t3-ck-3').className = 'checklist-item done';
@@ -1537,7 +1583,136 @@
       renderQuestion(currentQ);
     }
 
+    function renderQuestion3D(index) {
+      if (index === 0) {
+        // Câu 1: Đường d cắt mặt (alpha) tại 1 điểm M
+        const alpha = createPolygonMesh([
+          new THREE.Vector3(-3.5, 0, 3), new THREE.Vector3(3.5, 0, 3),
+          new THREE.Vector3(3.5, 0, -3), new THREE.Vector3(-3.5, 0, -3)
+        ], COLOR_PLANE_1, 0.25);
+        const M = new THREE.Vector3(0, 0, 0);
+        const p1 = new THREE.Vector3(-2, 3, -1.5);
+        const p2 = new THREE.Vector3(2, -3, 1.5);
+        createLineSegment(p1, p2, COLOR_RESULT);
+        makeSpherePoint(M, COLOR_RESULT, 0.12);
+        createLabel3D('(α)', new THREE.Vector3(-3, 0, -2.5), '#60a5fa');
+        createLabel3D('d', p1, '#fac775');
+        createLabel3D('M (1 điểm chung)', M, '#fac775');
+      } else if (index === 1) {
+        // Câu 2: Chóp S.ABCD, MP (P) qua điểm E trên SA // BC
+        const S = new THREE.Vector3(0.2, 3.4, -0.2);
+        const A = new THREE.Vector3(-2.2, 0, 1.8);
+        const B = new THREE.Vector3(1.8, 0, 1.8);
+        const C = new THREE.Vector3(2.6, 0, -1.8);
+        const D = new THREE.Vector3(-1.4, 0, -1.8);
+
+        currentSolidHull = createPolyhedronHullMesh([[S, A, B], [S, B, C], [S, C, D], [S, D, A], [A, B, C, D]]);
+        createDynamicEdge(S, A); createDynamicEdge(S, B); createDynamicEdge(S, C); createDynamicEdge(S, D);
+        createDynamicEdge(A, B); createDynamicEdge(B, C); createDynamicEdge(C, D); createDynamicEdge(D, A);
+
+        createPolygonMesh([A, B, C, D], COLOR_PLANE_BASE, 0.18);
+
+        const E = lerpVec(S, A, 0.4);
+        const F = lerpVec(S, B, 0.4);
+        const G = lerpVec(S, C, 0.4);
+        const H = lerpVec(S, D, 0.4);
+
+        createPolygonMesh([E, F, G, H], COLOR_PLANE_2, 0.3);
+        createPolylineBorder([E, F, G, H], COLOR_RESULT);
+
+        makeSpherePoint(E, COLOR_RESULT, 0.11);
+        createLabel3D('S', S); createLabel3D('A', A); createLabel3D('B (BC)', B);
+        createLabel3D('C (BC)', C); createLabel3D('D', D);
+        createLabel3D('E', E, '#FAC775');
+        createLabel3D('(P) // BC', E.clone().add(new THREE.Vector3(0.3, 0.1, 0)), '#a78bfa');
+      } else if (index === 2) {
+        // Câu 3: Kiểm tra thiết diện đủ các mặt
+        const S = new THREE.Vector3(0, 3.5, 0);
+        const A = new THREE.Vector3(-2, 0, 2);
+        const B = new THREE.Vector3(2, 0, 2);
+        const C = new THREE.Vector3(2, 0, -2);
+        const D = new THREE.Vector3(-2, 0, -2);
+
+        currentSolidHull = createPolyhedronHullMesh([[S, A, B], [S, B, C], [S, C, D], [S, D, A], [A, B, C, D]]);
+        createDynamicEdge(S, A); createDynamicEdge(S, B); createDynamicEdge(S, C); createDynamicEdge(S, D);
+        createDynamicEdge(A, B); createDynamicEdge(B, C); createDynamicEdge(C, D); createDynamicEdge(D, A);
+
+        createPolygonMesh([A, B, C, D], COLOR_PLANE_BASE, 0.18);
+
+        const E = lerpVec(S, A, 0.45);
+        const F = lerpVec(S, B, 0.45);
+        const G = lerpVec(S, C, 0.45);
+        const H = lerpVec(S, D, 0.45);
+
+        createPolygonMesh([E, F, G, H], COLOR_RESULT, 0.35);
+        createPolylineBorder([E, F, G, H], COLOR_RESULT);
+
+        createLabel3D('S', S); createLabel3D('A', A); createLabel3D('B', B);
+        createLabel3D('C', C); createLabel3D('D', D);
+        createLabel3D('Thiết diện khép kín', E.clone().add(new THREE.Vector3(0, 0.2, 0)), '#fac775');
+      } else if (index === 3) {
+        // Câu 4: SA và BD chéo nhau (ảo giác 2D phối cảnh)
+        const S = new THREE.Vector3(0, 3.5, 0);
+        const A = new THREE.Vector3(-2.2, 0, 1.8);
+        const B = new THREE.Vector3(1.8, 0, 1.8);
+        const C = new THREE.Vector3(2.6, 0, -1.8);
+        const D = new THREE.Vector3(-1.4, 0, -1.8);
+
+        currentSolidHull = createPolyhedronHullMesh([[S, A, B], [S, B, C], [S, C, D], [S, D, A], [A, B, C, D]]);
+        createDynamicEdge(S, B); createDynamicEdge(S, C); createDynamicEdge(S, D);
+        createDynamicEdge(A, B); createDynamicEdge(B, C); createDynamicEdge(C, D); createDynamicEdge(D, A);
+
+        createPolygonMesh([A, B, C, D], COLOR_PLANE_BASE, 0.18);
+
+        createGlowingHighlightSegment(S, A, 0xFAC775, 0.05); // SA
+        createGlowingHighlightSegment(B, D, 0x38bdf8, 0.05); // BD
+
+        createLabel3D('S', S); createLabel3D('A', A); createLabel3D('B', B);
+        createLabel3D('C', C); createLabel3D('D', D);
+        createLabel3D('SA (Mặt bên)', S.clone().add(A).multiplyScalar(0.5), '#fac775');
+        createLabel3D('BD (Mặt đáy)', B.clone().add(D).multiplyScalar(0.5), '#38bdf8');
+      } else if (index === 4) {
+        // Câu 5: Khung cửa sổ xoay quanh bản lề đứng AD
+        createPolygonMesh([
+          new THREE.Vector3(-4, 0, 4), new THREE.Vector3(4, 0, 4),
+          new THREE.Vector3(4, 0, -4), new THREE.Vector3(-4, 0, -4)
+        ], COLOR_PLANE_BASE, 0.2);
+        createLabel3D('Mặt sàn (ngang)', new THREE.Vector3(-3, 0, 3), '#64748b');
+
+        const A_h = new THREE.Vector3(0, 0.5, 0);
+        const D_h = new THREE.Vector3(0, 3.5, 0);
+        createGlowingHighlightSegment(A_h, D_h, 0xef4444, 0.06);
+        createLabel3D('Bản lề AD (Trục đứng)', D_h.clone().add(new THREE.Vector3(0, 0.3, 0)), '#ef4444');
+
+        const angle = 0.8;
+        const width = 2.4;
+        const rotX = width * Math.sin(angle);
+        const rotZ = width * Math.cos(angle);
+
+        const B_h = new THREE.Vector3(rotX, 0.5, rotZ);
+        const C_h = new THREE.Vector3(rotX, 3.5, rotZ);
+
+        createLineSegment(A_h, B_h, COLOR_EDGE_SOLID);
+        createLineSegment(B_h, C_h, COLOR_EDGE_SOLID);
+        createLineSegment(C_h, D_h, COLOR_EDGE_SOLID);
+
+        createPolygonMesh([A_h, B_h, C_h, D_h], COLOR_PLANE_1, 0.2);
+
+        for (let i = 1; i <= 3; i++) {
+          const t = i / 4;
+          const p1 = lerpVec(A_h, D_h, t);
+          const p2 = lerpVec(B_h, C_h, t);
+          createGlowingHighlightSegment(p1, p2, COLOR_RESULT, 0.04);
+        }
+        createLabel3D('Thanh chắn (luôn song song sàn)', lerpVec(A_h, D_h, 0.5).add(lerpVec(B_h, C_h, 0.5)).multiplyScalar(0.5), '#fac775');
+      }
+    }
+
     function renderQuestion(index) {
+      clearScene();
+      resetCameraAngle();
+      renderQuestion3D(index);
+
       const item = QUESTIONS[index];
       document.getElementById('t4-q-num').textContent = `Câu ${index + 1} / ${QUESTIONS.length}`;
       document.getElementById('t4-q-text').textContent = item.q;

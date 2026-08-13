@@ -567,8 +567,8 @@
       </div>
       <div style="font-size: 13.5px; line-height: 1.6; color: #e2e8f0;">
         <p><b>1. Định lí Thalès trong không gian:</b><br>
-          Ba mặt phẳng đôi một song song $(P) // (Q) // (R)$ chắn trên hai cát tuyến $d, d'$ phân biệt những đoạn thẳng tương ứng tỉ lệ:
-          $$\frac{AB}{BC} = \frac{A'B'}{B'C'}$$
+          Ba mặt phẳng đôi một song song <b>(P) // (Q) // (R)</b> chắn trên hai cát tuyến <b>d, d'</b> phân biệt những đoạn thẳng tương ứng tỉ lệ:
+          <br><br><span style="color: #fac775; font-weight: 800; font-size: 15px;">AB / BC = A'B' / B'C'</span>
         </p>
         <p style="background: rgba(250, 199, 117, 0.15); padding: 10px; border-radius: 8px; border-left: 3px solid #fac775;">
           ⚠️ <b>Điều kiện bắt buộc:</b> Cả 3 mặt phẳng phải <b>đôi một song song</b>. Thiếu điều kiện này thì KHÔNG được áp dụng tỉ lệ Thalès.
@@ -644,7 +644,7 @@
         </div>
 
         <div class="info-box hint-box">
-          <b>Phản tư:</b> Khi kéo slider dịch chuyển (Q), hai tỉ số $\frac{AB}{BC}$ và $\frac{A'B'}{B'C'}$ ở góc màn hình có luôn bằng nhau không?
+          <b>Phản tư:</b> Khi kéo slider dịch chuyển (Q), hai tỉ số <b>AB / BC</b> và <b>A'B' / B'C'</b> ở góc màn hình có luôn bằng nhau không?
         </div>
 
         <div class="choice-group">
@@ -999,6 +999,42 @@
     }
 
     /* =========================================================================
+       4b. ANIMATE LINE UTILITY (ease-out cubic, §A1 05_threejs_engine.md)
+       Vẽ dần đường thẳng từ p1 → p2 trong durationMs ms.
+       ========================================================================= */
+    function animateLine(p1, p2, colorHex, durationMs = 900, onComplete = null, opacity = 1.0, isDashed = false) {
+      const startTime = performance.now();
+      const posArr = new Float32Array(6);
+      posArr[0] = p1.x; posArr[1] = p1.y; posArr[2] = p1.z;
+      posArr[3] = p1.x; posArr[4] = p1.y; posArr[5] = p1.z;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+      let mat;
+      if (isDashed) {
+        mat = new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.2, gapSize: 0.12, transparent: true, opacity });
+      } else {
+        mat = new THREE.LineBasicMaterial({ color: colorHex, transparent: true, opacity });
+      }
+      const line = new THREE.Line(geo, mat);
+      if (isDashed) line.computeLineDistances();
+      scene.add(line);
+      function tick() {
+        const elapsed = performance.now() - startTime;
+        const raw = Math.min(elapsed / durationMs, 1);
+        const t = 1 - Math.pow(1 - raw, 3); // ease-out cubic
+        const cur = p1.clone().lerp(p2, t);
+        const arr = geo.attributes.position.array;
+        arr[3] = cur.x; arr[4] = cur.y; arr[5] = cur.z;
+        geo.attributes.position.needsUpdate = true;
+        if (isDashed) line.computeLineDistances();
+        if (raw < 1) { requestAnimationFrame(tick); }
+        else if (onComplete) { onComplete(); }
+      }
+      tick();
+      return line;
+    }
+
+    /* =========================================================================
        5. TAB & SCENARIO MANAGEMENT
        ========================================================================= */
     let currentTab = 1;
@@ -1156,9 +1192,9 @@
 
       updatePlaneQ(1.8);
 
-      // Cát tuyến d và d'
-      createLineSegment(A_pt, C_pt, 0xffffff, 0.8);
-      createLineSegment(Ap_pt, Cp_pt, 0xffffff, 0.8);
+      // Cát tuyến d và d' (Animation mọc dần)
+      animateLine(A_pt, C_pt, 0xffffff, 800);
+      animateLine(Ap_pt, Cp_pt, 0xffffff, 800);
 
       // Điểm A, C, A', C'
       makeSpherePoint(A_pt, COLOR_RESULT, 0.1);
@@ -1268,8 +1304,8 @@
       const B_pt = lerpVec(A_pt, C_pt, 3 / 8);
       const Bp_pt = lerpVec(Ap_pt, Cp_pt, 3 / 8);
 
-      createLineSegment(A_pt, C_pt, 0xffffff, 0.8);
-      createLineSegment(Ap_pt, Cp_pt, 0xffffff, 0.8);
+      animateLine(A_pt, C_pt, 0xffffff, 800);
+      animateLine(Ap_pt, Cp_pt, 0xffffff, 800);
 
       makeSpherePoint(A_pt, COLOR_RESULT, 0.1); makeSpherePoint(B_pt, COLOR_RESULT, 0.1); makeSpherePoint(C_pt, COLOR_RESULT, 0.1);
       makeSpherePoint(Ap_pt, COLOR_RESULT, 0.1); makeSpherePoint(Bp_pt, COLOR_RESULT, 0.1); makeSpherePoint(Cp_pt, COLOR_RESULT, 0.1);
@@ -1319,7 +1355,13 @@
       createDynamicEdge(A, B); createDynamicEdge(B, C); createDynamicEdge(C, D); createDynamicEdge(D, A);
 
       createPolygonMesh([A, B, C, D], COLOR_PLANE_BASE, 0.18);
-      createPolygonMesh([F, G, E, H_pt], COLOR_PLANE_2, 0.25);
+      animateLine(F, G, COLOR_PLANE_2, 600);
+      setTimeout(() => animateLine(G, E, COLOR_PLANE_2, 600), 180);
+      setTimeout(() => animateLine(E, H_pt, COLOR_PLANE_2, 600), 360);
+      setTimeout(() => animateLine(H_pt, F, COLOR_PLANE_2, 600), 540);
+      setTimeout(() => {
+        createPolygonMesh([F, G, E, H_pt], COLOR_PLANE_2, 0.25);
+      }, 720);
 
       makeSpherePoint(S, COLOR_RESULT, 0.1);
       makeSpherePoint(A, COLOR_RESULT, 0.1); makeSpherePoint(B, COLOR_RESULT, 0.1);

@@ -457,10 +457,10 @@
           (P) // (Q) khi (P) chứa 2 đường thẳng cắt nhau cùng song song (Q). Nếu (R) cắt (P) và (P)//(Q) thì (R) cũng cắt (Q).
         </p>
         <p><b>2. Định lí Thalès không gian:</b><br>
-          Các mặt phẳng song song chắn trên 2 cát tuyến các đoạn thẳng tương ứng tỉ lệ: $\frac{AM}{AA'} = \frac{BN}{BB'}$.
+          Các mặt phẳng song song chắn trên 2 cát tuyến các đoạn thẳng tương ứng tỉ lệ: <b>AM / AA' = BN / BB'</b>.
         </p>
         <p><b>3. Lăng trụ & Phép tịnh tiến:</b><br>
-          Lăng trụ là phép tịnh tiến đáy dưới thành đáy trên theo $\vec{AA'}$. Mọi điểm tương ứng (trọng tâm, trung điểm...) đều tịnh tiến theo đúng vector đó.
+          Lăng trụ là phép tịnh tiến đáy dưới thành đáy trên theo vector <b>AA'</b>. Mọi điểm tương ứng (trọng tâm, trung điểm...) đều tịnh tiến theo đúng vector đó.
         </p>
         <p><b>4. Lăng trụ xiên:</b><br>
           Định nghĩa lăng trụ chỉ yêu cầu 2 đáy // & các cạnh bên // và bằng nhau, KHÔNG bắt buộc cạnh bên phải vuông góc với đáy.
@@ -481,7 +481,7 @@
       <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: left; font-size: 13px; line-height: 1.6;">
         <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Điều kiện // mp:</b> Cần 2 đường cắt nhau cùng song song.</div>
         <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Thalès không gian:</b> Các đoạn tỉ lệ trên mặt cắt // đáy.</div>
-        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Trọng tâm & Tịnh tiến:</b> $\vec{GG'} = \vec{AA'}$ với mọi điểm tương ứng.</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Trọng tâm & Tịnh tiến:</b> <b>GG' = AA'</b> (song song & bằng nhau) với mọi điểm tương ứng.</div>
         <div style="display: flex; gap: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Lăng trụ xiên:</b> Vẫn là lăng trụ hợp lệ thỏa mãn 2 điều kiện.</div>
       </div>
 
@@ -614,7 +614,7 @@
       <div class="tab-content" id="tab-5">
         <div class="step-title"><i class="ti ti-aspect-ratio"></i> Tab 5: Thiết diện hình hộp & Diện tích đáy</div>
         <div class="info-box">
-          Hình hộp <b>ABCD.A'B'C'D'</b>. Điểm M trên AB ($AM = \frac{1}{3}AB$). Mặt phẳng $(\alpha)$ qua M song song $(ADD'A')$.
+          Hình hộp <b>ABCD.A'B'C'D'</b>. Điểm M trên AB (AM = ⅓ AB). Mặt phẳng (α) qua M song song (ADD'A').
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
@@ -887,6 +887,43 @@
       if (dashed) line.computeLineDistances();
       line.renderOrder = 10;
       scene.add(line);
+      return line;
+    }
+
+    /* =========================================================================
+       4b. ANIMATE LINE UTILITY (ease-out cubic, §A1 05_threejs_engine.md)
+       Vẽ dần đường thẳng từ p1 → p2 trong durationMs ms.
+       ========================================================================= */
+    function animateLine(p1, p2, colorHex, durationMs = 900, onComplete = null, opacity = 1, dashed = false) {
+      const startTime = performance.now();
+      const posArr = new Float32Array(6);
+      posArr[0] = p1.x; posArr[1] = p1.y; posArr[2] = p1.z;
+      posArr[3] = p1.x; posArr[4] = p1.y; posArr[5] = p1.z;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+      let mat;
+      if (dashed) {
+        mat = new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.15, gapSize: 0.08, transparent: true, opacity });
+      } else {
+        mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 2, transparent: true, opacity });
+      }
+      const line = new THREE.Line(geo, mat);
+      if (dashed) line.computeLineDistances();
+      line.renderOrder = 10;
+      scene.add(line);
+      function tick() {
+        const elapsed = performance.now() - startTime;
+        const raw = Math.min(elapsed / durationMs, 1);
+        const t = 1 - Math.pow(1 - raw, 3); // ease-out cubic
+        const cur = p1.clone().lerp(p2, t);
+        const arr = geo.attributes.position.array;
+        arr[3] = cur.x; arr[4] = cur.y; arr[5] = cur.z;
+        geo.attributes.position.needsUpdate = true;
+        if (dashed) line.computeLineDistances();
+        if (raw < 1) { requestAnimationFrame(tick); }
+        else if (onComplete) { onComplete(); }
+      }
+      tick();
       return line;
     }
 
@@ -1332,7 +1369,7 @@
 
       const wrapQ = document.getElementById('t2-questions-wrap');
       if (c === 'A') {
-        document.getElementById('t2-case-desc').innerHTML = `Lăng trụ tứ giác <b>ABCD.A'B'C'D'</b>. Các điểm M, N, P, Q nằm trên AA', BB', CC', DD' thỏa mãn $\\frac{AM}{AA'} = \\frac{1}{3}$.`;
+        document.getElementById('t2-case-desc').innerHTML = `Lăng trụ tứ giác <b>ABCD.A'B'C'D'</b>. Các điểm M, N, P, Q nằm trên AA', BB', CC', DD' thỏa mãn <b>AM / AA' = ⅓</b>.`;
         wrapQ.innerHTML = `
           <button class="choice-btn" id="t2-q1"><span>1. MN có song song AB không?</span> <i class="ti ti-circle"></i></button>
           <button class="choice-btn" id="t2-q2" style="display:none;"><span>2. NP có song song BC không?</span> <i class="ti ti-circle"></i></button>
@@ -1375,7 +1412,7 @@
       const fb = document.getElementById('t2-feedback');
       document.getElementById('t2-q1').onclick = () => {
         document.getElementById('t2-q1').className = 'choice-btn correct';
-        createLineSegment(M, N, 0xFAC775);
+        animateLine(M, N, 0xFAC775, 750);
         document.getElementById('t2-q2').style.display = 'flex';
         document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Đúng! Vì AM/AA' = BN/BB' = ⅓, theo định lí Thalès trong mp(ABB'A') ta có <b>MN // AB</b>.`;
         fb.style.display = 'flex';
@@ -1383,8 +1420,10 @@
 
       document.getElementById('t2-q2').onclick = () => {
         document.getElementById('t2-q2').className = 'choice-btn correct';
-        createLineSegment(N, P, 0xFAC775); createLineSegment(P, Q, 0xFAC775); createLineSegment(Q, M, 0xFAC775);
-        createPolygonMesh([M, N, P, Q], COLOR_PLANE_2, 0.35);
+        animateLine(N, P, 0xFAC775, 600);
+        setTimeout(() => animateLine(P, Q, 0xFAC775, 600), 200);
+        setTimeout(() => animateLine(Q, M, 0xFAC775, 600), 400);
+        setTimeout(() => createPolygonMesh([M, N, P, Q], COLOR_PLANE_2, 0.35), 650);
         t2CaseADone = true;
         document.getElementById('t2-sub-c1').innerHTML = 'Case A: Tỉ lệ 1/3 ✓';
 
@@ -1495,7 +1534,7 @@
 
           const idx1 = i - 1;
           const idx2 = i % 6;
-          createLineSegment(midPts[idx1], midPts[idx2], 0xFAC775);
+          animateLine(midPts[idx1], midPts[idx2], 0xFAC775, 700);
           makeSpherePoint(midPts[idx1], COLOR_RESULT, 0.1);
 
           t3EdgesDone++;
@@ -1558,8 +1597,8 @@
       const fb = document.getElementById('t4-feedback');
       document.getElementById('t4-opt-1').onclick = () => {
         document.getElementById('t4-opt-1').className = 'choice-btn correct';
-        createLineSegment(G, Gp, 0xef4444);
-        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> 🎉 Chính xác! Bản chất lăng trụ là phép tịnh tiến đáy dưới thành đáy trên theo $\\vec{AA'}$. Vì G tịnh tiến thành G' theo đúng vector đó $\\rightarrow$ <b>GG' // AA' và GG' = AA'</b>!`;
+        animateLine(G, Gp, 0xef4444, 850);
+        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> 🎉 Chính xác! Bản chất lăng trụ là phép tịnh tiến đáy dưới thành đáy trên theo vector <b>AA'</b>. Vì G tịnh tiến thành G' theo đúng vector đó <b>→ GG' // AA' và GG' = AA'</b>!`;
         fb.style.display = 'flex';
         document.getElementById('btn-next-tab4').style.display = 'inline-flex';
         unlockTab(5);
@@ -1614,9 +1653,11 @@
         makeSpherePoint(N, COLOR_RESULT, 0.11); makeSpherePoint(Mp, COLOR_RESULT, 0.11); makeSpherePoint(Np, COLOR_RESULT, 0.11);
         createLabel3D('N', N, '#FAC775'); createLabel3D("M'", Mp, '#FAC775'); createLabel3D("N'", Np, '#FAC775');
 
-        createPolygonMesh([M, N, Np, Mp], COLOR_PLANE_2, 0.35);
-        createLineSegment(M, N, 0xFAC775); createLineSegment(N, Np, 0xFAC775);
-        createLineSegment(Np, Mp, 0xFAC775); createLineSegment(Mp, M, 0xFAC775);
+        animateLine(M, N, 0xFAC775, 650);
+        setTimeout(() => animateLine(N, Np, 0xFAC775, 650), 200);
+        setTimeout(() => animateLine(Np, Mp, 0xFAC775, 650), 400);
+        setTimeout(() => animateLine(Mp, M, 0xFAC775, 650), 600);
+        setTimeout(() => createPolygonMesh([M, N, Np, Mp], COLOR_PLANE_2, 0.35), 800);
 
         document.getElementById('t5-step2-wrap').style.display = 'block';
         document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Đã dựng mặt cắt (α). Hãy trả lời tỉ lệ xác định N trên BC bên dưới!`;
@@ -1626,7 +1667,7 @@
       document.getElementById('t5-opt-13').onclick = () => {
         document.getElementById('t5-opt-13').className = 'choice-btn correct';
         document.getElementById('t5-calc-wrap').style.display = 'block';
-        document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Đúng! Theo định lí Thalès không gian, vì (α) // (ADD'A') $\\rightarrow$ <b>BN = ⅓ BC</b>. Khối AMND.A'M'N'D' là hình hộp con hợp lệ! Bây giờ hãy làm bài toán diện tích.`;
+        document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Đúng! Theo định lí Thalès không gian, vì (α) // (ADD'A') <b>→ BN = ⅓ BC</b>. Khối AMND.A'M'N'D' là hình hộp con hợp lệ! Bây giờ hãy làm bài toán diện tích.`;
         fb.style.display = 'flex';
       };
 
@@ -1714,7 +1755,7 @@
       const fb = document.getElementById('t6-feedback');
       document.getElementById('t6-qa-1').onclick = () => {
         document.getElementById('t6-qa-1').className = 'choice-btn correct';
-        document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> Chính xác! Mỗi mép ván song song bức tường $\\rightarrow$ Các mép ván nằm trên các mp ngang song song sẽ đôi một song song nhau!`;
+        document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> Chính xác! Mỗi mép ván song song bức tường <b>→</b> Các mép ván nằm trên các mp ngang song song sẽ đôi một song song nhau!`;
         fb.style.display = 'flex';
       };
     }
@@ -1749,7 +1790,7 @@
       const fb = document.getElementById('t6-feedback');
       document.getElementById('t6-qb-yes').onclick = () => {
         document.getElementById('t6-qb-yes').className = 'choice-btn correct';
-        document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> 🎉 Tuyệt vời! Định nghĩa lăng trụ KHÔNG bắt buộc cạnh bên phải vuông góc đáy, chỉ cần các cạnh bên song song và bằng nhau $\\rightarrow$ Lăng trụ xiên vẫn hoàn toàn hợp lệ!`;
+        document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> 🎉 Tuyệt vời! Định nghĩa lăng trụ KHÔNG bắt buộc cạnh bên phải vuông góc đáy, chỉ cần các cạnh bên song song và bằng nhau <b>→</b> Lăng trụ xiên vẫn hoàn toàn hợp lệ!`;
         fb.style.display = 'flex';
         setTimeout(() => {
           document.getElementById('celebration-modal').classList.add('show');

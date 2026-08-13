@@ -436,9 +436,9 @@
       </div>
       <div style="font-size: 13px; line-height: 1.6; color: #e2e8f0; max-height: 60vh; overflow-y: auto; padding-right: 6px;">
         <p><b>1. Phép chiếu song song & Xuyên tâm:</b><br>
-          Trong phép chiếu song song, các tia chiếu song song nhau theo một phương $\Delta$ cho trước. Trong phép chiếu xuyên tâm, mọi tia chiếu xuất phát từ một điểm tâm $C$ cố định.
+          Trong phép chiếu song song, các tia chiếu song song nhau theo một <b>phương Δ</b> cho trước. Trong phép chiếu xuyên tâm, mọi tia chiếu xuất phát từ một điểm tâm $C$ cố định.
         </p>
-        <p><b>2. Giới hạn toán học ($C \to \infty$):</b><br>
+        <p><b>2. Giới hạn toán học (C → ∞):</b><br>
           Khi tâm chiếu $C$ lùi ra xa vô tận, phép chiếu xuyên tâm dần biến thành phép chiếu song song. Phép chiếu song song chính là trường hợp giới hạn của phép chiếu xuyên tâm.
         </p>
         <p><b>3. Ảo giác thị giác & Góc chiếu bí mật:</b><br>
@@ -459,7 +459,7 @@
 
       <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: left; font-size: 13px; line-height: 1.6;">
         <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Trạm A:</b> Đường ray song song thật, sự hội tụ chỉ là hiệu ứng phối cảnh.</div>
-        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Trạm B:</b> Phép chiếu song song là giới hạn của phép chiếu xuyên tâm khi $C \to \infty$.</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Trạm B:</b> Phép chiếu song song là giới hạn của phép chiếu xuyên tâm khi <b>C → ∞</b>.</div>
         <div style="display: flex; gap: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Trạm C:</b> Ảo giác thị giác 3D chỉ xuất hiện ở đúng 1 góc nhìn góc phối cảnh đặc biệt.</div>
       </div>
 
@@ -711,6 +711,43 @@
       return line;
     }
 
+    /* =========================================================================
+       4b. ANIMATE LINE UTILITY (ease-out cubic, §A1 05_threejs_engine.md)
+       Vẽ dần đường thẳng từ p1 → p2 trong durationMs ms.
+       ========================================================================= */
+    function animateLine(p1, p2, colorHex, durationMs = 900, onComplete = null, opacity = 1, dashed = false) {
+      const startTime = performance.now();
+      const posArr = new Float32Array(6);
+      posArr[0] = p1.x; posArr[1] = p1.y; posArr[2] = p1.z;
+      posArr[3] = p1.x; posArr[4] = p1.y; posArr[5] = p1.z;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+      let mat;
+      if (dashed) {
+        mat = new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.15, gapSize: 0.08, transparent: true, opacity });
+      } else {
+        mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 2, transparent: true, opacity });
+      }
+      const line = new THREE.Line(geo, mat);
+      if (dashed) line.computeLineDistances();
+      line.renderOrder = 10;
+      scene.add(line);
+      function tick() {
+        const elapsed = performance.now() - startTime;
+        const raw = Math.min(elapsed / durationMs, 1);
+        const t = 1 - Math.pow(1 - raw, 3); // ease-out cubic
+        const cur = p1.clone().lerp(p2, t);
+        const arr = geo.attributes.position.array;
+        arr[3] = cur.x; arr[4] = cur.y; arr[5] = cur.z;
+        geo.attributes.position.needsUpdate = true;
+        if (dashed) line.computeLineDistances();
+        if (raw < 1) { requestAnimationFrame(tick); }
+        else if (onComplete) { onComplete(); }
+      }
+      tick();
+      return line;
+    }
+
     function createPolygonMesh(vertices, colorHex, opacity = 0.25, name = '') {
       const geo = new THREE.BufferGeometry();
       const pos = [];
@@ -880,15 +917,16 @@
        ========================================================================= */
     function initTab1() {
       clearScene();
-      const trackDist = 1.6; const trackLen = 40;
-      const leftRailPoints = [new THREE.Vector3(-trackDist / 2, 0.05, 10), new THREE.Vector3(-trackDist / 2, 0.05, -trackLen)];
-      const rightRailPoints = [new THREE.Vector3(trackDist / 2, 0.05, 10), new THREE.Vector3(trackDist / 2, 0.05, -trackLen)];
+      const trackDist = 1.6; const trackLen = 70;
+      const leftRailPoints = [new THREE.Vector3(-trackDist / 2, 0.05, 25), new THREE.Vector3(-trackDist / 2, 0.05, -trackLen)];
+      const rightRailPoints = [new THREE.Vector3(trackDist / 2, 0.05, 25), new THREE.Vector3(trackDist / 2, 0.05, -trackLen)];
 
+      // Dựng hai thanh đường ray cố định nguyên vẹn (không bị biến mất hay ngắt đoạn khi bay camera)
       createLineSegment(leftRailPoints[0], leftRailPoints[1], 0xFAC775);
       createLineSegment(rightRailPoints[0], rightRailPoints[1], 0xFAC775);
 
-      // Sleepers / Ties along railway
-      for (let z = 8; z >= -trackLen; z -= 1.5) {
+      // Các thanh tà vẹt dọc theo đường ray từ Z = 24 tới Z = -70
+      for (let z = 24; z >= -trackLen; z -= 1.5) {
         createLineSegment(new THREE.Vector3(-trackDist / 2 - 0.2, 0.02, z), new THREE.Vector3(trackDist / 2 + 0.2, 0.02, z), 0x94a3b8);
       }
 
@@ -925,17 +963,17 @@
       document.getElementById('btn-t1-measure').onclick = () => {
         makeSpherePoint(new THREE.Vector3(-trackDist / 2, 0.05, 5), 0x34d399, 0.12);
         makeSpherePoint(new THREE.Vector3(trackDist / 2, 0.05, 5), 0x34d399, 0.12);
-        createLineSegment(new THREE.Vector3(-trackDist / 2, 0.05, 5), new THREE.Vector3(trackDist / 2, 0.05, 5), 0x34d399);
+        animateLine(new THREE.Vector3(-trackDist / 2, 0.05, 5), new THREE.Vector3(trackDist / 2, 0.05, 5), 0x34d399, 600);
         createLabel3D('d1 = 1.60m', new THREE.Vector3(0, 0.3, 5), '#34d399');
 
         makeSpherePoint(new THREE.Vector3(-trackDist / 2, 0.05, -12), 0x34d399, 0.12);
         makeSpherePoint(new THREE.Vector3(trackDist / 2, 0.05, -12), 0x34d399, 0.12);
-        createLineSegment(new THREE.Vector3(-trackDist / 2, 0.05, -12), new THREE.Vector3(trackDist / 2, 0.05, -12), 0x34d399);
+        animateLine(new THREE.Vector3(-trackDist / 2, 0.05, -12), new THREE.Vector3(trackDist / 2, 0.05, -12), 0x34d399, 600);
         createLabel3D('d2 = 1.60m', new THREE.Vector3(0, 0.3, -12), '#34d399');
 
         makeSpherePoint(new THREE.Vector3(-trackDist / 2, 0.05, -26), 0x34d399, 0.12);
         makeSpherePoint(new THREE.Vector3(trackDist / 2, 0.05, -26), 0x34d399, 0.12);
-        createLineSegment(new THREE.Vector3(-trackDist / 2, 0.05, -26), new THREE.Vector3(trackDist / 2, 0.05, -26), 0x34d399);
+        animateLine(new THREE.Vector3(-trackDist / 2, 0.05, -26), new THREE.Vector3(trackDist / 2, 0.05, -26), 0x34d399, 600);
         createLabel3D('d3 = 1.60m', new THREE.Vector3(0, 0.3, -26), '#34d399');
 
         document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> 🎉 Số đo thực tế d1 = d2 = d3 = <b>1.60m không đổi</b>! Sự "hội tụ" chỉ là hiệu ứng thị giác của mắt/phối cảnh. Bạn đã hoàn thành Trạm A!`;
@@ -1055,7 +1093,7 @@
 
       const fb = document.getElementById('t2-feedback');
       if (sldXcVal >= 18.0) {
-        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Tuyệt vời! Khi C ở rất xa (${sldXcVal.toFixed(1)}m), các tia chiếu CM gần như song song nhau $\\rightarrow$ Chứng minh <b>Phép chiếu song song là trường hợp giới hạn của Phép chiếu xuyên tâm khi $C \\to \\infty$</b>!`;
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Tuyệt vời! Khi C ở rất xa (${sldXcVal.toFixed(1)}m), các tia chiếu CM gần như song song nhau <b>→</b> Chứng minh <b>Phép chiếu song song là trường hợp giới hạn của Phép chiếu xuyên tâm khi C → ∞</b>!`;
         fb.style.display = 'flex';
         document.getElementById('btn-next-tab2').style.display = 'inline-flex';
         unlockTab(3);

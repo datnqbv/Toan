@@ -977,6 +977,43 @@
       return line;
     }
 
+    /* =========================================================================
+       4b. ANIMATE LINE UTILITY (ease-out cubic, §A1 05_threejs_engine.md)
+       Vẽ dần đường thẳng từ p1 → p2 trong durationMs ms.
+       ========================================================================= */
+    function animateLine(p1, p2, colorHex, durationMs = 900, onComplete = null, opacity = 1, dashed = false) {
+      const startTime = performance.now();
+      const posArr = new Float32Array(6);
+      posArr[0] = p1.x; posArr[1] = p1.y; posArr[2] = p1.z;
+      posArr[3] = p1.x; posArr[4] = p1.y; posArr[5] = p1.z;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+      let mat;
+      if (dashed) {
+        mat = new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.15, gapSize: 0.08, transparent: true, opacity });
+      } else {
+        mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 2, transparent: true, opacity });
+      }
+      const line = new THREE.Line(geo, mat);
+      if (dashed) line.computeLineDistances();
+      line.renderOrder = 10;
+      scene.add(line);
+      function tick() {
+        const elapsed = performance.now() - startTime;
+        const raw = Math.min(elapsed / durationMs, 1);
+        const t = 1 - Math.pow(1 - raw, 3); // ease-out cubic
+        const cur = p1.clone().lerp(p2, t);
+        const arr = geo.attributes.position.array;
+        arr[3] = cur.x; arr[4] = cur.y; arr[5] = cur.z;
+        geo.attributes.position.needsUpdate = true;
+        if (dashed) line.computeLineDistances();
+        if (raw < 1) { requestAnimationFrame(tick); }
+        else if (onComplete) { onComplete(); }
+      }
+      tick();
+      return line;
+    }
+
     function createPolygonMesh(vertices, colorHex, opacity = 0.25, name = '') {
       const geo = new THREE.BufferGeometry();
       const pos = [];
@@ -1304,7 +1341,7 @@
       } else {
         const btn = document.getElementById(`t1-opt-${ans}`);
         if (btn) btn.className = 'choice-btn wrong';
-        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Hãy đếm 4 cặp đỉnh đối diện: (A,C'), (B,D'), (C,A'), (D,B') $\rightarrow$ Có tất cả 4 đường chéo khối!`;
+        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Hãy đếm 4 cặp đỉnh đối diện: (A,C'), (B,D'), (C,A'), (D,B') <b>→</b> Có tất cả 4 đường chéo khối!`;
       }
     }
 
@@ -1364,10 +1401,12 @@
       document.getElementById('t2-calc-wrap').style.display = 'none';
 
       document.getElementById('t2-btn-step1').onclick = () => {
-        createLineSegment(P, Rp, 0xFAC775); // PR'
-        createLineSegment(S, Qp, 0x38bdf8); // SQ'
-        makeSpherePoint(P.clone().add(Rp).multiplyScalar(0.5), 0xef4444, 0.13); // Midpoint O
-        createLabel3D('O', P.clone().add(Rp).multiplyScalar(0.5), '#ef4444');
+        animateLine(P, Rp, 0xFAC775, 750); // PR'
+        setTimeout(() => animateLine(S, Qp, 0x38bdf8, 750), 250); // SQ'
+        setTimeout(() => {
+          makeSpherePoint(P.clone().add(Rp).multiplyScalar(0.5), 0xef4444, 0.13); // Midpoint O
+          createLabel3D('O', P.clone().add(Rp).multiplyScalar(0.5), '#ef4444');
+        }, 850);
 
         document.getElementById('t2-step3-wrap').style.display = 'block';
         document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Đã dựng 2 đường chéo PR' và SQ'. Hãy trả lời bước lập luận trung gian bên dưới!`;
@@ -1385,17 +1424,17 @@
 
       document.getElementById('t2-btn-o1-no').onclick = () => {
         document.getElementById('t2-btn-o1-no').className = 'choice-btn wrong';
-        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Vì PS // QR và QR // Q'R' $\rightarrow$ PS // Q'R' và PS = Q'R', nên PSR'Q' bắt buộc là hình bình hành!`;
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Vì PS // QR và QR // Q'R' <b>→</b> PS // Q'R' và PS = Q'R', nên PSR'Q' bắt buộc là hình bình hành!`;
         fb.style.display = 'flex';
       };
 
       document.getElementById('t2-btn-o2-mid').onclick = () => {
         document.getElementById('t2-btn-o2-mid').className = 'choice-btn correct';
         document.getElementById('t2-btn-o2-any').className = 'choice-btn';
-        createLineSegment(R, Pp, 0x34d399); // RP'
-        createLineSegment(Q, Sp, 0xf43f5e); // QS'
+        animateLine(R, Pp, 0x34d399, 750); // RP'
+        setTimeout(() => animateLine(Q, Sp, 0xf43f5e, 750), 250); // QS'
         document.getElementById('t2-calc-wrap').style.display = 'block';
-        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Xuất sắc! 2 đường chéo của HBH PSR'Q' cắt nhau tại <b>trung điểm O của mỗi đường</b>. Tương tự cho 2 đường chéo còn lại $\rightarrow$ Cả 4 đường chéo cùng cắt nhau tại O! Bây giờ hãy làm bài toán tính OP bên dưới.`;
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Xuất sắc! 2 đường chéo của HBH PSR'Q' cắt nhau tại <b>trung điểm O của mỗi đường</b>. Tương tự cho 2 đường chéo còn lại <b>→</b> Cả 4 đường chéo cùng cắt nhau tại O! Bây giờ hãy làm bài toán tính OP bên dưới.`;
         fb.style.display = 'flex';
       };
 
@@ -1502,11 +1541,11 @@
       fb.style.display = 'flex';
       if (hitName === 't3_bot_a') {
         document.getElementById('t3-btn-block-a').className = 'choice-btn correct';
-        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Khối (a) có mặt đáy ABCD là <b>Hình bình hành</b> $\rightarrow$ Đây LÀ 1 <b>Hình hộp</b> hợp lệ!`;
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Khối (a) có mặt đáy ABCD là <b>Hình bình hành</b> <b>→</b> Đây LÀ 1 <b>Hình hộp</b> hợp lệ!`;
       } else if (hitName === 't3_bot_b') {
         document.getElementById('t3-btn-block-b').className = 'choice-btn wrong';
         document.getElementById('t3-morph-wrap').style.display = 'block';
-        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Khối (b) có mặt đáy EFGH là <b>Hình thang</b> (không phải HBH) $\rightarrow$ Đây KHÔNG PHẢI hình hộp! Thử kéo slider bên trên để biến đáy thành HBH!`;
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Khối (b) có mặt đáy EFGH là <b>Hình thang</b> (không phải HBH) <b>→</b> Đây KHÔNG PHẢI hình hộp! Thử kéo slider bên trên để biến đáy thành HBH!`;
       }
     }
 
