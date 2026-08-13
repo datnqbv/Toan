@@ -839,6 +839,49 @@
       }
     }
 
+    /* =========================================================================
+       4b. ANIMATE LINE UTILITY (ease-out cubic, §A1 05_threejs_engine.md)
+       Vẽ dần đường thẳng từ p1 → p2 trong `durationMs` ms.
+       Trả về line object để caller có thể track nếu cần.
+       ========================================================================= */
+    function animateLine(p1, p2, colorHex, durationMs = 900, onComplete = null, opacity = 1, dashed = false) {
+      const startTime = performance.now();
+      const posArr = new Float32Array(6);
+      posArr[0] = p1.x; posArr[1] = p1.y; posArr[2] = p1.z;
+      posArr[3] = p1.x; posArr[4] = p1.y; posArr[5] = p1.z;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+
+      let mat;
+      if (dashed) {
+        mat = new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.15, gapSize: 0.08, transparent: true, opacity });
+      } else {
+        mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 2, transparent: true, opacity });
+      }
+      const line = new THREE.Line(geo, mat);
+      if (dashed) line.computeLineDistances();
+      line.renderOrder = 10;
+      scene.add(line);
+
+      function tick() {
+        const elapsed = performance.now() - startTime;
+        const raw = Math.min(elapsed / durationMs, 1);
+        const t = 1 - Math.pow(1 - raw, 3); // ease-out cubic
+        const cur = p1.clone().lerp(p2, t);
+        const arr = geo.attributes.position.array;
+        arr[3] = cur.x; arr[4] = cur.y; arr[5] = cur.z;
+        geo.attributes.position.needsUpdate = true;
+        if (dashed) line.computeLineDistances();
+        if (raw < 1) {
+          requestAnimationFrame(tick);
+        } else if (onComplete) {
+          onComplete();
+        }
+      }
+      tick();
+      return line;
+    }
+
     function createLineSegment(p1, p2, colorHex, opacity = 1, dashed = false) {
       const geo = new THREE.BufferGeometry().setFromPoints([p1, p2]);
       let mat;
@@ -1126,8 +1169,11 @@
       createLabel3D('M', M, '#FAC775'); createLabel3D('N', N, '#FAC775');
       createLabel3D('P', P, '#FAC775'); createLabel3D('Q', Q, '#FAC775');
 
-      createLineSegment(E, M, 0xFAC775, 0.5, true); createLineSegment(F, N, 0xFAC775, 0.5, true);
-      createLineSegment(G, P, 0xFAC775, 0.5, true); createLineSegment(H, Q, 0xFAC775, 0.5, true);
+      // Animate chiếu tuyến EFGH → MNPQ tuần tự (300ms delay giữa mỗi đường)
+      animateLine(E, M, 0xFAC775, 750, null, 0.65, true);
+      setTimeout(() => animateLine(F, N, 0xFAC775, 750, null, 0.65, true), 280);
+      setTimeout(() => animateLine(G, P, 0xFAC775, 750, null, 0.65, true), 560);
+      setTimeout(() => animateLine(H, Q, 0xFAC775, 750, null, 0.65, true), 840);
 
       document.getElementById('t1-b-yes').onclick = () => {
         document.getElementById('t1-b-yes').className = 'choice-btn correct';
@@ -1199,7 +1245,12 @@
 
       if (t1CStepIdx >= 2) {
         makeSpherePoint(M, COLOR_PLANE_3, 0.09);
-        createLineSegment(E, M, COLOR_RESULT);
+        // Bước 2 mới → animate vẽ trung tuyến EM; bước sau → hiện ngay
+        if (t1CStepIdx === 2) {
+          animateLine(E, M, COLOR_RESULT, 900);
+        } else {
+          createLineSegment(E, M, COLOR_RESULT);
+        }
         createLabel3D('M (trung điểm)', M, '#34d399');
       }
       if (t1CStepIdx >= 3) {
@@ -1220,8 +1271,16 @@
         makeSpherePoint(Ep, COLOR_RESULT); makeSpherePoint(Fp, COLOR_RESULT); makeSpherePoint(Gp, COLOR_RESULT);
         createLabel3D("E'", Ep, '#FAC775'); createLabel3D("F'", Fp, '#FAC775'); createLabel3D("G'", Gp, '#FAC775');
 
-        createLineSegment(E, Ep, 0xFAC775, 0.4, true); createLineSegment(F, Fp, 0xFAC775, 0.4, true);
-        createLineSegment(G, Gp, 0xFAC775, 0.4, true);
+        // Bước 4 mới → animate 3 đường chiếu xuống tuần tự; bước sau → hiện ngay
+        if (t1CStepIdx === 4) {
+          animateLine(E, Ep, 0xFAC775, 700, null, 0.5, true);
+          setTimeout(() => animateLine(F, Fp, 0xFAC775, 700, null, 0.5, true), 250);
+          setTimeout(() => animateLine(G, Gp, 0xFAC775, 700, null, 0.5, true), 500);
+        } else {
+          createLineSegment(E, Ep, 0xFAC775, 0.4, true);
+          createLineSegment(F, Fp, 0xFAC775, 0.4, true);
+          createLineSegment(G, Gp, 0xFAC775, 0.4, true);
+        }
         makeSpherePoint(Mp, COLOR_PLANE_3, 0.09); createLabel3D("M'", Mp, '#34d399');
         makeSpherePoint(Kp, COLOR_RESULT, 0.12); createLabel3D("K'", Kp, '#FAC775');
         createLineSegment(Ep, Mp, COLOR_RESULT);
@@ -1390,7 +1449,7 @@
        8. TAB 3: VẼ HÌNH BIỂU DIỄN KHỐI CHÓP ĐÁY HÌNH THANG
        ========================================================================= */
     let t3RatioVal = 1.0;
-    let t3StepState = { apexPlaced: false, connected: false };
+    let t3StepState = { apexPlaced: false, connected: false, animateConnect: false };
 
     function renderTab3Pyramid(ratio = 1.0) {
       clearScene();
@@ -1441,8 +1500,16 @@
         const Cb2 = new THREE.Vector3(2.33, 0.2, -0.8); const Db2 = new THREE.Vector3(0.0, 0.2, -0.8);
         const S2 = new THREE.Vector3(1.2, 2.6, 0);
 
-        createLineSegment(S2, Ab2, COLOR_RESULT); createLineSegment(S2, Bb2, COLOR_RESULT);
-        createLineSegment(S2, Cb2, COLOR_RESULT); createLineSegment(S2, Db2, COLOR_RESULT, 1, true); // Hidden edge
+        if (t3StepState.animateConnect) {
+          // Animate 4 cạnh bên S'→A'/B'/C'/D' tuần tự (250ms delay)
+          animateLine(S2, Ab2, COLOR_RESULT, 700);
+          setTimeout(() => animateLine(S2, Bb2, COLOR_RESULT, 700), 250);
+          setTimeout(() => animateLine(S2, Cb2, COLOR_RESULT, 700), 500);
+          setTimeout(() => animateLine(S2, Db2, COLOR_RESULT, 700, null, 1, true), 750);
+        } else {
+          createLineSegment(S2, Ab2, COLOR_RESULT); createLineSegment(S2, Bb2, COLOR_RESULT);
+          createLineSegment(S2, Cb2, COLOR_RESULT); createLineSegment(S2, Db2, COLOR_RESULT, 1, true);
+        }
 
         createLabel3D('Hình Biểu Diễn 2D', new THREE.Vector3(1.2, -0.1, 0.8), '#FAC775');
       }
@@ -1487,7 +1554,9 @@
 
       document.getElementById('btn-t3-connect').onclick = () => {
         t3StepState.connected = true;
+        t3StepState.animateConnect = true;  // cờ kích hoạt animation cạnh bên
         renderTab3Pyramid(t3RatioVal);
+        t3StepState.animateConnect = false; // reset sau khi render đã khởi động animation
 
         document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> 🎉 Hoàn hảo! Hình biểu diễn 2D giữ đúng tính song song và tỉ lệ AB/CD = 4/3. Đã tạo thành công hình biểu diễn của hình chóp S.ABCD. Bạn đã hoàn thành Tab 3!`;
         document.getElementById('t3-feedback').style.display = 'flex';
@@ -1591,8 +1660,11 @@
       const Cp = C.clone().add(sunConfig.dir.clone().multiplyScalar(tC)); Cp.y = 0.01;
       const Dp = D.clone().add(sunConfig.dir.clone().multiplyScalar(tC)); Dp.y = 0.01;
 
-      // Shadow Lines A'B' and C'D'
-      createLineSegment(Ap, Bp, COLOR_RESULT); createLineSegment(Cp, Dp, COLOR_RESULT);
+      // Shadow Lines A'B' và C'D' — animate dần để làm nổi bật tính song song
+      // Bóng trên (A'B') trước, bóng dưới (C'D') sau 350ms
+      animateLine(Ap, Bp, COLOR_RESULT, 850);
+      setTimeout(() => animateLine(Cp, Dp, COLOR_RESULT, 850), 350);
+
       makeSpherePoint(Ap, COLOR_RESULT); makeSpherePoint(Bp, COLOR_RESULT);
       makeSpherePoint(Cp, COLOR_RESULT); makeSpherePoint(Dp, COLOR_RESULT);
 
