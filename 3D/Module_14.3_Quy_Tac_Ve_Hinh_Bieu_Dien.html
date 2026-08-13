@@ -842,6 +842,43 @@
       return line;
     }
 
+    /* =========================================================================
+       4b. ANIMATE LINE UTILITY (ease-out cubic, §A1 05_threejs_engine.md)
+       Vẽ dần đường thẳng từ p1 → p2 trong durationMs ms.
+       ========================================================================= */
+    function animateLine(p1, p2, colorHex, durationMs = 900, onComplete = null, opacity = 1, dashed = false) {
+      const startTime = performance.now();
+      const posArr = new Float32Array(6);
+      posArr[0] = p1.x; posArr[1] = p1.y; posArr[2] = p1.z;
+      posArr[3] = p1.x; posArr[4] = p1.y; posArr[5] = p1.z;
+      const geo = new THREE.BufferGeometry();
+      geo.setAttribute('position', new THREE.BufferAttribute(posArr, 3));
+      let mat;
+      if (dashed) {
+        mat = new THREE.LineDashedMaterial({ color: colorHex, dashSize: 0.15, gapSize: 0.08, transparent: true, opacity });
+      } else {
+        mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 2, transparent: true, opacity });
+      }
+      const line = new THREE.Line(geo, mat);
+      if (dashed) line.computeLineDistances();
+      line.renderOrder = 10;
+      scene.add(line);
+      function tick() {
+        const elapsed = performance.now() - startTime;
+        const raw = Math.min(elapsed / durationMs, 1);
+        const t = 1 - Math.pow(1 - raw, 3); // ease-out cubic
+        const cur = p1.clone().lerp(p2, t);
+        const arr = geo.attributes.position.array;
+        arr[3] = cur.x; arr[4] = cur.y; arr[5] = cur.z;
+        geo.attributes.position.needsUpdate = true;
+        if (dashed) line.computeLineDistances();
+        if (raw < 1) { requestAnimationFrame(tick); }
+        else if (onComplete) { onComplete(); }
+      }
+      tick();
+      return line;
+    }
+
     function createPolygonMesh(vertices, colorHex, opacity = 0.25, name = '') {
       const geo = new THREE.BufferGeometry();
       const pos = [];
@@ -1094,7 +1131,7 @@
       };
 
       document.getElementById('btn-t1-circle').onclick = () => {
-        // Draw 3D Circle at Y = 2.5
+        // Bước 4: Vẽ hình tròn thật ngay, rồi animate 8 tia chiếu xuống, cuối mới hiện elip
         const circleRadius = 1.2;
         const circleGeo = new THREE.RingGeometry(circleRadius - 0.03, circleRadius + 0.03, 48);
         circleGeo.rotateX(Math.PI / 2);
@@ -1102,22 +1139,39 @@
         const circleMat = new THREE.MeshBasicMaterial({ color: 0x38bdf8, side: THREE.DoubleSide });
         const circleMesh = new THREE.Mesh(circleGeo, circleMat);
         scene.add(circleMesh);
-        createLabel3D('Hình tròn thật', new THREE.Vector3(0, 2.7, 0), '#38bdf8');
+        createLabel3D('Hình tròn thật', new THREE.Vector3(0, 2.85, 0), '#38bdf8');
 
-        // Draw Ellipse projection on Y = 0
-        const ellipseCurve = new THREE.EllipseCurve(-0.8, 0.4, 1.4, 0.95, 0, 2 * Math.PI, false, 0);
-        const points = ellipseCurve.getPoints(48);
-        const ellipseGeo = new THREE.BufferGeometry().setFromPoints(points.map(p => new THREE.Vector3(p.x, 0.01, p.y)));
-        const ellipseMat = new THREE.LineBasicMaterial({ color: COLOR_RESULT, linewidth: 2.5 });
-        const ellipseLine = new THREE.Line(ellipseGeo, ellipseMat);
-        ellipseLine.renderOrder = 10;
-        scene.add(ellipseLine);
-        createLabel3D('Hình chiếu Elip', new THREE.Vector3(-0.8, 0.3, 0.4), '#FAC775');
+        // Phương chiếu Δ (unnormalized, t=1 khi Y=2.5→Y=0): (-0.8, -2.5, 0.4)
+        const projDelta = new THREE.Vector3(-0.8, -2.5, 0.4);
+        const numRays = 8;
+        for (let i = 0; i < numRays; i++) {
+          const angle = (i / numRays) * Math.PI * 2;
+          const circPt = new THREE.Vector3(
+            circleRadius * Math.cos(angle), 2.5, circleRadius * Math.sin(angle)
+          );
+          const projPt = circPt.clone().add(projDelta);
+          projPt.y = 0.01;
+          // Animate từng tia theo thứ tự, delay 80ms mỗi tia
+          setTimeout(() => animateLine(circPt, projPt, 0xFAC775, 650, null, 0.55, true), i * 80);
+        }
 
-        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> 🎉 Hình tròn bị chiếu xiên thành 1 <b>Hình Elip</b>! Kết luận: Phép chiếu song song giữ nguyên TÍNH SONG SONG & TỈ LỆ, nhưng KHÔNG giữ được GÓC và HÌNH DẠNG gốc (vuông → bình hành, tròn → elip). Bạn đã hoàn thành Tab 1!`;
-        fb.style.display = 'flex';
-        document.getElementById('btn-next-tab1').style.display = 'inline-flex';
-        unlockTab(2);
+        // Sau khi tất cả tia xong (~numRays*80 + 650ms), hiện elip và kết luận
+        const ellipseDelay = numRays * 80 + 700;
+        setTimeout(() => {
+          const ellipseCurve = new THREE.EllipseCurve(-0.8, 0.4, 1.4, 0.95, 0, 2 * Math.PI, false, 0);
+          const pts = ellipseCurve.getPoints(48);
+          const ellipseGeo = new THREE.BufferGeometry().setFromPoints(pts.map(p => new THREE.Vector3(p.x, 0.01, p.y)));
+          const ellipseMat = new THREE.LineBasicMaterial({ color: COLOR_RESULT, linewidth: 2.5 });
+          const ellipseLine = new THREE.Line(ellipseGeo, ellipseMat);
+          ellipseLine.renderOrder = 10;
+          scene.add(ellipseLine);
+          createLabel3D('Hình chiếu Elip', new THREE.Vector3(-0.8, 0.3, 0.4), '#FAC775');
+
+          document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> 🎉 Hình tròn bị chiếu xiên thành 1 <b>Hình Elip</b>! Kết luận: Phép chiếu song song giữ nguyên TÍNH SONG SONG & TỈ LỆ, nhưng KHÔNG giữ được GÓC và HÌNH DẠNG gốc (vuông → bình hành, tròn → elip). Bạn đã hoàn thành Tab 1!`;
+          fb.style.display = 'flex';
+          document.getElementById('btn-next-tab1').style.display = 'inline-flex';
+          unlockTab(2);
+        }, ellipseDelay);
       };
     }
 
@@ -1294,7 +1348,7 @@
        8. TAB 3: DỰNG HÌNH BIỂU DIỄN KHỐI LĂNG TRỤ
        ========================================================================= */
     let t3RatioVal = 1.2;
-    let t3StepState = { translated: false, connected: false };
+    let t3StepState = { translated: false, connected: false, animateTranslate: false, animateConnect: false };
 
     function renderTab3Prism(ratio = 1.2) {
       clearScene();
@@ -1339,8 +1393,16 @@
         const C2 = new THREE.Vector3(3.0, 2.2, -0.8); const D2 = new THREE.Vector3(0.5, 2.2, -0.8);
 
         createPolygonMesh([A2, B2, C2, D2], COLOR_PLANE_2, 0.45);
-        createLineSegment(A2, B2, COLOR_PLANE_2); createLineSegment(B2, C2, COLOR_PLANE_2);
-        createLineSegment(C2, D2, COLOR_PLANE_2); createLineSegment(D2, A2, COLOR_PLANE_2);
+        // Animate 4 cạnh đáy trên tuần tự nếu vừa tịnh tiến; hiện ngay nếu đã xong
+        if (t3StepState.animateTranslate) {
+          animateLine(A2, B2, COLOR_PLANE_2, 700);
+          setTimeout(() => animateLine(B2, C2, COLOR_PLANE_2, 700), 200);
+          setTimeout(() => animateLine(C2, D2, COLOR_PLANE_2, 700), 400);
+          setTimeout(() => animateLine(D2, A2, COLOR_PLANE_2, 700), 600);
+        } else {
+          createLineSegment(A2, B2, COLOR_PLANE_2); createLineSegment(B2, C2, COLOR_PLANE_2);
+          createLineSegment(C2, D2, COLOR_PLANE_2); createLineSegment(D2, A2, COLOR_PLANE_2);
+        }
 
         makeSpherePoint(A2, COLOR_RESULT); makeSpherePoint(B2, COLOR_RESULT);
         makeSpherePoint(C2, COLOR_RESULT); makeSpherePoint(D2, COLOR_RESULT);
@@ -1360,8 +1422,16 @@
         const A2 = new THREE.Vector3(0.5, 2.2, 0.8); const B2 = new THREE.Vector3(1.5, 2.2, 0.8);
         const C2 = new THREE.Vector3(3.0, 2.2, -0.8); const D2 = new THREE.Vector3(0.5, 2.2, -0.8);
 
-        createLineSegment(Ab2, A2, COLOR_RESULT); createLineSegment(Bb2, B2, COLOR_RESULT);
-        createLineSegment(Cb2, C2, COLOR_RESULT); createLineSegment(Db2, D2, COLOR_RESULT, 1, true);
+        // Animate 4 cạnh bên tuần tự nếu vừa nối; hiện ngay nếu đã xong
+        if (t3StepState.animateConnect) {
+          animateLine(Ab2, A2, COLOR_RESULT, 700);
+          setTimeout(() => animateLine(Bb2, B2, COLOR_RESULT, 700), 220);
+          setTimeout(() => animateLine(Cb2, C2, COLOR_RESULT, 700), 440);
+          setTimeout(() => animateLine(Db2, D2, COLOR_RESULT, 700, null, 1, true), 660);
+        } else {
+          createLineSegment(Ab2, A2, COLOR_RESULT); createLineSegment(Bb2, B2, COLOR_RESULT);
+          createLineSegment(Cb2, C2, COLOR_RESULT); createLineSegment(Db2, D2, COLOR_RESULT, 1, true);
+        }
 
         createLabel3D('Hình Biểu Diễn 2D', new THREE.Vector3(1.5, -0.1, 0.8), '#FAC775');
       }
@@ -1396,7 +1466,9 @@
 
       document.getElementById('btn-t3-translate').onclick = () => {
         t3StepState.translated = true;
+        t3StepState.animateTranslate = true;  // kích hoạt animation 4 cạnh đáy trên
         renderTab3Prism(t3RatioVal);
+        t3StepState.animateTranslate = false;
 
         document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đáy trên A'B'C'D' đã được tạo bằng cách tịnh tiến xiên! Bây giờ hãy bấm <b>3. Nối các cạnh bên</b>!`;
         document.getElementById('t3-feedback').style.display = 'flex';
@@ -1405,7 +1477,9 @@
 
       document.getElementById('btn-t3-connect').onclick = () => {
         t3StepState.connected = true;
+        t3StepState.animateConnect = true;  // kích hoạt animation 4 cạnh bên
         renderTab3Prism(t3RatioVal);
+        t3StepState.animateConnect = false;
 
         document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> 🎉 Hoàn hảo! Hình biểu diễn 2D giữ đúng tính song song và tỉ lệ CD = 2.5AB. Người đọc dễ dàng nhận ra đây là khối lăng trụ đáy thang. Bạn đã hoàn thành Tab 3!`;
         document.getElementById('t3-feedback').style.display = 'flex';
