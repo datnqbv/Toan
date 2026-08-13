@@ -271,6 +271,27 @@
       align-items: flex-start;
     }
 
+    .btn-athena-next {
+      margin-top: 8px;
+      font-size: 11.5px;
+      padding: 6px 12px;
+      background-color: #ffffff;
+      color: var(--jade-dark);
+      border: 1.5px solid var(--jade-dark);
+      border-radius: 6px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-athena-next:hover {
+      background-color: var(--jade-dark);
+      color: #ffffff;
+    }
+
     .athena-avatar {
       width: 26px;
       height: 26px;
@@ -1131,7 +1152,7 @@
 
         document.getElementById('t2-msg').innerHTML = `
           <div><b>Athena:</b> 🎉 Chính xác! Quy tắc 1: Hình biểu diễn của một tam giác (vuông, cân, đều) LÀ một tam giác bất kỳ, không cần giữ góc vuông hay tỉ lệ cạnh gốc!</div>
-          <button class="btn btn-outline" id="btn-t2-a-skip" style="margin-top: 8px; font-size: 11.5px; padding: 4px 10px; color: var(--navy); border-color: var(--teal);">
+          <button class="btn-athena-next" id="btn-t2-a-skip">
             Trường hợp tiếp theo <i class="ti ti-arrow-right"></i>
           </button>
         `;
@@ -1159,7 +1180,7 @@
 
         document.getElementById('t2-msg').innerHTML = `
           <div><b>Athena:</b> 🎉 Chuẩn xác! Quy tắc 2: Hình vuông/chữ nhật/thoi/bình hành có 2 cặp cạnh song song → Hình biểu diễn PHẢI là một <b>Hình bình hành</b>!</div>
-          <button class="btn btn-outline" id="btn-t2-b-skip" style="margin-top: 8px; font-size: 11.5px; padding: 4px 10px; color: var(--navy); border-color: var(--teal);">
+          <button class="btn-athena-next" id="btn-t2-b-skip">
             Trường hợp tiếp theo <i class="ti ti-arrow-right"></i>
           </button>
         `;
@@ -1273,44 +1294,47 @@
        8. TAB 3: DỰNG HÌNH BIỂU DIỄN KHỐI LĂNG TRỤ
        ========================================================================= */
     let t3RatioVal = 1.2;
+    let t3StepState = { translated: false, connected: false };
 
-    function initTab3() {
+    function renderTab3Prism(ratio = 1.2) {
       clearScene();
-      t3RatioVal = 1.2;
-      document.getElementById('sld-t3-ratio').value = 1.2;
-      document.getElementById('txt-t3-ratio').textContent = '1.20 × AB';
-      document.getElementById('t3-step1-card').style.display = 'block';
-      document.getElementById('btn-t3-translate').style.display = 'none';
-      document.getElementById('btn-t3-connect').style.display = 'none';
-      document.getElementById('t3-feedback').style.display = 'none';
 
       // 3D Real Prism at Left (X = -2.2)
-      const A3 = new THREE.Vector3(-3.2, 0, 1.0); const B3 = new THREE.Vector3(-2.2, 0, 1.0);
-      const C3 = new THREE.Vector3(-1.0, 0, -1.0); const D3 = new THREE.Vector3(-3.5, 0, -1.0);
-      const Ap3 = new THREE.Vector3(-3.2, 2.5, 1.0); const Bp3 = new THREE.Vector3(-2.2, 2.5, 1.0);
-      const Cp3 = new THREE.Vector3(-1.0, 2.5, -1.0); const Dp3 = new THREE.Vector3(-3.5, 2.5, -1.0);
+      const abHalf = 0.6;
+      const cdHalf = abHalf * ratio;
 
-      createPolygonMesh([A3, B3, C3, D3], COLOR_PLANE_BASE, 0.3);
-      createPolygonMesh([Ap3, Bp3, Cp3, Dp3], COLOR_PLANE_1, 0.3);
-      const e3 = [[A3,B3],[B3,C3],[C3,D3],[D3,A3],[Ap3,Bp3],[Bp3,Cp3],[Cp3,Dp3],[Dp3,Ap3],[A3,Ap3],[B3,Bp3],[C3,Cp3],[D3,Dp3]];
+      const A3 = new THREE.Vector3(-2.2 - abHalf, 0, 1.0);
+      const B3 = new THREE.Vector3(-2.2 + abHalf, 0, 1.0);
+      const C3 = new THREE.Vector3(-2.2 + cdHalf, 0, -1.0);
+      const D3 = new THREE.Vector3(-2.2 - cdHalf, 0, -1.0);
+
+      const Ap3 = new THREE.Vector3(A3.x, 2.5, 1.0);
+      const Bp3 = new THREE.Vector3(B3.x, 2.5, 1.0);
+      const Cp3 = new THREE.Vector3(C3.x, 2.5, -1.0);
+      const Dp3 = new THREE.Vector3(D3.x, 2.5, -1.0);
+
+      createPolygonMesh([A3, B3, C3, D3], COLOR_PLANE_BASE, 0.35);
+      createPolygonMesh([Ap3, Bp3, Cp3, Dp3], COLOR_PLANE_1, 0.35);
+
+      const e3 = [
+        [A3, B3], [B3, C3], [C3, D3], [D3, A3],
+        [Ap3, Bp3], [Bp3, Cp3], [Cp3, Dp3], [Dp3, Ap3],
+        [A3, Ap3], [B3, Bp3], [C3, Cp3], [D3, Dp3]
+      ];
       e3.forEach(edge => createLineSegment(edge[0], edge[1], COLOR_EDGE_SOLID));
-      createLabel3D('Khối Lăng Trụ Thật 3D', lerpVec(A3, Cp3, 0.5), '#60a5fa');
 
-      document.getElementById('sld-t3-ratio').oninput = (e) => {
-        t3RatioVal = parseFloat(e.target.value);
-        document.getElementById('txt-t3-ratio').textContent = `${t3RatioVal.toFixed(2)} × AB`;
+      makeSpherePoint(A3); makeSpherePoint(B3); makeSpherePoint(C3); makeSpherePoint(D3);
+      makeSpherePoint(Ap3); makeSpherePoint(Bp3); makeSpherePoint(Cp3); makeSpherePoint(Dp3);
 
-        if (Math.abs(t3RatioVal - 2.5) < 0.12) {
-          document.getElementById('txt-t3-ratio').textContent = '2.50 × AB (✓ Đạt!)';
-          document.getElementById('txt-t3-ratio').style.color = 'var(--correct)';
-          document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đáy dưới ABCD đã đạt tỉ lệ CD = 2.5AB! Bây giờ hãy bấm <b>2. Tịnh tiến tạo đáy trên A'B'C'D'</b>.`;
-          document.getElementById('t3-feedback').style.display = 'flex';
-          document.getElementById('btn-t3-translate').style.display = 'inline-flex';
-        }
-      };
+      createLabel3D('A', A3); createLabel3D('B', B3); createLabel3D('C', C3); createLabel3D('D', D3);
+      createLabel3D("A'", Ap3); createLabel3D("B'", Bp3); createLabel3D("C'", Cp3); createLabel3D("D'", Dp3);
 
-      document.getElementById('btn-t3-translate').onclick = () => {
-        // Draw Top Base representation at Right (X = +1.5)
+      const isExact = Math.abs(ratio - 2.5) < 0.12;
+      const titleColor = isExact ? '#34d399' : '#60a5fa';
+      createLabel3D(`Khối Lăng Trụ Thật (CD = ${ratio.toFixed(2)} × AB)`, lerpVec(A3, Cp3, 0.5).add(new THREE.Vector3(0, -0.3, 0)), titleColor);
+
+      // Restore Right Panel 2D Representation if Step 2 / Step 3 triggered
+      if (t3StepState.translated) {
         const A2 = new THREE.Vector3(0.5, 2.2, 0.8); const B2 = new THREE.Vector3(1.5, 2.2, 0.8);
         const C2 = new THREE.Vector3(3.0, 2.2, -0.8); const D2 = new THREE.Vector3(0.5, 2.2, -0.8);
 
@@ -1323,14 +1347,9 @@
 
         createLabel3D("A'", A2, '#FAC775'); createLabel3D("B'", B2, '#FAC775');
         createLabel3D("C'", C2, '#FAC775'); createLabel3D("D'", D2, '#FAC775');
+      }
 
-        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đáy trên A'B'C'D' đã được tạo bằng cách tịnh tiến xiên! Bây giờ hãy bấm <b>3. Nối các cạnh bên</b>!`;
-        document.getElementById('t3-feedback').style.display = 'flex';
-        document.getElementById('btn-t3-connect').style.display = 'inline-flex';
-      };
-
-      document.getElementById('btn-t3-connect').onclick = () => {
-        // Bottom Base 2D representation
+      if (t3StepState.connected) {
         const Ab2 = new THREE.Vector3(0.0, 0.2, 0.8); const Bb2 = new THREE.Vector3(1.0, 0.2, 0.8);
         const Cb2 = new THREE.Vector3(2.5, 0.2, -0.8); const Db2 = new THREE.Vector3(0.0, 0.2, -0.8);
 
@@ -1341,11 +1360,52 @@
         const A2 = new THREE.Vector3(0.5, 2.2, 0.8); const B2 = new THREE.Vector3(1.5, 2.2, 0.8);
         const C2 = new THREE.Vector3(3.0, 2.2, -0.8); const D2 = new THREE.Vector3(0.5, 2.2, -0.8);
 
-        // Connect lateral edges
         createLineSegment(Ab2, A2, COLOR_RESULT); createLineSegment(Bb2, B2, COLOR_RESULT);
-        createLineSegment(Cb2, C2, COLOR_RESULT); createLineSegment(Db2, D2, COLOR_RESULT, 1, true); // Hidden edge
+        createLineSegment(Cb2, C2, COLOR_RESULT); createLineSegment(Db2, D2, COLOR_RESULT, 1, true);
 
         createLabel3D('Hình Biểu Diễn 2D', new THREE.Vector3(1.5, -0.1, 0.8), '#FAC775');
+      }
+    }
+
+    function initTab3() {
+      t3RatioVal = 1.2;
+      t3StepState = { translated: false, connected: false };
+      document.getElementById('sld-t3-ratio').value = 1.2;
+      document.getElementById('txt-t3-ratio').textContent = '1.20 × AB';
+      document.getElementById('t3-step1-card').style.display = 'block';
+      document.getElementById('btn-t3-translate').style.display = 'none';
+      document.getElementById('btn-t3-connect').style.display = 'none';
+      document.getElementById('t3-feedback').style.display = 'none';
+
+      renderTab3Prism(1.2);
+
+      document.getElementById('sld-t3-ratio').oninput = (e) => {
+        t3RatioVal = parseFloat(e.target.value);
+        document.getElementById('txt-t3-ratio').textContent = `${t3RatioVal.toFixed(2)} × AB`;
+
+        renderTab3Prism(t3RatioVal);
+
+        if (Math.abs(t3RatioVal - 2.5) < 0.12) {
+          document.getElementById('txt-t3-ratio').textContent = '2.50 × AB (✓ Đạt!)';
+          document.getElementById('txt-t3-ratio').style.color = 'var(--correct)';
+          document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đáy dưới ABCD đã đạt tỉ lệ CD = 2.5AB! Bây giờ hãy bấm <b>2. Tịnh tiến tạo đáy trên A'B'C'D'</b>.`;
+          document.getElementById('t3-feedback').style.display = 'flex';
+          document.getElementById('btn-t3-translate').style.display = 'inline-flex';
+        }
+      };
+
+      document.getElementById('btn-t3-translate').onclick = () => {
+        t3StepState.translated = true;
+        renderTab3Prism(t3RatioVal);
+
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đáy trên A'B'C'D' đã được tạo bằng cách tịnh tiến xiên! Bây giờ hãy bấm <b>3. Nối các cạnh bên</b>!`;
+        document.getElementById('t3-feedback').style.display = 'flex';
+        document.getElementById('btn-t3-connect').style.display = 'inline-flex';
+      };
+
+      document.getElementById('btn-t3-connect').onclick = () => {
+        t3StepState.connected = true;
+        renderTab3Prism(t3RatioVal);
 
         document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> 🎉 Hoàn hảo! Hình biểu diễn 2D giữ đúng tính song song và tỉ lệ CD = 2.5AB. Người đọc dễ dàng nhận ra đây là khối lăng trụ đáy thang. Bạn đã hoàn thành Tab 3!`;
         document.getElementById('t3-feedback').style.display = 'flex';
@@ -1391,14 +1451,18 @@
 
     function initTab4() {
       t4Idx = 0;
+      document.getElementById('btn-next-tab4').style.display = 'none';
+      document.getElementById('t4-feedback').style.display = 'none';
       renderTab4Step();
     }
 
     function renderTab4Step() {
       clearScene();
+      document.getElementById('btn-next-tab4').style.display = 'none';
+      document.getElementById('t4-feedback').style.display = 'none';
+
       const qData = t4Questions[t4Idx];
       document.getElementById('t4-counter').textContent = `${t4Idx + 1}/4`;
-      document.getElementById('t4-feedback').style.display = 'none';
 
       const wrapQ = document.getElementById('t4-q-wrap');
       wrapQ.innerHTML = `
@@ -1453,27 +1517,35 @@
         let timer = null;
         const advance = () => {
           if (timer) clearTimeout(timer);
+          document.getElementById('t4-feedback').style.display = 'none';
           t4Idx++;
           if (t4Idx < t4Questions.length) {
             renderTab4Step();
           } else {
-            document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> 🎉 Chúc mừng! Bạn đã hoàn thành xuất sắc 4/4 câu hỏi trắc nghiệm!`;
+            document.getElementById('t4-q-wrap').innerHTML = `
+              <div class="info-box athena-box" style="margin-top: 10px;">
+                <div class="athena-avatar">A</div>
+                <div><b>Athena:</b> 🎉 Chúc mừng! Bạn đã trả lời đúng cả 4/4 câu hỏi trắc nghiệm củng cố!</div>
+              </div>
+            `;
             document.getElementById('btn-next-tab4').style.display = 'inline-flex';
             setTimeout(() => {
               document.getElementById('celebration-modal').classList.add('show');
-            }, 1000);
+            }, 800);
           }
         };
 
+        const nextBtnLabel = (t4Idx < t4Questions.length - 1) ? 'Câu tiếp theo <i class="ti ti-arrow-right"></i>' : 'Xem kết quả hoàn thành 🎉';
+
         document.getElementById('t4-msg').innerHTML = `
           <div><b>Athena:</b> ${qData.correctMsg}</div>
-          <button class="btn btn-outline" id="btn-t4-skip" style="margin-top: 8px; font-size: 11.5px; padding: 4px 10px; color: var(--navy); border-color: var(--teal);">
-            Câu tiếp theo <i class="ti ti-arrow-right"></i>
+          <button class="btn-athena-next" id="btn-t4-skip">
+            ${nextBtnLabel}
           </button>
         `;
         fb.style.display = 'flex';
         document.getElementById('btn-t4-skip').onclick = advance;
-        timer = setTimeout(advance, 4000);
+        timer = setTimeout(advance, 4500);
       } else {
         document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> ${qData.wrongMsg}`;
         fb.style.display = 'flex';
