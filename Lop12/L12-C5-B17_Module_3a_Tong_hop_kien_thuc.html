@@ -1,0 +1,999 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 17: Module 3a — Tổng hợp kiến thức Phương trình Mặt cầu</title>
+  
+  <!-- Google Fonts: Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+  
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+  
+  <!-- KaTeX for Math Formatting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Three.js r128 & OrbitControls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <style>
+    /* =========================================================================
+       1. CORE DESIGN SYSTEM & TOKENS (Jade & Cream Theme)
+       ========================================================================= */
+    :root {
+      --navy: #14432F;         /* Jade Dark */
+      --teal: #2D8B6F;         /* Primary Action / Active Tab */
+      --bg: #FAF7F0;           /* Cream background */
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-2: #334155;
+      --sub: #64748b;
+      --canvas-bg: #0a1628;    /* Dark WebGL Canvas */
+
+      --correct: #16a34a;
+      --correct-bg: #f0fdf4;
+      --wrong: #dc2626;
+      --wrong-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --info: #2563eb;
+      --info-bg: #eff6ff;
+
+      --purple: #8b5cf6;
+      --cyan: #38bdf8;
+      --amber: #f59e0b;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER (Jade/Cream design) */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(20, 67, 47, 0.15);
+    }
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(8px);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    /* APP BODY LAYOUT */
+    .app-body {
+      display: grid;
+      grid-template-columns: 65% 35%;
+      flex: 1;
+      min-height: calc(100vh - 48px);
+    }
+
+    /* CANVAS COLUMN */
+    .canvas-column {
+      position: relative;
+      background-color: var(--canvas-bg);
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 480px;
+    }
+    #canvas-wrap {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0; left: 0;
+    }
+    #three-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+    }
+    #label-layer {
+      position: absolute;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      overflow: hidden;
+      z-index: 10;
+    }
+    .point-label {
+      position: absolute;
+      background: rgba(10, 22, 40, 0.82);
+      color: #ffffff;
+      padding: 3px 8px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(4px);
+      white-space: nowrap;
+      transform: translate(-50%, -100%);
+      transition: opacity 0.2s;
+    }
+
+    /* CANVAS TOOLBAR */
+    .canvas-toolbar {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      display: flex;
+      gap: 8px;
+      z-index: 15;
+    }
+    .ctrl-btn {
+      background: rgba(15, 23, 42, 0.75);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(6px);
+      transition: all 0.2s ease;
+    }
+    .ctrl-btn:hover {
+      background: rgba(45, 139, 111, 0.85);
+      border-color: #2D8B6F;
+    }
+
+    /* SIDEBAR COLUMN */
+    .sidebar-column {
+      background-color: var(--bg);
+      border-left: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    /* NAV TAGS BAR */
+    .nav-tags-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      padding: 16px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+    }
+    .tag-btn {
+      background: #f1f5f9;
+      color: var(--text-2);
+      border: 1px solid var(--border);
+      padding: 10px 12px;
+      border-radius: 10px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .tag-btn:hover {
+      background: #e2e8f0;
+      color: var(--navy);
+    }
+    .tag-btn.active {
+      background: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+      box-shadow: 0 4px 10px rgba(20, 67, 47, 0.2);
+    }
+    .tag-btn.visited::after {
+      content: "✓";
+      margin-left: auto;
+      font-weight: 800;
+      color: #10b981;
+    }
+    .tag-btn.active.visited::after {
+      color: #34d399;
+    }
+    .tag-btn.disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* SIDEBAR CONTENT CONTAINER */
+    .sidebar-content {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+    .step-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .info-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--teal);
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--text-2);
+      box-shadow: 0 2px 6px rgba(0,0,0,0.03);
+    }
+    .athena-box {
+      border-left-color: var(--navy);
+      background: #f8fafc;
+    }
+
+    /* STATE BUTTON TOGGLES FOR PLANE (Q) */
+    .state-toggle-group {
+      display: flex;
+      gap: 6px;
+      margin-top: 10px;
+    }
+    .state-btn {
+      flex: 1;
+      padding: 8px 10px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-2);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+    .state-btn:hover {
+      background: #f1f5f9;
+    }
+    .state-btn.active {
+      background: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
+      box-shadow: 0 2px 6px rgba(45, 139, 111, 0.25);
+    }
+
+    /* PRIMARY BUTTONS */
+    .btn {
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+    .btn-primary {
+      background: var(--teal);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(45, 139, 111, 0.25);
+    }
+    .btn-primary:hover {
+      background: var(--navy);
+    }
+    .btn-primary:disabled {
+      background: #cbd5e1;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* MODAL POPUP FOR SUMMARY */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 620px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0,0,0,0.2);
+      border: 1px solid var(--border);
+    }
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 14px 0;
+      font-size: 13px;
+    }
+    .summary-table th, .summary-table td {
+      border: 1px solid var(--border);
+      padding: 8px 12px;
+      text-align: left;
+    }
+    .summary-table th {
+      background: #f8fafc;
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    /* RESPONSIVE MOBILE LAYOUT WITH STICKY 3D CANVAS */
+    @media (max-width: 768px) {
+      .app-body {
+        display: flex;
+        flex-direction: column;
+        min-height: auto;
+      }
+      .canvas-column {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        width: 100%;
+        height: calc((100vh - 48px) * 0.45);
+        height: calc((100dvh - 48px) * 0.45);
+        min-height: 250px;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.4);
+      }
+      .sidebar-column {
+        width: 100%;
+        border-left: none;
+        border-top: 1px solid var(--border);
+      }
+      .nav-tags-container {
+        grid-template-columns: 1fr 1fr;
+        padding: 10px;
+        gap: 6px;
+      }
+      .tag-btn {
+        padding: 8px 10px;
+        font-size: 11.5px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-badge">🧊 Hình học không gian</div>
+  </header>
+
+  <!-- APP BODY LAYOUT -->
+  <div class="app-body">
+    
+    <!-- LEFT 3D CANVAS COLUMN -->
+    <div class="canvas-column">
+      <div id="canvas-wrap">
+        <canvas id="three-canvas"></canvas>
+      </div>
+      <div id="label-layer"></div>
+
+      <!-- CANVAS CONTROLS -->
+      <div class="canvas-toolbar">
+        <button class="ctrl-btn" id="btn-reset-cam">
+          <i class="ti ti-refresh"></i> Góc nhìn chuẩn
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR COLUMN -->
+    <div class="sidebar-column">
+      
+      <!-- NAV TAGS SELECTOR (4 TABS) -->
+      <div class="nav-tags-container">
+        <button class="tag-btn active" id="tag-1" onclick="selectTag(1)">
+          <i class="ti ti-circle-dot"></i> (S) Dạng tâm - bán kính
+        </button>
+        <button class="tag-btn" id="tag-2" onclick="selectTag(2)">
+          <i class="ti ti-math-symbols"></i> (S) Dạng khai triển
+        </button>
+        <button class="tag-btn" id="tag-3" onclick="selectTag(3)">
+          <i class="ti ti-layers-intersect"></i> (Q) 3 Vị trí tương đối
+        </button>
+        <button class="tag-btn disabled" id="tag-4" onclick="selectTag(4)">
+          <i class="ti ti-circle"></i> Đường tròn giao tuyến
+        </button>
+      </div>
+
+      <!-- DYNAMIC CARD CONTENT PANEL -->
+      <div class="sidebar-content" id="panel-container">
+        <!-- Content inserted dynamically by JS -->
+      </div>
+
+      <!-- FOOTER ACTION BUTTON -->
+      <div style="padding:16px 20px; border-top:1px solid var(--border); background:#ffffff;">
+        <button class="btn btn-primary" id="btn-show-summary" style="width:100%;" disabled onclick="openSummaryModal()">
+          <i class="ti ti-file-certificate"></i> 📜 Xem bảng tổng kết hoàn thành
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SUMMARY MODAL POPUP -->
+  <div class="modal-backdrop" id="summary-modal">
+    <div class="modal-card">
+      <div class="modal-title">
+        <i class="ti ti-award" style="color:var(--teal); font-size:24px;"></i> Tổng Hợp Kiến Thức Phương Trình Mặt Cầu (Bài 17)
+      </div>
+      <div style="font-size:13.5px; color:var(--text-2); line-height:1.6;">
+        Chúc mừng bạn đã khám phá đầy đủ toàn bộ kiến thức trực quan về Phương trình Mặt cầu và vị trí tương đối với mặt phẳng!
+      </div>
+      
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Nội dung</th>
+            <th>Công thức / Mẫu chuẩn</th>
+            <th>Ghi chú quan trọng</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Dạng tâm – bán kính</b></td>
+            <td>$(x-a)^2 + (y-b)^2 + (z-c)^2 = R^2$</td>
+            <td>Tâm $I(a; b; c)$, bán kính $R$. Chú ý đổi dấu tâm!</td>
+          </tr>
+          <tr>
+            <td><b>Dạng khai triển</b></td>
+            <td>$x^2 + y^2 + z^2 - 2ax - 2by - 2cz + d = 0$</td>
+            <td>ĐK tồn tại: $a^2 + b^2 + c^2 - d > 0$. Bán kính $R = \sqrt{a^2+b^2+c^2-d}$.</td>
+          </tr>
+          <tr>
+            <td><b>Không cắt nhau</b></td>
+            <td>$d(I, (Q)) > R$</td>
+            <td>Mặt phẳng và mặt cầu không có điểm chung.</td>
+          </tr>
+          <tr>
+            <td><b>Tiếp xúc</b></td>
+            <td>$d(I, (Q)) = R$</td>
+            <td>Mặt phẳng tiếp xúc tại 1 điểm duy nhất $H$ (tiếp điểm).</td>
+          </tr>
+          <tr>
+            <td><b>Cắt theo đường tròn</b></td>
+            <td>$d(I, (Q)) < R$</td>
+            <td>Giao tuyến là đường tròn bán kính $r = \sqrt{R^2 - d^2}$, tâm $H$.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <div style="text-align:right; margin-top:16px;">
+        <button class="btn btn-primary" onclick="closeSummaryModal()">
+          <i class="ti ti-check"></i> Hoàn thành Module 3a
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- THREE.JS ENGINE & SIMULATION CODE -->
+  <script>
+    /* =========================================================================
+       1. THREE.JS SCENE SETUP & INFRASTRUCTURE
+       ========================================================================= */
+    const canvas = document.getElementById('three-canvas');
+    const wrap = document.getElementById('canvas-wrap');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a1628);
+
+    const camera = new THREE.PerspectiveCamera(45, wrap.clientWidth / wrap.clientHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    orbitControls.enableDamping = true;
+    orbitControls.dampingFactor = 0.08;
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.85);
+    dirLight.position.set(10, 15, 12);
+    scene.add(dirLight);
+
+    const gridHelper = new THREE.GridHelper(20, 20, 0x30363d, 0x1c2333);
+    gridHelper.position.y = -8.01;
+    scene.add(gridHelper);
+
+    /* Coordinate Transformation Helper: Math (x,y,z) -> Three.js (x, z, y) */
+    function mVec(x, y, z) {
+      return new THREE.Vector3(x, z, y);
+    }
+
+    function resetCamera() {
+      const isMobile = wrap.clientWidth <= 768;
+      camera.position.set(isMobile ? 14 : 10, isMobile ? 8 : 6, isMobile ? 14 : 10);
+      orbitControls.target.copy(mVec(1, 2, -1)); // Look at sphere center I(1,2,-1)
+      orbitControls.update();
+    }
+    resetCamera();
+    document.getElementById('btn-reset-cam').addEventListener('click', resetCamera);
+
+    /* LMS INTEGRATION */
+    function reportHeight() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'resize', height: document.documentElement.scrollHeight }, '*');
+      }
+    }
+    function LMS() {
+      return {
+        complete: () => {
+          console.log("LMS: Lesson 17 Module 3a completed!");
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'complete' }, '*');
+          }
+        }
+      };
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(reportHeight).observe(document.body);
+      new ResizeObserver(() => {
+        camera.aspect = wrap.clientWidth / wrap.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+        activeLabels.forEach(l => l.update());
+      }).observe(wrap);
+    }
+
+    /* KaTeX Helper */
+    function renderKaTeXInElement(element) {
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(element || document.body, {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "$", right: "$", display: false },
+              { left: "\\(", right: "\\)", display: false },
+              { left: "\\[", right: "\\]", display: true }
+            ],
+            throwOnError: false
+          });
+        } catch (err) {
+          console.warn("KaTeX render error:", err);
+        }
+      }
+    }
+
+    /* 3D HTML LABELS MANAGEMENT */
+    let activeLabels = [];
+    function createLabel3D(text, position, color = '#ffffff', id = null) {
+      const el = document.createElement('div');
+      el.className = 'point-label';
+      if (id) el.id = id;
+      el.innerHTML = text;
+      if (color) el.style.borderColor = color;
+      document.getElementById('label-layer').appendChild(el);
+
+      const labelObj = {
+        element: el,
+        position: position.clone(),
+        update: () => {
+          const wp = labelObj.position.clone();
+          const camDir = new THREE.Vector3();
+          camera.getWorldDirection(camDir);
+          const toLabel = wp.clone().sub(camera.position);
+
+          if (toLabel.dot(camDir) <= 0) {
+            el.style.display = 'none';
+            return;
+          }
+
+          const projected = wp.project(camera);
+          if (projected.z > 1) {
+            el.style.display = 'none';
+            return;
+          }
+
+          const x = (projected.x * 0.5 + 0.5) * wrap.clientWidth;
+          const y = (-projected.y * 0.5 + 0.5) * wrap.clientHeight;
+
+          el.style.display = 'block';
+          el.style.left = `${x}px`;
+          el.style.top = `${y}px`;
+        },
+        remove: () => {
+          if (el.parentNode) el.parentNode.removeChild(el);
+          const idx = activeLabels.indexOf(labelObj);
+          if (idx !== -1) activeLabels.splice(idx, 1);
+        }
+      };
+
+      activeLabels.push(labelObj);
+      renderKaTeXInElement(el);
+      return labelObj;
+    }
+
+    /* =========================================================================
+       2. MODULE 3a 3D SCENE & GEOMETRY BUILDER
+       ========================================================================= */
+    const sphereCenter = mVec(1, 2, -1); // Center I(1, 2, -1) -> Three.js (1, -1, 2)
+    const R = 5;
+
+    // 1. Sphere (S) Mesh (Semi-transparent cyan glass)
+    const sphereGeo = new THREE.SphereGeometry(R, 36, 36);
+    const sphereMat = new THREE.MeshStandardMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.35,
+      side: THREE.DoubleSide,
+      depthWrite: false,
+      roughness: 0.1,
+      metalness: 0.2
+    });
+    const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
+    sphereMesh.position.copy(sphereCenter);
+    scene.add(sphereMesh);
+
+    // Center point I marker
+    const iMarkerMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7 });
+    const iMarker = new THREE.Mesh(new THREE.SphereGeometry(0.14, 24, 24), iMarkerMat);
+    iMarker.position.copy(sphereCenter);
+    scene.add(iMarker);
+    const labelI = createLabel3D("Tâm $I(1; 2; -1)$", sphereCenter, "#38bdf8");
+
+    // Radius R line segment (from I to I + R*up)
+    const rLineGeo = new THREE.BufferGeometry().setFromPoints([sphereCenter, sphereCenter.clone().add(new THREE.Vector3(0, R, 0))]);
+    const rLineMat = new THREE.LineDashedMaterial({ color: 0x38bdf8, dashSize: 0.3, gapSize: 0.2, linewidth: 2 });
+    const rLine = new THREE.Line(rLineGeo, rLineMat);
+    rLine.computeLineDistances();
+    scene.add(rLine);
+    const labelR = createLabel3D("Bán kính $R = 5$", sphereCenter.clone().add(new THREE.Vector3(0, R/2, 0)), "#38bdf8");
+
+    // Plane (Q) and Dynamic State Management
+    let dynamicObjects = [];
+    let dynamicLabels = [];
+
+    function clearDynamicStateObjects() {
+      dynamicLabels.forEach(l => l.remove());
+      dynamicLabels = [];
+
+      dynamicObjects.forEach(obj => {
+        if (obj) {
+          scene.remove(obj);
+          if (obj.geometry) obj.geometry.dispose();
+          if (obj.material) obj.material.dispose();
+        }
+      });
+      dynamicObjects = [];
+    }
+
+    let planeState = 1; // 1: Non-intersecting (z=-8), 2: Tangent (z=4), 3: Intersecting circle (z=2)
+
+    function updatePlaneState(stateNum) {
+      clearDynamicStateObjects();
+      planeState = stateNum;
+
+      let zVal = -8;
+      let dVal = 7;
+      let labelText = "Mặt phẳng (Q): z = -8";
+      let planeColor = 0xf59e0b; // Amber
+
+      if (stateNum === 1) {
+        zVal = -8; dVal = 7;
+        labelText = "Mặt phẳng (Q): $z = -8$ ($d = 7 > R$)";
+        planeColor = 0xf59e0b;
+      } else if (stateNum === 2) {
+        zVal = 4; dVal = 5;
+        labelText = "Mặt phẳng (Q): $z = 4$ ($d = 5 = R$)";
+        planeColor = 0x10b981; // Green
+      } else if (stateNum === 3) {
+        zVal = 2; dVal = 3;
+        labelText = "Mặt phẳng (Q): $z = 2$ ($d = 3 < R$)";
+        planeColor = 0x8b5cf6; // Purple
+      }
+
+      // 1. Plane (Q) Mesh at height zVal (Three.js Y = zVal)
+      const planeGeo = new THREE.PlaneGeometry(12, 12);
+      const planeMat = new THREE.MeshStandardMaterial({
+        color: planeColor,
+        transparent: true,
+        opacity: 0.25,
+        side: THREE.DoubleSide,
+        depthWrite: false
+      });
+      const planeMesh = new THREE.Mesh(planeGeo, planeMat);
+      planeMesh.rotation.x = -Math.PI / 2;
+      planeMesh.position.set(1, zVal, 2); // Centered around sphere (1, zVal, 2)
+      scene.add(planeMesh);
+      dynamicObjects.push(planeMesh);
+
+      const outlineGeo = new THREE.EdgesGeometry(planeGeo);
+      const outlineMat = new THREE.LineBasicMaterial({ color: planeColor, linewidth: 2 });
+      const planeOutline = new THREE.LineSegments(outlineGeo, outlineMat);
+      planeOutline.rotation.x = -Math.PI / 2;
+      planeOutline.position.set(1, zVal, 2);
+      scene.add(planeOutline);
+      dynamicObjects.push(planeOutline);
+
+      const labelQ = createLabel3D(labelText, mVec(-3, 2, zVal), `#${planeColor.toString(16)}`);
+      dynamicLabels.push(labelQ);
+
+      // 2. Distance Line d(I, (Q)) from I(1,2,-1) to H(1,2,zVal)
+      const pointH = mVec(1, 2, zVal);
+      const distLineGeo = new THREE.BufferGeometry().setFromPoints([sphereCenter, pointH]);
+      const distLineMat = new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2.5 });
+      const distLine = new THREE.Line(distLineGeo, distLineMat);
+      scene.add(distLine);
+      dynamicObjects.push(distLine);
+
+      const labelDist = createLabel3D(`$d = ${dVal}$`, sphereCenter.clone().lerp(pointH, 0.5), "#ffffff");
+      dynamicLabels.push(labelDist);
+
+      // 3. Tangent / Intersecting Point H Marker & Intersection Circle
+      if (stateNum === 2) {
+        // Tangent Point H(1, 2, 4)
+        const hMat = new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x059669 });
+        const hMesh = new THREE.Mesh(new THREE.SphereGeometry(0.16, 24, 24), hMat);
+        hMesh.position.copy(pointH);
+        scene.add(hMesh);
+        dynamicObjects.push(hMesh);
+
+        const labelH = createLabel3D("Tiếp điểm $H(1; 2; 4)$", pointH, "#10b981");
+        dynamicLabels.push(labelH);
+
+      } else if (stateNum === 3) {
+        // Intersecting Circle Center H(1, 2, 2), radius r = 4
+        const rVal = 4;
+        const hMat = new THREE.MeshStandardMaterial({ color: 0x8b5cf6, emissive: 0x6d28d9 });
+        const hMesh = new THREE.Mesh(new THREE.SphereGeometry(0.16, 24, 24), hMat);
+        hMesh.position.copy(pointH);
+        scene.add(hMesh);
+        dynamicObjects.push(hMesh);
+
+        const labelH = createLabel3D("Tâm giao tuyến $H(1; 2; 2)$", pointH, "#8b5cf6");
+        dynamicLabels.push(labelH);
+
+        // Intersection Circle Mesh
+        const ringGeo = new THREE.RingGeometry(rVal - 0.08, rVal + 0.08, 64);
+        const ringMat = new THREE.MeshBasicMaterial({ color: 0x8b5cf6, side: THREE.DoubleSide });
+        const circleMesh = new THREE.Mesh(ringGeo, ringMat);
+        circleMesh.rotation.x = -Math.PI / 2;
+        circleMesh.position.copy(pointH);
+        scene.add(circleMesh);
+        dynamicObjects.push(circleMesh);
+
+        // Radius r line segment from H(1,2,2) to P(5, 2, 2)
+        const pointR = mVec(1 + rVal, 2, zVal);
+        const rSegGeo = new THREE.BufferGeometry().setFromPoints([pointH, pointR]);
+        const rSegMat = new THREE.LineBasicMaterial({ color: 0x8b5cf6, linewidth: 2.5 });
+        const rSeg = new THREE.Line(rSegGeo, rSegMat);
+        scene.add(rSeg);
+        dynamicObjects.push(rSeg);
+
+        const labelr = createLabel3D(`Bán kính $r = 4$`, pointH.clone().lerp(pointR, 0.5), "#8b5cf6");
+        dynamicLabels.push(labelr);
+
+        // Hypotenuse R segment connecting I(1,2,-1) to P(5,2,2) for Right Triangle IHP (R^2 = d^2 + r^2)
+        const ipGeo = new THREE.BufferGeometry().setFromPoints([sphereCenter, pointR]);
+        const ipMat = new THREE.LineDashedMaterial({ color: 0x38bdf8, dashSize: 0.3, gapSize: 0.2, linewidth: 2 });
+        const ipLine = new THREE.Line(ipGeo, ipMat);
+        ipLine.computeLineDistances();
+        scene.add(ipLine);
+        dynamicObjects.push(ipLine);
+
+        const labelIP = createLabel3D(`$R = 5$`, sphereCenter.clone().lerp(pointR, 0.5), "#38bdf8");
+        dynamicLabels.push(labelIP);
+      }
+    }
+    updatePlaneState(1);
+
+    /* =========================================================================
+       3. INTERACTIVE SIDEBAR & NAV TAGS SYSTEM
+       ========================================================================= */
+    let currentTag = 1;
+    const visitedTags = new Set();
+
+    function selectTag(tagNum) {
+      if (tagNum === 4 && !visitedTags.has(3)) {
+        alert("🔒 Nhãn 4 (Đường tròn giao tuyến) sẽ mở khi bạn chuyển Mặt phẳng (Q) sang trạng thái 'Cắt theo đường tròn' ở Nhãn 3!");
+        return;
+      }
+
+      currentTag = tagNum;
+      visitedTags.add(tagNum);
+
+      // Update Nav Tag UI
+      for (let i = 1; i <= 4; i++) {
+        const btn = document.getElementById(`tag-${i}`);
+        if (!btn) continue;
+        if (i === tagNum) btn.classList.add('active');
+        else btn.classList.remove('active');
+
+        if (visitedTags.has(i)) btn.classList.add('visited');
+      }
+
+      // Check Tag 4 lock/unlock condition based on plane state
+      const tag4Btn = document.getElementById('tag-4');
+      if (planeState === 3) {
+        tag4Btn.classList.remove('disabled');
+      }
+
+      renderPanelContent(tagNum);
+      checkCompletionState();
+    }
+
+    function changePlaneState(stateNum) {
+      updatePlaneState(stateNum);
+      const tag4Btn = document.getElementById('tag-4');
+      if (stateNum === 3) {
+        tag4Btn.classList.remove('disabled');
+      }
+      renderPanelContent(3);
+    }
+
+    function renderPanelContent(tagNum) {
+      const container = document.getElementById('panel-container');
+
+      if (tagNum === 1) {
+        container.innerHTML = `
+          <div class="step-title"><i class="ti ti-circle-dot"></i> (S) Dạng Tâm – Bán Kính</div>
+          
+          <div class="info-box">
+            <b>Phương trình mặt cầu $(S)$:</b><br>
+            $$(x - 1)^2 + (y - 2)^2 + (z + 1)^2 = 25$$
+          </div>
+
+          <div class="info-box athena-box">
+            📌 <b>Thẻ giải thích kiến thức:</b><br>
+            • <b>Tâm mặt cầu:</b> $I(1; 2; -1)$<br>
+            • <b>Bán kính:</b> $R = \sqrt{25} = 5$<br>
+            💡 <b>Lưu ý đổi dấu:</b> Từ $(x - 1)^2$ suy ra hoành độ tâm là $+1$ (KHÔNG phải $-1$). Từ $(z + 1)^2$ suy ra cao độ tâm là $-1$. Đây là bẫy sai lầm phổ biến nhất khi đọc tọa độ tâm!
+          </div>
+        `;
+
+      } else if (tagNum === 2) {
+        container.innerHTML = `
+          <div class="step-title"><i class="ti ti-math-symbols"></i> (S) Dạng Khai Triển & Điều Kiện</div>
+
+          <div class="info-box">
+            <b>Phương trình khai triển $(S)$:</b><br>
+            $$x^2 + y^2 + z^2 - 2x - 4y + 2z - 19 = 0$$
+          </div>
+
+          <div class="info-box athena-box">
+            📌 <b>Thẻ giải thích kiến thức:</b><br>
+            • Đưa về dạng chuẩn: $a = 1$, $b = 2$, $c = -1$, $d = -19$.<br>
+            • <b>Thử điều kiện tồn tại:</b><br>
+            $$a^2 + b^2 + c^2 - d = 1^2 + 2^2 + (-1)^2 - (-19) = 25 > 0$$
+            👉 Đúng là phương trình mặt cầu với bán kính $R = \sqrt{25} = 5$.
+          </div>
+        `;
+
+      } else if (tagNum === 3) {
+        let stateText = "";
+        if (planeState === 1) {
+          stateText = `
+            <div class="info-box" style="border-left-color:var(--warning); background:var(--warning-bg); color:#92400e;">
+              <b>1. Trạng thái Không cắt ($z = -8$):</b><br>
+              • Khoảng cách $d(I, (Q)) = |-1 - (-8)| = 7$.<br>
+              • Vì $d = 7 > R = 5 \implies$ Mặt phẳng $(Q)$ và mặt cầu $(S)$ <b>không có điểm chung</b>.
+            </div>
+          `;
+        } else if (planeState === 2) {
+          stateText = `
+            <div class="info-box" style="border-left-color:var(--correct); background:var(--correct-bg); color:#166534;">
+              <b>2. Trạng thái Tiếp xúc ($z = 4$):</b><br>
+              • Khoảng cách $d(I, (Q)) = |-1 - 4| = 5$.<br>
+              • Vì $d = 5 = R = 5 \implies$ Mặt phẳng $(Q)$ <b>tiếp xúc</b> mặt cầu $(S)$ tại tiếp điểm duy nhất $H(1; 2; 4)$.
+            </div>
+          `;
+        } else if (planeState === 3) {
+          stateText = `
+            <div class="info-box" style="border-left-color:var(--purple); background:#f3e8ff; color:#6b21a8;">
+              <b>3. Trạng thái Cắt theo đường tròn ($z = 2$):</b><br>
+              • Khoảng cách $d(I, (Q)) = |-1 - 2| = 3$.<br>
+              • Vì $d = 3 < R = 5 \implies$ Mặt phẳng $(Q)$ <b>cắt</b> mặt cầu $(S)$ theo đường tròn giao tuyến.<br>
+              👉 <i>Bấm nhãn 4 để xem công thức tính bán kính đường tròn $r$!</i>
+            </div>
+          `;
+        }
+
+        container.innerHTML = `
+          <div class="step-title"><i class="ti ti-layers-intersect"></i> (Q) 3 Vị Trí Tương Đối Với Mặt Cầu</div>
+
+          <div style="margin-bottom:12px;">
+            <b>Bấm chuyển trạng thái mặt phẳng $(Q)$:</b>
+            <div class="state-toggle-group">
+              <button class="state-btn ${planeState === 1 ? 'active' : ''}" onclick="changePlaneState(1)">1. Không cắt</button>
+              <button class="state-btn ${planeState === 2 ? 'active' : ''}" onclick="changePlaneState(2)">2. Tiếp xúc</button>
+              <button class="state-btn ${planeState === 3 ? 'active' : ''}" onclick="changePlaneState(3)">3. Cắt đường tròn</button>
+            </div>
+          </div>
+
+          ${stateText}
+        `;
+
+      } else if (tagNum === 4) {
+        container.innerHTML = `
+          <div class="step-title"><i class="ti ti-circle"></i> Đường Tròn Giao Tuyến & Bán Kính $r$</div>
+
+          <div class="info-box">
+            <b>Mặt phẳng $(Q): z = 2$ cắt Mặt cầu $(S)$ tại đường tròn tâm $H(1; 2; 2)$.</b>
+          </div>
+
+          <div class="info-box athena-box">
+            📌 <b>Công thức Pythagore quan trọng:</b><br>
+            $$R^2 = d^2 + r^2 \implies r = \sqrt{R^2 - d^2}$$
+            • Thay số: $r = \sqrt{5^2 - 3^2} = \sqrt{25 - 9} = \sqrt{16} = 4$.<br>
+            • <b>Tâm đường tròn $H(1; 2; 2)$:</b> Là hình chiếu vuông góc của tâm $I(1; 2; -1)$ lên mặt phẳng $(Q)$ (KHÔNG phải tâm $I$).
+          </div>
+        `;
+      }
+
+      renderKaTeXInElement(container);
+    }
+
+    function checkCompletionState() {
+      if (visitedTags.size >= 4) {
+        const btn = document.getElementById('btn-show-summary');
+        btn.disabled = false;
+      }
+    }
+
+    function openSummaryModal() {
+      const modal = document.getElementById('summary-modal');
+      modal.style.display = 'flex';
+      renderKaTeXInElement(modal);
+      LMS().complete();
+    }
+
+    function closeSummaryModal() {
+      document.getElementById('summary-modal').style.display = 'none';
+    }
+
+    // Initialize Tag 1 on Load
+    selectTag(1);
+
+    // Animation Loop
+    function animate() {
+      requestAnimationFrame(animate);
+      orbitControls.update();
+      activeLabels.forEach(l => l.update());
+      renderer.render(scene, camera);
+    }
+    animate();
+  </script>
+
+</body>
+</html>
