@@ -321,6 +321,12 @@
       color: #fac775;
     }
 
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+      transform: none;
+    }
+
     .control-card {
       background: var(--cream);
       border: 1px solid var(--paper-line);
@@ -497,7 +503,8 @@
 
         <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;">
           <button class="btn btn-primary" id="btn-t1-animate"><i class="ti ti-player-play"></i> 1. Bay dọc đường ray</button>
-          <button class="btn btn-outline" id="btn-t1-measure" style="color: var(--navy); border-color: var(--teal);"><i class="ti ti-ruler-2"></i> 2. Đo khoảng cách thật</button>
+          <button class="btn btn-outline" id="btn-t1-measure" disabled style="color: var(--navy); border-color: var(--teal);"><i class="ti ti-ruler-2"></i> 2. Đo khoảng cách thật</button>
+          <button class="btn btn-outline" id="btn-t1-top" style="color: var(--navy); border-color: var(--teal); display:none;"><i class="ti ti-view-360"></i> 3. Nhìn từ trên xuống</button>
         </div>
 
         <div id="t1-feedback" class="info-box athena-box" style="display: none;">
@@ -889,17 +896,20 @@
         camera.position.set(centerX, 7.5 + distRatio * 5.5, 14.0 + distRatio * 16.0);
         orbitControls.target.set(centerX, 1.0, 0);
       } else if (currentTab === 3) {
-        // Secret angle for Penrose triangle - Wide Overview Perspective
-        camera.position.set(13.5, 11.16, 13.5);
-        camera.fov = 28;
+        // Góc bí mật nhìn thẳng theo trục Z. Các thanh được tính ngược từ
+        // hình chiếu mong muốn nên chỉ khép kín chính xác ở góc này.
+        camera.position.set(0, 1.0, 18);
+        camera.fov = 18;
         camera.updateProjectionMatrix();
-        orbitControls.target.set(0, 1.2, -1.8);
+        orbitControls.target.set(0, 1.0, -1.8);
+        orbitControls.enabled = t3Revealed;
       }
       orbitControls.update();
     }
 
     function loadTabScenario(tabNum) {
       clearScene();
+      gridHelper.visible = true;
       document.getElementById('btn-handbook').style.display = 'flex';
 
       if (tabNum === 1) initTab1();
@@ -911,12 +921,17 @@
 
     let interactiveMeshes = [];
     let animId = null;
+    let t3Revealed = false;
 
     /* =========================================================================
        6. TRẠM A: ĐƯỜNG RAY "HỘI TỤ Ở VÔ TẬN"
        ========================================================================= */
     function initTab1() {
       clearScene();
+      document.getElementById('btn-t1-animate').disabled = false;
+      document.getElementById('btn-t1-measure').disabled = true;
+      document.getElementById('btn-t1-top').style.display = 'none';
+      document.getElementById('btn-next-tab1').style.display = 'none';
       const trackDist = 1.6; const trackLen = 70;
       const leftRailPoints = [new THREE.Vector3(-trackDist / 2, 0.05, 25), new THREE.Vector3(-trackDist / 2, 0.05, -trackLen)];
       const rightRailPoints = [new THREE.Vector3(trackDist / 2, 0.05, 25), new THREE.Vector3(trackDist / 2, 0.05, -trackLen)];
@@ -937,6 +952,7 @@
       fb.style.display = 'none';
 
       document.getElementById('btn-t1-animate').onclick = () => {
+        document.getElementById('btn-t1-animate').disabled = true;
         let startTime = performance.now();
         const duration = 4000;
         const startZ = 12; const endZ = -25;
@@ -953,6 +969,7 @@
           if (progress < 1.0) {
             animId = requestAnimationFrame(stepCam);
           } else {
+            document.getElementById('btn-t1-measure').disabled = false;
             document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Bạn vừa bay dọc đường ray! Khoảng cách trên hình ảnh có vẻ thu hẹp lại khi ra xa, nhưng thực tế khoảng cách giữa 2 ray có đổi không? Bấm nút <b>2. Đo khoảng cách thật</b> để kiểm tra!`;
             fb.style.display = 'flex';
           }
@@ -961,6 +978,7 @@
       };
 
       document.getElementById('btn-t1-measure').onclick = () => {
+        document.getElementById('btn-t1-measure').disabled = true;
         makeSpherePoint(new THREE.Vector3(-trackDist / 2, 0.05, 5), 0x34d399, 0.12);
         makeSpherePoint(new THREE.Vector3(trackDist / 2, 0.05, 5), 0x34d399, 0.12);
         animateLine(new THREE.Vector3(-trackDist / 2, 0.05, 5), new THREE.Vector3(trackDist / 2, 0.05, 5), 0x34d399, 600);
@@ -976,10 +994,18 @@
         animateLine(new THREE.Vector3(-trackDist / 2, 0.05, -26), new THREE.Vector3(trackDist / 2, 0.05, -26), 0x34d399, 600);
         createLabel3D('d3 = 1.60m', new THREE.Vector3(0, 0.3, -26), '#34d399');
 
-        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> 🎉 Số đo thực tế d1 = d2 = d3 = <b>1.60m không đổi</b>! Sự "hội tụ" chỉ là hiệu ứng thị giác của mắt/phối cảnh. Bạn đã hoàn thành Trạm A!`;
+        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Số đo thực tế d1 = d2 = d3 = <b>1.60m không đổi</b>! Sự "hội tụ" chỉ là hiệu ứng thị giác của mắt/phối cảnh. Hãy nhìn từ trên xuống để kiểm chứng thêm.`;
         fb.style.display = 'flex';
+        document.getElementById('btn-t1-top').style.display = 'inline-flex';
         document.getElementById('btn-next-tab1').style.display = 'inline-flex';
         unlockTab(2);
+      };
+
+      document.getElementById('btn-t1-top').onclick = () => {
+        camera.position.set(0, 28, -12);
+        orbitControls.target.set(0, 0, -12);
+        orbitControls.update();
+        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> 🎉 Từ trên xuống, hai ray hiện rõ song song tuyệt đối. Hiệu ứng hội tụ chỉ xuất hiện khi mắt nhìn gần như dọc theo hướng đường ray; bạn vẫn có thể xoay tự do để kiểm chứng.`;
       };
     }
 
@@ -993,6 +1019,7 @@
       sldXcVal = 4.5;
       document.getElementById('sld-xc').value = 4.5;
       document.getElementById('txt-xc-val').textContent = '4.5 m (Gần)';
+      document.getElementById('btn-next-tab2').style.display = 'none';
 
       document.getElementById('sld-xc').oninput = (e) => {
         sldXcVal = parseFloat(e.target.value);
@@ -1108,67 +1135,97 @@
        ========================================================================= */
     function initTab3() {
       clearScene();
+      t3Revealed = false;
+      gridHelper.visible = false;
+      document.getElementById('btn-t3-reveal').disabled = false;
+      document.getElementById('t3-msg').innerHTML = `Athena: Nhìn kỹ ở góc bí mật này — ba thanh trông khép kín. Bấm <b>"Xoay ra xem sự thật"</b> để mở khóa camera!`;
+      document.getElementById('t3-feedback').style.display = 'flex';
 
-      // 3 L-shaped bars placed at 3 different Z-depths (Z = 0, Z = -1.8, Z = -3.6)
-      // Bar 1 (Vertical left): Base at X = -1.5, Y = 0 to 3.0, Z = 0
-      const bar1 = createPolygonMesh([
-        new THREE.Vector3(-1.8, 0, 0), new THREE.Vector3(-1.2, 0, 0),
-        new THREE.Vector3(-1.2, 2.8, 0), new THREE.Vector3(-1.8, 2.8, 0)
-      ], COLOR_PLANE_1, 0.7);
-      createLineSegment(new THREE.Vector3(-1.8, 0, 0), new THREE.Vector3(-1.8, 2.8, 0), COLOR_PLANE_1);
-      createLineSegment(new THREE.Vector3(-1.2, 0, 0), new THREE.Vector3(-1.2, 2.8, 0), COLOR_PLANE_1);
+      // Dựng NGƯỢC từ tam giác 2D mong muốn. Với camera C=(0,1,18),
+      // điểm (x,y) đặt ở độ sâu z phải nhân hệ số (18-z)/18 để có cùng
+      // hình chiếu phối cảnh. Nhờ vậy các đầu thanh trùng nhau trên màn
+      // hình nhưng cách xa nhau trong không gian thật.
+      const secretCameraZ = 18;
+      const secretCameraY = 1.0;
+      const toWorldAtDepth = (point2D, z) => {
+        const scale = (secretCameraZ - z) / secretCameraZ;
+        return new THREE.Vector3(
+          point2D.x * scale,
+          secretCameraY + (point2D.y - secretCameraY) * scale,
+          z
+        );
+      };
+      const makeProjectedBar = (start2D, end2D, width, z, color) => {
+        const dx = end2D.x - start2D.x;
+        const dy = end2D.y - start2D.y;
+        const length = Math.hypot(dx, dy);
+        const unit = { x: dx / length, y: dy / length };
+        // Nới hai đầu một chút trên hình chiếu để ba thanh phủ kín mối nối.
+        const drawStart = { x: start2D.x - unit.x * width * 0.45, y: start2D.y - unit.y * width * 0.45 };
+        const drawEnd = { x: end2D.x + unit.x * width * 0.45, y: end2D.y + unit.y * width * 0.45 };
+        const offset = { x: -dy / length * width / 2, y: dx / length * width / 2 };
+        const quad2D = [
+          { x: drawStart.x + offset.x, y: drawStart.y + offset.y },
+          { x: drawEnd.x + offset.x, y: drawEnd.y + offset.y },
+          { x: drawEnd.x - offset.x, y: drawEnd.y - offset.y },
+          { x: drawStart.x - offset.x, y: drawStart.y - offset.y }
+        ];
+        const quad3D = quad2D.map(point => toWorldAtDepth(point, z));
+        createPolygonMesh(quad3D, color, 0.92);
+        for (let i = 0; i < quad3D.length; i++) {
+          createLineSegment(quad3D[i], quad3D[(i + 1) % quad3D.length], color);
+        }
+        return {
+          center: toWorldAtDepth({ x: (start2D.x + end2D.x) / 2, y: (start2D.y + end2D.y) / 2 }, z),
+          start: toWorldAtDepth(start2D, z),
+          end: toWorldAtDepth(end2D, z)
+        };
+      };
 
-      // Bar 2 (Horizontal top): Y = 2.8, X = -1.5 to 1.5, Z = -1.8 (Different depth!)
-      const bar2 = createPolygonMesh([
-        new THREE.Vector3(-1.5, 2.5, -1.8), new THREE.Vector3(1.5, 2.5, -1.8),
-        new THREE.Vector3(1.5, 3.1, -1.8), new THREE.Vector3(-1.5, 3.1, -1.8)
-      ], COLOR_PLANE_2, 0.7);
-      createLineSegment(new THREE.Vector3(-1.5, 2.5, -1.8), new THREE.Vector3(1.5, 2.5, -1.8), COLOR_PLANE_2);
-      createLineSegment(new THREE.Vector3(-1.5, 3.1, -1.8), new THREE.Vector3(1.5, 3.1, -1.8), COLOR_PLANE_2);
+      const vertexA = { x: -1.65, y: -0.75 };
+      const vertexB = { x: -1.65, y: 2.55 };
+      const vertexC = { x: 1.55, y: 2.55 };
+      const barA = makeProjectedBar(vertexA, vertexB, 0.48, 0.0, COLOR_PLANE_1);
+      const barB = makeProjectedBar(vertexB, vertexC, 0.48, -2.2, COLOR_PLANE_2);
+      const barC = makeProjectedBar(vertexC, vertexA, 0.48, -4.4, COLOR_PLANE_3);
 
-      // Bar 3 (Slanted right): X = 1.5 down to 0, Z = -3.6 (Different depth!)
-      const bar3 = createPolygonMesh([
-        new THREE.Vector3(1.2, 2.8, -3.6), new THREE.Vector3(1.8, 2.8, -3.6),
-        new THREE.Vector3(-0.3, -0.2, -3.6), new THREE.Vector3(-0.9, -0.2, -3.6)
-      ], COLOR_PLANE_3, 0.7);
-      createLineSegment(new THREE.Vector3(1.2, 2.8, -3.6), new THREE.Vector3(-0.9, -0.2, -3.6), COLOR_PLANE_3);
-      createLineSegment(new THREE.Vector3(1.8, 2.8, -3.6), new THREE.Vector3(-0.3, -0.2, -3.6), COLOR_PLANE_3);
-
-      createLabel3D('Thanh A (Độ sâu Z = 0)', new THREE.Vector3(-1.5, 1.4, 0), '#60a5fa');
-      createLabel3D('Thanh B (Độ sâu Z = -1.8m)', new THREE.Vector3(0, 2.8, -1.8), '#c084fc');
-      createLabel3D('Thanh C (Độ sâu Z = -3.6m)', new THREE.Vector3(0.5, 1.3, -3.6), '#34d399');
-
-      // Lock Camera to Secret Perspective Angle initially (Wide Overview)
+      // Khóa camera ở góc bí mật, dùng FOV hẹp đúng kịch bản.
       orbitControls.enabled = false;
-      camera.position.set(13.5, 11.16, 13.5);
-      camera.fov = 28;
+      camera.position.set(0, secretCameraY, secretCameraZ);
+      camera.fov = 18;
       camera.updateProjectionMatrix();
-      orbitControls.target.set(0, 1.2, -1.8);
+      orbitControls.target.set(0, secretCameraY, -1.8);
       orbitControls.update();
 
       const fb = document.getElementById('t3-feedback');
 
       document.getElementById('btn-t3-reveal').onclick = () => {
+        document.getElementById('btn-t3-reveal').disabled = true;
+        gridHelper.visible = true;
         let startTime = performance.now();
         const duration = 3000;
         const startPos = camera.position.clone();
-        const endPos = new THREE.Vector3(-4.0, 5.0, 9.0);
+        const endPos = new THREE.Vector3(-7.0, 6.0, 10.0);
 
         function stepReveal(now) {
           const elapsed = now - startTime;
           const progress = Math.min(elapsed / duration, 1.0);
 
           camera.position.lerpVectors(startPos, endPos, progress);
-          camera.fov = 28 + (50 - 28) * progress;
+          camera.fov = 18 + (50 - 18) * progress;
           camera.updateProjectionMatrix();
-          orbitControls.target.set(0, 1.0, -1.8);
+          orbitControls.target.set(0, 1.0, -2.2);
           orbitControls.update();
 
           if (progress < 1.0) {
             animId = requestAnimationFrame(stepReveal);
           } else {
+            t3Revealed = true;
             orbitControls.enabled = true;
-            document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> 🎉 Sự thật lộ diện! 3 thanh gỗ <b>nằm ở 3 độ sâu Z hoàn toàn khác nhau</b> và không hề chạm nhau. Ảo giác khép kín chỉ xảy ra ở 1 góc nhìn phối cảnh bí mật duy nhất! Bạn đã hoàn thành bài khám phá!`;
+            createLabel3D('Thanh A — Z = 0', barA.center, '#60a5fa');
+            createLabel3D('Thanh B — Z = -2.2m', barB.center, '#c084fc');
+            createLabel3D('Thanh C — Z = -4.4m', barC.center, '#34d399');
+            document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> 🎉 Sự thật lộ diện! Ba thanh nằm ở ba độ sâu khác nhau và không hề chạm nhau. Chúng chỉ có các đầu mút <b>trùng nhau trên hình chiếu</b> ở góc bí mật. Nguyên lý hình bất khả thi này từng được Oscar Reutersvärd và Roger Penrose khai thác; Escher thể hiện những cấu trúc tương tự trong tranh 2D. Hãy xoay tự do và thử tìm lại góc ban đầu — đây là cách dùng phép chiếu theo chiều ngược.`;
             fb.style.display = 'flex';
             setTimeout(() => {
               document.getElementById('celebration-modal').classList.add('show');
