@@ -9,7 +9,9 @@
   <!-- Google Fonts: Be Vietnam Pro -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    rel="stylesheet">
 
   <!-- Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
@@ -93,7 +95,9 @@
 
     #app-body {
       display: flex;
-      min-height: calc(100vh - 50px);
+      height: calc(100vh - 50px);
+      max-height: calc(100vh - 50px);
+      overflow: hidden;
       position: relative;
     }
 
@@ -154,7 +158,8 @@
       cursor: pointer;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
       transition: all 0.2s ease;
-      display: none; /* Initially hidden on Tab 1 */
+      display: none;
+      /* Initially hidden on Tab 1 */
       align-items: center;
       gap: 6px;
       z-index: 5;
@@ -439,12 +444,36 @@
     }
 
     .btn-outline {
+      background-color: #ffffff;
+      border: 1.5px solid var(--paper-line);
+      color: var(--navy);
+      font-weight: 700;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+    }
+
+    .btn-outline:hover:not(:disabled) {
+      background-color: var(--jade-light);
+      border-color: var(--teal);
+      color: var(--jade-dark);
+      box-shadow: 0 2px 6px rgba(27, 77, 62, 0.12);
+    }
+
+    .btn-outline:disabled {
+      background-color: var(--cream);
+      border-color: var(--paper-line);
+      color: var(--ink-3);
+      opacity: 0.55;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    .modal-card .btn-outline {
       background-color: rgba(255, 255, 255, 0.1);
       border: 1.5px solid rgba(255, 255, 255, 0.35);
       color: #ffffff;
     }
 
-    .btn-outline:hover {
+    .modal-card .btn-outline:hover {
       background-color: rgba(255, 255, 255, 0.2);
       border-color: #fac775;
       color: #fac775;
@@ -537,19 +566,28 @@
   <div class="modal-overlay" id="handbook-modal">
     <div class="modal-card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-        <h3 style="margin: 0; color: #fac775; font-size: 18px;"><i class="ti ti-book"></i> Sổ tay Kiến thức Hình hộp</h3>
-        <button id="btn-handbook-close" style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;"><i class="ti ti-x"></i></button>
+        <h3 style="margin: 0; color: #fac775; font-size: 18px;"><i class="ti ti-book"></i> Sổ tay Kiến thức Hình hộp
+        </h3>
+        <button id="btn-handbook-close"
+          style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;"><i
+            class="ti ti-x"></i></button>
       </div>
       <div style="font-size: 13.5px; line-height: 1.6; color: #e2e8f0;">
         <p><b>1. Định nghĩa hình hộp:</b><br>
           Hình hộp là 1 hình lăng trụ tứ giác <b>ĐẶC BIỆT</b> có <b>mặt đáy là hình bình hành</b>.
         </p>
+        <p><b>Nhắc lại công cụ chứng minh:</b><br>
+          Hai đường chéo của một hình bình hành cắt nhau tại trung điểm mỗi đường. Vì vậy, muốn kết luận về giao điểm
+          đường chéo hình hộp, ta phải chứng minh tứ giác trung gian là hình bình hành trước.
+        </p>
         <p><b>2. Tính chất 4 đường chéo khối:</b><br>
           - Hình hộp có đúng 4 đường chéo khối: <b>AC', BD', CA', DB'</b>.<br>
           - 4 đường chéo khối <b>cùng đi qua 1 điểm chung O</b> và O là <b>trung điểm của mỗi đường</b>.
         </p>
-        <p style="background: rgba(250, 199, 117, 0.15); padding: 10px; border-radius: 8px; border-left: 3px solid #fac775;">
-          💡 <b>Phân biệt:</b> Đường chéo khối xuyên qua bên trong khối (nối 2 đỉnh đối diện). Đường chéo mặt nằm hoàn toàn trên 1 mặt.
+        <p
+          style="background: rgba(250, 199, 117, 0.15); padding: 10px; border-radius: 8px; border-left: 3px solid #fac775;">
+          💡 <b>Phân biệt:</b> Đường chéo khối xuyên qua bên trong khối (nối 2 đỉnh đối diện). Đường chéo mặt nằm hoàn
+          toàn trên 1 mặt.
         </p>
       </div>
     </div>
@@ -558,21 +596,37 @@
   <!-- CELEBRATION VICTORY MODAL -->
   <div class="modal-overlay" id="celebration-modal">
     <div class="modal-card" style="text-align: center;">
-      <div style="background: rgba(250, 199, 117, 0.2); color: #fac775; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-block; margin-bottom: 12px;">
+      <div
+        style="background: rgba(250, 199, 117, 0.2); color: #fac775; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-block; margin-bottom: 12px;">
         <i class="ti ti-award"></i> TỔNG KẾT BÀI HỌC
       </div>
       <h2 style="margin: 0 0 6px 0; font-size: 22px; color: #fac775;">🎉 Xuất sắc! Hoàn thành Module 13.6</h2>
       <div style="font-size: 14px; color: #94a3b8;">Hình hộp và tính chất</div>
 
-      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: left; font-size: 13px; line-height: 1.6;">
-        <div style="display: flex; gap: 8px; margin-bottom: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Điều kiện Đáy:</b> Đáy phải là Hình bình hành mới tạo thành Hình hộp.</div>
-        <div style="display: flex; gap: 8px; margin-bottom: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>4 Đường chéo khối:</b> Cắt nhau tại trung điểm O của mỗi đường.</div>
-        <div style="display: flex; gap: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>3 Điều kiện bắt buộc:</b> Đáy HBH + Mặt bên HBH + Cạnh bên song song & bằng nhau.</div>
+      <div
+        style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: left; font-size: 13px; line-height: 1.6;">
+        <div style="display: flex; gap: 8px; margin-bottom: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled"
+            style="color: #34d399;"></i> <b>Điều kiện Đáy:</b> Đáy phải là Hình bình hành mới tạo thành Hình hộp.</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled"
+            style="color: #34d399;"></i> <b>4 Đường chéo khối:</b> Cắt nhau tại trung điểm O của mỗi đường.</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled"
+            style="color: #34d399;"></i> <b>3 Điều kiện bắt buộc:</b> Đáy HBH + Mặt bên HBH + Cạnh bên song song & bằng
+          nhau.</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 8px; color: #e2e8f0;"><i class="ti ti-alert-triangle"
+            style="color: #fac775;"></i> Không phải mọi lăng trụ tứ giác đều là hình hộp; phải kiểm tra đáy là hình bình
+          hành.</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 8px; color: #e2e8f0;"><i class="ti ti-arrows-diagonal"
+            style="color: #38bdf8;"></i> Đường chéo khối xuyên qua bên trong; đường chéo mặt nằm hoàn toàn trên một mặt.
+        </div>
+        <div style="display: flex; gap: 8px; color: #e2e8f0;"><i class="ti ti-proof" style="color: #a78bfa;"></i> Khi
+          chứng minh, không kết luận bằng hình vẽ: phải dựng và chứng minh hình bình hành trung gian.</div>
       </div>
 
       <div style="display: flex; gap: 12px;">
-        <button class="btn btn-outline" id="btn-modal-restart" style="flex:1;"><i class="ti ti-refresh"></i> Làm lại từ đầu</button>
-        <button class="btn btn-primary" id="btn-modal-close" style="flex:1;"><i class="ti ti-eye"></i> Xem lại hình 3D</button>
+        <button class="btn btn-outline" id="btn-modal-restart" style="flex:1;"><i class="ti ti-refresh"></i> Làm lại từ
+          đầu</button>
+        <button class="btn btn-primary" id="btn-modal-close" style="flex:1;"><i class="ti ti-eye"></i> Xem lại hình
+          3D</button>
       </div>
     </div>
   </div>
@@ -604,15 +658,26 @@
         </div>
 
         <div class="chk-list">
-          <div class="chk-item current" id="chk-t1-1"><div class="chk-icon">1</div> <span>Click Cặp đỉnh đối diện (A & C')</span></div>
-          <div class="chk-item" id="chk-t1-2"><div class="chk-icon">2</div> <span>Click Cặp mặt đối diện (ABCD & A'B'C'D')</span></div>
-          <div class="chk-item" id="chk-t1-3"><div class="chk-icon">3</div> <span>Click Đường chéo khối (AC')</span></div>
-          <div class="chk-item" id="chk-t1-4"><div class="chk-icon">4</div> <span>Click Đường chéo mặt (AC)</span></div>
-          <div class="chk-item" id="chk-t1-5"><div class="chk-icon">5</div> <span>Trắc nghiệm: Số đường chéo khối</span></div>
+          <div class="chk-item current" id="chk-t1-1">
+            <div class="chk-icon">1</div> <span>Click Cặp đỉnh đối diện (A & C')</span>
+          </div>
+          <div class="chk-item" id="chk-t1-2">
+            <div class="chk-icon">2</div> <span>Click Cặp mặt đối diện (ABCD & A'B'C'D')</span>
+          </div>
+          <div class="chk-item" id="chk-t1-3">
+            <div class="chk-icon">3</div> <span>Click Đường chéo khối (AC')</span>
+          </div>
+          <div class="chk-item" id="chk-t1-4">
+            <div class="chk-icon">4</div> <span>Click Đường chéo mặt (AC)</span>
+          </div>
+          <div class="chk-item" id="chk-t1-5">
+            <div class="chk-icon">5</div> <span>Trắc nghiệm: Số đường chéo khối</span>
+          </div>
         </div>
 
         <div id="t1-quiz-wrap" style="display: none; margin-bottom: 12px;">
-          <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;">Hình hộp có tất cả bao nhiêu đường chéo khối?</div>
+          <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;">Hình hộp có tất cả
+            bao nhiêu đường chéo khối?</div>
           <div class="choice-group">
             <button class="choice-btn" id="t1-opt-2"><span>A. 2 đường chéo</span> <i class="ti ti-circle"></i></button>
             <button class="choice-btn" id="t1-opt-4"><span>B. 4 đường chéo</span> <i class="ti ti-circle"></i></button>
@@ -623,7 +688,8 @@
 
         <div id="t1-feedback" class="info-box athena-box" style="display: flex;">
           <div class="athena-avatar">A</div>
-          <div id="t1-msg">Athena: Hãy click vào <b>Cặp đỉnh đối diện (A & C')</b> trên hình 3D hoặc thẻ Checklist 1 để bắt đầu!</div>
+          <div id="t1-msg">Athena: Hãy click vào <b>Cặp đỉnh đối diện (A & C')</b> trên hình 3D hoặc thẻ Checklist 1 để
+            bắt đầu!</div>
         </div>
 
         <button class="btn btn-primary" id="btn-next-tab1" style="width: 100%; margin-top: 14px; display: none;">
@@ -635,26 +701,50 @@
       <div class="tab-content" id="tab-2">
         <div class="step-title"><i class="ti ti-git-fork"></i> Tab 2: Tính chất 4 đường chéo khối</div>
         <div class="info-box">
-          Xét hình hộp <b>PQRS.P'Q'R'S'</b>. Ta sẽ lập luận chứng minh 4 đường chéo khối <b>PR', QS', RP', SQ'</b> cắt nhau tại trung điểm O.
+          Xét hình hộp <b>PQRS.P'Q'R'S'</b>. Ta sẽ lập luận chứng minh 4 đường chéo khối <b>PR', QS', RP', SQ'</b> cắt
+          nhau tại trung điểm O.
+        </div>
+        <div class="info-box" style="background:var(--jade-light);font-size:12.5px;">
+          <b>Sổ tay dùng ngay:</b> Đáy hình hộp là hình bình hành; hai đường chéo của hình bình hành cắt nhau tại trung
+          điểm mỗi đường. Ta phải chứng minh tứ giác trung gian là hình bình hành trước khi dùng tính chất này.
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
-          <button class="btn btn-outline" id="t2-btn-step1" style="color: var(--navy); border-color: var(--teal);"><i class="ti ti-timeline"></i> 1. Dựng đường chéo PR' & SQ'</button>
+          <button class="btn btn-outline" id="t2-btn-step1"><i class="ti ti-timeline"></i> 1. Dựng đường chéo
+            PR'</button>
+          <button class="btn btn-outline" id="t2-btn-step2" disabled><i class="ti ti-timeline"></i> 2. Dựng đường chéo
+            SQ'</button>
           <div id="t2-step3-wrap" style="display: none;" class="choice-group">
-            <div style="font-size: 12.5px; font-weight: 700; color: var(--navy);">Lập luận trung gian: Tứ giác PSR'Q' có phải là hình bình hành không?</div>
-            <button class="choice-btn" id="t2-btn-o1-yes"><span>A. Có, PSR'Q' là hình bình hành</span> <i class="ti ti-circle"></i></button>
-            <button class="choice-btn" id="t2-btn-o1-no"><span>B. Không phải hình bình hành</span> <i class="ti ti-circle"></i></button>
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--navy);">Lập luận trung gian: Tứ giác PSR'Q' có
+              phải là hình bình hành không?</div>
+            <button class="choice-btn" id="t2-btn-o1-yes"><span>A. Có, PSR'Q' là hình bình hành</span> <i
+                class="ti ti-circle"></i></button>
+            <button class="choice-btn" id="t2-btn-o1-no"><span>B. Không phải hình bình hành</span> <i
+                class="ti ti-circle"></i></button>
           </div>
-          <div id="t2-step4-wrap" style="display: none;" class="choice-group">
-            <div style="font-size: 12.5px; font-weight: 700; color: var(--navy);">Vậy PR' và SQ' cắt nhau tại vị trí nào?</div>
-            <button class="choice-btn" id="t2-btn-o2-mid"><span>A. Tại trung điểm của mỗi đường</span> <i class="ti ti-circle"></i></button>
-            <button class="choice-btn" id="t2-btn-o2-any"><span>B. Tại 1 điểm bất kỳ</span> <i class="ti ti-circle"></i></button>
+          <div id="t2-step4-wrap" style="display: block; opacity: .55;" class="choice-group">
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--navy);">Vậy PR' và SQ' cắt nhau tại vị trí
+              nào?</div>
+            <button class="choice-btn" id="t2-btn-o2-mid"><span>A. Tại trung điểm của mỗi đường</span> <i
+                class="ti ti-circle"></i></button>
+            <button class="choice-btn" id="t2-btn-o2-any"><span>B. Tại 1 điểm bất kỳ</span> <i
+                class="ti ti-circle"></i></button>
+            <button class="choice-btn" id="t2-btn-o2-none"><span>C. Không cắt nhau</span> <i
+                class="ti ti-circle"></i></button>
           </div>
-          <div id="t2-calc-wrap" style="display: none; background: var(--cream); padding: 10px; border-radius: 8px; border: 1px solid var(--paper-line);">
-            <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;">Bài toán tính toán: Biết PR' = 10 cm. Khoảng cách OP = ?</div>
+          <button class="btn btn-outline" id="t2-btn-step5" style="display:none;"><i class="ti ti-timeline"></i> 5. Dựng
+            cặp RP' và QS'</button>
+          <button class="btn btn-outline" id="t2-btn-step6" style="display:none;"><i class="ti ti-bulb"></i> 6. Xem kết
+            luận đồng quy</button>
+          <div id="t2-calc-wrap"
+            style="display: none; background: var(--cream); padding: 10px; border-radius: 8px; border: 1px solid var(--paper-line);">
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;">Bài toán tính
+              toán: Biết PR' = 10 cm. Khoảng cách OP = ?</div>
             <div style="display: flex; gap: 8px; align-items: center;">
-              <input type="number" id="t2-inp-op" placeholder="Nhập số cm..." style="flex:1; padding: 8px; border-radius: 6px; border: 1.5px solid var(--paper-line); font-size: 13px;">
-              <button class="btn btn-primary" id="t2-btn-check-op" style="min-height: 36px; padding: 6px 12px;">Kiểm tra</button>
+              <input type="number" id="t2-inp-op" placeholder="Nhập số cm..."
+                style="flex:1; padding: 8px; border-radius: 6px; border: 1.5px solid var(--paper-line); font-size: 13px;">
+              <button class="btn btn-primary" id="t2-btn-check-op" style="min-height: 36px; padding: 6px 12px;">Kiểm
+                tra</button>
             </div>
           </div>
         </div>
@@ -673,23 +763,47 @@
       <div class="tab-content" id="tab-3">
         <div class="step-title"><i class="ti ti-scale"></i> Tab 3: Đối chiếu Lăng trụ tứ giác & Hình hộp</div>
         <div class="info-box">
-          Quan sát 2 khối bên cạnh: Cả 2 đều là lăng trụ tứ giác hợp lệ. Click vào mặt đáy của từng khối để đối chiếu và trả lời.
+          Quan sát 2 khối bên cạnh: Cả 2 đều là lăng trụ tứ giác hợp lệ. Click vào mặt đáy của từng khối để đối chiếu và
+          trả lời.
         </div>
 
-        <div class="choice-group">
-          <button class="choice-btn" id="t3-btn-block-a"><span>1. Click Đáy Khối (a) — HBH</span> <i class="ti ti-circle"></i></button>
-          <button class="choice-btn" id="t3-btn-block-b"><span>2. Click Đáy Khối (b) — Hình thang</span> <i class="ti ti-circle"></i></button>
+        <div class="choice-group" id="t3-observe-controls">
+          <button class="choice-btn" id="t3-btn-block-a"><span>1. Click đáy khối (a)</span> <i
+              class="ti ti-cube"></i></button>
+          <div id="t3-question-a" style="display:none;">
+            <div style="font-size:12.5px;font-weight:700;margin:6px 0;">2. Khối (a) có phải hình hộp không?</div>
+            <button class="choice-btn" id="t3-a-yes"><span>Có</span><i class="ti ti-circle"></i></button>
+            <button class="choice-btn" id="t3-a-no"><span>Không</span><i class="ti ti-circle"></i></button>
+          </div>
+          <button class="choice-btn" id="t3-btn-block-b" style="display:none;"><span>3. Click đáy khối (b)</span> <i
+              class="ti ti-cube"></i></button>
+          <div id="t3-question-b" style="display:none;">
+            <div style="font-size:12.5px;font-weight:700;margin:6px 0;">4. Khối (b) có phải hình hộp không?</div>
+            <button class="choice-btn" id="t3-b-yes"><span>Có</span><i class="ti ti-circle"></i></button>
+            <button class="choice-btn" id="t3-b-no"><span>Không</span><i class="ti ti-circle"></i></button>
+          </div>
         </div>
 
-        <div id="t3-morph-wrap" style="display: none; margin-top: 12px; background: var(--cream); padding: 10px; border-radius: 8px; border: 1.5px solid var(--teal);">
-          <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;">Thử thách biến hình: Kéo đỉnh H của đáy khối (b) để biến thành Hình hộp!</div>
+        <div id="t3-morph-wrap"
+          style="display: none; margin-top: 12px; background: var(--cream); padding: 10px; border-radius: 8px; border: 1.5px solid var(--teal);">
+          <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;">5. Kéo trực tiếp
+            đỉnh H (tương ứng đỉnh D) trên hình 3D để đáy EFGH thành hình bình hành.</div>
           <div class="slider-wrap">
             <div class="slider-label"><span>Vị trí X đỉnh H:</span><span id="val-hx">0.50</span></div>
-            <input type="range" id="t3-slider-hx" min="-0.5" max="1.5" step="0.25" value="0.50">
+            <input type="range" id="t3-slider-hx" min="-0.75" max="1.5" step="0.25" value="0.50">
           </div>
-          <div class="status-badge fail" id="t3-badge-hbh">
-            <span>Đáy EFGH là Hình bình hành:</span>
-            <span id="t3-txt-hbh">✗ Chưa đạt</span>
+          <div class="slider-wrap">
+            <div class="slider-label"><span>Vị trí Z đỉnh H:</span><span id="val-hz">-1.25</span></div>
+            <input type="range" id="t3-slider-hz" min="-2.0" max="0.5" step="0.25" value="-1.25">
+          </div>
+          <div class="info-box" style="font-size:12px;line-height:1.55;margin:8px 0;">
+            <b>Số liệu sống:</b><br><span id="t3-live-lengths">AD (EH) = — · BC (FG) = —</span>
+          </div>
+          <div class="status-badge fail" id="t3-badge-parallel">
+            <span>AD (EH) song song BC (FG):</span><span id="t3-txt-parallel">✗ Chưa đạt</span>
+          </div>
+          <div class="status-badge fail" id="t3-badge-equal">
+            <span>AD (EH) bằng BC (FG):</span><span id="t3-txt-equal">✗ Chưa đạt</span>
           </div>
         </div>
 
@@ -707,7 +821,8 @@
       <div class="tab-content" id="tab-4">
         <div class="step-title"><i class="ti ti-drag-drop"></i> Tab 4: Thử thách tự dựng hình hộp</div>
         <div class="info-box">
-          Đáy <b>ABCD</b> cố định (HBH). Đỉnh <b>A', B', C'</b> ở vị trí đúng. Hãy kéo đỉnh <b>D'</b> trên hình 3D (hoặc slider) sao cho thỏa mãn đúng 3 điều kiện! (Tự khớp ô lưới 0.25).
+          <b>GĐ1:</b> Đáy ABCD cố định là hình bình hành; A', B', C' đã đúng. Kéo D' trên hình 3D, chỉnh độ cao bằng
+          slider và khớp lưới 0,25 để đủ cả 3 điều kiện.
         </div>
 
         <div class="status-badge ok" id="badge-base">
@@ -725,23 +840,44 @@
           <span id="txt-edge-st">✗ Chưa đạt</span>
         </div>
 
+        <div class="info-box" id="t4-live-metrics" style="font-size:12px;line-height:1.55;">
+          <b>Số liệu trực quan:</b><br>
+          <span id="t4-lengths">AA' = — · BB' = — · CC' = — · DD' = —</span><br>
+          <span id="t4-directions">Độ lệch hướng cạnh bên: —</span>
+        </div>
+
+        <div id="t4-point-selector" class="slider-wrap" style="display:none;">
+          <div class="slider-label"><label for="t4-select-point">GĐ2 — Điểm đang điều chỉnh:</label></div>
+          <select id="t4-select-point"
+            style="width:100%;padding:8px;border:1px solid var(--paper-line);border-radius:7px;">
+            <option value="A">A'</option>
+            <option value="B">B'</option>
+            <option value="C">C'</option>
+            <option value="D">D'</option>
+          </select>
+        </div>
+
         <div class="slider-wrap">
-          <div class="slider-label"><span>Vị trí X điểm D':</span><span id="val-dx">0.80</span></div>
-          <input type="range" id="t4-slider-dx" min="-1.5" max="1.5" step="0.25" value="0.75">
+          <div class="slider-label"><span>Vị trí X điểm đang chọn:</span><span id="val-dx">0.75</span></div>
+          <input type="range" id="t4-slider-dx" min="-2.0" max="2.75" step="0.25" value="0.75">
         </div>
         <div class="slider-wrap">
-          <div class="slider-label"><span>Vị trí Z điểm D':</span><span id="val-dz">-0.50</span></div>
-          <input type="range" id="t4-slider-dz" min="-2.5" max="0.5" step="0.25" value="-0.50">
+          <div class="slider-label"><span>Vị trí Z điểm đang chọn:</span><span id="val-dz">-0.50</span></div>
+          <input type="range" id="t4-slider-dz" min="-2.0" max="2.0" step="0.25" value="-0.50">
         </div>
         <div class="slider-wrap">
-          <div class="slider-label"><span>Độ cao Y điểm D':</span><span id="val-dy">2.25</span></div>
+          <div class="slider-label"><span>Độ cao Y điểm đang chọn:</span><span id="val-dy">2.25</span></div>
           <input type="range" id="t4-slider-dy" min="1.0" max="4.0" step="0.25" value="2.25">
         </div>
 
         <div id="t4-feedback" class="info-box athena-box" style="display: flex; margin-top: 10px;">
           <div class="athena-avatar">A</div>
-          <div id="t4-msg">Athena: Hãy di chuyển đỉnh D' (hoặc dùng slider) sao cho cả 3 điều kiện bên trên đều chuyển sang màu xanh ✓!</div>
+          <div id="t4-msg">Athena: Hãy di chuyển đỉnh D' (hoặc dùng slider) sao cho cả 3 điều kiện bên trên đều chuyển
+            sang màu xanh ✓!</div>
         </div>
+        <button class="btn btn-outline" id="t4-btn-extended" style="display:none;width:100%;margin-top:8px;">
+          GĐ2 mở rộng: dựng lại với cả A', B', C', D'
+        </button>
       </div>
     </div>
   </div>
@@ -791,12 +927,27 @@
     const gridHelper = new THREE.GridHelper(12, 12, 0x30363d, 0x21262d);
     scene.add(gridHelper);
 
-    window.addEventListener('resize', () => {
-      camera.aspect = wrap.clientWidth / wrap.clientHeight;
+    const handleCanvasResize = () => {
+      if (!wrap || !camera || !renderer) return;
+      const w = wrap.clientWidth;
+      const h = wrap.clientHeight;
+      if (w === 0 || h === 0) return;
+      camera.aspect = w / h;
       camera.updateProjectionMatrix();
-      renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+      renderer.setSize(w, h);
+      if (typeof activeLabels !== 'undefined') {
+        activeLabels.forEach(l => l.update());
+      }
+    };
+
+    window.addEventListener('resize', () => {
+      handleCanvasResize();
       setCameraStandardSGK();
     });
+
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(handleCanvasResize).observe(wrap);
+    }
 
     /* =========================================================================
        3. LMS RESIZE INTEGRATION (§2.9b 04_design_toan_3d.md)
@@ -1194,6 +1345,7 @@
     /* UNIVERSAL CANVAS POINTER TAP LISTENER FOR MOBILE TOUCHSCREENS */
     let tapStartX = 0, tapStartY = 0, tapStartTime = 0;
     const raycaster = new THREE.Raycaster();
+    raycaster.params.Line.threshold = 0.14;
     const mouse = new THREE.Vector2();
     let interactiveMeshes = [];
 
@@ -1215,7 +1367,7 @@
           raycaster.setFromCamera(mouse, camera);
           const intersects = raycaster.intersectObjects(interactiveMeshes, false);
           if (intersects.length > 0) {
-            handleTab1Click(intersects[0].object.name);
+            handleTab1Click(intersects.map(hit => hit.object.name));
           }
         } else if (currentTab === 3 && interactiveMeshes.length > 0) {
           const rect = canvas.getBoundingClientRect();
@@ -1234,11 +1386,19 @@
        6. TAB 1: CẤU TRÚC HÌNH HỘP ABCD.A'B'C'D' (CHECKLIST 5 BƯỚC)
        ========================================================================= */
     let t1Step = 1;
+    let t1SelectedVertices = new Set();
+    let t1SelectedFaces = new Set();
 
     function initTab1() {
       t1Step = 1;
+      t1SelectedVertices = new Set();
+      t1SelectedFaces = new Set();
       updateTab1ChecklistUI();
       document.getElementById('t1-quiz-wrap').style.display = 'none';
+      document.getElementById('btn-next-tab1').style.display = 'none';
+      document.getElementById('t1-msg').innerHTML = `Athena: Hãy chọn lần lượt <b>A rồi C'</b> (hoặc ngược lại) để tạo thành một cặp đỉnh đối diện.`;
+      [2, 4, 6, 8].forEach(n => document.getElementById(`t1-opt-${n}`).className = 'choice-btn');
+      [2, 4, 6, 8].forEach(n => document.getElementById(`t1-opt-${n}`).disabled = false);
 
       const A = new THREE.Vector3(-1.8, 0, 1.5);
       const B = new THREE.Vector3(1.4, 0, 1.5);
@@ -1261,10 +1421,10 @@
       const lineFaceDiag = createLineSegment(A, C, 0xef4444);
       lineFaceDiag.name = 'face_diag';
 
-      const sphereA = makeSpherePoint(A, COLOR_RESULT, 0.14); sphereA.name = 'opp_vert';
-      const sphereCp = makeSpherePoint(Cp, COLOR_RESULT, 0.14); sphereCp.name = 'opp_vert';
+      const sphereA = makeSpherePoint(A, COLOR_RESULT, 0.14); sphereA.name = 'opp_a';
+      const sphereCp = makeSpherePoint(Cp, COLOR_RESULT, 0.14); sphereCp.name = 'opp_cp';
 
-      interactiveMeshes = [botFace, topFace, sideFace, lineBlockDiag, lineFaceDiag, sphereA, sphereCp];
+      interactiveMeshes = [botFace, topFace, lineBlockDiag, lineFaceDiag, sphereA, sphereCp];
 
       // Dynamic Occlusion Hull & Edges
       currentSolidHull = createPolyhedronHullMesh([
@@ -1312,25 +1472,60 @@
       }
     }
 
-    function handleTab1Click(hitName) {
-      if (t1Step === 1 && (hitName === 'opp_vert' || hitName === 'top_face' || hitName === 'bot_face')) {
+    function handleTab1Click(hitNames) {
+      const names = Array.isArray(hitNames) ? hitNames : [hitNames];
+      const msg = document.getElementById('t1-msg');
+      if (t1Step === 1) {
+        const vertex = names.find(name => name === 'opp_a' || name === 'opp_cp');
+        if (!vertex) {
+          msg.innerHTML = `<b>Athena:</b> Bạn đang chọn một mặt hoặc một đường. Bước này cần chọn đủ <b>hai đỉnh A và C'</b> — hai đỉnh không cùng thuộc bất kỳ mặt nào.`;
+          return;
+        }
+        t1SelectedVertices.add(vertex);
+        if (t1SelectedVertices.size < 2) {
+          msg.innerHTML = `<b>Athena:</b> Đã chọn một đỉnh của cặp. Hãy chọn tiếp đỉnh còn lại ${vertex === 'opp_a' ? "C'" : 'A'} để tạo thành một cặp đỉnh đối diện.`;
+          return;
+        }
         t1Step = 2;
-        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Chính xác! <b>A và C'</b> là 2 đỉnh đối diện của hình hộp — không cùng thuộc bất kỳ mặt nào. Tiếp theo hãy click vào <b>Cặp mặt đối diện (ABCD và A'B'C'D')</b>!`;
-      } else if (t1Step === 2 && (hitName === 'opp_face' || hitName === 'bot_face' || hitName === 'top_face')) {
+        msg.innerHTML = `<b>Athena:</b> Chính xác! <b>A và C'</b> là hai đỉnh đối diện — chúng không cùng thuộc bất kỳ mặt nào. Tiếp theo, hãy chọn đủ <b>hai mặt ABCD và A'B'C'D'</b>.`;
+      } else if (t1Step === 2) {
+        const face = names.find(name => name === 'bot_face' || name === 'top_face');
+        if (!face) {
+          msg.innerHTML = `<b>Athena:</b> Bước này cần chọn mặt, không phải đỉnh hay đường chéo. Hãy click lần lượt vào hai mặt đáy đối diện.`;
+          return;
+        }
+        t1SelectedFaces.add(face);
+        if (t1SelectedFaces.size < 2) {
+          msg.innerHTML = `<b>Athena:</b> Đã chọn một mặt. Hãy xoay khối nếu cần và chọn tiếp mặt đối diện còn lại.`;
+          return;
+        }
         t1Step = 3;
-        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Giỏi lắm! <b>ABCD và A'B'C'D'</b> là 2 mặt đối diện — song song và không có điểm chung. Tiếp theo hãy click vào <b>Đường chéo khối (AC')</b>!`;
-      } else if (t1Step === 3 && (hitName === 'block_diag' || hitName === 'side_face')) {
+        msg.innerHTML = `<b>Athena:</b> Đúng! <b>ABCD và A'B'C'D'</b> là hai mặt đối diện: không có điểm chung và có thể coi là hai đáy. Tiếp theo hãy chọn <b>đường chéo khối AC'</b>.`;
+      } else if (t1Step === 3) {
+        if (!names.includes('block_diag')) {
+          msg.innerHTML = names.includes('face_diag')
+            ? `<b>Athena:</b> AC nằm hoàn toàn trên mặt đáy nên là <b>đường chéo mặt</b>. Đường chéo khối phải nối hai đỉnh đối diện và xuyên qua bên trong — hãy thử AC'.`
+            : `<b>Athena:</b> Hãy chọn đoạn AC' màu vàng xuyên qua bên trong hình hộp.`;
+          return;
+        }
         t1Step = 4;
-        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Đúng rồi! <b>Đường chéo khối AC'</b> nối 2 đỉnh đối diện và xuyên qua bên trong hình hộp. Tiếp theo hãy click vào <b>Đường chéo mặt (AC)</b>!`;
+        msg.innerHTML = `<b>Athena:</b> Đúng! <b>AC'</b> nối hai đỉnh đối diện và xuyên qua khối. Hình hộp có bốn đường chéo khối. Bây giờ hãy chọn <b>đường chéo mặt AC</b>.`;
       } else if (t1Step === 4) {
+        if (!names.includes('face_diag')) {
+          msg.innerHTML = names.includes('block_diag')
+            ? `<b>Athena:</b> Đường bạn vừa chọn xuyên qua bên trong khối — đó là đường chéo của <b>HÌNH HỘP</b>. Đường chéo mặt phải nằm hoàn toàn trên một mặt phẳng, ví dụ AC trên đáy ABCD. Hãy xoay camera và thử lại.`
+            : `<b>Athena:</b> Hãy click đúng đoạn AC màu đỏ nằm hoàn toàn trên mặt đáy ABCD.`;
+          return;
+        }
         t1Step = 5;
         document.getElementById('t1-quiz-wrap').style.display = 'block';
-        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Xuất sắc! <b>Đường chéo mặt AC</b> nằm hoàn toàn trên mặt đáy ABCD, khác với đường chéo khối AC' xuyên qua bên trong. Cuối cùng hãy chọn số lượng đường chéo khối ở câu hỏi trắc nghiệm!`;
+        msg.innerHTML = `<b>Athena:</b> Chính xác! <b>AC</b> là đường chéo mặt, nằm trọn trên ABCD; còn AC' là đường chéo khối, xuyên bên trong. Hai khái niệm này khác nhau. Hãy hoàn thành câu hỏi cuối.`;
       }
       updateTab1ChecklistUI();
     }
 
     function handleTab1Quiz(ans) {
+      if (t1Step !== 5) return;
       if (ans === 4) {
         document.getElementById('t1-opt-4').className = 'choice-btn correct';
         document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> 🎉 Chính xác! Hình hộp có đúng <b>4 đường chéo khối</b>: AC', BD', CA', DB' ứng với 4 cặp đỉnh đối diện!`;
@@ -1338,6 +1533,8 @@
         t1Step = 6;
         updateTab1ChecklistUI();
         unlockTab(2);
+        [2, 4, 6, 8].forEach(n => document.getElementById(`t1-opt-${n}`).disabled = true);
+        document.getElementById('t1-msg').innerHTML += `<br><br><b>Chốt:</b> Bạn đã nhận diện đủ đỉnh đối diện, mặt đối diện, bốn đường chéo khối và phân biệt chúng với đường chéo mặt. Ta sẽ dùng nền tảng này để chứng minh tính chất ở Tab 2.`;
       } else {
         const btn = document.getElementById(`t1-opt-${ans}`);
         if (btn) btn.className = 'choice-btn wrong';
@@ -1364,8 +1561,15 @@
     /* =========================================================================
        7. TAB 2: TÍNH CHẤT 4 ĐƯỜNG CHÉO KHỐI PQRS.P'Q'R'S'
        ========================================================================= */
+    let t2ProofStep = 1;
+    let t2CalcWrongAttempts = 0;
+
     function initTab2() {
       clearScene();
+      t2ProofStep = 1;
+      t2CalcWrongAttempts = 0;
+      document.getElementById('t2-inp-op').disabled = false;
+      document.getElementById('t2-btn-check-op').disabled = false;
       const P = new THREE.Vector3(-1.8, 0, 1.5);
       const Q = new THREE.Vector3(1.4, 0, 1.5);
       const R = new THREE.Vector3(2.2, 0, -1.5);
@@ -1394,57 +1598,108 @@
       createLabel3D("P'", Pp); createLabel3D("Q'", Qp); createLabel3D("R'", Rp); createLabel3D("S'", Sp);
 
       const fb = document.getElementById('t2-feedback');
-      fb.style.display = 'none';
+      fb.style.display = 'flex';
 
       document.getElementById('t2-step3-wrap').style.display = 'none';
-      document.getElementById('t2-step4-wrap').style.display = 'none';
+      document.getElementById('t2-step4-wrap').style.display = 'block';
+      document.getElementById('t2-step4-wrap').style.opacity = '.55';
+      document.getElementById('t2-btn-step1').disabled = false;
+      document.getElementById('t2-btn-step2').disabled = true;
+      document.getElementById('t2-btn-step5').style.display = 'none';
+      document.getElementById('t2-btn-step5').disabled = false;
+      document.getElementById('t2-btn-step6').style.display = 'none';
+      document.getElementById('t2-btn-step6').disabled = false;
       document.getElementById('t2-calc-wrap').style.display = 'none';
+      document.getElementById('t2-inp-op').value = '';
+      document.getElementById('btn-next-tab2').style.display = 'none';
+      ['t2-btn-o1-yes', 't2-btn-o1-no', 't2-btn-o2-mid', 't2-btn-o2-any', 't2-btn-o2-none'].forEach(id => {
+        document.getElementById(id).className = 'choice-btn';
+      });
+      document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Ta sẽ chứng minh bằng lập luận, không kết luận chỉ vì hình vẽ “trông có vẻ đúng”. Trước tiên hãy dựng PR'.`;
 
       document.getElementById('t2-btn-step1').onclick = () => {
+        if (t2ProofStep !== 1) return;
         animateLine(P, Rp, 0xFAC775, 750); // PR'
-        setTimeout(() => animateLine(S, Qp, 0x38bdf8, 750), 250); // SQ'
-        setTimeout(() => {
-          makeSpherePoint(P.clone().add(Rp).multiplyScalar(0.5), 0xef4444, 0.13); // Midpoint O
-          createLabel3D('O', P.clone().add(Rp).multiplyScalar(0.5), '#ef4444');
-        }, 850);
+        t2ProofStep = 2;
+        document.getElementById('t2-btn-step1').disabled = true;
+        document.getElementById('t2-btn-step2').disabled = false;
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> <b>PR'</b> nối P với đỉnh đối diện R', nên là một đường chéo khối. Tiếp tục dựng SQ'.`;
+      };
 
+      document.getElementById('t2-btn-step2').onclick = () => {
+        if (t2ProofStep !== 2) return;
+        animateLine(S, Qp, 0x38bdf8, 750); // SQ'
+        t2ProofStep = 3;
+        document.getElementById('t2-btn-step2').disabled = true;
         document.getElementById('t2-step3-wrap').style.display = 'block';
-        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Đã dựng 2 đường chéo PR' và SQ'. Hãy trả lời bước lập luận trung gian bên dưới!`;
-        fb.style.display = 'flex';
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> <b>SQ'</b> cũng nối hai đỉnh đối diện. Trước khi nói hai đường cắt tại trung điểm, phải chứng minh tứ giác trung gian PSR'Q' là hình bình hành.`;
       };
 
       document.getElementById('t2-btn-o1-yes').onclick = () => {
+        if (t2ProofStep !== 3) return;
         document.getElementById('t2-btn-o1-yes').className = 'choice-btn correct';
         document.getElementById('t2-btn-o1-no').className = 'choice-btn';
         createPolygonMesh([P, S, Rp, Qp], COLOR_PLANE_2, 0.35);
-        document.getElementById('t2-step4-wrap').style.display = 'block';
+        t2ProofStep = 4;
+        document.getElementById('t2-step4-wrap').style.opacity = '1';
         document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chính xác! Vì PS // Q'R' và PS = Q'R' (cùng bằng QR), nên <b>PSR'Q' là hình bình hành</b>! Đây là bước lập luận bắt buộc trước khi xét giao điểm 2 đường chéo.`;
-        fb.style.display = 'flex';
       };
 
       document.getElementById('t2-btn-o1-no').onclick = () => {
+        if (t2ProofStep !== 3) return;
         document.getElementById('t2-btn-o1-no').className = 'choice-btn wrong';
         document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Vì PS // QR và QR // Q'R' <b>→</b> PS // Q'R' và PS = Q'R', nên PSR'Q' bắt buộc là hình bình hành!`;
         fb.style.display = 'flex';
       };
 
       document.getElementById('t2-btn-o2-mid').onclick = () => {
+        if (t2ProofStep < 4) {
+          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Cần xác nhận <b>PSR'Q' là hình bình hành trước</b> — đó mới là lý do thực sự khiến hai đường chéo cắt tại trung điểm, không phải vì “nhìn thấy vậy”.`;
+          return;
+        }
+        if (t2ProofStep !== 4) return;
         document.getElementById('t2-btn-o2-mid').className = 'choice-btn correct';
         document.getElementById('t2-btn-o2-any').className = 'choice-btn';
+        document.getElementById('t2-btn-o2-none').className = 'choice-btn';
+        const O = P.clone().add(Rp).multiplyScalar(0.5);
+        makeSpherePoint(O, 0xef4444, 0.13);
+        createLabel3D('O', O, '#ef4444');
+        t2ProofStep = 5;
+        document.getElementById('t2-btn-step5').style.display = 'inline-flex';
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Đúng! PR' và SQ' là hai đường chéo của hình bình hành PSR'Q', nên cắt nhau tại <b>trung điểm O của mỗi đường</b>. Tiếp tục kiểm tra cặp còn lại.`;
+      };
+
+      ['t2-btn-o2-any', 't2-btn-o2-none'].forEach(id => {
+        document.getElementById(id).onclick = () => {
+          if (t2ProofStep < 4) {
+            document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Cần xác nhận PSR'Q' là hình bình hành trước; không được nhảy cóc từ hình vẽ tới kết luận.`;
+            return;
+          }
+          if (t2ProofStep !== 4) return;
+          document.getElementById(id).className = 'choice-btn wrong';
+          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Hai đường chéo của một <b>hình bình hành</b> luôn cắt nhau tại trung điểm mỗi đường. Kết luận này dùng được vì bước 3 đã chứng minh PSR'Q' là hình bình hành.`;
+        };
+      });
+
+      document.getElementById('t2-btn-step5').onclick = () => {
+        if (t2ProofStep !== 5) return;
         animateLine(R, Pp, 0x34d399, 750); // RP'
         setTimeout(() => animateLine(Q, Sp, 0xf43f5e, 750), 250); // QS'
+        t2ProofStep = 6;
+        document.getElementById('t2-btn-step5').disabled = true;
+        document.getElementById('t2-btn-step6').style.display = 'inline-flex';
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Tương tự, tứ giác <b>QRS'P'</b> là hình bình hành, nên hai đường chéo RP' và QS' cũng cắt nhau tại trung điểm mỗi đường. Ta đã có hai cặp; hãy xem vì sao chúng có cùng một điểm.`;
+      };
+
+      document.getElementById('t2-btn-step6').onclick = () => {
+        if (t2ProofStep !== 6) return;
+        t2ProofStep = 7;
+        document.getElementById('t2-btn-step6').disabled = true;
         document.getElementById('t2-calc-wrap').style.display = 'block';
-        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Xuất sắc! 2 đường chéo của HBH PSR'Q' cắt nhau tại <b>trung điểm O của mỗi đường</b>. Tương tự cho 2 đường chéo còn lại <b>→</b> Cả 4 đường chéo cùng cắt nhau tại O! Bây giờ hãy làm bài toán tính OP bên dưới.`;
-        fb.style.display = 'flex';
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> <b>Kết luận:</b> Hai hình bình hành trung gian được tạo bởi cùng phép tịnh tiến từ đáy lên mặt trên, nên trung điểm của hai cặp trùng nhau tại O. Trung điểm của mỗi đoạn là duy nhất; do đó bốn đường chéo <b>PR', SQ', RP', QS'</b> cùng đi qua đúng một điểm O, và O là trung điểm của mỗi đường. Bây giờ áp dụng định lượng ở bước 7.`;
       };
 
-      document.getElementById('t2-btn-o2-any').onclick = () => {
-        document.getElementById('t2-btn-o2-any').className = 'choice-btn wrong';
-        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Theo tính chất HBH đã học, 2 đường chéo của HBH luôn cắt nhau tại <b>trung điểm của mỗi đường</b>!`;
-        fb.style.display = 'flex';
-      };
-
-      document.getElementById('t2-btn-check-op').onclick = () => {
+      const handleCheckOp = () => {
         const val = parseFloat(document.getElementById('t2-inp-op').value);
         if (val === 5) {
           document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Chính xác! OP = ½ PR' = ½ × 10 = <b>5 cm</b> vì O là trung điểm của đường chéo PR'!`;
@@ -1452,9 +1707,28 @@
           document.getElementById('btn-next-tab2').style.display = 'inline-flex';
           unlockTab(3);
         } else {
-          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Bạn nhớ chia đôi độ dài đường chéo PR' = 10cm nhé: OP = ½ × 10 = ?`;
-          fb.style.display = 'flex';
+          t2CalcWrongAttempts++;
+          if (t2CalcWrongAttempts >= 2) {
+            document.getElementById('t2-inp-op').value = '5';
+            document.getElementById('t2-inp-op').disabled = true;
+            document.getElementById('t2-btn-check-op').disabled = true;
+            document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Sau 2 lần thử chưa đúng, đáp án chính xác là <b>5 cm</b>. Vì O là trung điểm của đường chéo PR' = 10 cm, nên OP = ½ × 10 = <b>5 cm</b>.`;
+            fb.style.display = 'flex';
+            document.getElementById('btn-next-tab2').style.display = 'inline-flex';
+            unlockTab(3);
+          } else if (val === 10) {
+            document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Bạn vừa nhập đúng bằng độ dài <b>cả đường chéo PR'</b>, không phải khoảng cách từ trung điểm O đến P. Vì O là trung điểm, hãy chia đôi 10 cm (Lần sai 1/2).`;
+            fb.style.display = 'flex';
+          } else {
+            document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Bạn nhớ chia đôi độ dài đường chéo PR' = 10cm nhé: OP = ½ × 10 = ? (Lần sai 1/2).`;
+            fb.style.display = 'flex';
+          }
         }
+      };
+
+      document.getElementById('t2-btn-check-op').onclick = handleCheckOp;
+      document.getElementById('t2-inp-op').onkeydown = (e) => {
+        if (e.key === 'Enter') handleCheckOp();
       };
 
       document.getElementById('btn-next-tab2').onclick = () => {
@@ -1466,135 +1740,220 @@
     /* =========================================================================
        8. TAB 3: ĐỐI CHIẾU LĂNG TRỤ TỨ GIÁC & HÌNH HỘP (BIẾN HÌNH ĐÁY HBH)
        ========================================================================= */
-    let ptHMesh = null, labelH = null;
+    let ptHMesh = null;
+    let t3Step = 1;
+    let t3MorphUnlocked = false;
+    let t3MorphCompleted = false;
+    let t3H = new THREE.Vector3(0.5, 0, -1.25);
+    let t3DynamicObjects = [];
+    let t3DynamicLabels = [];
+    let t3MorphAttempts = 0;
+
+    function registerTab3MorphAttempt() {
+      if (!t3MorphUnlocked || t3MorphCompleted) return;
+      t3MorphAttempts++;
+      if (t3MorphAttempts >= 2 && !t3MorphCompleted) {
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Bạn đã thử 2 lần chưa khớp. 💡 <b>Gợi ý tọa độ chuẩn:</b> Hãy điều chỉnh đỉnh H về <b>X = -0.25</b> và <b>Z = -1.25</b> (dùng slider hoặc kéo chuột trên hình 3D) để tạo hình bình hành EFGH!`;
+      }
+    }
 
     function initTab3() {
       clearScene();
+      t3Step = 1;
+      t3MorphUnlocked = false;
+      t3MorphCompleted = false;
+      t3MorphAttempts = 0;
+      t3H.set(0.5, 0, -1.25);
+      t3DynamicObjects = [];
+      t3DynamicLabels = [];
 
-      // Solid (a) - Parallelepiped at left (X offset -3.0)
-      const Aa = new THREE.Vector3(-4.5, 0, 1.2);
-      const Ba = new THREE.Vector3(-2.0, 0, 1.2);
-      const Ca = new THREE.Vector3(-1.2, 0, -1.2);
-      const Da = new THREE.Vector3(-3.7, 0, -1.2);
-
-      const Aap = new THREE.Vector3(-4.5, 2.8, 1.2);
-      const Bap = new THREE.Vector3(-2.0, 2.8, 1.2);
-      const Cap = new THREE.Vector3(-1.2, 2.8, -1.2);
-      const Dap = new THREE.Vector3(-3.7, 2.8, -1.2);
-
-      const botA = createPolygonMesh([Aa, Ba, Ca, Da], COLOR_PLANE_BASE, 0.25, 't3_bot_a');
+      const Aa = new THREE.Vector3(-4.5, 0, 1.25), Ba = new THREE.Vector3(-2, 0, 1.25);
+      const Ca = new THREE.Vector3(-1.25, 0, -1.25), Da = new THREE.Vector3(-3.75, 0, -1.25);
+      const lift = new THREE.Vector3(0, 2.75, 0);
+      const Aap = Aa.clone().add(lift), Bap = Ba.clone().add(lift), Cap = Ca.clone().add(lift), Dap = Da.clone().add(lift);
+      const botA = createPolygonMesh([Aa, Ba, Ca, Da], COLOR_PLANE_BASE, 0.3, 't3_bot_a');
       createPolygonMesh([Aap, Bap, Cap, Dap], COLOR_PLANE_1, 0.25);
+      [[Aa, Ba], [Ba, Ca], [Ca, Da], [Da, Aa], [Aap, Bap], [Bap, Cap], [Cap, Dap], [Dap, Aap], [Aa, Aap], [Ba, Bap], [Ca, Cap], [Da, Dap]].forEach(p => createDynamicEdge(p[0], p[1]));
+      [Aa, Ba, Ca, Da, Aap, Bap, Cap, Dap].forEach(p => makeSpherePoint(p));
+      createLabel3D('(a)', Aa.clone().add(Ca).multiplyScalar(.5), '#FAC775');
 
-      createDynamicEdge(Aa, Ba); createDynamicEdge(Ba, Ca); createDynamicEdge(Ca, Da); createDynamicEdge(Da, Aa);
-      createDynamicEdge(Aap, Bap); createDynamicEdge(Bap, Cap); createDynamicEdge(Cap, Dap); createDynamicEdge(Dap, Aap);
-      createDynamicEdge(Aa, Aap); createDynamicEdge(Ba, Bap); createDynamicEdge(Ca, Cap); createDynamicEdge(Da, Dap);
+      const E = new THREE.Vector3(0.5, 0, 1.25), F = new THREE.Vector3(3, 0, 1.25), G = new THREE.Vector3(2.25, 0, -1.25);
+      const Ep = E.clone().add(lift), Fp = F.clone().add(lift), Gp = G.clone().add(lift);
+      [E, F, G, Ep, Fp, Gp].forEach(p => makeSpherePoint(p));
+      [['E', E], ['F', F], ['G', G], ["E'", Ep], ["F'", Fp], ["G'", Gp]].forEach(([n, p]) => createLabel3D(n, p));
+      createLabel3D('(b)', E.clone().add(G).multiplyScalar(.5), '#38bdf8');
+      [[E, F], [F, G], [Ep, Fp], [Fp, Gp], [E, Ep], [F, Fp], [G, Gp]].forEach(p => createLineSegment(p[0], p[1], COLOR_EDGE_SOLID));
+      createPolygonMesh([E, F, Fp, Ep], COLOR_PLANE_3, .12);
+      createPolygonMesh([F, G, Gp, Fp], COLOR_PLANE_3, .12);
+      updateTab3SolidB();
+      interactiveMeshes = [botA, ...t3DynamicObjects.filter(o => o.name === 't3_bot_b')];
 
-      makeSpherePoint(Aa); makeSpherePoint(Ba); makeSpherePoint(Ca); makeSpherePoint(Da);
-      makeSpherePoint(Aap); makeSpherePoint(Bap); makeSpherePoint(Cap); makeSpherePoint(Dap);
-
-      createLabel3D('A', Aa); createLabel3D('B', Ba); createLabel3D('C', Ca); createLabel3D('D', Da);
-      createLabel3D('(a) Hình hộp', lerpVec(Aa, Ca, 0.5), '#FAC775');
-
-      // Solid (b) - Trapezoidal Prism at right (X offset +1.5)
-      const Eb = new THREE.Vector3(0.5, 0, 1.2);
-      const Fb = new THREE.Vector3(3.0, 0, 1.2);
-      const Gb = new THREE.Vector3(2.2, 0, -1.2);
-      const Hb = new THREE.Vector3(0.5, 0, -1.2); // Trapezoid start (EH not parallel to FG)
-
-      const Ebp = new THREE.Vector3(0.5, 2.8, 1.2);
-      const Fbp = new THREE.Vector3(3.0, 2.8, 1.2);
-      const Gbp = new THREE.Vector3(2.2, 2.8, -1.2);
-      const Hbp = new THREE.Vector3(0.5, 2.8, -1.2);
-
-      const botB = createPolygonMesh([Eb, Fb, Gb, Hb], COLOR_PLANE_3, 0.25, 't3_bot_b');
-      interactiveMeshes = [botA, botB];
-
-      makeSpherePoint(Eb); makeSpherePoint(Fb); makeSpherePoint(Gb);
-      makeSpherePoint(Ebp); makeSpherePoint(Fbp); makeSpherePoint(Gbp);
-
-      createLabel3D('E', Eb); createLabel3D('F', Fb); createLabel3D('G', Gb);
-      createLabel3D('(b) Lăng trụ tứ giác', lerpVec(Eb, Gb, 0.5), '#38bdf8');
-
-      updateTab3SolidB(0.50);
-
-      const fb = document.getElementById('t3-feedback');
-      fb.style.display = 'none';
+      document.getElementById('t3-feedback').style.display = 'flex';
+      document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Cả hai khối đều là lăng trụ tứ giác. Hãy bắt đầu bằng cách click đáy khối (a).`;
+      document.getElementById('t3-question-a').style.display = 'none';
+      document.getElementById('t3-btn-block-b').style.display = 'none';
+      document.getElementById('t3-question-b').style.display = 'none';
       document.getElementById('t3-morph-wrap').style.display = 'none';
+      document.getElementById('btn-next-tab3').style.display = 'none';
+      ['t3-btn-block-a', 't3-btn-block-b', 't3-a-yes', 't3-a-no', 't3-b-yes', 't3-b-no'].forEach(id => document.getElementById(id).className = 'choice-btn');
+      document.getElementById('t3-slider-hx').value = '0.50';
+      document.getElementById('t3-slider-hz').value = '-1.25';
+      document.getElementById('t3-slider-hx').disabled = false;
+      document.getElementById('t3-slider-hz').disabled = false;
 
       document.getElementById('t3-btn-block-a').onclick = () => handleTab3BlockClick('t3_bot_a');
       document.getElementById('t3-btn-block-b').onclick = () => handleTab3BlockClick('t3_bot_b');
-
-      document.getElementById('t3-slider-hx').oninput = (e) => {
-        const hx = parseFloat(e.target.value);
-        document.getElementById('val-hx').textContent = hx.toFixed(2);
-        updateTab3SolidB(hx);
-      };
-
-      document.getElementById('btn-next-tab3').onclick = () => {
-        unlockTab(4);
-        switchToTab(4);
-      };
+      document.getElementById('t3-a-yes').onclick = () => answerTab3A(true);
+      document.getElementById('t3-a-no').onclick = () => answerTab3A(false);
+      document.getElementById('t3-b-yes').onclick = () => answerTab3B(true);
+      document.getElementById('t3-b-no').onclick = () => answerTab3B(false);
+      ['x', 'z'].forEach(axis => {
+        const slider = document.getElementById(`t3-slider-h${axis}`);
+        slider.oninput = () => {
+          if (!t3MorphUnlocked || t3MorphCompleted) return;
+          t3H.x = parseFloat(document.getElementById('t3-slider-hx').value);
+          t3H.z = parseFloat(document.getElementById('t3-slider-hz').value);
+          updateTab3SolidB();
+        };
+        slider.onchange = registerTab3MorphAttempt;
+      });
+      document.getElementById('btn-next-tab3').onclick = () => { unlockTab(4); switchToTab(4); };
     }
 
     function handleTab3BlockClick(hitName) {
-      const fb = document.getElementById('t3-feedback');
-      fb.style.display = 'flex';
-      if (hitName === 't3_bot_a') {
+      const msg = document.getElementById('t3-msg');
+      if (hitName === 't3_bot_a' && t3Step === 1) {
+        t3Step = 2;
         document.getElementById('t3-btn-block-a').className = 'choice-btn correct';
-        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Khối (a) có mặt đáy ABCD là <b>Hình bình hành</b> <b>→</b> Đây LÀ 1 <b>Hình hộp</b> hợp lệ!`;
-      } else if (hitName === 't3_bot_b') {
-        document.getElementById('t3-btn-block-b').className = 'choice-btn wrong';
-        document.getElementById('t3-morph-wrap').style.display = 'block';
-        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Khối (b) có mặt đáy EFGH là <b>Hình thang</b> (không phải HBH) <b>→</b> Đây KHÔNG PHẢI hình hộp! Thử kéo slider bên trên để biến đáy thành HBH!`;
+        document.getElementById('t3-question-a').style.display = 'block';
+        msg.innerHTML = `<b>Athena:</b> Đáy khối (a) là hình bình hành: cả hai cặp cạnh đối song song và bằng nhau. Vậy khối (a) có phải hình hộp không?`;
+      } else if (hitName === 't3_bot_b' && t3Step === 3) {
+        t3Step = 4;
+        document.getElementById('t3-btn-block-b').className = 'choice-btn correct';
+        document.getElementById('t3-question-b').style.display = 'block';
+        msg.innerHTML = `<b>Athena:</b> Đáy EFGH của khối (b) là hình thang: chỉ có một cặp cạnh đối song song. Nó <b>không phải hình bình hành</b>. Hãy quyết định tên của khối.`;
+      } else {
+        msg.innerHTML = `<b>Athena:</b> Hãy làm đúng thứ tự đang hiển thị: quan sát đáy rồi mới trả lời cho từng khối.`;
       }
     }
 
-    let lineHbEb = null, lineHbGb = null, lineHbHbp = null, meshBotB = null;
+    function answerTab3A(isYes) {
+      if (t3Step !== 2) return;
+      if (!isYes) {
+        document.getElementById('t3-a-no').className = 'choice-btn wrong';
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Khối (a) là lăng trụ tứ giác và đáy của nó là hình bình hành, nên thỏa đúng điều kiện riêng để trở thành <b>hình hộp</b>.`;
+        return;
+      }
+      document.getElementById('t3-a-yes').className = 'choice-btn correct';
+      t3Step = 3;
+      document.getElementById('t3-btn-block-b').style.display = 'flex';
+      document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Chính xác: khối (a) là hình hộp vì đáy là hình bình hành. Tiếp tục click đáy khối (b).`;
+    }
 
-    function updateTab3SolidB(hx) {
-      const Eb = new THREE.Vector3(0.5, 0, 1.2);
-      const Fb = new THREE.Vector3(3.0, 0, 1.2);
-      const Gb = new THREE.Vector3(2.2, 0, -1.2);
-      const Hb = new THREE.Vector3(hx, 0, -1.2);
-      const Hbp = new THREE.Vector3(hx, 2.8, -1.2);
+    function answerTab3B(isYes) {
+      if (t3Step !== 4) return;
+      if (isYes) {
+        document.getElementById('t3-b-yes').className = 'choice-btn wrong';
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Khối (b) đúng là một lăng trụ tứ giác, nhưng hình hộp có điều kiện riêng: <b>đáy phải là hình bình hành</b>. Đáy này chỉ có một cặp cạnh đối song song, nên chưa phải hình hộp.`;
+        return;
+      }
+      document.getElementById('t3-b-no').className = 'choice-btn correct';
+      t3Step = 5;
+      t3MorphUnlocked = true;
+      document.getElementById('t3-morph-wrap').style.display = 'block';
+      document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đúng! Bây giờ kéo H trong mặt phẳng đáy. Hãy làm cho AD (tức EH) vừa <b>song song</b>, vừa <b>bằng</b> BC (tức FG); toàn bộ lăng trụ sẽ cập nhật theo thời gian thực.`;
+      updateTab3SolidB();
+    }
 
-      if (ptHMesh) scene.remove(ptHMesh);
-      if (lineHbEb) scene.remove(lineHbEb);
-      if (lineHbGb) scene.remove(lineHbGb);
-      if (lineHbHbp) scene.remove(lineHbHbp);
-      if (meshBotB) scene.remove(meshBotB);
+    function disposeObjects(objects, labels = []) {
+      objects.forEach(object => {
+        scene.remove(object);
+        object.geometry?.dispose?.();
+        const mats = Array.isArray(object.material) ? object.material : [object.material];
+        mats.filter(Boolean).forEach(material => material.dispose?.());
+      });
+      labels.forEach(label => {
+        label.element?.remove?.();
+        activeLabels = activeLabels.filter(item => item !== label);
+      });
+    }
 
-      ptHMesh = makeSpherePoint(Hb, COLOR_RESULT, 0.11);
-      if (!labelH) labelH = createLabel3D('H', Hb, '#FAC775');
-      else labelH.position.copy(Hb);
+    function updateTab3SolidB() {
+      const E = new THREE.Vector3(0.5, 0, 1.25), F = new THREE.Vector3(3, 0, 1.25), G = new THREE.Vector3(2.25, 0, -1.25);
+      const lift = new THREE.Vector3(0, 2.75, 0), Ep = E.clone().add(lift), Gp = G.clone().add(lift), Hp = t3H.clone().add(lift);
+      disposeObjects(t3DynamicObjects, t3DynamicLabels);
+      t3DynamicObjects = [];
+      t3DynamicLabels = [];
+      const bot = createPolygonMesh([E, F, G, t3H], COLOR_PLANE_3, .28, 't3_bot_b');
+      t3DynamicObjects.push(bot, createPolygonMesh([Ep, F.clone().add(lift), Gp, Hp], COLOR_PLANE_3, .2));
+      t3DynamicObjects.push(createPolygonMesh([G, t3H, Hp, Gp], COLOR_PLANE_3, .12), createPolygonMesh([t3H, E, Ep, Hp], COLOR_PLANE_3, .12));
+      [[G, t3H], [t3H, E], [Gp, Hp], [Hp, Ep], [t3H, Hp]].forEach(p => t3DynamicObjects.push(createLineSegment(p[0], p[1], COLOR_EDGE_SOLID)));
+      ptHMesh = makeSpherePoint(t3H, t3MorphUnlocked ? COLOR_RESULT : 0x94a3b8, .15);
+      ptHMesh.name = 't3_drag_h';
+      t3DynamicObjects.push(ptHMesh, makeSpherePoint(Hp, 0x94a3b8, .1));
+      t3DynamicLabels.push(createLabel3D('H', t3H, '#FAC775'), createLabel3D("H'", Hp));
+      if (!t3MorphUnlocked) interactiveMeshes = [bot, ...interactiveMeshes.filter(o => o.name === 't3_bot_a')];
 
-      lineHbEb = createLineSegment(Hb, Eb, COLOR_EDGE_SOLID);
-      lineHbGb = createLineSegment(Hb, Gb, COLOR_EDGE_SOLID);
-      lineHbHbp = createLineSegment(Hb, Hbp, COLOR_EDGE_SOLID);
-      meshBotB = createPolygonMesh([Eb, Fb, Gb, Hb], COLOR_PLANE_3, 0.25);
-
-      // Target H for parallelogram: EF = (2.5, 0, 0) -> HG = (2.2 - hx, 0, 0) -> hx = -0.30
-      const isHBH = Math.abs(hx - (-0.30)) < 0.15;
-      const badgeHBH = document.getElementById('t3-badge-hbh');
-
-      if (isHBH) {
-        badgeHBH.className = 'status-badge ok';
-        document.getElementById('t3-txt-hbh').textContent = '✓ Đạt (Hình bình hành!)';
-        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> 🎉 Tuyệt vời! Khi đáy EFGH biến thành <b>Hình bình hành</b>, Khối (b) đã chính thức trở thành 1 <b>Hình hộp</b> hợp lệ!`;
+      const vEH = new THREE.Vector3().subVectors(t3H, E), vFG = new THREE.Vector3().subVectors(G, F);
+      const crossGrid = Math.round((vEH.x * vFG.z - vEH.z * vFG.x) * 16);
+      const isParallel = crossGrid === 0 && vEH.dot(vFG) > 0;
+      const lenEHGrid = Math.round(vEH.lengthSq() * 16), lenFGGrid = Math.round(vFG.lengthSq() * 16);
+      const isEqual = lenEHGrid === lenFGGrid;
+      document.getElementById('val-hx').textContent = t3H.x.toFixed(2);
+      document.getElementById('val-hz').textContent = t3H.z.toFixed(2);
+      document.getElementById('t3-live-lengths').textContent = `AD (EH) = ${vEH.length().toFixed(2)} · BC (FG) = ${vFG.length().toFixed(2)}`;
+      document.getElementById('t3-badge-parallel').className = `status-badge ${isParallel ? 'ok' : 'fail'}`;
+      document.getElementById('t3-txt-parallel').textContent = isParallel ? '✓ Có' : '✗ Không';
+      document.getElementById('t3-badge-equal').className = `status-badge ${isEqual ? 'ok' : 'fail'}`;
+      document.getElementById('t3-txt-equal').textContent = isEqual ? '✓ Bằng nhau' : '✗ Chưa bằng';
+      if (!t3MorphUnlocked || t3MorphCompleted) return;
+      if (isParallel && isEqual) {
+        t3MorphCompleted = true;
+        document.getElementById('t3-slider-hx').disabled = true;
+        document.getElementById('t3-slider-hz').disabled = true;
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> 🎉 Cả hai điều kiện đã đạt: EH // FG và EH = FG, nên EFGH là hình bình hành. Khối (b) đã trở thành một <b>hình hộp</b>; các mặt và cạnh bên vẫn giữ cùng vector tịnh tiến của lăng trụ.`;
         document.getElementById('btn-next-tab3').style.display = 'inline-flex';
         unlockTab(4);
+      } else if (isParallel) {
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> EH đã song song FG, nhưng độ dài ${vEH.length().toFixed(2)} chưa bằng ${vFG.length().toFixed(2)}. Hình bình hành cần <b>cả song song và bằng nhau</b>.`;
+      } else if (isEqual) {
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> EH và FG đã bằng nhau, nhưng chưa song song. Hãy điều chỉnh hướng của H; chỉ một điều kiện vẫn chưa đủ.`;
       } else {
-        badgeHBH.className = 'status-badge fail';
-        document.getElementById('t3-txt-hbh').textContent = '✗ Chưa đạt (Hình thang)';
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Tiếp tục kéo H: hai chỉ báo cho biết riêng điều kiện song song và điều kiện bằng nhau còn thiếu.`;
       }
     }
+
+    let isDraggingH = false;
+    canvas.addEventListener('pointerdown', e => {
+      if (currentTab !== 3 || !t3MorphUnlocked || t3MorphCompleted || !ptHMesh) return;
+      const rect = canvas.getBoundingClientRect();
+      const m = new THREE.Vector2(((e.clientX - rect.left) / wrap.clientWidth) * 2 - 1, -((e.clientY - rect.top) / wrap.clientHeight) * 2 + 1);
+      dragRaycaster.setFromCamera(m, camera);
+      if (dragRaycaster.intersectObject(ptHMesh, false).length) {
+        isDraggingH = true; orbitControls.enabled = false; canvas.style.cursor = 'grabbing';
+        dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 1, 0), t3H);
+      }
+    });
+    canvas.addEventListener('pointermove', e => {
+      if (currentTab !== 3 || !isDraggingH) return;
+      const rect = canvas.getBoundingClientRect();
+      const m = new THREE.Vector2(((e.clientX - rect.left) / wrap.clientWidth) * 2 - 1, -((e.clientY - rect.top) / wrap.clientHeight) * 2 + 1);
+      dragRaycaster.setFromCamera(m, camera);
+      if (dragRaycaster.ray.intersectPlane(dragPlane, planeIntersectPt)) {
+        t3H.x = Math.max(-.75, Math.min(1.5, Math.round(planeIntersectPt.x * 4) / 4));
+        t3H.z = Math.max(-2, Math.min(.5, Math.round(planeIntersectPt.z * 4) / 4));
+        document.getElementById('t3-slider-hx').value = t3H.x;
+        document.getElementById('t3-slider-hz').value = t3H.z;
+        updateTab3SolidB();
+      }
+    });
 
     /* =========================================================================
        9. TAB 4: THỬ THÁCH TỰ DỰNG HÌNH HỘP (SNAP GRID 0.25 & REAL-TIME BADGES)
        ========================================================================= */
     let ptDpMesh = null, labelDp = null, t4Attempts = 0;
 
-    function initTab4() {
+    function legacyInitTab4() {
       clearScene();
       t4Attempts = 0;
 
@@ -1652,7 +2011,7 @@
     const planeIntersectPt = new THREE.Vector3();
 
     canvas.addEventListener('pointerdown', (e) => {
-      if (currentTab !== 4 || !ptDpMesh) return;
+      if (true) return; // legacy listener disabled; full multi-point engine is defined below
       const rect = canvas.getBoundingClientRect();
       const mouseVec = new THREE.Vector2(
         ((e.clientX - rect.left) / wrap.clientWidth) * 2 - 1,
@@ -1669,7 +2028,7 @@
     });
 
     canvas.addEventListener('pointermove', (e) => {
-      if (currentTab !== 4 || !ptDpMesh) return;
+      if (true) return; // legacy listener disabled; full multi-point engine is defined below
       const rect = canvas.getBoundingClientRect();
       const mouseVec = new THREE.Vector2(
         ((e.clientX - rect.left) / wrap.clientWidth) * 2 - 1,
@@ -1794,6 +2153,256 @@
         fb.innerHTML = `<b>Athena (Gợi ý):</b> Hãy điều chỉnh D' về vị trí tọa độ <b>X = -1.00, Z = -1.50, Y = 3.20</b> để hoàn thành hình hộp!`;
       }
     }
+
+    /* FULL TWO-STAGE TAB 4 ENGINE — exact 0.25-grid comparisons */
+    const t4Base = {
+      A: new THREE.Vector3(-1.75, 0, 1.5),
+      B: new THREE.Vector3(1.5, 0, 1.5),
+      C: new THREE.Vector3(2.25, 0, -1.5),
+      D: new THREE.Vector3(-1.0, 0, -1.5)
+    };
+    const t4Lift = new THREE.Vector3(0, 3, 0);
+    let t4Top = null;
+    let t4Stage = 1;
+    let t4SelectedPoint = 'D';
+    let t4Completed = false;
+    let t4HintTimer = null;
+    let t4DynamicObjects = [];
+    let t4DynamicLabels = [];
+    let t4TopMeshes = {};
+    let t4Dragging = false;
+
+    function initTab4() {
+      clearScene();
+      clearTimeout(t4HintTimer);
+      t4Attempts = 0;
+      t4Stage = 1;
+      t4SelectedPoint = 'D';
+      t4Completed = false;
+      t4Top = {
+        A: t4Base.A.clone().add(t4Lift),
+        B: t4Base.B.clone().add(t4Lift),
+        C: t4Base.C.clone().add(t4Lift),
+        D: new THREE.Vector3(0.75, 2.25, -0.5)
+      };
+      createPolygonMesh([t4Base.A, t4Base.B, t4Base.C, t4Base.D], COLOR_PLANE_BASE, .3);
+      ['A', 'B', 'C', 'D'].forEach(key => {
+        makeSpherePoint(t4Base[key]);
+        createLabel3D(key, t4Base[key]);
+      });
+      [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A']].forEach(([a, b]) => createLineSegment(t4Base[a], t4Base[b], COLOR_EDGE_SOLID));
+      document.getElementById('t4-point-selector').style.display = 'none';
+      document.getElementById('t4-btn-extended').style.display = 'none';
+      document.getElementById('t4-select-point').value = 'D';
+      setTab4ControlsDisabled(false);
+      setT4SlidersFromSelected();
+      updateTab4Geometry();
+      startTab4HintTimer();
+
+      ['x', 'y', 'z'].forEach(axis => {
+        const slider = document.getElementById(`t4-slider-d${axis}`);
+        slider.oninput = () => {
+          if (t4Completed) return;
+          const point = t4Top[t4SelectedPoint];
+          point.set(
+            parseFloat(document.getElementById('t4-slider-dx').value),
+            parseFloat(document.getElementById('t4-slider-dy').value),
+            parseFloat(document.getElementById('t4-slider-dz').value)
+          );
+          setT4ValueLabels(point);
+          updateTab4Geometry();
+        };
+        slider.onchange = registerTab4Attempt;
+      });
+      document.getElementById('t4-select-point').onchange = e => {
+        if (t4Completed) return;
+        t4SelectedPoint = e.target.value;
+        setT4SlidersFromSelected();
+        updateTab4Geometry();
+      };
+      document.getElementById('t4-btn-extended').onclick = startTab4Extended;
+    }
+
+    function startTab4HintTimer() {
+      clearTimeout(t4HintTimer);
+      t4HintTimer = setTimeout(() => {
+        if (currentTab === 4 && !t4Completed) showTab4SpecificHint();
+      }, 90000);
+    }
+
+    function disposeTab4Dynamic() {
+      disposeObjects(t4DynamicObjects, t4DynamicLabels);
+      t4DynamicObjects = [];
+      t4DynamicLabels = [];
+      t4TopMeshes = {};
+      ptDpMesh = null;
+    }
+
+    function gridCoord(value) { return Math.round(value * 4); }
+    function sameGridVector(a, b, axes = ['x', 'y', 'z']) {
+      return axes.every(axis => gridCoord(a[axis]) === gridCoord(b[axis]));
+    }
+
+    function updateTab4Geometry() {
+      if (!t4Top) return;
+      disposeTab4Dynamic();
+      ['A', 'B', 'C', 'D'].forEach(key => {
+        const draggable = t4Stage === 2 || key === 'D';
+        const mesh = makeSpherePoint(t4Top[key], key === t4SelectedPoint ? COLOR_RESULT : (draggable ? 0x38bdf8 : 0x94a3b8), .13);
+        mesh.userData.pointKey = key;
+        t4TopMeshes[key] = mesh;
+        t4DynamicObjects.push(mesh);
+        t4DynamicLabels.push(createLabel3D(`${key}'`, t4Top[key], key === t4SelectedPoint ? '#FAC775' : '#ffffff'));
+        t4DynamicObjects.push(createLineSegment(t4Base[key], t4Top[key], COLOR_EDGE_SOLID));
+      });
+      [['A', 'B'], ['B', 'C'], ['C', 'D'], ['D', 'A']].forEach(([a, b]) => t4DynamicObjects.push(createLineSegment(t4Top[a], t4Top[b], COLOR_EDGE_SOLID)));
+      t4DynamicObjects.push(createPolygonMesh([t4Top.A, t4Top.B, t4Top.C, t4Top.D], COLOR_PLANE_2, .25));
+      ptDpMesh = t4TopMeshes[t4SelectedPoint];
+
+      const baseEdges = [
+        new THREE.Vector3().subVectors(t4Base.B, t4Base.A), new THREE.Vector3().subVectors(t4Base.C, t4Base.B),
+        new THREE.Vector3().subVectors(t4Base.D, t4Base.C), new THREE.Vector3().subVectors(t4Base.A, t4Base.D)
+      ];
+      const topEdges = [
+        new THREE.Vector3().subVectors(t4Top.B, t4Top.A), new THREE.Vector3().subVectors(t4Top.C, t4Top.B),
+        new THREE.Vector3().subVectors(t4Top.D, t4Top.C), new THREE.Vector3().subVectors(t4Top.A, t4Top.D)
+      ];
+      const sideVectors = ['A', 'B', 'C', 'D'].map(key => new THREE.Vector3().subVectors(t4Top[key], t4Base[key]));
+      // Theo phản hồi kịch bản, chỉ báo mặt bên xét khớp phương ngang; chỉ báo cạnh bên xét đầy đủ cả hướng và độ dài.
+      const isFaceHBH = topEdges.every((edge, i) => sameGridVector(edge, baseEdges[i], ['x', 'z']));
+      const isEdgeOk = sideVectors.slice(1).every(edge => sameGridVector(edge, sideVectors[0]));
+      const lengths = sideVectors.map(v => v.length());
+      const maxDirectionError = Math.max(...sideVectors.slice(1).map(v => v.distanceTo(sideVectors[0])));
+      document.getElementById('t4-lengths').textContent = `AA' = ${lengths[0].toFixed(2)} · BB' = ${lengths[1].toFixed(2)} · CC' = ${lengths[2].toFixed(2)} · DD' = ${lengths[3].toFixed(2)}`;
+      document.getElementById('t4-directions').textContent = `Độ lệch vector cạnh bên lớn nhất = ${maxDirectionError.toFixed(2)} (cần bằng 0,00)`;
+      setStatus('badge-face', 'txt-face-st', isFaceHBH, '✓ Đạt (Hình bình hành)', '✗ Chưa đạt');
+      setStatus('badge-edge', 'txt-edge-st', isEdgeOk, '✓ Đạt (Song song & bằng nhau)', '✗ Chưa đạt');
+
+      const fb = document.getElementById('t4-msg');
+      if (isFaceHBH && isEdgeOk) {
+        t4Completed = true;
+        clearTimeout(t4HintTimer);
+        setTab4ControlsDisabled(true);
+        fb.innerHTML = `<b>Athena:</b> 🎉 Hoàn thành ${t4Stage === 1 ? 'GĐ1' : 'GĐ2'}! Đáy là hình bình hành; các mặt bên là hình bình hành; bốn cạnh bên có cùng vector nên song song và bằng nhau. Thiếu bất kỳ điều kiện nào thì khối chưa phải hình hộp.`;
+        if (t4Stage === 1) document.getElementById('t4-btn-extended').style.display = 'inline-flex';
+        setTimeout(() => { if (t4Completed && currentTab === 4) document.getElementById('celebration-modal').classList.add('show'); }, 800);
+      } else if (t4Attempts >= 5) {
+        showTab4SpecificHint();
+      } else if (isFaceHBH) {
+        const ref = lengths[0].toFixed(2), current = lengths[['A', 'B', 'C', 'D'].indexOf(t4SelectedPoint)].toFixed(2);
+        fb.innerHTML = `<b>Athena:</b> Mặt bên đã đúng hình bình hành, nhưng cạnh bên chưa cùng vector: độ dài ${t4SelectedPoint}${t4SelectedPoint}' = ${current}, trong khi cạnh chuẩn dài ${ref}. Hãy chỉnh độ cao hoặc hướng để khớp.`;
+      } else if (isEdgeOk) {
+        fb.innerHTML = `<b>Athena:</b> Các cạnh bên đã cùng độ dài và hướng, nhưng các cạnh tương ứng của mặt bên chưa khớp trên lưới. Hãy kiểm tra vị trí ngang của các đỉnh trên.`;
+      } else {
+        fb.innerHTML = `<b>Athena:</b> Bạn đang di chuyển ${t4SelectedPoint}' trong mặt phẳng ngang; dùng slider Y để chỉnh độ cao. Theo dõi độ dài và độ lệch vector, đưa cả hai chỉ báo còn lại về xanh.`;
+      }
+    }
+
+    function setStatus(badgeId, textId, ok, okText, failText) {
+      document.getElementById(badgeId).className = `status-badge ${ok ? 'ok' : 'fail'}`;
+      document.getElementById(textId).textContent = ok ? okText : failText;
+    }
+
+    function registerTab4Attempt() {
+      if (t4Completed) return;
+      t4Attempts++;
+      if (t4Attempts < 5) startTab4HintTimer();
+      updateTab4Geometry();
+      if (t4Attempts >= 5) showTab4SpecificHint();
+    }
+
+    function showTab4SpecificHint() {
+      if (t4Completed || !t4Top) return;
+      const target = t4Base[t4SelectedPoint].clone().add(t4Lift);
+      const current = t4Top[t4SelectedPoint];
+      const wrongAxes = ['x', 'y', 'z'].filter(axis => gridCoord(current[axis]) !== gridCoord(target[axis])).map(axis => axis.toUpperCase());
+      document.getElementById('t4-msg').innerHTML = `<b>Athena (gợi ý sau 5 lần thử/90 giây):</b> ${t4SelectedPoint}' còn lệch ở ${wrongAxes.join(', ') || 'vector cạnh bên'}. Ô lưới mục tiêu là X=${target.x.toFixed(2)}, Y=${target.y.toFixed(2)}, Z=${target.z.toFixed(2)}.`;
+    }
+
+    function setTab4ControlsDisabled(disabled) {
+      ['t4-slider-dx', 't4-slider-dy', 't4-slider-dz', 't4-select-point'].forEach(id => document.getElementById(id).disabled = disabled);
+      if (disabled) { t4Dragging = false; orbitControls.enabled = true; }
+    }
+
+    function setT4ValueLabels(point) {
+      document.getElementById('val-dx').textContent = point.x.toFixed(2);
+      document.getElementById('val-dy').textContent = point.y.toFixed(2);
+      document.getElementById('val-dz').textContent = point.z.toFixed(2);
+    }
+
+    function setT4SlidersFromSelected() {
+      const point = t4Top[t4SelectedPoint];
+      document.getElementById('t4-slider-dx').value = point.x;
+      document.getElementById('t4-slider-dy').value = point.y;
+      document.getElementById('t4-slider-dz').value = point.z;
+      setT4ValueLabels(point);
+    }
+
+    function startTab4Extended() {
+      document.getElementById('celebration-modal').classList.remove('show');
+      t4Stage = 2;
+      t4Completed = false;
+      t4Attempts = 0;
+      t4SelectedPoint = 'A';
+      t4Top = {
+        A: new THREE.Vector3(-1.25, 2.0, 1.0), B: new THREE.Vector3(1.75, 3.5, 1.75),
+        C: new THREE.Vector3(1.75, 2.25, -0.75), D: new THREE.Vector3(-0.25, 3.5, -1.75)
+      };
+      document.getElementById('t4-point-selector').style.display = 'block';
+      document.getElementById('t4-select-point').value = 'A';
+      document.getElementById('t4-btn-extended').style.display = 'none';
+      setTab4ControlsDisabled(false);
+      setT4SlidersFromSelected();
+      updateTab4Geometry();
+      startTab4HintTimer();
+      document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> GĐ2 mở rộng: cả bốn đỉnh trên đã bị xáo. Chọn trong danh sách hoặc click trực tiếp từng điểm rồi kéo; chỉnh Y bằng slider để đưa tất cả về cùng một vector tịnh tiến.`;
+    }
+
+    canvas.addEventListener('pointerdown', e => {
+      if (currentTab !== 4 || t4Completed || !t4Top) return;
+      const rect = canvas.getBoundingClientRect();
+      const m = new THREE.Vector2(((e.clientX - rect.left) / wrap.clientWidth) * 2 - 1, -((e.clientY - rect.top) / wrap.clientHeight) * 2 + 1);
+      dragRaycaster.setFromCamera(m, camera);
+      const candidates = Object.values(t4TopMeshes).filter(mesh => t4Stage === 2 || mesh.userData.pointKey === 'D');
+      const hits = dragRaycaster.intersectObjects(candidates, false);
+      if (!hits.length) return;
+      t4SelectedPoint = hits[0].object.userData.pointKey;
+      document.getElementById('t4-select-point').value = t4SelectedPoint;
+      setT4SlidersFromSelected();
+      ptDpMesh = hits[0].object;
+      t4Dragging = true;
+      orbitControls.enabled = false;
+      dragPlane.setFromNormalAndCoplanarPoint(new THREE.Vector3(0, 1, 0), t4Top[t4SelectedPoint]);
+      canvas.style.cursor = 'grabbing';
+    });
+
+    canvas.addEventListener('pointermove', e => {
+      if (currentTab !== 4 || !t4Dragging) return;
+      const rect = canvas.getBoundingClientRect();
+      const m = new THREE.Vector2(((e.clientX - rect.left) / wrap.clientWidth) * 2 - 1, -((e.clientY - rect.top) / wrap.clientHeight) * 2 + 1);
+      dragRaycaster.setFromCamera(m, camera);
+      if (!dragRaycaster.ray.intersectPlane(dragPlane, planeIntersectPt)) return;
+      const point = t4Top[t4SelectedPoint];
+      point.x = Math.max(-2, Math.min(2.75, Math.round(planeIntersectPt.x * 4) / 4));
+      point.z = Math.max(-2, Math.min(2, Math.round(planeIntersectPt.z * 4) / 4));
+      setT4SlidersFromSelected();
+      updateTab4Geometry();
+    });
+
+    window.addEventListener('pointerup', () => {
+      if (isDraggingH) {
+        isDraggingH = false;
+        orbitControls.enabled = true;
+        canvas.style.cursor = 'default';
+        registerTab3MorphAttempt();
+      }
+      if (t4Dragging) {
+        t4Dragging = false;
+        orbitControls.enabled = true;
+        canvas.style.cursor = 'default';
+        registerTab4Attempt();
+      }
+    });
 
     /* RESTART BUTTON IN MODAL */
     document.getElementById('btn-modal-close').onclick = () => {

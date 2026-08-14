@@ -497,6 +497,9 @@
         <button id="btn-handbook-close" style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;"><i class="ti ti-x"></i></button>
       </div>
       <div style="font-size: 13px; line-height: 1.6; color: #e2e8f0; max-height: 60vh; overflow-y: auto; padding-right: 6px;">
+        <p><b>0. Hình biểu diễn:</b><br>
+          Là hình chiếu song song của hình không gian, hoặc một hình đồng dạng với hình chiếu đó. Phép chiếu không bảo toàn góc và độ dài tuyệt đối.
+        </p>
         <p><b>1. Tính chất được bảo toàn:</b><br>
           • Bảo toàn tính thẳng hàng và thứ tự 3 điểm.<br>
           • Bảo toàn tính song song của 2 đường thẳng.<br>
@@ -526,10 +529,10 @@
       <div style="font-size: 14px; color: #94a3b8;">Module 14.3 — Hình học không gian 11</div>
 
       <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: left; font-size: 13px; line-height: 1.6;">
-        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Tab 1:</b> Hiểu vì sao góc vuông biến mất và hình tròn thành elip qua chiếu xiên.</div>
-        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Tab 2:</b> Thành thạo 4 quy tắc hình phẳng & giữ đúng tỉ lệ 2 đáy hình thang.</div>
-        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Tab 3:</b> Dựng từng bước hình biểu diễn khối lăng trụ đáy hình thang.</div>
-        <div style="display: flex; gap: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Tab 4:</b> Hoàn thành xuất sắc 4/4 câu hỏi trắc nghiệm củng cố kiến thức.</div>
+        <div style="display:flex;gap:8px;margin-bottom:7px;color:#e2e8f0;"><i class="ti ti-circle-check-filled" style="color:#34d399;"></i><span><b>Hình biểu diễn</b> là hình chiếu song song hoặc hình đồng dạng với hình chiếu đó.</span></div>
+        <div style="display:flex;gap:8px;margin-bottom:7px;color:#e2e8f0;"><i class="ti ti-circle-check-filled" style="color:#34d399;"></i><span>Giữ thẳng hàng, song song và tỉ lệ thích hợp; <b>không giữ góc và độ dài tuyệt đối</b>.</span></div>
+        <div style="display:flex;gap:8px;margin-bottom:9px;color:#e2e8f0;"><i class="ti ti-circle-check-filled" style="color:#34d399;"></i><span>Tam giác → tam giác; vuông/chữ nhật/thoi/bình hành → bình hành; thang → thang đúng tỉ lệ đáy; tròn → elip.</span></div>
+        <div style="color:#fac775;"><b>Tránh 3 lỗi:</b> giữ góc vuông; vẽ hình tròn/bầu dục tùy ý; bỏ qua tỉ lệ hai đáy hình thang.</div>
       </div>
 
       <div style="display: flex; gap: 12px;">
@@ -569,6 +572,7 @@
           <button class="btn btn-primary" id="btn-t1-project"><i class="ti ti-player-play"></i> 1. Chiếu xiên hình vuông</button>
           <button class="btn btn-outline" id="btn-t1-measure" style="color: var(--navy); border-color: var(--teal); display: none;"><i class="ti ti-ruler-measure"></i> 2. Đo góc tại A'</button>
           <button class="btn btn-outline" id="btn-t1-circle" style="color: var(--navy); border-color: var(--teal); display: none;"><i class="ti ti-circle"></i> 3. Thử lại với hình tròn</button>
+          <button class="btn btn-outline" id="btn-t1-conclusion" style="color: var(--navy); border-color: var(--teal); display: none;"><i class="ti ti-bulb"></i> 4. Kết luận</button>
         </div>
 
         <div id="t1-feedback" class="info-box athena-box" style="display: none;">
@@ -649,9 +653,18 @@
           <input type="range" id="sld-t3-ratio" min="1.2" max="3.2" step="0.1" value="1.2">
         </div>
 
+        <div class="control-card" id="t3-vector-card" style="display:none;">
+          <div class="slider-label">
+            <span>Độ xiên ngang của vector tịnh tiến:</span>
+            <span id="txt-t3-shift">0.00 (đang thẳng đứng)</span>
+          </div>
+          <input type="range" id="sld-t3-shift" min="0" max="1.2" step="0.1" value="0">
+        </div>
+
         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
           <button class="btn btn-primary" id="btn-t3-translate" style="display: none;"><i class="ti ti-arrow-up-right"></i> 2. Tịnh tiến tạo đáy trên A'B'C'D'</button>
           <button class="btn btn-outline" id="btn-t3-connect" style="color: var(--navy); border-color: var(--teal); display: none;"><i class="ti ti-vector-triangle"></i> 3. Nối các cạnh bên</button>
+          <button class="btn btn-outline" id="btn-t3-compare" style="color: var(--navy); border-color: var(--teal); display: none;"><i class="ti ti-arrows-exchange"></i> 4. Đối chiếu và đặt lại góc nhìn</button>
         </div>
 
         <div id="t3-feedback" class="info-box athena-box" style="display: none;">
@@ -1029,6 +1042,7 @@
       else if (tabNum === 4) initTab4();
 
       setCameraStandardSGK();
+      if (tabNum === 1) orbitControls.enabled = false;
     }
 
     let interactiveMeshes = [];
@@ -1037,7 +1051,7 @@
     /* =========================================================================
        6. TAB 1: QUAN SÁT VÌ SAO GÓC VUÔNG "BIẾN MẤT" KHI CHIẾU
        ========================================================================= */
-    function initTab1() {
+    function legacyInitTab1() {
       clearScene();
 
       // Plane alpha at Y = 0
@@ -1175,6 +1189,129 @@
       };
     }
 
+    /* Phép chiếu thật lên mặt phẳng nghiêng alpha: n.x = 0 */
+    function initTab1() {
+      clearScene();
+      orbitControls.enabled = false;
+      document.getElementById('btn-next-tab1').style.display = 'none';
+      document.getElementById('btn-t1-measure').style.display = 'none';
+      document.getElementById('btn-t1-measure').disabled = false;
+      document.getElementById('btn-t1-circle').style.display = 'none';
+      document.getElementById('btn-t1-circle').disabled = false;
+      document.getElementById('btn-t1-conclusion').style.display = 'none';
+      document.getElementById('btn-t1-conclusion').disabled = false;
+      document.getElementById('btn-t1-project').disabled = false;
+      document.getElementById('t1-feedback').style.display = 'none';
+
+      const alphaNormal = new THREE.Vector3(-0.5, 1, -0.35);
+      const projectionDirection = new THREE.Vector3(-0.8, -2.5, 0.4);
+      const projectPoint = point => {
+        const t = -alphaNormal.dot(point) / alphaNormal.dot(projectionDirection);
+        return point.clone().addScaledVector(projectionDirection, t);
+      };
+      const alphaY = (x,z) => 0.5 * x + 0.35 * z;
+
+      function buildProjectionReference() {
+        const p1 = new THREE.Vector3(-3.2,alphaY(-3.2,3.2),3.2);
+        const p2 = new THREE.Vector3(3.2,alphaY(3.2,3.2),3.2);
+        const p3 = new THREE.Vector3(3.2,alphaY(3.2,-3.2),-3.2);
+        const p4 = new THREE.Vector3(-3.2,alphaY(-3.2,-3.2),-3.2);
+        createPolygonMesh([p1,p2,p3,p4],COLOR_PLANE_BASE,.18);
+        createLabel3D('Mặt phẳng chiếu nghiêng (α)',p3.clone().add(new THREE.Vector3(0,.2,0)),'#94a3b8');
+        const dir = projectionDirection.clone().normalize();
+        [new THREE.Vector3(2.8,3.7,2.6),new THREE.Vector3(2.2,3.4,.5),new THREE.Vector3(2.8,3.7,-1.7)].forEach(origin => {
+          scene.add(new THREE.ArrowHelper(dir,origin,1.8,0xFAC775,.32,.16));
+        });
+        createLabel3D('Các tia song song phương Δ',new THREE.Vector3(2.7,3.9,2.6),'#FAC775');
+      }
+
+      buildProjectionReference();
+      const A = new THREE.Vector3(-1.2,2.5,1.2), B = new THREE.Vector3(1.2,2.5,1.2);
+      const C = new THREE.Vector3(1.2,2.5,-1.2), D = new THREE.Vector3(-1.2,2.5,-1.2);
+      const source = [A,B,C,D];
+      const projected = source.map(projectPoint);
+      createPolygonMesh(source,COLOR_PLANE_1,.4);
+      source.forEach((point,i) => {
+        const next = source[(i+1)%4];
+        createLineSegment(point,next,COLOR_EDGE_SOLID);
+        makeSpherePoint(point);
+        createLabel3D(['A','B','C','D'][i],point);
+      });
+
+      const fb = document.getElementById('t1-feedback');
+      document.getElementById('btn-t1-project').onclick = () => {
+        document.getElementById('btn-t1-project').disabled = true;
+        orbitControls.enabled = false;
+        projected.forEach((target,i) => {
+          setTimeout(() => {
+            animateLine(source[i],target,0xFAC775,650,() => {
+              makeSpherePoint(target,COLOR_RESULT,.1);
+              createLabel3D(`${['A','B','C','D'][i]}'`,target,'#FAC775');
+            },.75,true);
+          },i*420);
+        });
+        setTimeout(() => {
+          createPolygonMesh(projected,COLOR_PLANE_2,.42);
+          projected.forEach((point,i) => createLineSegment(point,projected[(i+1)%4],COLOR_PLANE_2));
+          orbitControls.enabled = true;
+          document.getElementById('btn-t1-measure').style.display = 'inline-flex';
+          document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Mỗi đỉnh M được đưa tới giao điểm M' của tia qua M song song Δ với mặt phẳng nghiêng (α). A'B' // C'D' và A'D' // B'C' vẫn được giữ, nhưng hãy đo góc để biết sự thay đổi không chỉ do camera.`;
+          fb.style.display = 'flex';
+        },4*420+700);
+      };
+
+      document.getElementById('btn-t1-measure').onclick = () => {
+        const vAB = new THREE.Vector3().subVectors(projected[1],projected[0]);
+        const vAD = new THREE.Vector3().subVectors(projected[3],projected[0]);
+        const angleDeg = vAB.angleTo(vAD) * 180 / Math.PI;
+        createLabel3D(`Góc A' = ${angleDeg.toFixed(1)}°`,projected[0].clone().add(new THREE.Vector3(-.25,.35,.2)),'#f43f5e');
+        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Góc B'A'D' đo được <b>${angleDeg.toFixed(1)}°</b>, thực sự khác 90° dù xoay camera thế nào. Phép chiếu song song bảo toàn song song, nhưng không bảo toàn độ lớn góc.`;
+        document.getElementById('btn-t1-measure').disabled = true;
+        document.getElementById('btn-t1-circle').style.display = 'inline-flex';
+      };
+
+      document.getElementById('btn-t1-circle').onclick = () => {
+        clearScene();
+        buildProjectionReference();
+        orbitControls.enabled = false;
+        document.getElementById('btn-t1-circle').disabled = true;
+        const radius = 1.2, count = 48;
+        const circlePts = Array.from({length:count},(_,i) => {
+          const a = i * Math.PI * 2 / count;
+          return new THREE.Vector3(radius*Math.cos(a),2.5,radius*Math.sin(a));
+        });
+        const circleLine = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(circlePts),new THREE.LineBasicMaterial({color:0x38bdf8}));
+        scene.add(circleLine);
+        createLabel3D('Hình tròn thật',new THREE.Vector3(0,2.8,0),'#38bdf8');
+        const ellipsePts = circlePts.map(projectPoint);
+        for (let i=0;i<12;i++) {
+          const idx = i * 4;
+          setTimeout(() => animateLine(circlePts[idx],ellipsePts[idx],0xFAC775,500,null,.45,true),i*90);
+        }
+        setTimeout(() => {
+          const ellipse = new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(ellipsePts),new THREE.LineBasicMaterial({color:COLOR_RESULT}));
+          scene.add(ellipse);
+          const center = projectPoint(new THREE.Vector3(0,2.5,0));
+          const x1 = projectPoint(new THREE.Vector3(-radius,2.5,0)), x2 = projectPoint(new THREE.Vector3(radius,2.5,0));
+          const z1 = projectPoint(new THREE.Vector3(0,2.5,-radius)), z2 = projectPoint(new THREE.Vector3(0,2.5,radius));
+          createLineSegment(x1,x2,0xa78bfa,.9,true);
+          createLineSegment(z1,z2,0x34d399,.9,true);
+          makeSpherePoint(center,COLOR_RESULT,.1);
+          createLabel3D("O' — trung điểm chung",center,'#FAC775');
+          orbitControls.enabled = true;
+          document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Elip màu vàng được nối từ chính các điểm chiếu của đường tròn, không phải vẽ ước lượng. Hai đường kính vuông góc cùng đi qua tâm O chiếu thành hai đường kính của elip vẫn có chung trung điểm O', nhưng không còn vuông góc.`;
+          document.getElementById('btn-t1-conclusion').style.display = 'inline-flex';
+        },1600);
+      };
+
+      document.getElementById('btn-t1-conclusion').onclick = () => {
+        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> <b>Kết luận:</b> Hình biểu diễn giữ tính thẳng hàng, song song và các tỉ lệ thích hợp, nhưng không giữ góc hay độ dài tuyệt đối. Vì vậy hình vuông thường thành hình bình hành nghiêng, còn hình tròn thành elip.`;
+        document.getElementById('btn-t1-conclusion').disabled = true;
+        document.getElementById('btn-next-tab1').style.display = 'inline-flex';
+        unlockTab(2);
+      };
+    }
+
     /* =========================================================================
        7. TAB 2: LUYỆN QUY TẮC CHO CÁC HÌNH PHẲNG
        ========================================================================= */
@@ -1184,6 +1321,14 @@
       document.getElementById('t2-case-b').style.display = 'none';
       document.getElementById('t2-case-c').style.display = 'none';
       document.getElementById('t2-feedback').style.display = 'none';
+      document.getElementById('btn-next-tab2').style.display = 'none';
+      ['t2-a-opt1','t2-a-opt2','t2-a-opt3','t2-b-opt1','t2-b-opt2','t2-b-opt3'].forEach(id => {
+        const button = document.getElementById(id);
+        button.className = 'choice-btn';
+        button.disabled = false;
+      });
+      randomizeButtonOrder(['t2-a-opt1','t2-a-opt2','t2-a-opt3']);
+      randomizeButtonOrder(['t2-b-opt1','t2-b-opt2','t2-b-opt3']);
 
       renderTab2CaseA3D();
 
@@ -1195,6 +1340,7 @@
       };
       document.getElementById('t2-a-opt2').onclick = () => {
         document.getElementById('t2-a-opt2').className = 'choice-btn correct';
+        ['t2-a-opt1','t2-a-opt2','t2-a-opt3'].forEach(id => document.getElementById(id).disabled = true);
         let timerA = null;
         const advanceA = () => {
           if (timerA) clearTimeout(timerA);
@@ -1223,6 +1369,7 @@
       // Case B option handlers
       document.getElementById('t2-b-opt1').onclick = () => {
         document.getElementById('t2-b-opt1').className = 'choice-btn correct';
+        ['t2-b-opt1','t2-b-opt2','t2-b-opt3'].forEach(id => document.getElementById(id).disabled = true);
         let timerB = null;
         const advanceB = () => {
           if (timerB) clearTimeout(timerB);
@@ -1254,7 +1401,7 @@
       };
     }
 
-    function renderTab2CaseA3D() {
+    function legacyRenderTab2CaseA3D() {
       clearScene();
       const A = new THREE.Vector3(-1.5, 0.2, 1.2);
       const B = new THREE.Vector3(1.8, 0.2, 1.2);
@@ -1277,7 +1424,7 @@
       createLabel3D('Tam giác ABC vuông tại A', new THREE.Vector3(0.15, 0.4, -0.3), '#60a5fa');
     }
 
-    function renderTab2CaseB3D() {
+    function legacyRenderTab2CaseB3D() {
       clearScene();
       const A = new THREE.Vector3(-1.5, 0.2, 1.5);
       const B = new THREE.Vector3(1.5, 0.2, 1.5);
@@ -1293,6 +1440,34 @@
       createLabel3D('Hình vuông ABCD (2 cặp cạnh song song)', new THREE.Vector3(0, 0.4, 0), '#c084fc');
     }
 
+    function randomizeButtonOrder(ids) {
+      const order = ids.map((id,index) => ({id,sort:Math.random(),index})).sort((a,b) => a.sort-b.sort);
+      order.forEach((item,index) => document.getElementById(item.id).style.order = `${index+1}`);
+    }
+
+    function drawFlatOption(points,label,color) {
+      createPolygonMesh(points,color,.3);
+      points.forEach((point,i) => createLineSegment(point,points[(i+1)%points.length],COLOR_EDGE_SOLID));
+      const center = points.reduce((sum,p) => sum.add(p),new THREE.Vector3()).divideScalar(points.length);
+      createLabel3D(label,center.clone().add(new THREE.Vector3(0,.25,0)),'#FAC775');
+    }
+
+    function renderTab2CaseA3D() {
+      clearScene();
+      drawFlatOption([new THREE.Vector3(-4,.2,1),new THREE.Vector3(-2,.2,1),new THREE.Vector3(-4,.2,-1)],'(I) Tam giác vuông',COLOR_PLANE_BASE);
+      drawFlatOption([new THREE.Vector3(-1.2,.2,.9),new THREE.Vector3(1.1,.2,.45),new THREE.Vector3(-.3,.2,-1.25)],'(II) Tam giác thường',COLOR_PLANE_1);
+      drawFlatOption([new THREE.Vector3(2.2,.2,-1),new THREE.Vector3(4.2,.2,-1),new THREE.Vector3(3.2,.2,.75)],'(III) Tam giác đều',COLOR_PLANE_BASE);
+      createLabel3D('Ba phương án hình biểu diễn',new THREE.Vector3(0,.65,1.55),'#60a5fa');
+    }
+
+    function renderTab2CaseB3D() {
+      clearScene();
+      drawFlatOption([new THREE.Vector3(-4,.2,1),new THREE.Vector3(-2.2,.2,1),new THREE.Vector3(-1.7,.2,-1),new THREE.Vector3(-3.5,.2,-1)],'(I) Bình hành',COLOR_PLANE_2);
+      drawFlatOption([new THREE.Vector3(-.9,.2,1),new THREE.Vector3(.9,.2,1),new THREE.Vector3(.9,.2,-1),new THREE.Vector3(-.9,.2,-1)],'(II) Chữ nhật',COLOR_PLANE_BASE);
+      drawFlatOption([new THREE.Vector3(2.4,.2,1),new THREE.Vector3(3.8,.2,1),new THREE.Vector3(4.3,.2,-1),new THREE.Vector3(1.9,.2,-1)],'(III) Hình thang',COLOR_PLANE_BASE);
+      createLabel3D('Ba phương án hình biểu diễn',new THREE.Vector3(0,.65,1.55),'#c084fc');
+    }
+
     function renderTab2CaseC3D(val = 1.0) {
       clearScene();
       const cdHalf = 1.2;
@@ -1303,7 +1478,7 @@
       const C = new THREE.Vector3(cdHalf, 0.2, -1.5);
       const D = new THREE.Vector3(-cdHalf, 0.2, -1.5);
 
-      const isExact = Math.abs(val - 1.5) < 0.06;
+      const isExact = Math.abs(val - 1.5) < 1e-9;
       const meshColor = isExact ? COLOR_PLANE_3 : COLOR_PLANE_BASE;
       const lineColor = isExact ? 0x34d399 : COLOR_RESULT;
 
@@ -1323,7 +1498,9 @@
 
     function initTab2CaseC() {
       document.getElementById('sld-ab').value = 1.0;
+      document.getElementById('sld-ab').disabled = false;
       document.getElementById('txt-ab-val').textContent = '1.00 × CD (Chưa đạt)';
+      document.getElementById('txt-ab-val').style.color = 'var(--teal)';
 
       renderTab2CaseC3D(1.0);
 
@@ -1333,12 +1510,13 @@
 
         renderTab2CaseC3D(val);
 
-        if (Math.abs(val - 1.5) < 0.06) {
+        if (Math.abs(val - 1.5) < 1e-9) {
           document.getElementById('txt-ab-val').textContent = '1.50 × CD (✓ Đạt tỉ lệ!)';
           document.getElementById('txt-ab-val').style.color = 'var(--correct)';
           document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Rất tốt! Quy tắc 3: Hình biểu diễn của hình thang BẮT BUỘC phải <b>giữ đúng tỉ lệ 2 đáy</b> (ở đây A'B' / C'D' = 1.5). Bạn đã hoàn thành Tab 2!`;
           document.getElementById('t2-feedback').style.display = 'flex';
           document.getElementById('btn-next-tab2').style.display = 'inline-flex';
+          document.getElementById('sld-ab').disabled = true;
           unlockTab(3);
         }
       };
@@ -1350,7 +1528,7 @@
     let t3RatioVal = 1.2;
     let t3StepState = { translated: false, connected: false, animateTranslate: false, animateConnect: false };
 
-    function renderTab3Prism(ratio = 1.2) {
+    function legacyRenderTab3Prism(ratio = 1.2) {
       clearScene();
 
       // 3D Real Prism at Left (X = -2.2)
@@ -1437,7 +1615,7 @@
       }
     }
 
-    function initTab3() {
+    function legacyInitTab3() {
       t3RatioVal = 1.2;
       t3StepState = { translated: false, connected: false };
       document.getElementById('sld-t3-ratio').value = 1.2;
@@ -1488,10 +1666,127 @@
       };
     }
 
+    let t3ShiftX = 0;
+
+    function renderTab3Prism(ratio = 1.2) {
+      clearScene();
+      // Khung trái: khối thật luôn giữ nguyên dữ kiện CD = 2.5 AB.
+      const realCenter = -2.7, realAB = .55, realCD = realAB * 2.5;
+      const A = new THREE.Vector3(realCenter-realAB,0,1), B = new THREE.Vector3(realCenter+realAB,0,1);
+      const C = new THREE.Vector3(realCenter+realCD,0,-1), D = new THREE.Vector3(realCenter-realCD,0,-1);
+      const lift = new THREE.Vector3(.35,2.4,.15);
+      const Ap=A.clone().add(lift), Bp=B.clone().add(lift), Cp=C.clone().add(lift), Dp=D.clone().add(lift);
+      createPolygonMesh([A,B,C,D],COLOR_PLANE_BASE,.3);
+      createPolygonMesh([Ap,Bp,Cp,Dp],COLOR_PLANE_1,.25);
+      [[A,B],[B,C],[C,D],[D,A],[Ap,Bp],[Bp,Cp],[Cp,Dp],[Dp,Ap],[A,Ap],[B,Bp],[C,Cp],[D,Dp]].forEach(pair => createLineSegment(pair[0],pair[1],COLOR_EDGE_SOLID));
+      createLabel3D('Khối 3D thật — cố định CD = 2,5AB',new THREE.Vector3(realCenter,2.9,0),'#60a5fa');
+
+      // Khung phải: hình biểu diễn 2D được dựng dần.
+      const center = 1.7, ab=.5, cd=ab*ratio;
+      const a=new THREE.Vector3(center-ab,.15,.8), b=new THREE.Vector3(center+ab,.15,.8);
+      const c=new THREE.Vector3(center+cd,.15,-.8), d=new THREE.Vector3(center-cd,.15,-.8);
+      drawFlatOption([a,b,c,d],`Đáy biểu diễn — CD/AB = ${ratio.toFixed(2)}`,Math.abs(ratio-2.5)<1e-9?COLOR_PLANE_3:COLOR_PLANE_BASE);
+      createLabel3D('Khung vẽ hình biểu diễn 2D',new THREE.Vector3(center,.55,1.35),'#FAC775');
+
+      if (t3StepState.translated) {
+        const shift = new THREE.Vector3(t3ShiftX,2,0);
+        const top=[a,b,c,d].map(point => point.clone().add(shift));
+        createPolygonMesh(top,COLOR_PLANE_2,.3);
+        top.forEach((point,i) => {
+          if (t3StepState.animateTranslate) setTimeout(() => animateLine(point,top[(i+1)%4],COLOR_PLANE_2,550),i*160);
+          else createLineSegment(point,top[(i+1)%4],COLOR_PLANE_2);
+          createLabel3D(`${['A','B','C','D'][i]}'`,point,'#FAC775');
+        });
+        if (t3StepState.connected) {
+          [a,b,c,d].forEach((point,i) => {
+            if (t3StepState.animateConnect) setTimeout(() => animateLine(point,top[i],COLOR_RESULT,550,null,1,i===3),i*180);
+            else createLineSegment(point,top[i],COLOR_RESULT,1,i===3);
+          });
+        }
+      }
+    }
+
+    function initTab3() {
+      t3RatioVal = 1.2;
+      t3ShiftX = 0;
+      t3StepState = {translated:false,connected:false,animateTranslate:false,animateConnect:false};
+      document.getElementById('sld-t3-ratio').value = '1.2';
+      document.getElementById('sld-t3-ratio').disabled = false;
+      document.getElementById('txt-t3-ratio').textContent = '1.20 × AB';
+      document.getElementById('txt-t3-ratio').style.color = 'var(--teal)';
+      document.getElementById('sld-t3-shift').value = '0';
+      document.getElementById('sld-t3-shift').disabled = false;
+      document.getElementById('txt-t3-shift').textContent = '0.00 (đang thẳng đứng)';
+      document.getElementById('t3-vector-card').style.display = 'none';
+      document.getElementById('btn-t3-translate').style.display = 'none';
+      document.getElementById('btn-t3-translate').disabled = false;
+      document.getElementById('btn-t3-connect').style.display = 'none';
+      document.getElementById('btn-t3-connect').disabled = false;
+      document.getElementById('btn-t3-compare').style.display = 'none';
+      document.getElementById('btn-t3-compare').disabled = false;
+      document.getElementById('btn-next-tab3').style.display = 'none';
+      document.getElementById('t3-feedback').style.display = 'flex';
+      document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Khối thật bên trái giữ nguyên. Hãy chỉnh riêng đáy biểu diễn bên phải sao cho CD/AB = 2,5.`;
+      renderTab3Prism(t3RatioVal);
+
+      document.getElementById('sld-t3-ratio').oninput = e => {
+        t3RatioVal = parseFloat(e.target.value);
+        document.getElementById('txt-t3-ratio').textContent = `${t3RatioVal.toFixed(2)} × AB`;
+        renderTab3Prism(t3RatioVal);
+        if (Math.abs(t3RatioVal-2.5)<1e-9) {
+          document.getElementById('txt-t3-ratio').textContent = '2.50 × AB (✓ Đúng tỉ lệ)';
+          document.getElementById('txt-t3-ratio').style.color = 'var(--correct)';
+          document.getElementById('sld-t3-ratio').disabled = true;
+          document.getElementById('t3-vector-card').style.display = 'block';
+          document.getElementById('btn-t3-translate').style.display = 'inline-flex';
+          document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đáy biểu diễn đã giữ đúng CD/AB = 2,5. Bây giờ chọn một vector tịnh tiến có thành phần ngang để gợi chiều sâu không gian.`;
+        }
+      };
+
+      document.getElementById('sld-t3-shift').oninput = e => {
+        t3ShiftX = parseFloat(e.target.value);
+        document.getElementById('txt-t3-shift').textContent = t3ShiftX < .2 ? `${t3ShiftX.toFixed(2)} (gần thẳng đứng)` : `${t3ShiftX.toFixed(2)} (vector xiên)`;
+      };
+
+      document.getElementById('btn-t3-translate').onclick = () => {
+        if (t3ShiftX < .2) {
+          document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Vector gần thẳng đứng vẫn đúng về phép tịnh tiến nhưng làm hai đáy chồng phương, hình trông phẳng và khó đọc. Hãy tăng độ xiên ngang rồi thử lại.`;
+          return;
+        }
+        t3StepState.translated=true;
+        t3StepState.animateTranslate=true;
+        renderTab3Prism(t3RatioVal);
+        t3StepState.animateTranslate=false;
+        document.getElementById('btn-t3-translate').disabled=true;
+        document.getElementById('sld-t3-shift').disabled=true;
+        document.getElementById('btn-t3-connect').style.display='inline-flex';
+        document.getElementById('t3-msg').innerHTML=`<b>Athena:</b> Đáy trên được tạo bằng cách cộng cùng vector xiên (${t3ShiftX.toFixed(2)}; 2,00) vào mọi đỉnh đáy dưới. Nhờ vậy các cạnh tương ứng giữ song song và bằng nhau.`;
+      };
+
+      document.getElementById('btn-t3-connect').onclick = () => {
+        t3StepState.connected=true;
+        t3StepState.animateConnect=true;
+        renderTab3Prism(t3RatioVal);
+        t3StepState.animateConnect=false;
+        document.getElementById('btn-t3-connect').disabled=true;
+        document.getElementById('btn-t3-compare').style.display='inline-flex';
+        document.getElementById('t3-msg').innerHTML=`<b>Athena:</b> Bốn cạnh bên biểu diễn đều là cùng vector tịnh tiến, nên song song và bằng nhau; các mặt bên vì thế là hình bình hành.`;
+      };
+
+      document.getElementById('btn-t3-compare').onclick = () => {
+        setCameraStandardSGK();
+        document.getElementById('btn-t3-compare').disabled=true;
+        document.getElementById('t3-msg').innerHTML=`<b>Athena:</b> <b>Đối chiếu:</b> hình 2D không giữ góc hay kích thước tuyệt đối của khối thật, nhưng vẫn nhận ra đúng lăng trụ đáy thang nhờ CD/AB = 2,5, hai đáy tương ứng và bốn cạnh bên cùng phương.`;
+        document.getElementById('btn-next-tab3').style.display='inline-flex';
+        unlockTab(4);
+      };
+    }
+
     /* =========================================================================
        9. TAB 4: CỦNG CỐ TỔNG HỢP (MCQ)
        ========================================================================= */
     let t4Idx = 0;
+    let t4AnswerLocked = false;
     const t4Questions = [
       {
         q: '1. Hình biểu diễn của một HÌNH BÌNH HÀNH là hình gì?',
@@ -1525,6 +1820,7 @@
 
     function initTab4() {
       t4Idx = 0;
+      t4AnswerLocked = false;
       document.getElementById('btn-next-tab4').style.display = 'none';
       document.getElementById('t4-feedback').style.display = 'none';
       renderTab4Step();
@@ -1536,15 +1832,25 @@
       document.getElementById('t4-feedback').style.display = 'none';
 
       const qData = t4Questions[t4Idx];
+      t4AnswerLocked = false;
       document.getElementById('t4-counter').textContent = `${t4Idx + 1}/4`;
 
       const wrapQ = document.getElementById('t4-q-wrap');
-      wrapQ.innerHTML = `
-        <div style="font-size: 13px; font-weight: 700; color: var(--navy); margin-bottom: 8px;">${qData.q}</div>
-        <div class="choice-group">
-          ${qData.opts.map((opt, idx) => `<button class="choice-btn" onclick="handleTab4Answer(${idx})"><span>${opt}</span> <i class="ti ti-circle"></i></button>`).join('')}
-        </div>
-      `;
+      if (t4Idx === 3) {
+        wrapQ.innerHTML = `
+          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">${qData.q}</div>
+          <div style="display:flex;gap:8px;"><input type="number" id="t4-number-answer" placeholder="Nhập số cm" style="flex:1;padding:9px;border:1px solid var(--paper-line);border-radius:7px;"><button class="btn btn-primary" id="t4-check-number">Kiểm tra</button></div>
+        `;
+        document.getElementById('t4-check-number').onclick = handleTab4Numeric;
+      } else {
+        const shuffled = qData.opts.map((opt,index) => ({opt,index,sort:Math.random()})).sort((a,b) => a.sort-b.sort);
+        wrapQ.innerHTML = `
+          <div style="font-size:13px;font-weight:700;color:var(--navy);margin-bottom:8px;">${qData.q}</div>
+          <div class="choice-group">
+            ${shuffled.map(item => `<button class="choice-btn" onclick="handleTab4Answer(${item.index})"><span>${item.opt}</span><i class="ti ti-circle"></i></button>`).join('')}
+          </div>
+        `;
+      }
 
       // 3D Illustrations for MCQ
       if (t4Idx === 0) {
@@ -1552,16 +1858,11 @@
         const C = new THREE.Vector3(2.2, 1.0, -1.0); const D = new THREE.Vector3(-0.8, 1.0, -1.0);
         createPolygonMesh([A, B, C, D], COLOR_PLANE_1, 0.4);
         createLineSegment(A, B); createLineSegment(B, C); createLineSegment(C, D); createLineSegment(D, A);
-        createLabel3D('Hình Bình Hành Biểu Diễn', new THREE.Vector3(0.3, 1.2, 0), '#60a5fa');
+        createLabel3D('Hình gốc ABCD', new THREE.Vector3(0.3, 1.2, 0), '#60a5fa');
       } else if (t4Idx === 1) {
-        const ellipseCurve = new THREE.EllipseCurve(0, 1.0, 1.8, 1.1, 0, 2 * Math.PI, false, 0);
-        const points = ellipseCurve.getPoints(48);
-        const ellipseGeo = new THREE.BufferGeometry().setFromPoints(points.map(p => new THREE.Vector3(p.x, p.y, 0)));
-        const ellipseMat = new THREE.LineBasicMaterial({ color: COLOR_RESULT, linewidth: 2.5 });
-        const ellipseLine = new THREE.Line(ellipseGeo, ellipseMat);
-        ellipseLine.renderOrder = 10;
-        scene.add(ellipseLine);
-        createLabel3D('Hình Elip Biểu Diễn', new THREE.Vector3(0, 1.3, 0), '#FAC775');
+        const points = Array.from({length:64},(_,i) => new THREE.Vector3(1.5*Math.cos(i*Math.PI*2/64),1,1.5*Math.sin(i*Math.PI*2/64)));
+        scene.add(new THREE.LineLoop(new THREE.BufferGeometry().setFromPoints(points),new THREE.LineBasicMaterial({color:0x38bdf8})));
+        createLabel3D('Hình tròn gốc',new THREE.Vector3(0,1.35,0),'#38bdf8');
       } else if (t4Idx === 2) {
         const S = new THREE.Vector3(0, 3.0, 0);
         const A = new THREE.Vector3(-1.8, 0.5, 1.2); const B = new THREE.Vector3(1.4, 0.5, 1.2);
@@ -1571,6 +1872,9 @@
         pyramidEdges.forEach(e => createLineSegment(e[0], e[1], COLOR_EDGE_SOLID));
         makeSpherePoint(S, COLOR_RESULT); createLabel3D('S', S);
         createLabel3D('A', A); createLabel3D('B', B); createLabel3D('C', C); createLabel3D('D', D);
+        const delta = new THREE.Vector3(-.7,-1,.35).normalize();
+        scene.add(new THREE.ArrowHelper(delta,new THREE.Vector3(2.8,3.2,2),1.8,0xFAC775,.3,.15));
+        createLabel3D('Phương chiếu Δ',new THREE.Vector3(2.8,3.5,2),'#FAC775');
       } else if (t4Idx === 3) {
         const E = new THREE.Vector3(-1.0, 1.0, 0.8); const F = new THREE.Vector3(1.0, 1.0, 0.8);
         const G = new THREE.Vector3(2.5, 1.0, -0.8); const H = new THREE.Vector3(-2.5, 1.0, -0.8);
@@ -1578,16 +1882,19 @@
         createLineSegment(E, F, COLOR_RESULT); createLineSegment(G, H, COLOR_RESULT);
         createLineSegment(F, G); createLineSegment(H, E);
         createLabel3D('E\'F\' = 2cm', new THREE.Vector3(0, 1.2, 0.8), '#FAC775');
-        createLabel3D('G\'H\' = 5cm', new THREE.Vector3(0, 1.2, -0.8), '#34d399');
+        createLabel3D('G\'H\' = ?', new THREE.Vector3(0, 1.2, -0.8), '#FAC775');
       }
     }
 
     function handleTab4Answer(userChoice) {
+      if (t4AnswerLocked) return;
       const qData = t4Questions[t4Idx];
       const isCorrect = userChoice === qData.ans;
       const fb = document.getElementById('t4-feedback');
 
       if (isCorrect) {
+        t4AnswerLocked = true;
+        document.querySelectorAll('#t4-q-wrap button').forEach(button => button.disabled = true);
         let timer = null;
         const advance = () => {
           if (timer) clearTimeout(timer);
@@ -1623,6 +1930,17 @@
       } else {
         document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> ${qData.wrongMsg}`;
         fb.style.display = 'flex';
+      }
+    }
+
+    function handleTab4Numeric() {
+      if (t4AnswerLocked) return;
+      const value = parseFloat(document.getElementById('t4-number-answer').value);
+      if (value === 5) {
+        handleTab4Answer(t4Questions[t4Idx].ans);
+      } else {
+        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Hãy tính EF/GH = 4/10 = 0,4, rồi giữ E'F'/G'H' = 0,4. Với E'F' = 2 cm, ta có G'H' = 2/0,4.`;
+        document.getElementById('t4-feedback').style.display = 'flex';
       }
     }
 

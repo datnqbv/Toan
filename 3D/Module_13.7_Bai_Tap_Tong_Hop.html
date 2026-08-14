@@ -351,12 +351,29 @@
     }
 
     .btn-outline {
+      background-color: var(--cream);
+      border: 1.5px solid var(--paper-line);
+      color: var(--navy);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--jade-light);
+      border-color: var(--teal);
+      color: var(--jade-dark);
+    }
+
+    .btn-outline:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .modal-card .btn-outline {
       background-color: rgba(255, 255, 255, 0.1);
       border: 1.5px solid rgba(255, 255, 255, 0.35);
       color: #ffffff;
     }
 
-    .btn-outline:hover {
+    .modal-card .btn-outline:hover {
       background-color: rgba(255, 255, 255, 0.2);
       border-color: #fac775;
       color: #fac775;
@@ -454,15 +471,18 @@
       </div>
       <div style="font-size: 13px; line-height: 1.6; color: #e2e8f0; max-height: 60vh; overflow-y: auto; padding-right: 6px;">
         <p><b>1. Mặt phẳng song song:</b><br>
-          (P) // (Q) khi (P) chứa 2 đường thẳng cắt nhau cùng song song (Q). Nếu (R) cắt (P) và (P)//(Q) thì (R) cũng cắt (Q).
+          (P) // (Q) khi (P) chứa 2 đường thẳng cắt nhau cùng song song (Q). Nếu (R) cắt (P) và (P)//(Q) thì (R) cũng cắt (Q). Hai mặt phẳng cùng song song một đường thẳng vẫn có thể cắt nhau — không được suy diễn bắc cầu.
         </p>
         <p><b>2. Định lí Thalès không gian:</b><br>
           Các mặt phẳng song song chắn trên 2 cát tuyến các đoạn thẳng tương ứng tỉ lệ: <b>AM / AA' = BN / BB'</b>.
         </p>
-        <p><b>3. Lăng trụ & Phép tịnh tiến:</b><br>
+        <p><b>3. Thiết diện song song đáy:</b><br>
+          Mặt cắt song song đáy của lăng trụ tạo một đa giác đồng dạng với đáy, có đủ cùng số cạnh và các cạnh tương ứng song song.
+        </p>
+        <p><b>4. Lăng trụ & Phép tịnh tiến:</b><br>
           Lăng trụ là phép tịnh tiến đáy dưới thành đáy trên theo vector <b>AA'</b>. Mọi điểm tương ứng (trọng tâm, trung điểm...) đều tịnh tiến theo đúng vector đó.
         </p>
-        <p><b>4. Lăng trụ xiên:</b><br>
+        <p><b>5. Lăng trụ xiên:</b><br>
           Định nghĩa lăng trụ chỉ yêu cầu 2 đáy // & các cạnh bên // và bằng nhau, KHÔNG bắt buộc cạnh bên phải vuông góc với đáy.
         </p>
       </div>
@@ -480,9 +500,11 @@
 
       <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: left; font-size: 13px; line-height: 1.6;">
         <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Điều kiện // mp:</b> Cần 2 đường cắt nhau cùng song song.</div>
-        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Thalès không gian:</b> Các đoạn tỉ lệ trên mặt cắt // đáy.</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Bẫy bắc cầu:</b> Cùng song song một đối tượng thứ ba chưa chắc song song nhau.</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Thiết diện song song đáy:</b> Đồng dạng với đáy và có đủ cùng số cạnh.</div>
         <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Trọng tâm & Tịnh tiến:</b> <b>GG' = AA'</b> (song song & bằng nhau) với mọi điểm tương ứng.</div>
-        <div style="display: flex; gap: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Lăng trụ xiên:</b> Vẫn là lăng trụ hợp lệ thỏa mãn 2 điều kiện.</div>
+        <div style="display: flex; gap: 8px; margin-bottom: 10px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Lăng trụ xiên:</b> Vẫn là lăng trụ hợp lệ thỏa mãn 2 điều kiện.</div>
+        <div style="color:#fac775;"><b>Ba lỗi cần tránh:</b> suy diễn song song bắc cầu; nhầm trọng tâm với trung điểm; loại lăng trụ chỉ vì hình trông nghiêng.</div>
       </div>
 
       <div style="display: flex; gap: 12px;">
@@ -581,6 +603,10 @@
           <div id="t3-msg"></div>
         </div>
 
+        <button class="btn btn-outline" id="t3-btn-conclusion" style="width:100%;margin-top:10px;opacity:.55;">
+          7. Kết luận thiết diện
+        </button>
+
         <button class="btn btn-primary" id="btn-next-tab3" style="width: 100%; margin-top: 14px; display: none;">
           Chuyển sang Tab 4: Trọng tâm <i class="ti ti-arrow-right"></i>
         </button>
@@ -594,10 +620,13 @@
         </div>
 
         <div id="t4-quiz-wrap" style="display: none;" class="choice-group">
-          <div style="font-size: 12.5px; font-weight: 700; color: var(--navy);">Nhận xét về đoạn nối GG' so với cạnh bên AA':</div>
-          <button class="choice-btn" id="t4-opt-1"><span>A. GG' // AA' và GG' = AA'</span> <i class="ti ti-circle"></i></button>
-          <button class="choice-btn" id="t4-opt-2"><span>B. GG' // AA' nhưng GG' = ½ AA'</span> <i class="ti ti-circle"></i></button>
-          <button class="choice-btn" id="t4-opt-3"><span>C. GG' không song song AA'</span> <i class="ti ti-circle"></i></button>
+          <div style="font-size: 12.5px; font-weight: 700; color: var(--navy);">Ý 1 — GG' có song song AA' không?</div>
+          <button class="choice-btn" id="t4-par-yes"><span>Có, GG' // AA'</span><i class="ti ti-circle"></i></button>
+          <button class="choice-btn" id="t4-par-no"><span>Không song song</span><i class="ti ti-circle"></i></button>
+          <div style="font-size: 12.5px; font-weight: 700; color: var(--navy);margin-top:5px;">Ý 2 — Độ dài GG' so với AA'?</div>
+          <button class="choice-btn" id="t4-len-equal"><span>GG' = AA'</span><i class="ti ti-circle"></i></button>
+          <button class="choice-btn" id="t4-len-diff"><span>GG' khác AA' (ví dụ bằng ½)</span><i class="ti ti-circle"></i></button>
+          <button class="btn btn-primary" id="t4-btn-check">Kiểm tra hai nhận xét</button>
         </div>
 
         <div id="t4-feedback" class="info-box athena-box" style="display: flex; margin-top: 10px;">
@@ -614,15 +643,21 @@
       <div class="tab-content" id="tab-5">
         <div class="step-title"><i class="ti ti-aspect-ratio"></i> Tab 5: Thiết diện hình hộp & Diện tích đáy</div>
         <div class="info-box">
-          Hình hộp <b>ABCD.A'B'C'D'</b>. Điểm M trên AB (AM = ⅓ AB). Mặt phẳng (α) qua M song song (ADD'A').
+          Hình hộp <b>ABCD.A'B'C'D'</b>. M trên AB với AM = ⅓AB. Mặt phẳng (α) qua M, song song (ADD'A'), cắt DC tại N và các cạnh tương ứng ở đáy trên tại M', N'.
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 10px;">
           <button class="btn btn-outline" id="t5-btn-cut" style="color: var(--navy); border-color: var(--teal);"><i class="ti ti-cut"></i> 1. Dựng mặt cắt (α)</button>
           <div id="t5-step2-wrap" style="display: none;" class="choice-group">
-            <div style="font-size: 12.5px; font-weight: 700; color: var(--navy);">Điểm N trên BC xác định theo tỉ lệ nào?</div>
-            <button class="choice-btn" id="t5-opt-13"><span>A. BN = ⅓ BC</span> <i class="ti ti-circle"></i></button>
-            <button class="choice-btn" id="t5-opt-12"><span>B. BN = ½ BC</span> <i class="ti ti-circle"></i></button>
+            <div style="font-size: 12.5px; font-weight: 700; color: var(--navy);">Điểm N trên DC được xác định theo tỉ lệ nào?</div>
+            <button class="choice-btn" id="t5-opt-13"><span>A. DN = ⅓ DC</span> <i class="ti ti-circle"></i></button>
+            <button class="choice-btn" id="t5-opt-12"><span>B. DN = ½ DC</span> <i class="ti ti-circle"></i></button>
+            <button class="choice-btn" id="t5-opt-23"><span>C. DN = ⅔ DC</span> <i class="ti ti-circle"></i></button>
+          </div>
+          <div id="t5-step3-wrap" style="display:none;" class="choice-group">
+            <div style="font-size:12.5px;font-weight:700;color:var(--navy);">Khối AMND.A'M'N'D' có phải một hình hộp con hợp lệ không?</div>
+            <button class="choice-btn" id="t5-box-yes"><span>Có</span><i class="ti ti-circle"></i></button>
+            <button class="choice-btn" id="t5-box-no"><span>Không</span><i class="ti ti-circle"></i></button>
           </div>
           <div id="t5-calc-wrap" style="display: none; background: var(--cream); padding: 10px; border-radius: 8px; border: 1px solid var(--paper-line);">
             <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;">Tính diện tích: Nếu S(ABCD) = 36 cm², thì S(AMND) = ?</div>
@@ -1124,6 +1159,7 @@
     /* UNIVERSAL CANVAS POINTER TAP LISTENER FOR MOBILE TOUCHSCREENS */
     let tapStartX = 0, tapStartY = 0, tapStartTime = 0;
     const raycaster = new THREE.Raycaster();
+    raycaster.params.Line.threshold = 0.14;
     const mouse = new THREE.Vector2();
     let interactiveMeshes = [];
 
@@ -1146,7 +1182,7 @@
         if (intersects.length > 0) {
           const hitName = intersects[0].object.name;
           if (currentTab === 4) handleTab4SelectPoint(hitName);
-          else if (currentTab === 6) handleTab6SelectEdge(hitName);
+          else if (currentTab === 6) handleTab6SelectEdgeFull(hitName);
         }
       }
     });
@@ -1186,9 +1222,16 @@
     ];
 
     let t1Idx = 0;
+    let t1Order = [];
 
     function initTab1() {
       t1Idx = 0;
+      t1Order = [...tab1Propositions];
+      for (let i = t1Order.length - 1; i > 0; i--) {
+        const j = Math.floor(Math.random() * (i + 1));
+        [t1Order[i], t1Order[j]] = [t1Order[j], t1Order[i]];
+      }
+      document.getElementById('btn-next-tab1').style.display = 'none';
       renderTab1Step();
     }
 
@@ -1198,8 +1241,13 @@
       document.getElementById('t1-feedback').style.display = 'none';
       document.getElementById('t1-btn-true').className = 'choice-btn';
       document.getElementById('t1-btn-false').className = 'choice-btn';
+      document.getElementById('t1-btn-true').disabled = false;
+      document.getElementById('t1-btn-false').disabled = false;
+      const trueFirst = Math.random() < 0.5;
+      document.getElementById('t1-btn-true').style.order = trueFirst ? '1' : '2';
+      document.getElementById('t1-btn-false').style.order = trueFirst ? '2' : '1';
 
-      const prop = tab1Propositions[t1Idx];
+      const prop = t1Order[t1Idx];
       document.getElementById('t1-prop-text').textContent = prop.text;
 
       // 3D Scene setup for current proposition matching scenario script
@@ -1298,7 +1346,7 @@
     }
 
     function handleTab1Answer(userAns) {
-      const prop = tab1Propositions[t1Idx];
+      const prop = t1Order[t1Idx];
       const isCorrect = userAns === prop.ans;
       const fb = document.getElementById('t1-feedback');
       fb.style.display = 'flex';
@@ -1312,6 +1360,8 @@
       }
 
       if (isCorrect) {
+        document.getElementById('t1-btn-true').disabled = true;
+        document.getElementById('t1-btn-false').disabled = true;
         let timer = null;
         const advance = () => {
           if (timer) {
@@ -1319,7 +1369,7 @@
             timer = null;
           }
           t1Idx++;
-          if (t1Idx < tab1Propositions.length) {
+          if (t1Idx < t1Order.length) {
             renderTab1Step();
           } else {
             document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> 🎉 Hoàn thành 4/4 mệnh đề! Bạn đã nắm vững lý thuyết quan hệ 2 mặt phẳng song song.`;
@@ -1350,6 +1400,9 @@
 
     function initTab2() {
       t2Case = 'A';
+      t2CaseADone = false;
+      t2CaseBDone = false;
+      document.getElementById('btn-next-tab2').style.display = 'none';
       document.getElementById('t2-sub-c1').onclick = () => switchTab2Case('A');
       document.getElementById('t2-sub-c2').onclick = () => switchTab2Case('B');
       switchTab2Case('A');
@@ -1371,15 +1424,27 @@
       if (c === 'A') {
         document.getElementById('t2-case-desc').innerHTML = `Lăng trụ tứ giác <b>ABCD.A'B'C'D'</b>. Các điểm M, N, P, Q nằm trên AA', BB', CC', DD' thỏa mãn <b>AM / AA' = ⅓</b>.`;
         wrapQ.innerHTML = `
-          <button class="choice-btn" id="t2-q1"><span>1. MN có song song AB không?</span> <i class="ti ti-circle"></i></button>
-          <button class="choice-btn" id="t2-q2" style="display:none;"><span>2. NP có song song BC không?</span> <i class="ti ti-circle"></i></button>
+          <div style="font-size:12px;color:var(--ink-2);">1. Quan sát M, N, P, Q cùng chia bốn cạnh bên theo tỉ lệ ⅓.</div>
+          <div style="font-size:12.5px;font-weight:700;">2. MN có song song AB không?</div>
+          <button class="choice-btn" id="t2-a1-yes"><span>Có</span><i class="ti ti-circle"></i></button>
+          <button class="choice-btn" id="t2-a1-no"><span>Không</span><i class="ti ti-circle"></i></button>
+          <div id="t2-a-step3" style="display:none;">
+            <div style="font-size:12.5px;font-weight:700;margin:5px 0;">3. NP có song song BC không?</div>
+            <button class="choice-btn" id="t2-a2-yes"><span>Có</span><i class="ti ti-circle"></i></button>
+            <button class="choice-btn" id="t2-a2-no"><span>Không</span><i class="ti ti-circle"></i></button>
+          </div>
+          <button class="btn btn-outline" id="t2-a-conclusion" style="width:100%;opacity:.55;">4. Xem kết luận</button>
         `;
         renderTab2CaseA();
       } else {
         document.getElementById('t2-case-desc').innerHTML = `Hình bình hành <b>ABCD</b>. Qua B và C lần lượt vẽ 2 đường thẳng p, q song song với nhau và không nằm trong mp(ABCD).`;
         wrapQ.innerHTML = `
-          <button class="choice-btn" id="t2-q1"><span>1. AB có song song DC không?</span> <i class="ti ti-circle"></i></button>
-          <button class="choice-btn" id="t2-q2" style="display:none;"><span>2. mp(A, p) có song song mp(D, q) không?</span> <i class="ti ti-circle"></i></button>
+          <div style="font-size:12px;color:var(--ink-2);">1. Quan sát p qua B và q qua C: p // q theo giả thiết.</div>
+          <div style="font-size:12.5px;font-weight:700;">2. AB có song song DC không?</div>
+          <button class="choice-btn" id="t2-b1-yes"><span>Có</span><i class="ti ti-circle"></i></button>
+          <button class="choice-btn" id="t2-b1-no"><span>Không</span><i class="ti ti-circle"></i></button>
+          <button class="btn btn-outline" id="t2-b-build" style="display:none;width:100%;">3. Dựng mp(A,p) và mp(D,q)</button>
+          <button class="btn btn-outline" id="t2-b-conclusion" style="width:100%;opacity:.55;">4. Xem kết luận</button>
         `;
         renderTab2CaseB();
       }
@@ -1391,8 +1456,8 @@
       const Ap = new THREE.Vector3(-1.8, 3.2, 1.5); const Bp = new THREE.Vector3(1.4, 3.2, 1.5);
       const Cp = new THREE.Vector3(2.2, 3.2, -1.5); const Dp = new THREE.Vector3(-1.0, 3.2, -1.5);
 
-      const M = lerpVec(A, Ap, 0.33); const N = lerpVec(B, Bp, 0.33);
-      const P = lerpVec(C, Cp, 0.33); const Q = lerpVec(D, Dp, 0.33);
+      const M = lerpVec(A, Ap, 1 / 3); const N = lerpVec(B, Bp, 1 / 3);
+      const P = lerpVec(C, Cp, 1 / 3); const Q = lerpVec(D, Dp, 1 / 3);
 
       createPolygonMesh([A, B, C, D], COLOR_PLANE_BASE, 0.25);
       currentSolidHull = createPolyhedronHullMesh([
@@ -1410,31 +1475,46 @@
       createLabel3D('P', P, '#FAC775'); createLabel3D('Q', Q, '#FAC775');
 
       const fb = document.getElementById('t2-feedback');
-      document.getElementById('t2-q1').onclick = () => {
-        document.getElementById('t2-q1').className = 'choice-btn correct';
-        animateLine(M, N, 0xFAC775, 750);
-        document.getElementById('t2-q2').style.display = 'flex';
-        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Đúng! Vì AM/AA' = BN/BB' = ⅓, theo định lí Thalès trong mp(ABB'A') ta có <b>MN // AB</b>.`;
-        fb.style.display = 'flex';
+      let stepA = 2;
+      document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> M, N, P, Q đều nằm ở cùng mức ⅓ trên các cạnh bên song song. Đây là dấu hiệu của một mặt cắt song song đáy.`;
+      fb.style.display = 'flex';
+      document.getElementById('t2-a1-no').onclick = () => {
+        document.getElementById('t2-a1-no').className = 'choice-btn wrong';
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Trong mặt bên ABB'A', AA' // BB' và AM/AA' = BN/BB' = ⅓; định lí Thalès đảo cho <b>MN // AB</b>.`;
       };
-
-      document.getElementById('t2-q2').onclick = () => {
-        document.getElementById('t2-q2').className = 'choice-btn correct';
-        animateLine(N, P, 0xFAC775, 600);
-        setTimeout(() => animateLine(P, Q, 0xFAC775, 600), 200);
-        setTimeout(() => animateLine(Q, M, 0xFAC775, 600), 400);
-        setTimeout(() => createPolygonMesh([M, N, P, Q], COLOR_PLANE_2, 0.35), 650);
-        t2CaseADone = true;
-        document.getElementById('t2-sub-c1').innerHTML = 'Case A: Tỉ lệ 1/3 ✓';
-
-        if (t2CaseADone && t2CaseBDone) {
-          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Xuất sắc! Bạn đã hoàn thành cả 2 Case (A & B) của Tab 2. Hãy chuyển sang Tab 3 bên dưới!`;
-          document.getElementById('btn-next-tab2').style.display = 'inline-flex';
-          unlockTab(3);
-        } else {
-          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Bạn đã hoàn thành <b>Case A</b>! Hãy bấm nút <b>Case B: HBH</b> phía trên để làm tiếp Case B và mở khóa Tab 3 nhé!`;
+      document.getElementById('t2-a1-yes').onclick = () => {
+        if (stepA !== 2) return;
+        stepA = 3;
+        document.getElementById('t2-a1-yes').className = 'choice-btn correct';
+        animateLine(M,N,0xFAC775,750);
+        document.getElementById('t2-a-step3').style.display = 'block';
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Đúng! Trong mp(ABB'A'), hai cạnh bên song song và hai điểm chia cùng tỉ lệ ⅓, nên <b>MN // AB</b>. Một đường vẫn chưa đủ để kết luận hai mặt phẳng song song; cần kiểm tra NP.`;
+      };
+      document.getElementById('t2-a2-no').onclick = () => {
+        if (stepA !== 3) return;
+        document.getElementById('t2-a2-no').className = 'choice-btn wrong';
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Tương tự trên mặt bên BCC'B': BN/BB' = CP/CC' = ⅓, nên <b>NP // BC</b>.`;
+      };
+      document.getElementById('t2-a2-yes').onclick = () => {
+        if (stepA !== 3) return;
+        stepA = 4;
+        document.getElementById('t2-a2-yes').className = 'choice-btn correct';
+        animateLine(N,P,0xFAC775,700);
+        document.getElementById('t2-a-conclusion').style.opacity = '1';
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chính xác: <b>NP // BC</b> theo cùng lập luận Thalès trên mặt bên BCC'B'. Ta đã có hai đường MN và NP cắt nhau tại N.`;
+      };
+      document.getElementById('t2-a-conclusion').onclick = () => {
+        if (stepA < 4) {
+          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chưa thể kết luận: cần ít nhất <b>hai đường cắt nhau</b> cùng song song mặt phẳng đáy. Chỉ một đường MN là chưa đủ điều kiện.`;
+          fb.style.display = 'flex';
+          return;
         }
-        fb.style.display = 'flex';
+        if (stepA > 4) return;
+        stepA = 5;
+        animateLine(P,Q,0xFAC775,600);
+        setTimeout(() => animateLine(Q,M,0xFAC775,600),180);
+        setTimeout(() => createPolygonMesh([M,N,P,Q],COLOR_PLANE_2,.35),500);
+        completeTab2Case('A', `<b>Athena:</b> Vì MN và NP cắt nhau tại N, đồng thời MN // AB và NP // BC với AB, BC nằm trong đáy, nên theo điều kiện đủ <b>(MNPQ) // (ABCD)</b>.`);
       };
     }
 
@@ -1455,37 +1535,69 @@
       createLabel3D('q', new THREE.Vector3(2.2, 2.5, -1.2), '#38bdf8');
 
       const fb = document.getElementById('t2-feedback');
-      document.getElementById('t2-q1').onclick = () => {
-        document.getElementById('t2-q1').className = 'choice-btn correct';
-        document.getElementById('t2-q2').style.display = 'flex';
-        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Đúng! Vì ABCD là hình bình hành nên <b>AB // DC</b> (và AB = DC).`;
-        fb.style.display = 'flex';
+      let stepB = 2;
+      document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Theo giả thiết, p qua B và q qua C, đồng thời <b>p // q</b>. Hãy tìm cặp đường song song thứ hai từ hình bình hành ABCD.`;
+      fb.style.display = 'flex';
+      document.getElementById('t2-b1-no').onclick = () => {
+        document.getElementById('t2-b1-no').className = 'choice-btn wrong';
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> ABCD là hình bình hành nên các cạnh đối <b>AB // DC</b> và AB = DC.`;
       };
-
-      document.getElementById('t2-q2').onclick = () => {
-        document.getElementById('t2-q2').className = 'choice-btn correct';
-        t2CaseBDone = true;
-        document.getElementById('t2-sub-c2').innerHTML = 'Case B: HBH ✓';
-
-        if (t2CaseADone && t2CaseBDone) {
-          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Xuất sắc! Bạn đã hoàn thành cả 2 Case (A & B) của Tab 2. Hãy chuyển sang Tab 3 bên dưới!`;
-          document.getElementById('btn-next-tab2').style.display = 'inline-flex';
-          unlockTab(3);
-        } else {
-          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Bạn đã hoàn thành <b>Case B</b>! Hãy bấm nút <b>Case A: Tỉ lệ 1/3</b> phía trên để làm tiếp Case A và mở khóa Tab 3 nhé!`;
+      document.getElementById('t2-b1-yes').onclick = () => {
+        if (stepB !== 2) return;
+        stepB = 3;
+        document.getElementById('t2-b1-yes').className = 'choice-btn correct';
+        document.getElementById('t2-b-build').style.display = 'inline-flex';
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Đúng! Vì ABCD là hình bình hành nên <b>AB // DC</b>. Cùng với p // q, ta có hai cặp đường tương ứng.`;
+      };
+      document.getElementById('t2-b-build').onclick = () => {
+        if (stepB !== 3) return;
+        stepB = 4;
+        const up = new THREE.Vector3(0,2.5,0);
+        createPolygonMesh([A,B,B.clone().add(up),A.clone().add(up)],COLOR_PLANE_1,.3);
+        createPolygonMesh([D,C,C.clone().add(up),D.clone().add(up)],COLOR_PLANE_3,.3);
+        document.getElementById('t2-b-build').disabled = true;
+        document.getElementById('t2-b-conclusion').style.opacity = '1';
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> mp(A,p) chứa hai đường cắt nhau <b>AB và p</b> tại B; mp(D,q) chứa hai đường cắt nhau <b>DC và q</b> tại C.`;
+      };
+      document.getElementById('t2-b-conclusion').onclick = () => {
+        if (stepB < 4) {
+          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Cần xác định rõ hai đường cắt nhau nằm trong mỗi mặt phẳng trước khi dùng điều kiện đủ.`;
+          return;
         }
-        fb.style.display = 'flex';
+        if (stepB > 4) return;
+        stepB = 5;
+        completeTab2Case('B', `<b>Athena:</b> mp(A,p) chứa AB và p; mp(D,q) chứa DC và q. Vì <b>AB // DC</b> và <b>p // q</b>, hai cặp đường cắt nhau tương ứng song song, nên <b>mp(A,p) // mp(D,q)</b>.`);
       };
+    }
+
+    function completeTab2Case(caseId, message) {
+      if (caseId === 'A') t2CaseADone = true;
+      else t2CaseBDone = true;
+      document.getElementById(`t2-sub-c${caseId === 'A' ? 1 : 2}`).innerHTML = `${caseId === 'A' ? 'Case A: Tỉ lệ 1/3' : 'Case B: HBH'} ✓`;
+      document.getElementById('t2-msg').innerHTML = message;
+      document.getElementById('t2-feedback').style.display = 'flex';
+      if (t2CaseADone && t2CaseBDone) {
+        document.getElementById('t2-msg').innerHTML += `<br><br>🎉 Bạn đã hoàn thành cả hai case bằng đúng điều kiện hai đường cắt nhau.`;
+        document.getElementById('btn-next-tab2').style.display = 'inline-flex';
+        unlockTab(3);
+      } else {
+        document.getElementById('t2-msg').innerHTML += `<br><br>Hãy chuyển sang case còn lại để hoàn thành Tab 2.`;
+      }
     }
 
     /* =========================================================================
        8. TAB 3: THIẾT DIỆN LĂNG TRỤ LỤC GIÁC ĐỀU (CHECKLIST 6 MẶT)
        ========================================================================= */
     let t3EdgesDone = 0;
+    let t3DoneSet = new Set();
 
     function initTab3() {
       clearScene();
       t3EdgesDone = 0;
+      t3DoneSet = new Set();
+      document.getElementById('btn-next-tab3').style.display = 'none';
+      document.getElementById('t3-btn-conclusion').style.opacity = '.55';
+      document.getElementById('t3-btn-conclusion').disabled = false;
 
       const r = 2.0; const h = 3.2;
       const botPts = [], topPts = [], midPts = [];
@@ -1528,6 +1640,12 @@
         btn.style.color = 'var(--navy)';
         btn.style.borderColor = 'var(--paper-line)';
         btn.onclick = () => {
+          if (t3DoneSet.has(i)) {
+            document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Mặt bên thứ ${i} đã được kiểm tra. Hãy chọn một mặt chưa hoàn thành để thiết diện có đủ sáu cạnh khác nhau.`;
+            fb.style.display = 'flex';
+            return;
+          }
+          t3DoneSet.add(i);
           btn.style.borderColor = 'var(--correct)';
           btn.style.backgroundColor = 'var(--correct-bg)';
           btn.style.color = 'var(--correct)';
@@ -1537,27 +1655,51 @@
           animateLine(midPts[idx1], midPts[idx2], 0xFAC775, 700);
           makeSpherePoint(midPts[idx1], COLOR_RESULT, 0.1);
 
-          t3EdgesDone++;
+          t3EdgesDone = t3DoneSet.size;
+          const baseNames = ['AB','BC','CD','DE','EF','FA'];
           if (t3EdgesDone < 6) {
-            document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đã dựng cạnh thứ ${t3EdgesDone}/6! Hãy rà tiếp các mặt còn lại.`;
+            document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Cạnh thiết diện trên mặt ${i} <b>song song cạnh đáy ${baseNames[i-1]}</b>, vì mặt cắt song song đáy. Đã kiểm tra ${t3EdgesDone}/6 mặt; thiết diện chưa khép kín.`;
             fb.style.display = 'flex';
           } else {
-            createPolygonMesh(midPts, COLOR_PLANE_2, 0.4);
-            document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> 🎉 Tuyệt vời! Thiết diện khép kín đủ 6 mặt bên là 1 <b>Lục giác đều đồng dạng với đáy</b>!`;
+            document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đã đủ 6/6 cạnh khác nhau và đường gấp khúc đã khép kín. Bây giờ có thể đưa ra kết luận về thiết diện.`;
             fb.style.display = 'flex';
-            document.getElementById('btn-next-tab3').style.display = 'inline-flex';
-            unlockTab(4);
+            document.getElementById('t3-btn-conclusion').style.opacity = '1';
           }
         };
       }
+      document.getElementById('t3-btn-conclusion').onclick = () => {
+        if (t3DoneSet.size < 6) {
+          document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Thiết diện chưa khép kín: mới có ${t3DoneSet.size}/6 cạnh. Hãy rà đủ tất cả các mặt bên, không dừng ở hình chiếu trông “gần đủ”.`;
+          fb.style.display = 'flex';
+          return;
+        }
+        createPolygonMesh(midPts,COLOR_PLANE_2,.4);
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> 🎉 Thiết diện là một <b>lục giác đều đồng dạng với đáy</b>: có cùng sáu cạnh và từng cạnh tương ứng song song cạnh đáy. Nguyên tắc này đúng với mặt cắt song song đáy của mọi lăng trụ.`;
+        document.getElementById('t3-btn-conclusion').disabled = true;
+        document.getElementById('btn-next-tab3').style.display = 'inline-flex';
+        unlockTab(4);
+      };
     }
 
     /* =========================================================================
        9. TAB 4: TRỌNG TÂM VÀ LĂNG TRỤ TAM GIÁC (LĂNG TRỤ ĐỨNG ĐÁY VUÔNG)
        ========================================================================= */
+    let t4CentroidsSelected = new Set();
+    let t4CentroidData = null;
+    let t4ParallelChoice = null;
+    let t4LengthChoice = null;
+
     function initTab4() {
       clearScene();
       document.getElementById('t4-quiz-wrap').style.display = 'none';
+      document.getElementById('btn-next-tab4').style.display = 'none';
+      t4CentroidsSelected = new Set();
+      t4ParallelChoice = null;
+      t4LengthChoice = null;
+      ['t4-par-yes','t4-par-no','t4-len-equal','t4-len-diff'].forEach(id => document.getElementById(id).className = 'choice-btn');
+      ['t4-par-yes','t4-par-no','t4-len-equal','t4-len-diff'].forEach(id => document.getElementById(id).style.borderColor = 'var(--paper-line)');
+      document.getElementById('t4-btn-check').disabled = false;
+      document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> Hãy click đủ cả G và G'. Mỗi trọng tâm được xác định bởi giao điểm của ba đường trung tuyến, không phải trung điểm của một cạnh.`;
 
       const A = new THREE.Vector3(-1.8, 0, 1.2);
       const B = new THREE.Vector3(1.8, 0, 1.2);
@@ -1570,6 +1712,7 @@
       // Centroid G = (A + B + C) / 3
       const G = new THREE.Vector3().add(A).add(B).add(C).divideScalar(3);
       const Gp = new THREE.Vector3().add(Ap).add(Bp).add(Cp).divideScalar(3);
+      t4CentroidData = { A,B,C,Ap,Bp,Cp,G,Gp };
 
       createPolygonMesh([A, B, C], COLOR_PLANE_BASE, 0.25);
       createPolygonMesh([Ap, Bp, Cp], COLOR_PLANE_1, 0.25);
@@ -1594,21 +1737,65 @@
 
       interactiveMeshes = [ptG, ptGp];
 
-      const fb = document.getElementById('t4-feedback');
-      document.getElementById('t4-opt-1').onclick = () => {
-        document.getElementById('t4-opt-1').className = 'choice-btn correct';
-        animateLine(G, Gp, 0xef4444, 850);
-        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> 🎉 Chính xác! Bản chất lăng trụ là phép tịnh tiến đáy dưới thành đáy trên theo vector <b>AA'</b>. Vì G tịnh tiến thành G' theo đúng vector đó <b>→ GG' // AA' và GG' = AA'</b>!`;
-        fb.style.display = 'flex';
-        document.getElementById('btn-next-tab4').style.display = 'inline-flex';
-        unlockTab(5);
-      };
+      document.getElementById('t4-par-yes').onclick = () => selectTab4Answer('parallel',true);
+      document.getElementById('t4-par-no').onclick = () => selectTab4Answer('parallel',false);
+      document.getElementById('t4-len-equal').onclick = () => selectTab4Answer('length',true);
+      document.getElementById('t4-len-diff').onclick = () => selectTab4Answer('length',false);
+      document.getElementById('t4-btn-check').onclick = checkTab4Answer;
     }
 
     function handleTab4SelectPoint(hitName) {
-      document.getElementById('t4-quiz-wrap').style.display = 'block';
-      document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> Đã chọn trọng tâm! Hãy trả lời câu hỏi nhận xét về đoạn GG' so với cạnh bên AA' bên dưới.`;
+      if (!['pt_G','pt_Gp'].includes(hitName) || t4CentroidsSelected.has(hitName)) return;
+      t4CentroidsSelected.add(hitName);
+      const lower = hitName === 'pt_G';
+      const vertices = lower ? [t4CentroidData.A,t4CentroidData.B,t4CentroidData.C] : [t4CentroidData.Ap,t4CentroidData.Bp,t4CentroidData.Cp];
+      const center = lower ? t4CentroidData.G : t4CentroidData.Gp;
+      vertices.forEach((vertex,i) => {
+        const midpoint = vertices[(i+1)%3].clone().add(vertices[(i+2)%3]).multiplyScalar(.5);
+        animateLine(vertex,midpoint,0xa78bfa,550 + i*100,null,.75,true);
+      });
+      if (t4CentroidsSelected.size < 2) {
+        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> Đã chọn ${lower ? 'G' : "G'"}: đây là giao của ba đường trung tuyến của tam giác đáy ${lower ? 'dưới' : 'trên'}. Hãy chọn trọng tâm còn lại; trọng tâm khác trung điểm vì không nằm trên một cạnh riêng lẻ.`;
+      } else {
+        document.getElementById('t4-quiz-wrap').style.display = 'block';
+        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> Đã xác định đủ G và G'. Bây giờ hãy chọn riêng quan hệ phương và quan hệ độ dài của GG' so với AA'.`;
+      }
       document.getElementById('t4-feedback').style.display = 'flex';
+    }
+
+    function selectTab4Answer(kind,value) {
+      if (kind === 'parallel') {
+        t4ParallelChoice = value;
+        document.getElementById('t4-par-yes').style.borderColor = value ? 'var(--teal)' : 'var(--paper-line)';
+        document.getElementById('t4-par-no').style.borderColor = value ? 'var(--paper-line)' : 'var(--teal)';
+      } else {
+        t4LengthChoice = value;
+        document.getElementById('t4-len-equal').style.borderColor = value ? 'var(--teal)' : 'var(--paper-line)';
+        document.getElementById('t4-len-diff').style.borderColor = value ? 'var(--paper-line)' : 'var(--teal)';
+      }
+    }
+
+    function checkTab4Answer() {
+      const msg = document.getElementById('t4-msg');
+      if (t4ParallelChoice === null || t4LengthChoice === null) {
+        msg.innerHTML = `<b>Athena:</b> Hãy chọn đủ cả hai ý: quan hệ song song và quan hệ độ dài.`;
+        return;
+      }
+      if (t4ParallelChoice && t4LengthChoice) {
+        document.getElementById('t4-par-yes').className = 'choice-btn correct';
+        document.getElementById('t4-len-equal').className = 'choice-btn correct';
+        animateLine(t4CentroidData.G,t4CentroidData.Gp,0xef4444,850);
+        msg.innerHTML = `<b>Athena:</b> 🎉 Chính xác! Phép tịnh tiến biến toàn bộ đáy dưới thành đáy trên theo vector AA', nên biến trọng tâm G thành G' và <b>vector GG' = vector AA'</b>. Vì vậy GG' // AA' và GG' = AA'. Điều này đúng với mọi điểm tương ứng được xác định cùng quy tắc — trọng tâm, trực tâm hay một điểm bất kỳ — không phải vì trọng tâm có công thức “chia đôi”.`;
+        document.getElementById('t4-btn-check').disabled = true;
+        document.getElementById('btn-next-tab4').style.display = 'inline-flex';
+        unlockTab(5);
+      } else if (t4ParallelChoice && !t4LengthChoice) {
+        document.getElementById('t4-len-diff').className = 'choice-btn wrong';
+        msg.innerHTML = `<b>Athena:</b> Bạn đang áp dụng tính chất của <b>trung điểm</b> (chia đôi) cho <b>trọng tâm</b>. Lăng trụ là phép tịnh tiến, không phải phép chia tỉ lệ: G dịch chuyển theo nguyên vẹn vector AA', nên GG' = AA'.`;
+      } else {
+        document.getElementById('t4-par-no').className = 'choice-btn wrong';
+        msg.innerHTML = `<b>Athena:</b> Hai đáy của lăng trụ là ảnh qua cùng một phép tịnh tiến. Mọi điểm tương ứng đều dịch chuyển theo cùng vector cạnh bên, nên GG' bắt buộc song song AA' và có cùng độ dài.`;
+      }
     }
 
     /* =========================================================================
@@ -1617,7 +1804,11 @@
     function initTab5() {
       clearScene();
       document.getElementById('t5-step2-wrap').style.display = 'none';
+      document.getElementById('t5-step3-wrap').style.display = 'none';
       document.getElementById('t5-calc-wrap').style.display = 'none';
+      document.getElementById('btn-next-tab5').style.display = 'none';
+      document.getElementById('t5-inp-area').value = '';
+      ['t5-opt-13','t5-opt-12','t5-opt-23','t5-box-yes','t5-box-no'].forEach(id => document.getElementById(id).className = 'choice-btn');
 
       const A = new THREE.Vector3(-1.8, 0, 1.5);
       const B = new THREE.Vector3(1.4, 0, 1.5);
@@ -1629,8 +1820,8 @@
       const Cp = new THREE.Vector3(2.2, 3.2, -1.5);
       const Dp = new THREE.Vector3(-1.0, 3.2, -1.5);
 
-      const M = lerpVec(A, B, 0.33); const N = lerpVec(D, C, 0.33);
-      const Mp = lerpVec(Ap, Bp, 0.33); const Np = lerpVec(Dp, Cp, 0.33);
+      const M = lerpVec(A, B, 1 / 3); const N = lerpVec(D, C, 1 / 3);
+      const Mp = lerpVec(Ap, Bp, 1 / 3); const Np = lerpVec(Dp, Cp, 1 / 3);
 
       createPolygonMesh([A, B, C, D], COLOR_PLANE_BASE, 0.25);
       currentSolidHull = createPolyhedronHullMesh([
@@ -1648,8 +1839,12 @@
 
       const fb = document.getElementById('t5-feedback');
       fb.style.display = 'none';
+      let t5Step = 1;
 
       document.getElementById('t5-btn-cut').onclick = () => {
+        if (t5Step !== 1) return;
+        t5Step = 2;
+        document.getElementById('t5-btn-cut').disabled = true;
         makeSpherePoint(N, COLOR_RESULT, 0.11); makeSpherePoint(Mp, COLOR_RESULT, 0.11); makeSpherePoint(Np, COLOR_RESULT, 0.11);
         createLabel3D('N', N, '#FAC775'); createLabel3D("M'", Mp, '#FAC775'); createLabel3D("N'", Np, '#FAC775');
 
@@ -1660,28 +1855,79 @@
         setTimeout(() => createPolygonMesh([M, N, Np, Mp], COLOR_PLANE_2, 0.35), 800);
 
         document.getElementById('t5-step2-wrap').style.display = 'block';
-        document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Đã dựng mặt cắt (α). Hãy trả lời tỉ lệ xác định N trên BC bên dưới!`;
+        document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Mặt phẳng (α) song song mặt bên ADD'A' cắt DC tại N. Ba mặt bên tương ứng song song tạo các đoạn tỉ lệ, nên hãy so sánh AM/AB với DN/DC.`;
         fb.style.display = 'flex';
       };
 
       document.getElementById('t5-opt-13').onclick = () => {
+        if (t5Step !== 2) return;
+        t5Step = 3;
         document.getElementById('t5-opt-13').className = 'choice-btn correct';
-        document.getElementById('t5-calc-wrap').style.display = 'block';
-        document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Đúng! Theo định lí Thalès không gian, vì (α) // (ADD'A') <b>→ BN = ⅓ BC</b>. Khối AMND.A'M'N'D' là hình hộp con hợp lệ! Bây giờ hãy làm bài toán diện tích.`;
+        document.getElementById('t5-step3-wrap').style.display = 'block';
+        document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Đúng! Theo Thalès không gian trên các mặt phẳng song song, <b>AM/AB = DN/DC = ⅓</b>. Tiếp theo phải kiểm tra khối tạo thành có đúng là hình hộp con hay không.`;
         fb.style.display = 'flex';
       };
 
-      document.getElementById('t5-btn-check-area').onclick = () => {
+      ['t5-opt-12','t5-opt-23'].forEach(id => {
+        document.getElementById(id).onclick = () => {
+          if (t5Step !== 2) return;
+          document.getElementById(id).className = 'choice-btn wrong';
+          document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Chưa đúng. M được đặt sao cho AM/AB = ⅓; mặt cắt song song mặt bên bảo toàn tỉ lệ tương ứng trên DC, nên <b>DN/DC cũng bằng ⅓</b>.`;
+          fb.style.display = 'flex';
+        };
+      });
+
+      document.getElementById('t5-box-no').onclick = () => {
+        if (t5Step !== 3) return;
+        document.getElementById('t5-box-no').className = 'choice-btn wrong';
+        document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> AM // DN và AM = DN vì chúng cùng bằng ⅓ hai cạnh đối AB, DC; AD // MN và AD = MN. Do đó AMND là hình bình hành, còn các cạnh bên được kế thừa từ hình hộp gốc.`;
+      };
+      document.getElementById('t5-box-yes').onclick = () => {
+        if (t5Step !== 3) return;
+        t5Step = 4;
+        document.getElementById('t5-box-yes').className = 'choice-btn correct';
+        createPolygonMesh([A,M,N,D],COLOR_PLANE_3,.3);
+        createPolygonMesh([Ap,Mp,Np,Dp],COLOR_PLANE_3,.25);
+        document.getElementById('t5-calc-wrap').style.display = 'block';
+        document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Chính xác! Đáy AMND là hình bình hành và các cạnh bên vẫn song song, bằng nhau, nên AMND.A'M'N'D' là hình hộp con. Bây giờ tính diện tích đáy.`;
+      };
+
+      let t5CalcWrongAttempts = 0;
+      const handleCheckTab5Area = () => {
+        if (t5Step < 4) return;
         const val = parseFloat(document.getElementById('t5-inp-area').value);
         if (val === 12) {
+          t5Step = 5;
           document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> 🎉 Chính xác! S(AMND) = ⅓ × S(ABCD) = ⅓ × 36 = <b>12 cm²</b> vì chỉ 1 chiều AB thay đổi theo tỉ lệ ⅓, chiều AD giữ nguyên!`;
           fb.style.display = 'flex';
+          document.getElementById('t5-inp-area').disabled = true;
+          document.getElementById('t5-btn-check-area').disabled = true;
           document.getElementById('btn-next-tab5').style.display = 'inline-flex';
           unlockTab(6);
         } else {
-          document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Vì chỉ 1 chiều thay đổi theo tỉ lệ ⅓ nên S(AMND) = ⅓ × 36 = ? (không bình phương tỉ lệ).`;
-          fb.style.display = 'flex';
+          t5CalcWrongAttempts++;
+          if (t5CalcWrongAttempts >= 2) {
+            t5Step = 5;
+            document.getElementById('t5-inp-area').value = '12';
+            document.getElementById('t5-inp-area').disabled = true;
+            document.getElementById('t5-btn-check-area').disabled = true;
+            document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Sau 2 lần thử chưa đúng, đáp án chính xác là <b>12 cm²</b>. Vì chỉ 1 chiều AB thay đổi theo tỉ lệ ⅓, chiều AD giữ nguyên, nên S(AMND) = ⅓ × 36 = <b>12 cm²</b>.`;
+            fb.style.display = 'flex';
+            document.getElementById('btn-next-tab5').style.display = 'inline-flex';
+            unlockTab(6);
+          } else if (val === 4) {
+            document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Bạn đã bình phương tỉ lệ ⅓ như một hình thu nhỏ đồng dạng theo hai chiều. Ở đây chỉ chiều AB đổi thành AM = ⅓AB, còn chiều AD giữ nguyên, nên diện tích chỉ nhân <b>⅓</b>, không nhân (⅓)² (Lần sai 1/2).`;
+            fb.style.display = 'flex';
+          } else {
+            document.getElementById('t5-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Vì chỉ 1 chiều thay đổi theo tỉ lệ ⅓ nên S(AMND) = ⅓ × 36 = ? (không bình phương tỉ lệ) (Lần sai 1/2).`;
+            fb.style.display = 'flex';
+          }
         }
+      };
+
+      document.getElementById('t5-btn-check-area').onclick = handleCheckTab5Area;
+      document.getElementById('t5-inp-area').onkeydown = (e) => {
+        if (e.key === 'Enter') handleCheckTab5Area();
       };
 
       document.getElementById('btn-next-tab5').onclick = () => {
@@ -1694,9 +1940,19 @@
        11. TAB 6: THỰC TẾ & LĂNG TRỤ XIÊN
        ========================================================================= */
     let t6Part = 'A';
+    let t6PartADone = false;
+    let t6BAnswerAttempted = false;
+    let t6BAnswerCorrect = false;
+    let t6BEdgeInspected = false;
+    let t6Completed = false;
 
     function initTab6() {
       t6Part = 'A';
+      t6PartADone = false;
+      t6BAnswerAttempted = false;
+      t6BAnswerCorrect = false;
+      t6BEdgeInspected = false;
+      t6Completed = false;
       document.getElementById('t6-sub-p1').onclick = () => switchTab6Part('A');
       document.getElementById('t6-sub-p2').onclick = () => switchTab6Part('B');
       switchTab6Part('A');
@@ -1719,6 +1975,7 @@
           <div style="font-size: 12.5px; font-weight: 700; color: var(--navy);">Vì sao mép các bậc ván luôn song song nhau dù độ cao khác nhau?</div>
           <button class="choice-btn" id="t6-qa-1"><span>A. Vì cùng song song 1 mặt tường cố định</span> <i class="ti ti-circle"></i></button>
           <button class="choice-btn" id="t6-qa-2"><span>B. Vì được đo thủ công bằng thước</span> <i class="ti ti-circle"></i></button>
+          <button class="choice-btn" id="t6-qa-3"><span>C. Vì tình cờ có cùng hướng</span> <i class="ti ti-circle"></i></button>
         `;
         renderTab6PartA();
       } else {
@@ -1755,9 +2012,18 @@
       const fb = document.getElementById('t6-feedback');
       document.getElementById('t6-qa-1').onclick = () => {
         document.getElementById('t6-qa-1').className = 'choice-btn correct';
-        document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> Chính xác! Mỗi mép ván song song bức tường <b>→</b> Các mép ván nằm trên các mp ngang song song sẽ đôi một song song nhau!`;
+        t6PartADone = true;
+        document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> Chính xác! Mỗi mép ván song song mặt tường cố định và nằm trên các mặt phẳng ngang song song, nên các mép có cùng phương và đôi một song song. Hãy tiếp tục Phần B để kiểm tra lăng trụ xiên.`;
         fb.style.display = 'flex';
+        tryFinishTab6();
       };
+      ['t6-qa-2','t6-qa-3'].forEach(id => {
+        document.getElementById(id).onclick = () => {
+          document.getElementById(id).className = 'choice-btn wrong';
+          document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> Độ chính xác thi công không phải lý do hình học, và sự song song không phải tình cờ. Các mép cùng song song mặt tường, đồng thời nằm trên các mặt phẳng ngang song song, nên chúng cùng phương.`;
+          fb.style.display = 'flex';
+        };
+      });
     }
 
     function renderTab6PartB() {
@@ -1790,18 +2056,41 @@
       const fb = document.getElementById('t6-feedback');
       document.getElementById('t6-qb-yes').onclick = () => {
         document.getElementById('t6-qb-yes').className = 'choice-btn correct';
-        document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> 🎉 Tuyệt vời! Định nghĩa lăng trụ KHÔNG bắt buộc cạnh bên phải vuông góc đáy, chỉ cần các cạnh bên song song và bằng nhau <b>→</b> Lăng trụ xiên vẫn hoàn toàn hợp lệ!`;
+        t6BAnswerAttempted = true;
+        t6BAnswerCorrect = true;
+        document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> Chính xác! Các cạnh bên song song và bằng nhau (cùng dài 3,01m); định nghĩa không yêu cầu chúng vuông góc đáy, nên hình (b) là lăng trụ xiên hợp lệ. Bạn cũng có thể click cạnh bên màu vàng trên hình 3D để xem thông số chi tiết.`;
         fb.style.display = 'flex';
-        setTimeout(() => {
-          document.getElementById('celebration-modal').classList.add('show');
-        }, 1200);
+        tryFinishTab6();
+      };
+      document.getElementById('t6-qb-no').onclick = () => {
+        document.getElementById('t6-qb-no').className = 'choice-btn wrong';
+        t6BAnswerAttempted = true;
+        t6BAnswerCorrect = false;
+        document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> Hình trông nghiêng và lạ mắt chưa đủ để loại bỏ. Hãy click một cạnh bên màu vàng, xem độ dài và góc giữa các cạnh rồi trả lời lại dựa trên hai điều kiện định nghĩa.`;
+        fb.style.display = 'flex';
       };
     }
 
     function handleTab6SelectEdge(hitName) {
       const fb = document.getElementById('t6-feedback');
-      document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> Bạn vừa click vào <b>Cạnh bên Lăng trụ xiên</b>. Số đo kiểm tra: Độ dài các cạnh bên đều bằng nhau (3.15m), góc giữa chúng = 0° (song song) $\\rightarrow$ Đủ 2 điều kiện lăng trụ!`;
+      document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> Các cạnh bên đều dài 3,01 m và có góc giữa từng cặp bằng 0°, nên song song và bằng nhau.`;
       fb.style.display = 'flex';
+    }
+
+    function handleTab6SelectEdgeFull(hitName) {
+      const fb = document.getElementById('t6-feedback');
+      if (hitName !== 'oblique_edge') return;
+      t6BEdgeInspected = true;
+      document.getElementById('t6-msg').innerHTML = `<b>Athena:</b> Số đo kiểm tra: ba cạnh bên đều dài <b>3,01 m</b> (cùng vector (1; 2,8; −0,5)); góc giữa từng cặp bằng <b>0°</b>, nên chúng song song và bằng nhau. ${t6BAnswerCorrect ? 'Hình (b) thỏa đúng định nghĩa lăng trụ dù không đứng.' : 'Hãy dùng bằng chứng này để trả lời lại câu hỏi Có/Không.'}`;
+      fb.style.display = 'flex';
+      tryFinishTab6();
+    }
+
+    function tryFinishTab6() {
+      if (t6Completed || !t6PartADone || !t6BAnswerCorrect) return;
+      t6Completed = true;
+      document.getElementById('t6-msg').innerHTML += `<br><br>🎉 Bạn đã hoàn thành cả tình huống thực tế và kiểm chứng lăng trụ xiên!`;
+      setTimeout(() => document.getElementById('celebration-modal').classList.add('show'), 600);
     }
 
     /* RESTART BUTTON IN MODAL */

@@ -497,6 +497,46 @@
       color: #34d399;
       font-size: 18px;
     }
+
+    #knowledge-btn {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      z-index: 30;
+    }
+
+    #knowledge-panel {
+      position: absolute;
+      inset: 58px 14px auto 14px;
+      z-index: 31;
+      max-width: 520px;
+      padding: 16px;
+      border: 1px solid var(--jade-light);
+      border-radius: 12px;
+      background: rgba(249, 247, 241, .97);
+      box-shadow: 0 14px 32px rgba(0, 0, 0, .24);
+      color: var(--ink);
+    }
+
+    #knowledge-panel h3 { margin: 0 0 8px; color: var(--jade-dark); }
+    #knowledge-panel ol { margin: 8px 0; padding-left: 20px; }
+
+    .inline-feedback {
+      margin-top: 8px;
+      padding: 9px 11px;
+      border-radius: 8px;
+      background: var(--info-bg);
+      color: var(--ink-2);
+      font-size: 12px;
+      line-height: 1.5;
+    }
+
+    .shake { animation: feedback-shake .28s ease; }
+    @keyframes feedback-shake {
+      25% { transform: translateX(-5px); }
+      50% { transform: translateX(5px); }
+      75% { transform: translateX(-3px); }
+    }
   </style>
 </head>
 
@@ -534,6 +574,12 @@
     <div id="canvas-wrap">
       <canvas id="three-canvas"></canvas>
       <div id="label-layer"></div>
+      <button class="btn btn-secondary" id="knowledge-btn"><i class="ti ti-book-2"></i> Xem Sổ tay</button>
+      <section id="knowledge-panel" style="display:none;" role="dialog" aria-label="Sổ tay kiến thức">
+        <h3>Sổ tay kiến thức</h3>
+        <div id="knowledge-content"></div>
+        <button class="btn btn-outline" id="knowledge-close" style="width:100%; margin-top:8px;">Đóng Sổ tay</button>
+      </section>
       <button id="btn-reset-cam">
         <i class="ti ti-refresh"></i> Đặt lại góc nhìn
       </button>
@@ -553,6 +599,7 @@
         <div class="step-title">
           <i class="ti ti-checkup-list"></i> Dạng 1: Chứng minh a // (α)
         </div>
+        <div class="inline-feedback"><b>Mục tiêu:</b> Áp dụng đúng quy trình ba bước; không bỏ sót điều kiện đường thẳng không nằm trong mặt phẳng.</div>
         <div class="info-box">
           Cho hình chóp tam giác <b>S.MNP</b>. Hai điểm <b>I, K</b> lần lượt nằm trên cạnh <b>SM, SN</b> sao cho <b>SI =
             ⅓SM</b> và <b>SK = ⅓SN</b>.
@@ -574,11 +621,15 @@
               <span>Không song song</span> <i class="ti ti-circle"></i>
             </button>
           </div>
+          <div id="t1-predict-feedback" class="inline-feedback" style="display:none;"></div>
         </div>
 
         <div id="t1-step2" style="display: none;">
           <button class="btn btn-primary" id="t1-btn-build" style="width: 100%;">
             <i class="ti ti-vector-triangle"></i> Dựng đường phụ MN trong (MNP)
+          </button>
+          <button class="btn btn-secondary" id="t1-btn-continue" style="display:none; width:100%; margin-top:6px;">
+            Đã xoay hình kiểm chứng — Tiếp tục <i class="ti ti-arrow-right"></i>
           </button>
         </div>
 
@@ -589,8 +640,9 @@
           <div class="choice-group">
             <div style="font-weight: 700; font-size: 12px; margin-bottom: 4px;">Nhận định sau ĐÚNG hay SAI?</div>
             <div class="info-box" style="font-style: italic;">
-              "Nếu đường thẳng d không nằm trong (α) và d // b ⊂ (α) thì d // (α)."
+              "Nếu đường thẳng d không nằm trong mặt phẳng (α) và d không cắt (α) tại điểm nào, thì chắc chắn tồn tại một đường thẳng b nằm trong (α) sao cho d // b."
             </div>
+            <div id="t1-tf-feedback" class="inline-feedback" style="display:none;"></div>
             <div style="display: flex; gap: 8px;">
               <button class="choice-btn" id="t1-tf-true" style="flex:1;">ĐÚNG</button>
               <button class="choice-btn" id="t1-tf-false" style="flex:1;">SAI</button>
@@ -614,6 +666,7 @@
         <div class="step-title">
           <i class="ti ti-route"></i> Dạng 2: Giao tuyến song song
         </div>
+        <div class="inline-feedback"><b>Mục tiêu:</b> Dựng đường qua điểm chung và song song đúng đường đã biết, không nối hai điểm tùy ý.</div>
         <div class="info-box">
           Cho hình chóp <b>S.ABCD</b> có đáy ABCD là hình bình hành. Cho điểm <b>E ∈ SA</b> sao cho <b>SE = ⅓SA</b>. Mặt
           phẳng <b>(P)</b> qua E và song song với <b>AD</b>.
@@ -631,6 +684,9 @@
           <b>Nhiệm vụ:</b> Chạm / Click vào vị trí thích hợp trên cạnh <b>SD</b> trong không gian 3D.
         </div>
 
+        <button class="btn btn-primary" id="t2-btn-select" style="width:100%; margin-bottom:6px;">
+          <i class="ti ti-target"></i> Chọn điểm trên SD
+        </button>
         <button class="btn btn-secondary" id="t2-btn-reset-step" style="width: 100%;">
           <i class="ti ti-refresh"></i> Làm lại bước dựng
         </button>
@@ -644,6 +700,7 @@
         <div class="step-title">
           <i class="ti ti-polygon"></i> Dạng 3: Tìm thiết diện
         </div>
+        <div class="inline-feedback"><b>Mục tiêu:</b> Rà đủ tất cả các mặt tiếp giáp và chỉ kết luận khi thiết diện đã khép kín.</div>
 
         <div class="sub-pills">
           <button class="sub-pill active" id="t3-pill-a">Case A: Hình chóp</button>
@@ -660,6 +717,7 @@
           <button class="choice-btn" data-dir="AD">Song song với AD</button>
           <button class="choice-btn" data-dir="SD">Song song với SD</button>
         </div>
+        <div id="t3-feedback" class="inline-feedback">Bước 1: Chọn hướng của cạnh thiết diện đi qua điểm đã biết.</div>
 
         <div style="font-size: 12px; font-weight: 700; margin-top: 4px;">Checklist các mặt cắt:</div>
         <ul class="checklist" id="t3-checklist">
@@ -681,6 +739,7 @@
         <div class="step-title">
           <i class="ti ti-help-hexagon"></i> Tab 4: Luyện tập MCQ
         </div>
+        <div class="inline-feedback"><b>Mục tiêu:</b> Củng cố ba dạng bài và tự sửa bốn sai lầm thường gặp qua năm câu hỏi 3D.</div>
 
         <div class="info-box" id="t4-q-num" style="font-weight: 700; color: var(--jade-dark);">
           Câu 1 / 5
@@ -1066,6 +1125,7 @@
       const activeContent = document.getElementById(`tab-${targetTab}`);
       if (activeContent) activeContent.classList.add('active');
       currentTab = targetTab;
+      knowledgePanel.style.display = 'none';
       loadTabScenario(targetTab);
     }
 
@@ -1092,6 +1152,25 @@
     document.getElementById('btn-reset-cam').addEventListener('click', () => {
       resetCameraAngle();
     });
+
+    const KNOWLEDGE_BY_TAB = {
+      1: `<b>Định nghĩa:</b> d // (α) khi d và (α) không có điểm chung.
+          <ol><li>Tìm b ⊂ (α) sao cho b // d.</li><li>Chứng minh d // b.</li><li>Kiểm tra d ⊄ (α), rồi kết luận d // (α).</li></ol>`,
+      2: `<b>Tính chất:</b> Nếu d // (α), mặt phẳng (β) chứa d và (β) cắt (α) theo b thì b // d.
+          <ol><li>Xác định một điểm chung của hai mặt phẳng.</li><li>Qua điểm đó dựng đường song song với đường đã biết.</li></ol>`,
+      3: `<b>Quy trình thiết diện:</b> Tìm giao tuyến với tất cả các mặt mà mặt cắt đi qua. Thiết diện chỉ hoàn tất khi các cạnh tạo thành một đa giác khép kín.`,
+      4: `<b>Ghi nhớ:</b> Phân biệt ba vị trí tương đối; chọn đúng đường phụ; rà đủ mọi mặt của khối; không kết luận quan hệ không gian chỉ từ hình phối cảnh.`
+    };
+    const knowledgePanel = document.getElementById('knowledge-panel');
+    document.getElementById('knowledge-btn').onclick = () => {
+      document.getElementById('knowledge-content').innerHTML = KNOWLEDGE_BY_TAB[currentTab] || '';
+      knowledgePanel.style.display = 'block';
+      document.getElementById('knowledge-close').focus();
+    };
+    document.getElementById('knowledge-close').onclick = () => {
+      knowledgePanel.style.display = 'none';
+      document.getElementById('knowledge-btn').focus();
+    };
 
     function resetCameraAngle() {
       camera.position.set(6, 4.5, 7.5);
@@ -1151,14 +1230,23 @@
       document.getElementById('t1-step1').style.display = 'block';
       document.getElementById('t1-step2').style.display = 'none';
       document.getElementById('t1-step3').style.display = 'none';
+      document.getElementById('t1-btn-continue').style.display = 'none';
       document.getElementById('t1-conclusion').style.display = 'none';
+      document.getElementById('t1-predict-feedback').style.display = 'none';
+      document.getElementById('t1-tf-feedback').style.display = 'none';
+      ['t1-btn-yes', 't1-btn-no', 't1-tf-true', 't1-tf-false'].forEach(id => {
+        document.getElementById(id).className = 'choice-btn';
+      });
 
       document.getElementById('t1-btn-yes').onclick = () => {
         document.getElementById('t1-btn-yes').className = 'choice-btn correct';
+        document.getElementById('t1-predict-feedback').textContent = 'Chính xác, cùng kiểm chứng bằng đường phụ nhé.';
+        document.getElementById('t1-predict-feedback').style.display = 'block';
         document.getElementById('t1-step2').style.display = 'block';
       };
       document.getElementById('t1-btn-no').onclick = () => {
-        document.getElementById('t1-btn-no').className = 'choice-btn wrong';
+        document.getElementById('t1-predict-feedback').textContent = 'Hãy tạm giữ dự đoán này và dựng MN để tự đối chiếu: I, K chia SM, SN theo cùng tỉ lệ ⅓.';
+        document.getElementById('t1-predict-feedback').style.display = 'block';
         document.getElementById('t1-step2').style.display = 'block';
       };
 
@@ -1167,18 +1255,23 @@
           animateLine(M, N, COLOR_RESULT, 750);
           auxLine = createGlowingHighlightSegment(M, N, COLOR_RESULT, 0.045);
         }
+        document.getElementById('t1-btn-continue').style.display = 'inline-flex';
+      };
+      document.getElementById('t1-btn-continue').onclick = () => {
         document.getElementById('t1-step3').style.display = 'block';
       };
 
       document.getElementById('t1-tf-true').onclick = () => {
         document.getElementById('t1-tf-true').className = 'choice-btn correct';
+        document.getElementById('t1-tf-feedback').innerHTML = 'Đúng. Đây là chiều ngược của tính chất d // (α): luôn có thể tìm được ít nhất một đường b ⊂ (α) song song với d.';
+        document.getElementById('t1-tf-feedback').style.display = 'block';
         document.getElementById('t1-conclusion').style.display = 'block';
         unlockTab(2);
       };
       document.getElementById('t1-tf-false').onclick = () => {
         document.getElementById('t1-tf-false').className = 'choice-btn wrong';
-        document.getElementById('t1-conclusion').style.display = 'block';
-        unlockTab(2);
+        document.getElementById('t1-tf-feedback').textContent = 'Chưa đúng, thử lại: nếu d không có điểm chung với (α), quan hệ giữa d và (α) là gì theo định nghĩa?';
+        document.getElementById('t1-tf-feedback').style.display = 'block';
       };
     }
 
@@ -1186,6 +1279,10 @@
        7. TAB 2: GIAO TUYẾN SONG SONG (CLICK RAYCAST)
        ========================================================================= */
     function initTab2() {
+      document.getElementById('t2-athena-msg').innerHTML = '<b>Athena:</b> Giao tuyến của (P) với (SAD) đi qua E và song song AD. Hãy chọn đúng điểm trên SD.';
+      document.getElementById('t2-status').innerHTML = '<b>Bước 1:</b> Chạm / click vào vị trí thích hợp trên cạnh SD.';
+      document.getElementById('t2-status').style.backgroundColor = '';
+      document.getElementById('btn-next-tab2').style.display = 'none';
       // Chóp S.ABCD đáy hình bình hành
       const S = new THREE.Vector3(0.2, 3.4, -0.2);
       const A = new THREE.Vector3(-2.2, 0, 1.8);
@@ -1195,6 +1292,7 @@
 
       const E = lerpVec(S, A, 1 / 3);
       const targetF = lerpVec(S, D, 1 / 3); // Điểm đúng trên SD
+      const targetG = lerpVec(S, C, 1 / 3); // Điểm đúng trên SC để khép thiết diện
 
       // Khung chóp với Occlusion tự động (05_threejs_engine.md PHẦN 4.20)
       currentSolidHull = createPolyhedronHullMesh([
@@ -1205,6 +1303,7 @@
 
       // Đáy ABCD
       createPolygonMesh([A, B, C, D], COLOR_PLANE_BASE, 0.18);
+      createPolygonMesh([E, targetF, targetG], COLOR_PLANE_2, 0.14);
 
       makeSpherePoint(E, COLOR_RESULT, 0.11);
 
@@ -1236,16 +1335,85 @@
         interactiveClickables.push(mesh);
       }
 
+      const scHits = [];
+      for (let i = 1; i <= 5; i++) {
+        const pt = lerpVec(S, C, i / 6);
+        const visMesh = new THREE.Mesh(
+          new THREE.SphereGeometry(0.1, 16, 16),
+          new THREE.MeshStandardMaterial({ color: 0x94a3b8, transparent: true, opacity: 0.65 })
+        );
+        visMesh.position.copy(pt);
+        visMesh.visible = false;
+        scene.add(visMesh);
+        const mesh = new THREE.Mesh(new THREE.SphereGeometry(0.38, 12, 12), new THREE.MeshBasicMaterial({ visible: false }));
+        mesh.position.copy(pt);
+        mesh.userData = { pt, isCorrect: i === 2, visual: visMesh };
+        scene.add(mesh);
+        scHits.push(mesh);
+      }
+
       createLabel3D('S', S);
       createLabel3D('A', A);
       createLabel3D('B', B);
       createLabel3D('C', C);
       createLabel3D('D', D);
       createLabel3D('E', E, '#FAC775');
+      createLabel3D('(P)', E.clone().add(new THREE.Vector3(0.25, 0.25, 0)), '#a78bfa');
 
       let builtF = null;
       let builtLine = null;
       let attempts = 0;
+      let stage = 'SD';
+      let selectionActive = false;
+      const selectButton = document.getElementById('t2-btn-select');
+      selectButton.style.display = 'inline-flex';
+      selectButton.disabled = false;
+      selectButton.innerHTML = '<i class="ti ti-target"></i> Chọn điểm trên SD';
+      selectButton.onclick = () => {
+        selectionActive = true;
+        selectButton.disabled = true;
+        document.getElementById('t2-status').innerHTML = `<b>Đang chọn:</b> Click một điểm trên cạnh ${stage}.`;
+      };
+
+      function shakeCanvas() {
+        const wrap = document.getElementById('canvas-wrap');
+        wrap.classList.remove('shake');
+        void wrap.offsetWidth;
+        wrap.classList.add('shake');
+      }
+
+      function revealAndComplete(target) {
+        if (stage === 'SD') {
+          builtF = makeSpherePoint(targetF, COLOR_RESULT, 0.12);
+          animateLine(E, targetF, COLOR_RESULT, 750);
+          createGlowingHighlightSegment(E, targetF, COLOR_RESULT, 0.045);
+          createLabel3D('F', targetF, '#FAC775');
+          stage = 'SC';
+          attempts = 0;
+          selectionActive = false;
+          selectButton.disabled = false;
+          selectButton.innerHTML = '<i class="ti ti-target"></i> Chọn điểm trên SC';
+          scHits.forEach(hit => { hit.userData.visual.visible = true; interactiveClickables.push(hit); });
+          document.getElementById('t2-athena-msg').innerHTML = `<b>Athena:</b> EF // AD đã đúng. Tiếp tục chọn G trên SC để hoàn thành thiết diện.`;
+          document.getElementById('t2-status').innerHTML = `<b>Bước 2:</b> Chọn G trên SC theo cùng tỉ lệ SG/SC = ⅓.`;
+        } else {
+          makeSpherePoint(targetG, COLOR_RESULT, 0.12);
+          createLabel3D('G', targetG, '#FAC775');
+          animateLine(E, targetG, COLOR_RESULT, 750);
+          animateLine(targetF, targetG, COLOR_RESULT, 750);
+          createGlowingHighlightSegment(E, targetG, COLOR_RESULT, 0.045);
+          createGlowingHighlightSegment(targetF, targetG, COLOR_RESULT, 0.045);
+          createPolygonMesh([E, targetF, targetG], COLOR_RESULT, 0.3);
+          stage = 'done';
+          selectionActive = false;
+          selectButton.style.display = 'none';
+          document.getElementById('t2-athena-msg').innerHTML = `<b>Athena:</b> Chính xác! Các điểm cùng chia ba cạnh theo tỉ lệ ⅓, thiết diện EFG đã khép kín.`;
+          document.getElementById('t2-status').innerHTML = `<b>Trạng thái:</b> Hoàn thành thiết diện tam giác EFG; EF // AD và EG // AC. ✓`;
+          document.getElementById('t2-status').style.backgroundColor = 'var(--correct-bg)';
+          document.getElementById('btn-next-tab2').style.display = 'inline-flex';
+          unlockTab(3);
+        }
+      }
 
       let tapStart = { x: 0, y: 0, time: 0 };
 
@@ -1256,7 +1424,7 @@
       };
 
       activePointerUpHandler = (e) => {
-        if (builtF) return;
+        if (stage === 'done' || !selectionActive) return;
         const clientX = e.clientX ?? (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientX : 0);
         const clientY = e.clientY ?? (e.changedTouches && e.changedTouches[0] ? e.changedTouches[0].clientY : 0);
         const dx = Math.abs(clientX - tapStart.x);
@@ -1269,25 +1437,22 @@
         mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
         raycaster.setFromCamera(mouse, camera);
 
-        const intersects = raycaster.intersectObjects(sdHits);
+        const candidates = stage === 'SD' ? sdHits : scHits;
+        const intersects = raycaster.intersectObjects(candidates);
         if (intersects.length > 0) {
           const hit = intersects[0].object;
           if (hit.userData.isCorrect) {
-            builtF = makeSpherePoint(targetF, COLOR_RESULT, 0.12);
-            animateLine(E, targetF, COLOR_RESULT, 750);
-            builtLine = createGlowingHighlightSegment(E, targetF, COLOR_RESULT, 0.045);
-            createLabel3D('F', targetF, '#FAC775');
-            document.getElementById('t2-athena-msg').innerHTML = `<b>Athena:</b> Xuất sắc! Giao tuyến EF // AD vì (P) // AD.`;
-            document.getElementById('t2-status').innerHTML = `<b>Trạng thái:</b> Đã dựng thành công giao tuyến EF // AD ✓`;
-            document.getElementById('t2-status').style.backgroundColor = 'var(--correct-bg)';
-            document.getElementById('btn-next-tab2').style.display = 'inline-flex';
-            unlockTab(3);
+            revealAndComplete(stage === 'SD' ? targetF : targetG);
           } else {
             attempts++;
+            shakeCanvas();
             if (attempts === 1) {
-              document.getElementById('t2-athena-msg').innerHTML = `<b>Athena:</b> Chưa chính xác. Thử chọn lại điểm khác trên SD!`;
+              document.getElementById('t2-athena-msg').innerHTML = `<b>Athena:</b> Chưa chính xác. Hãy thử lại, chưa cần đoán đáp án.`;
+            } else if (attempts === 2) {
+              document.getElementById('t2-athena-msg').innerHTML = `<b>Athena:</b> Gợi ý: giữ đường qua điểm đã có song song với cạnh tương ứng; điểm mới phải chia cạnh theo tỉ lệ ⅓.`;
             } else {
-              document.getElementById('t2-athena-msg').innerHTML = `<b>Athena:</b> Gợi ý: Theo định lý Ta-lét, F phải chia SD theo tỉ lệ SE/SA = ⅓!`;
+              document.getElementById('t2-athena-msg').innerHTML = `<b>Athena:</b> Điểm đúng đã được dựng: theo Ta-lét, tỉ lệ trên các cạnh bằng SE/SA = ⅓.`;
+              revealAndComplete(stage === 'SD' ? targetF : targetG);
             }
           }
         }
@@ -1297,7 +1462,7 @@
       canvas.addEventListener('pointerup', activePointerUpHandler);
 
       document.getElementById('t2-btn-reset-step').onclick = () => {
-        initTab2();
+        loadTabScenario(2);
       };
     }
 
@@ -1316,6 +1481,8 @@
       pillB.onclick = () => { if (t3Case !== 'B') { t3Case = 'B'; pillA.className = 'sub-pill'; pillB.className = 'sub-pill active'; initTab3(); } };
 
       document.getElementById('t3-btn-finish').disabled = true;
+      document.getElementById('btn-next-tab3').style.display = 'none';
+      document.getElementById('t3-feedback').textContent = 'Bước 1: Chọn hướng của cạnh thiết diện đi qua điểm đã biết.';
 
       if (t3Case === 'A') {
         desc.textContent = "Case A: Hình chóp S.ABCD (đáy hình bình hành). Điểm G ∈ SB (SG = ⅔SB). Mặt phẳng (Q) qua G // (SAD).";
@@ -1358,8 +1525,7 @@
 
       const G = lerpVec(S, B, 2 / 3);
       const H = lerpVec(A, B, 2 / 3); // Giao điểm với AB (song song SA)
-      const K = lerpVec(C, D, 2 / 3); // Giao điểm với CD (song song AD)
-      const L = lerpVec(S, C, 2 / 3); // Giao điểm với SC (song song SD)
+      const K = lerpVec(S, C, 2 / 3); // Điểm thứ ba để khép thiết diện GHK theo kịch bản
 
       // Khung chóp với Occlusion tự động (05_threejs_engine.md PHẦN 4.20)
       currentSolidHull = createPolyhedronHullMesh([
@@ -1377,7 +1543,9 @@
       createLabel3D('C', C); createLabel3D('D', D); createLabel3D('G', G, '#FAC775');
 
       let stepState = { SA: false, AD: false, SD: false };
-      let drawnH = false, drawnK = false, drawnL = false;
+      let drawnH = false, drawnK = false;
+      let currentStep = 0;
+      const expectedDirections = ['SA', 'AD', 'SD'];
 
       function ensurePointH() {
         if (!drawnH) {
@@ -1393,40 +1561,39 @@
           createLabel3D('K', K, '#FAC775');
         }
       }
-      function ensurePointL() {
-        if (!drawnL) {
-          drawnL = true;
-          makeSpherePoint(L, COLOR_RESULT, 0.09);
-          createLabel3D('L', L, '#FAC775');
-        }
-      }
-
       document.querySelectorAll('#t3-choice-wrap .choice-btn').forEach(btn => {
         btn.onclick = () => {
           const dir = btn.dataset.dir;
-          if (dir === 'SA' && !stepState.SA) {
+          if (dir !== expectedDirections[currentStep]) {
+            document.getElementById('t3-feedback').textContent = 'Chưa đúng, xem lại: (Q) song song với mặt (SAD), nên cần chọn đúng một hướng nằm trong mặt đó theo thứ tự cạnh đang dựng.';
+            document.getElementById('t3-choice-wrap').classList.add('shake');
+            setTimeout(() => document.getElementById('t3-choice-wrap').classList.remove('shake'), 300);
+            return;
+          }
+          if (dir === 'SA') {
             stepState.SA = true;
             ensurePointH();
             animateLine(G, H, COLOR_RESULT, 700);
             createGlowingHighlightSegment(G, H, COLOR_RESULT, 0.04);
             document.getElementById('t3-ck-1').className = 'checklist-item done';
-          } else if (dir === 'AD' && !stepState.AD) {
+          } else if (dir === 'AD') {
             stepState.AD = true;
             ensurePointH();
             ensurePointK();
             animateLine(H, K, COLOR_RESULT, 700);
             createGlowingHighlightSegment(H, K, COLOR_RESULT, 0.04);
             document.getElementById('t3-ck-2').className = 'checklist-item done';
-          } else if (dir === 'SD' && !stepState.SD) {
+          } else if (dir === 'SD') {
             stepState.SD = true;
             ensurePointK();
-            ensurePointL();
-            animateLine(G, L, COLOR_RESULT, 700);
-            setTimeout(() => animateLine(L, K, COLOR_RESULT, 700), 200);
-            createGlowingHighlightSegment(G, L, COLOR_RESULT, 0.04);
-            createGlowingHighlightSegment(L, K, COLOR_RESULT, 0.04);
+            animateLine(K, G, COLOR_RESULT, 700);
+            createGlowingHighlightSegment(K, G, COLOR_RESULT, 0.04);
             document.getElementById('t3-ck-3').className = 'checklist-item done';
           }
+          currentStep++;
+          document.getElementById('t3-feedback').textContent = currentStep < 3
+            ? `Chính xác! Tiếp tục dựng cạnh ${currentStep + 1} để rà mặt kế tiếp.`
+            : 'Đã rà đủ các mặt tiếp giáp. Thiết diện GHK đã khép kín; có thể kết luận.';
           if (stepState.SA && stepState.AD && stepState.SD) {
             document.getElementById('t3-btn-finish').disabled = false;
           }
@@ -1434,10 +1601,11 @@
       });
 
       document.getElementById('t3-btn-finish').onclick = () => {
-        createPolygonMesh([G, H, K, L], COLOR_RESULT, 0.35);
+        createPolygonMesh([G, H, K], COLOR_RESULT, 0.5);
+        createPolylineBorder([G, H, K], COLOR_RESULT);
         document.getElementById('btn-next-tab3').style.display = 'inline-flex';
         unlockTab(4);
-        alert('Thiết diện hoàn chỉnh là tứ giác GHKL!');
+        document.getElementById('t3-feedback').innerHTML = '<b>Kết luận:</b> Thiết diện là tam giác GHK. Thiết diện gồm toàn bộ giao tuyến với các mặt mà mặt cắt đi qua.';
       };
     }
 
@@ -1475,6 +1643,8 @@
 
       let stepState = { BD: false, BpDp: false, BBp: false };
       let drawnN = false, drawnP = false, drawnQ = false;
+      let currentStep = 0;
+      const expectedDirections = ['BD', 'BBp', 'BpDp'];
 
       function ensurePointN() {
         if (!drawnN) {
@@ -1501,20 +1671,26 @@
       document.querySelectorAll('#t3-choice-wrap .choice-btn').forEach(btn => {
         btn.onclick = () => {
           const dir = btn.dataset.dir;
-          if (dir === 'BD' && !stepState.BD) {
+          if (dir !== expectedDirections[currentStep]) {
+            document.getElementById('t3-feedback').textContent = 'Chưa đúng, xem lại hướng của các đường nằm trong mặt chéo (BDD\'B\') và mặt đang được rà.';
+            document.getElementById('t3-choice-wrap').classList.add('shake');
+            setTimeout(() => document.getElementById('t3-choice-wrap').classList.remove('shake'), 300);
+            return;
+          }
+          if (dir === 'BD') {
             stepState.BD = true;
             ensurePointN();
             animateLine(M, N, COLOR_RESULT, 700);
             createGlowingHighlightSegment(M, N, COLOR_RESULT, 0.04);
             document.getElementById('t3-ck-1').className = 'checklist-item done';
-          } else if (dir === 'BBp' && !stepState.BBp) {
+          } else if (dir === 'BBp') {
             stepState.BBp = true;
             ensurePointN();
             ensurePointP();
             animateLine(N, P, COLOR_RESULT, 700);
             createGlowingHighlightSegment(N, P, COLOR_RESULT, 0.04);
             document.getElementById('t3-ck-2').className = 'checklist-item done';
-          } else if (dir === 'BpDp' && !stepState.BpDp) {
+          } else if (dir === 'BpDp') {
             stepState.BpDp = true;
             ensurePointP();
             ensurePointQ();
@@ -1525,6 +1701,10 @@
             document.getElementById('t3-ck-3').className = 'checklist-item done';
             document.getElementById('t3-ck-4').className = 'checklist-item done';
           }
+          currentStep++;
+          document.getElementById('t3-feedback').textContent = currentStep < 3
+            ? `Chính xác! Tiếp tục dựng cạnh ${currentStep + 1}; chưa được dừng khi đa giác còn hở.`
+            : 'Checklist đã đủ và đa giác MNPQ đã khép kín; có thể kết luận.';
           if (stepState.BD && stepState.BBp && stepState.BpDp) {
             document.getElementById('t3-btn-finish').disabled = false;
           }
@@ -1536,7 +1716,7 @@
         createPolylineBorder([M, N, P, Q], COLOR_RESULT);
         document.getElementById('btn-next-tab3').style.display = 'inline-flex';
         unlockTab(4);
-        alert('Thiết diện là hình bình hành MNPQ!');
+        document.getElementById('t3-feedback').innerHTML = '<b>Kết luận:</b> Thiết diện là hình bình hành MNPQ. Bốn cạnh là toàn bộ giao tuyến của mặt cắt với các mặt hộp mà nó đi qua.';
       };
     }
 
@@ -1548,31 +1728,36 @@
         q: "Cho đường thẳng d và mặt phẳng (α). Biết d có đúng 1 điểm chung với (α). Kết luận nào ĐÚNG?",
         options: ["d ⊂ (α)", "d // (α)", "d cắt (α)", "Không xác định"],
         correct: 2,
-        explain: "Đúng! Có đúng 1 điểm chung nghĩa là đường thẳng d cắt mặt phẳng (α) tại điểm đó."
+        explain: "Đúng! Có đúng 1 điểm chung nghĩa là đường thẳng d cắt mặt phẳng (α) tại điểm đó — khác với vô số điểm chung hoặc không có điểm chung.",
+        hint: "Thử nhớ lại ba vị trí tương đối của đường thẳng và mặt phẳng: mỗi vị trí ứng với bao nhiêu điểm chung?"
       },
       {
         q: "Cho hình chóp S.ABCD (đáy hình bình hành). Gọi (P) qua 1 điểm trên SA và song song BC. Giao tuyến của (P) với (ABCD) có tính chất gì?",
         options: ["Vuông góc BC", "Song song BC", "Trùng BC", "Cắt BC"],
         correct: 1,
-        explain: "Chính xác! Theo tính chất: nếu (P) // BC thì giao tuyến của (P) với mặt phẳng chứa BC bắt buộc phải song song BC."
+        explain: "Chính xác! Vì (P) // BC và (ABCD) chứa BC nên giao tuyến của (P) với (ABCD) phải song song BC.",
+        hint: "Nếu (P) không được phép chạm vào BC, giao tuyến của nó với mặt phẳng chứa BC có thể cắt BC được không?"
       },
       {
         q: "Khi tìm thiết diện của 1 hình chóp bị cắt bởi 1 mặt phẳng, bước nào BẮT BUỘC để đảm bảo thiết diện đúng?",
         options: ["Chỉ tìm giao tuyến với 2 mặt", "Chỉ tìm giao tuyến với đáy", "Kiểm tra giao tuyến với tất cả các mặt", "Chỉ tìm 1 giao tuyến"],
         correct: 2,
-        explain: "Chính xác! Bỏ sót 1 mặt tiếp giáp sẽ khiến thiết diện bị hở, không tạo thành đa giác khép kín."
+        explain: "Chính xác! Bỏ sót 1 mặt tiếp giáp sẽ khiến thiết diện bị hở, không tạo thành đa giác khép kín.",
+        hint: "Nhớ lại Tab 3: nút Kết luận chỉ sáng lên khi checklist đạt điều kiện nào?"
       },
       {
         q: "Trên hình phối cảnh 2D, hai đường thẳng SA và BD có vẻ cắt nhau. Trong không gian 3D thực tế, chúng có quan hệ gì?",
         options: ["Luôn cắt nhau", "Song song", "Chéo nhau", "Đồng phẳng"],
         correct: 2,
-        explain: "Chính xác! SA thuộc mặt bên, BD thuộc mặt đáy nên chúng chéo nhau trong không gian, không có điểm chung."
+        explain: "Chính xác! SA và BD không cùng nằm trong một mặt phẳng nên chéo nhau; điểm trông như giao nhau chỉ là hiệu ứng phối cảnh.",
+        hint: "Hãy xoay hình sang góc nhìn bên hông: hai đường này có thực sự chạm nhau không?"
       },
       {
-        q: "Một khung cửa sổ hình chữ nhật quay quanh bản lề cố định. Các thanh chắn song song bản lề có giữ nguyên trạng thái song song với mặt sàn không?",
+        q: "Một khung cửa sổ hình chữ nhật được lắp các thanh chắn song song với một cạnh của khung. Khi khung quay quanh bản lề ở cạnh còn lại, các thanh có còn song song với mặt sàn không nếu ban đầu chúng song song mặt sàn?",
         options: ["Luôn song song", "Không còn song song", "Tùy góc xoay", "Chỉ khi đóng cửa"],
         correct: 0,
-        explain: "Chính xác! Vì các thanh chắn song song với trục bản lề đứng, nên khi xoay quanh trục đó chúng luôn song song với sàn."
+        explain: "Chính xác! Khi khung xoay quanh trục bản lề cố định, các thanh vốn có phương song song mặt sàn vẫn giữ phương nằm ngang và tiếp tục song song với mặt sàn.",
+        hint: "Hãy quan sát phương của thanh trước và sau khi khung quay quanh một trục cố định."
       }
     ];
 
@@ -1721,21 +1906,45 @@
 
       const wrap = document.getElementById('t4-options');
       wrap.innerHTML = '';
+      let attempts = 0;
+      let answered = false;
+      const shuffledOptions = item.options
+        .map((text, originalIndex) => ({ text, correct: originalIndex === item.correct }))
+        .sort(() => Math.random() - 0.5);
 
-      item.options.forEach((optText, idx) => {
+      shuffledOptions.forEach((option, idx) => {
         const btn = document.createElement('button');
         btn.className = 'choice-btn';
-        btn.innerHTML = `<span>${String.fromCharCode(65 + idx)}. ${optText}</span> <i class="ti ti-circle"></i>`;
+        btn.innerHTML = `<span>${String.fromCharCode(65 + idx)}. ${option.text}</span> <i class="ti ti-circle"></i>`;
         btn.onclick = () => {
-          if (idx === item.correct) {
+          if (answered) return;
+          if (option.correct) {
+            answered = true;
             btn.className = 'choice-btn correct';
             document.getElementById('t4-fb-text').innerHTML = `<b>Athena:</b> ${item.explain}`;
             document.getElementById('t4-feedback').style.display = 'flex';
             document.getElementById('t4-btn-next').style.display = 'inline-flex';
+            wrap.querySelectorAll('button').forEach(choice => { choice.disabled = true; });
           } else {
+            attempts++;
             btn.className = 'choice-btn wrong';
-            document.getElementById('t4-fb-text').innerHTML = `<b>Athena:</b> Chưa chính xác, hãy suy nghĩ thêm!`;
-            document.getElementById('t4-feedback').style.display = 'flex';
+            document.getElementById('sidebar').classList.remove('shake');
+            void document.getElementById('sidebar').offsetWidth;
+            document.getElementById('sidebar').classList.add('shake');
+            if (attempts === 1) {
+              document.getElementById('t4-feedback').style.display = 'none';
+            } else if (attempts === 2) {
+              document.getElementById('t4-fb-text').innerHTML = `<b>Athena gợi ý:</b> ${item.hint}`;
+              document.getElementById('t4-feedback').style.display = 'flex';
+            } else {
+              answered = true;
+              const correctButton = [...wrap.querySelectorAll('button')][shuffledOptions.findIndex(o => o.correct)];
+              correctButton.className = 'choice-btn correct';
+              document.getElementById('t4-fb-text').innerHTML = `<b>Athena:</b> ${item.explain}`;
+              document.getElementById('t4-feedback').style.display = 'flex';
+              document.getElementById('t4-btn-next').style.display = 'inline-flex';
+              wrap.querySelectorAll('button').forEach(choice => { choice.disabled = true; });
+            }
           }
         };
         wrap.appendChild(btn);

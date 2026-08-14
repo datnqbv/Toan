@@ -521,11 +521,21 @@
       <h2 style="margin: 0 0 6px 0; font-size: 22px; color: #fac775;">🎉 Xuất sắc! Bạn đã làm chủ Ôn tập Chương IV!</h2>
       <div style="font-size: 14px; color: #94a3b8;">Module 14.4 — Hình học không gian 11</div>
 
-      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: left; font-size: 13px; line-height: 1.6;">
+      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: left; font-size: 13px; line-height: 1.6; max-height: 56vh; overflow-y: auto;">
         <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Tab 1:</b> Chứng minh thành công tính đối xứng phép chiếu & chứng minh trọng tâm K → K'.</div>
         <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Tab 2:</b> Đo tỉ lệ 3 cặp cạnh đối để kiểm tra tính hợp lệ hình biểu diễn lục giác.</div>
         <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Tab 3:</b> Dựng từng bước hình biểu diễn khối chóp S.ABCD đáy hình thang.</div>
         <div style="display: flex; gap: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Tab 4:</b> Giải thích hiện tượng bóng hàng rào dưới nắng qua phép chiếu song song tự nhiên.</div>
+        <hr style="border: 0; border-top: 1px solid rgba(255,255,255,.12); margin: 12px 0;">
+        <div style="color:#fac775; font-weight:800; margin-bottom:5px;">Kiến thức cần nhớ</div>
+        <div style="color:#e2e8f0;">Phép chiếu song song bảo toàn tính thẳng hàng, thứ tự, song song và tỉ lệ trên cùng một đường thẳng hoặc hai đường thẳng song song; không bảo toàn góc, độ dài tuyệt đối hay diện tích.</div>
+        <div style="color:#e2e8f0; margin-top:5px;">Có thể chiếu ngược theo phương −Δ; cần đo tỉ lệ khi kiểm tra hình biểu diễn; hình chóp có đỉnh biểu diễn tự do hơn lăng trụ; bóng nắng là một phép chiếu song song tự nhiên.</div>
+        <div style="color:#fac775; font-weight:800; margin:10px 0 5px;">Ba sai lầm cần tránh</div>
+        <ol style="color:#e2e8f0; margin:0; padding-left:18px;">
+          <li>Chọn đáp án mà không giải thích cơ chế.</li>
+          <li>Đánh giá hình biểu diễn chỉ bằng mắt, không đo tỉ lệ.</li>
+          <li>Áp tính chất trung điểm trực tiếp cho trọng tâm thay vì lập luận qua trung tuyến và tỉ lệ 2:1.</li>
+        </ol>
       </div>
 
       <div style="display: flex; gap: 12px;">
@@ -614,9 +624,9 @@
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
-          <button class="btn btn-outline" id="btn-t2-m1" style="color: var(--navy); border-color: var(--teal);"><i class="ti ti-ruler-measure"></i> 1. Đo cặp cạnh MN và QP</button>
-          <button class="btn btn-outline" id="btn-t2-m2" style="color: var(--navy); border-color: var(--teal); display: none;"><i class="ti ti-ruler-measure"></i> 2. Đo cặp cạnh NQ và PS</button>
-          <button class="btn btn-outline" id="btn-t2-m3" style="color: var(--navy); border-color: var(--teal); display: none;"><i class="ti ti-ruler-measure"></i> 3. Đo cặp cạnh RS và PM</button>
+          <button class="btn btn-outline" id="btn-t2-m1" style="color: var(--navy); border-color: var(--teal);"><i class="ti ti-ruler-measure"></i> 1. Đo cặp cạnh đối MN và QR</button>
+          <button class="btn btn-outline" id="btn-t2-m2" style="color: var(--navy); border-color: var(--teal); display: none;"><i class="ti ti-ruler-measure"></i> 2. Đo cặp cạnh đối NP và RS</button>
+          <button class="btn btn-outline" id="btn-t2-m3" style="color: var(--navy); border-color: var(--teal); display: none;"><i class="ti ti-ruler-measure"></i> 3. Đo cặp cạnh đối PQ và SM</button>
         </div>
 
         <div id="t2-conclusion-wrap" style="display: none;">
@@ -649,12 +659,20 @@
             <span>Tỉ lệ đáy AB / CD:</span>
             <span id="txt-t3-ratio" style="color: var(--teal);">1.00 × CD</span>
           </div>
-          <input type="range" id="sld-t3-ratio" min="0.8" max="2.0" step="0.05" value="1.0">
+          <input type="range" id="sld-t3-ratio" min="0.8" max="2.0" step="0.01" value="1.0">
+        </div>
+
+        <div class="control-card" id="t3-apex-controls" style="display:none;">
+          <div class="slider-label"><span>Vị trí ngang của S′:</span><span id="txt-t3-apex-x">1.20</span></div>
+          <input type="range" id="sld-t3-apex-x" min="0.3" max="2.1" step="0.05" value="1.2">
+          <div class="slider-label" style="margin-top:8px;"><span>Độ cao của S′:</span><span id="txt-t3-apex-y">2.60</span></div>
+          <input type="range" id="sld-t3-apex-y" min="1.4" max="3.0" step="0.05" value="2.6">
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 8px; margin-bottom: 12px;">
-          <button class="btn btn-primary" id="btn-t3-apex" style="display: none;"><i class="ti ti-point"></i> 2. Đặt vị trí đỉnh chóp S' (tự do)</button>
+          <button class="btn btn-primary" id="btn-t3-apex" style="display: none;"><i class="ti ti-point"></i> 2. Xác nhận vị trí đỉnh S′</button>
           <button class="btn btn-outline" id="btn-t3-connect" style="color: var(--navy); border-color: var(--teal); display: none;"><i class="ti ti-vector-triangle"></i> 3. Nối các cạnh bên</button>
+          <button class="btn btn-outline" id="btn-t3-compare" style="color: var(--navy); border-color: var(--teal); display: none;"><i class="ti ti-arrows-diff"></i> 4. Đối chiếu với khối 3D thật</button>
         </div>
 
         <div id="t3-feedback" class="info-box athena-box" style="display: none;">
@@ -675,7 +693,7 @@
         </div>
 
         <div style="display: flex; flex-direction: column; gap: 10px; margin-bottom: 12px;">
-          <button class="btn btn-primary" id="btn-t4-sun"><i class="ti ti-sun-high"></i> Đổi thời điểm trong ngày (Sáng → Trưa → Chiều)</button>
+          <button class="btn btn-primary" id="btn-t4-sun" style="display:none;"><i class="ti ti-sun-high"></i> 3. Đổi thời điểm trong ngày</button>
         </div>
 
         <div id="t4-quiz-wrap" style="margin-bottom: 12px;">
@@ -1222,8 +1240,10 @@
     }
 
     let t1CStepIdx = 1;
+    let t1CReminderShown = false;
     function initTab1PartC() {
       t1CStepIdx = 1;
+      t1CReminderShown = false;
       renderTab1PartCStep();
     }
 
@@ -1242,6 +1262,8 @@
       createLineSegment(E, F, COLOR_EDGE_SOLID); createLineSegment(F, G, COLOR_EDGE_SOLID); createLineSegment(G, E, COLOR_EDGE_SOLID);
       makeSpherePoint(E); makeSpherePoint(F); makeSpherePoint(G);
       createLabel3D('E', E); createLabel3D('F', F); createLabel3D('G', G);
+      makeSpherePoint(K, COLOR_RESULT, 0.12);
+      createLabel3D('K (trọng tâm)', K, '#FAC775');
 
       if (t1CStepIdx >= 2) {
         makeSpherePoint(M, COLOR_PLANE_3, 0.09);
@@ -1254,8 +1276,6 @@
         createLabel3D('M (trung điểm)', M, '#34d399');
       }
       if (t1CStepIdx >= 3) {
-        makeSpherePoint(K, COLOR_RESULT, 0.12);
-        createLabel3D('K (trọng tâm)', K, '#FAC775');
         createLabel3D('EK : KM = 2 : 1', K.clone().add(new THREE.Vector3(0, 0.3, 0)), '#FAC775');
       }
 
@@ -1276,10 +1296,14 @@
           animateLine(E, Ep, 0xFAC775, 700, null, 0.5, true);
           setTimeout(() => animateLine(F, Fp, 0xFAC775, 700, null, 0.5, true), 250);
           setTimeout(() => animateLine(G, Gp, 0xFAC775, 700, null, 0.5, true), 500);
+          setTimeout(() => animateLine(M, Mp, 0x34d399, 700, null, 0.55, true), 750);
+          setTimeout(() => animateLine(K, Kp, 0xFAC775, 700, null, 0.7, true), 1000);
         } else {
           createLineSegment(E, Ep, 0xFAC775, 0.4, true);
           createLineSegment(F, Fp, 0xFAC775, 0.4, true);
           createLineSegment(G, Gp, 0xFAC775, 0.4, true);
+          createLineSegment(M, Mp, 0x34d399, 0.45, true);
+          createLineSegment(K, Kp, 0xFAC775, 0.55, true);
         }
         makeSpherePoint(Mp, COLOR_PLANE_3, 0.09); createLabel3D("M'", Mp, '#34d399');
         makeSpherePoint(Kp, COLOR_RESULT, 0.12); createLabel3D("K'", Kp, '#FAC775');
@@ -1289,10 +1313,24 @@
       const actBtn = document.getElementById('btn-t1-c-action');
 
       if (t1CStepIdx === 1) {
-        desc.innerHTML = `<b>Bước 1:</b> Trọng tâm K là giao điểm 3 đường trung tuyến. Bấm <b>"Dựng trung tuyến EM"</b>.`;
+        desc.innerHTML = t1CReminderShown
+          ? `<b>Bước 2:</b> Dựng trung tuyến EM qua đỉnh E và trung điểm M của FG.`
+          : `<b>Bước 1:</b> Quan sát tam giác EFG và điểm K đã đánh dấu. Hãy nhắc lại khái niệm trọng tâm trước khi dựng hình.`;
         actBtn.style.display = 'inline-flex';
-        actBtn.innerHTML = '<i class="ti ti-vector-triangle"></i> Dựng trung tuyến EM';
-        actBtn.onclick = () => { t1CStepIdx = 2; renderTab1PartCStep(); };
+        actBtn.innerHTML = t1CReminderShown
+          ? '<i class="ti ti-vector-triangle"></i> Dựng trung tuyến EM'
+          : '<i class="ti ti-help-circle"></i> Nhắc lại trọng tâm là gì?';
+        actBtn.onclick = () => {
+          if (!t1CReminderShown) {
+            t1CReminderShown = true;
+            document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Trọng tâm K là giao điểm của ba đường trung tuyến — mỗi trung tuyến nối một đỉnh với trung điểm cạnh đối diện.`;
+            document.getElementById('t1-feedback').style.display = 'flex';
+            renderTab1PartCStep();
+          } else {
+            t1CStepIdx = 2;
+            renderTab1PartCStep();
+          }
+        };
       } else if (t1CStepIdx === 2) {
         desc.innerHTML = `<b>Bước 2:</b> M là trung điểm của FG. Đoạn EM là đường trung tuyến. Bấm <b>"Hiển thị tỉ lệ EK:KM"</b>.`;
         actBtn.style.display = 'inline-flex';
@@ -1382,6 +1420,13 @@
        ========================================================================= */
     function initTab2() {
       clearScene();
+      ['btn-t2-m1', 'btn-t2-m2', 'btn-t2-m3'].forEach(id => {
+        const button = document.getElementById(id);
+        button.disabled = false;
+        button.style.opacity = '1';
+      });
+      document.getElementById('t2-c-yes').className = 'choice-btn';
+      document.getElementById('t2-c-no').className = 'choice-btn';
       document.getElementById('btn-t2-m2').style.display = 'none';
       document.getElementById('btn-t2-m3').style.display = 'none';
       document.getElementById('t2-conclusion-wrap').style.display = 'none';
@@ -1406,27 +1451,47 @@
 
       createLabel3D('Hình Lục Giác MNPQRS Biểu Diễn', new THREE.Vector3(0, 0.3, 0), '#c084fc');
 
-      document.getElementById('btn-t2-m1').onclick = () => {
-        createLineSegment(M, N, 0xFAC775); createLineSegment(Q, P, 0xFAC775);
-        createLabel3D('MN / QP = 1.00 (MN // QP)', lerpVec(M, N, 0.5).add(new THREE.Vector3(0, 0.3, 0)), '#FAC775');
-        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Đã đo cặp cạnh 1: MN / QP = 1.00 và MN // QP! Bấm tiếp <b>2. Đo cặp cạnh NQ và PS</b>!`;
+      // Đo trực tiếp từ tọa độ, không ghi cứng kết quả. Hai vector có thể
+      // ngược hướng nhưng vẫn được xem là song song.
+      const measurePair = (a, b, c, d) => {
+        const firstLength = a.distanceTo(b);
+        const secondLength = c.distanceTo(d);
+        const firstDirection = b.clone().sub(a).normalize();
+        const secondDirection = d.clone().sub(c).normalize();
+        return {
+          ratio: firstLength / secondLength,
+          parallel: Math.abs(firstDirection.dot(secondDirection)) > 0.999
+        };
+      };
+
+      const showMeasurement = (buttonId, firstName, secondName, a, b, c, d, color, nextButtonId) => {
+        const result = measurePair(a, b, c, d);
+        const ratioText = result.ratio.toFixed(2);
+        createLineSegment(a, b, color);
+        createLineSegment(c, d, color);
+        createLabel3D(`${firstName} / ${secondName} = ${ratioText} (${firstName} // ${secondName})`, lerpVec(a, b, 0.5).add(new THREE.Vector3(0, 0.3, 0)), `#${color.toString(16).padStart(6, '0')}`);
+        const button = document.getElementById(buttonId);
+        button.disabled = true;
+        button.style.opacity = '0.65';
+        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Đo từ tọa độ thực: ${firstName}/${secondName} = <b>${ratioText}</b> và hai cạnh ${result.parallel ? 'song song' : 'không song song'}.`;
         document.getElementById('t2-feedback').style.display = 'flex';
-        document.getElementById('btn-t2-m2').style.display = 'inline-flex';
+        if (nextButtonId) document.getElementById(nextButtonId).style.display = 'inline-flex';
+        return result;
+      };
+
+      document.getElementById('btn-t2-m1').onclick = () => {
+        showMeasurement('btn-t2-m1', 'MN', 'QR', M, N, Q, R, 0xFAC775, 'btn-t2-m2');
+        document.getElementById('t2-msg').innerHTML += ` Bấm tiếp <b>2. Đo cặp cạnh đối NP và RS</b>.`;
       };
 
       document.getElementById('btn-t2-m2').onclick = () => {
-        createLineSegment(N, P, 0x34d399); createLineSegment(S, R, 0x34d399);
-        createLabel3D('NP / SR = 1.00 (NP // SR)', lerpVec(N, P, 0.5).add(new THREE.Vector3(0, 0.3, 0)), '#34d399');
-        document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Đã đo cặp cạnh 2: NP / SR = 1.00 và NP // SR! Bấm tiếp <b>3. Đo cặp cạnh RS và PM</b>!`;
-        document.getElementById('t2-feedback').style.display = 'flex';
-        document.getElementById('btn-t2-m3').style.display = 'inline-flex';
+        showMeasurement('btn-t2-m2', 'NP', 'RS', N, P, R, S, 0x34d399, 'btn-t2-m3');
+        document.getElementById('t2-msg').innerHTML += ` Bấm tiếp <b>3. Đo cặp cạnh đối PQ và SM</b>.`;
       };
 
       document.getElementById('btn-t2-m3').onclick = () => {
-        createLineSegment(M, S, 0x60a5fa); createLineSegment(Q, R, 0x60a5fa);
-        createLabel3D('SM / RQ = 1.00 (SM // RQ)', lerpVec(S, M, 0.5).add(new THREE.Vector3(0, 0.3, 0)), '#60a5fa');
+        showMeasurement('btn-t2-m3', 'PQ', 'SM', P, Q, S, M, 0x60a5fa, null);
         document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> 🎉 Đã đo xong cả 3 cặp cạnh đối! Cả 3 cặp đều song song và có tỉ lệ đúng bằng 1.00. Hãy trả lời câu hỏi kết luận!`;
-        document.getElementById('t2-feedback').style.display = 'flex';
         document.getElementById('t2-conclusion-wrap').style.display = 'block';
       };
 
@@ -1449,117 +1514,113 @@
        8. TAB 3: VẼ HÌNH BIỂU DIỄN KHỐI CHÓP ĐÁY HÌNH THANG
        ========================================================================= */
     let t3RatioVal = 1.0;
-    let t3StepState = { apexPlaced: false, connected: false, animateConnect: false };
+    let t3StepState = { apexVisible: false, apexPlaced: false, connected: false, animateConnect: false, apexX: 1.2, apexY: 2.6 };
 
     function renderTab3Pyramid(ratio = 1.0) {
       clearScene();
 
-      // 3D Real Pyramid at Left (X = -2.2)
-      const abHalf = 0.6 * ratio;
-      const cdHalf = 0.6 / 1.33;
-
-      const A3 = new THREE.Vector3(-2.2 - abHalf, 0, 1.0);
-      const B3 = new THREE.Vector3(-2.2 + abHalf, 0, 1.0);
-      const C3 = new THREE.Vector3(-2.2 + cdHalf, 0, -1.0);
-      const D3 = new THREE.Vector3(-2.2 - cdHalf, 0, -1.0);
-      const S3 = new THREE.Vector3(-2.2, 2.8, 0); // Apex S
-
+      // Khối thật bên trái luôn giữ đúng AB/CD = 4/3; thanh trượt chỉ
+      // điều khiển đáy biểu diễn bên phải để học sinh tự tìm đúng tỉ lệ.
+      const A3 = new THREE.Vector3(-3.0, 0, 1.0); const B3 = new THREE.Vector3(-1.4, 0, 1.0);
+      const C3 = new THREE.Vector3(-1.6, 0, -1.0); const D3 = new THREE.Vector3(-2.8, 0, -1.0);
+      const S3 = new THREE.Vector3(-2.2, 2.8, 0);
       createPolygonMesh([A3, B3, C3, D3], COLOR_PLANE_BASE, 0.35);
-      const pyramidEdges = [[S3,A3],[S3,B3],[S3,C3],[S3,D3],[A3,B3],[B3,C3],[C3,D3],[D3,A3]];
-      pyramidEdges.forEach(edge => createLineSegment(edge[0], edge[1], COLOR_EDGE_SOLID));
-
-      makeSpherePoint(A3); makeSpherePoint(B3); makeSpherePoint(C3); makeSpherePoint(D3);
+      [[S3,A3],[S3,B3],[S3,C3],[S3,D3],[A3,B3],[B3,C3],[C3,D3],[D3,A3]]
+        .forEach(edge => createLineSegment(edge[0], edge[1], COLOR_EDGE_SOLID));
+      [A3, B3, C3, D3].forEach(point => makeSpherePoint(point));
       makeSpherePoint(S3, COLOR_RESULT, 0.12);
+      createLabel3D('A', A3); createLabel3D('B', B3); createLabel3D('C', C3); createLabel3D('D', D3); createLabel3D('S', S3, '#FAC775');
+      createLabel3D('Khối chóp thật (AB/CD = 4/3)', new THREE.Vector3(-2.2, -0.25, 1.0), '#60a5fa');
 
-      createLabel3D('A', A3); createLabel3D('B', B3); createLabel3D('C', C3); createLabel3D('D', D3);
-      createLabel3D('S', S3, '#FAC775');
+      const baseCenterX = 1.2;
+      const cdLength = 1.8;
+      const abLength = cdLength * ratio;
+      const Ab2 = new THREE.Vector3(baseCenterX - abLength / 2, 0.2, 0.9);
+      const Bb2 = new THREE.Vector3(baseCenterX + abLength / 2, 0.2, 0.9);
+      const Cb2 = new THREE.Vector3(baseCenterX + cdLength / 2, 0.2, -0.9);
+      const Db2 = new THREE.Vector3(baseCenterX - cdLength / 2, 0.2, -0.9);
+      createPolygonMesh([Ab2, Bb2, Cb2, Db2], COLOR_PLANE_BASE, 0.3);
+      createLineSegment(Ab2, Bb2, COLOR_EDGE_SOLID); createLineSegment(Bb2, Cb2, COLOR_EDGE_SOLID);
+      createLineSegment(Cb2, Db2, COLOR_EDGE_SOLID); createLineSegment(Db2, Ab2, COLOR_EDGE_SOLID);
+      [Ab2, Bb2, Cb2, Db2].forEach(point => makeSpherePoint(point));
+      createLabel3D("A'", Ab2); createLabel3D("B'", Bb2); createLabel3D("C'", Cb2); createLabel3D("D'", Db2);
+      createLabel3D(`Đáy biểu diễn: A'B'/C'D' = ${ratio.toFixed(2)}`, new THREE.Vector3(baseCenterX, -0.1, 1.0), Math.abs(ratio - 4/3) < 0.015 ? '#34d399' : '#FAC775');
 
-      const isExact = Math.abs(ratio - 1.33) < 0.08;
-      const titleColor = isExact ? '#34d399' : '#60a5fa';
-      createLabel3D(`Khối Chóp Thật (AB/CD = ${(ratio * 1.33).toFixed(2)})`, lerpVec(A3, C3, 0.5).add(new THREE.Vector3(0, -0.3, 0)), titleColor);
-
-      // Restore Right Panel 2D Representation if Step 2 / Step 3 triggered
-      if (t3StepState.apexPlaced) {
-        const Ab2 = new THREE.Vector3(0.0, 0.2, 0.8); const Bb2 = new THREE.Vector3(1.33, 0.2, 0.8);
-        const Cb2 = new THREE.Vector3(2.33, 0.2, -0.8); const Db2 = new THREE.Vector3(0.0, 0.2, -0.8);
-        const S2 = new THREE.Vector3(1.2, 2.6, 0); // Apex S'
-
-        createPolygonMesh([Ab2, Bb2, Cb2, Db2], COLOR_PLANE_BASE, 0.3);
-        createLineSegment(Ab2, Bb2, COLOR_EDGE_SOLID); createLineSegment(Bb2, Cb2, COLOR_EDGE_SOLID);
-        createLineSegment(Cb2, Db2, COLOR_EDGE_SOLID); createLineSegment(Db2, Ab2, COLOR_EDGE_SOLID);
-
-        makeSpherePoint(Ab2); makeSpherePoint(Bb2); makeSpherePoint(Cb2); makeSpherePoint(Db2);
+      const S2 = new THREE.Vector3(t3StepState.apexX, t3StepState.apexY, 0);
+      if (t3StepState.apexVisible) {
         makeSpherePoint(S2, COLOR_RESULT, 0.12);
-
-        createLabel3D("A'", Ab2); createLabel3D("B'", Bb2); createLabel3D("C'", Cb2); createLabel3D("D'", Db2);
         createLabel3D("S'", S2, '#FAC775');
       }
-
       if (t3StepState.connected) {
-        const Ab2 = new THREE.Vector3(0.0, 0.2, 0.8); const Bb2 = new THREE.Vector3(1.33, 0.2, 0.8);
-        const Cb2 = new THREE.Vector3(2.33, 0.2, -0.8); const Db2 = new THREE.Vector3(0.0, 0.2, -0.8);
-        const S2 = new THREE.Vector3(1.2, 2.6, 0);
-
+        const edges = [[S2, Ab2, false], [S2, Bb2, false], [S2, Cb2, false], [S2, Db2, true]];
         if (t3StepState.animateConnect) {
-          // Animate 4 cạnh bên S'→A'/B'/C'/D' tuần tự (250ms delay)
-          animateLine(S2, Ab2, COLOR_RESULT, 700);
-          setTimeout(() => animateLine(S2, Bb2, COLOR_RESULT, 700), 250);
-          setTimeout(() => animateLine(S2, Cb2, COLOR_RESULT, 700), 500);
-          setTimeout(() => animateLine(S2, Db2, COLOR_RESULT, 700, null, 1, true), 750);
+          edges.forEach((edge, index) => setTimeout(() => animateLine(edge[0], edge[1], COLOR_RESULT, 700, null, 1, edge[2]), index * 250));
         } else {
-          createLineSegment(S2, Ab2, COLOR_RESULT); createLineSegment(S2, Bb2, COLOR_RESULT);
-          createLineSegment(S2, Cb2, COLOR_RESULT); createLineSegment(S2, Db2, COLOR_RESULT, 1, true);
+          edges.forEach(edge => createLineSegment(edge[0], edge[1], COLOR_RESULT, 1, edge[2]));
         }
-
-        createLabel3D('Hình Biểu Diễn 2D', new THREE.Vector3(1.2, -0.1, 0.8), '#FAC775');
+        createLabel3D('Hình biểu diễn hoàn chỉnh', new THREE.Vector3(baseCenterX, 0.05, -1.1), '#FAC775');
       }
     }
 
     function initTab3() {
       t3RatioVal = 1.0;
-      t3StepState = { apexPlaced: false, connected: false };
+      t3StepState = { apexVisible: false, apexPlaced: false, connected: false, animateConnect: false, apexX: 1.2, apexY: 2.6 };
       document.getElementById('sld-t3-ratio').value = 1.0;
+      document.getElementById('sld-t3-apex-x').value = 1.2;
+      document.getElementById('sld-t3-apex-y').value = 2.6;
       document.getElementById('txt-t3-ratio').textContent = '1.00 × CD';
-      document.getElementById('t3-step1-card').style.display = 'block';
-      document.getElementById('btn-t3-apex').style.display = 'none';
-      document.getElementById('btn-t3-connect').style.display = 'none';
+      document.getElementById('txt-t3-ratio').style.color = 'var(--teal)';
+      document.getElementById('t3-apex-controls').style.display = 'none';
+      ['btn-t3-apex', 'btn-t3-connect', 'btn-t3-compare', 'btn-next-tab3'].forEach(id => document.getElementById(id).style.display = 'none');
       document.getElementById('t3-feedback').style.display = 'none';
-      document.getElementById('btn-next-tab3').style.display = 'none';
-
       renderTab3Pyramid(1.0);
 
       document.getElementById('sld-t3-ratio').oninput = (e) => {
         t3RatioVal = parseFloat(e.target.value);
-        document.getElementById('txt-t3-ratio').textContent = `${t3RatioVal.toFixed(2)} × CD`;
-
+        const isExact = Math.abs(t3RatioVal - 4/3) < 0.015;
+        document.getElementById('txt-t3-ratio').textContent = isExact ? '1.33 × CD (✓ 4/3 Đạt!)' : `${t3RatioVal.toFixed(2)} × CD`;
+        document.getElementById('txt-t3-ratio').style.color = isExact ? 'var(--correct)' : 'var(--teal)';
+        t3StepState.apexVisible = isExact;
+        t3StepState.apexPlaced = false;
+        t3StepState.connected = false;
+        document.getElementById('t3-apex-controls').style.display = isExact ? 'block' : 'none';
+        document.getElementById('btn-t3-apex').style.display = isExact ? 'inline-flex' : 'none';
+        document.getElementById('btn-t3-connect').style.display = 'none';
+        document.getElementById('btn-t3-compare').style.display = 'none';
         renderTab3Pyramid(t3RatioVal);
-
-        if (Math.abs(t3RatioVal - 1.33) < 0.08) {
-          document.getElementById('txt-t3-ratio').textContent = '1.33 × CD (✓ 4/3 Đạt!)';
-          document.getElementById('txt-t3-ratio').style.color = 'var(--correct)';
-          document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đáy dưới A'B'C'D' đã đạt đúng tỉ lệ AB/CD = 4/3! Bây giờ hãy bấm <b>2. Đặt vị trí đỉnh chóp S' (tự do)</b>.`;
+        if (isExact) {
+          document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đáy A'B'C'D' đã giữ đúng tỉ lệ AB/CD = 4/3. Hãy dùng hai thanh trượt để tự chọn vị trí S' phía trên đáy, rồi xác nhận.`;
           document.getElementById('t3-feedback').style.display = 'flex';
-          document.getElementById('btn-t3-apex').style.display = 'inline-flex';
         }
       };
 
+      const updateApex = () => {
+        t3StepState.apexX = parseFloat(document.getElementById('sld-t3-apex-x').value);
+        t3StepState.apexY = parseFloat(document.getElementById('sld-t3-apex-y').value);
+        document.getElementById('txt-t3-apex-x').textContent = t3StepState.apexX.toFixed(2);
+        document.getElementById('txt-t3-apex-y').textContent = t3StepState.apexY.toFixed(2);
+        renderTab3Pyramid(t3RatioVal);
+      };
+      document.getElementById('sld-t3-apex-x').oninput = updateApex;
+      document.getElementById('sld-t3-apex-y').oninput = updateApex;
+
       document.getElementById('btn-t3-apex').onclick = () => {
         t3StepState.apexPlaced = true;
-        renderTab3Pyramid(t3RatioVal);
-
-        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Khác với khối lăng trụ, đỉnh S' của hình chóp có thể đặt ở vị trí bất kỳ không thuộc mặt đáy. Bây giờ hãy bấm <b>3. Nối các cạnh bên</b>!`;
-        document.getElementById('t3-feedback').style.display = 'flex';
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đúng! Khác với lăng trụ, hình chóp chỉ có một đáy nên S' có thể đặt tự do phía trên đáy, không cần tạo bằng phép tịnh tiến.`;
         document.getElementById('btn-t3-connect').style.display = 'inline-flex';
       };
 
       document.getElementById('btn-t3-connect').onclick = () => {
         t3StepState.connected = true;
-        t3StepState.animateConnect = true;  // cờ kích hoạt animation cạnh bên
+        t3StepState.animateConnect = true;
         renderTab3Pyramid(t3RatioVal);
-        t3StepState.animateConnect = false; // reset sau khi render đã khởi động animation
+        t3StepState.animateConnect = false;
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Bốn cạnh bên nối S' với A', B', C', D' tạo thành hình biểu diễn hoàn chỉnh. Không có yêu cầu song song hay tỉ lệ riêng giữa các cạnh bên.`;
+        document.getElementById('btn-t3-compare').style.display = 'inline-flex';
+      };
 
-        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> 🎉 Hoàn hảo! Hình biểu diễn 2D giữ đúng tính song song và tỉ lệ AB/CD = 4/3. Đã tạo thành công hình biểu diễn của hình chóp S.ABCD. Bạn đã hoàn thành Tab 3!`;
-        document.getElementById('t3-feedback').style.display = 'flex';
+      document.getElementById('btn-t3-compare').onclick = () => {
+        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> 🎉 Đối chiếu hai hình: cả hai đều truyền tải đúng cấu trúc “một đỉnh, đáy hình thang”. Hình chóp cho phép đặt đỉnh tự do; lăng trụ thì đáy trên phải là ảnh tịnh tiến của đáy dưới.`;
         document.getElementById('btn-next-tab3').style.display = 'inline-flex';
         unlockTab(4);
       };
@@ -1568,48 +1629,80 @@
     /* =========================================================================
        9. TAB 4: LIÊN HỆ THỰC TẾ — HÀNG RÀO GỖ DƯỚI NẮNG
        ========================================================================= */
-    let t4SunTime = 0; // 0: Sáng, 1: Trưa, 2: Chiều
+    const T4_SUN_CONFIGS = [
+      { dir: new THREE.Vector3(-1.2, -1.0, 1.5).normalize(), label: 'Sáng — nắng xiên trái' },
+      { dir: new THREE.Vector3(0.0, -2.5, 0.8).normalize(), label: 'Trưa — nắng gần thẳng đứng' },
+      { dir: new THREE.Vector3(1.2, -1.0, 1.5).normalize(), label: 'Chiều — nắng xiên phải' }
+    ];
+    let t4SunTime = 0;
+    let t4SunAnimationToken = 0;
+    let t4HasChangedTime = false;
 
     function initTab4() {
       clearScene();
       t4SunTime = 0;
+      t4HasChangedTime = false;
+      t4SunAnimationToken++;
+      ['t4-q-opt1', 't4-q-opt2', 't4-q-opt3'].forEach(id => document.getElementById(id).className = 'choice-btn');
       document.getElementById('t4-feedback').style.display = 'none';
+      document.getElementById('btn-t4-sun').style.display = 'none';
       document.getElementById('btn-next-tab4').style.display = 'none';
-
-      renderTab4FenceScene(0);
-
-      document.getElementById('btn-t4-sun').onclick = () => {
-        t4SunTime = (t4SunTime + 1) % 3;
-        const timeNames = ['Sáng (nắng xiên)', 'Trưa (nắng cao)', 'Chiều (nắng ngả)'];
-        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> Thời điểm: <b>${timeNames[t4SunTime]}</b>. Quan sát: độ dài bóng A'B' và C'D' co/giãn liên tục nhưng tính song song A'B' // C'D' luôn bất biến!`;
-        document.getElementById('t4-feedback').style.display = 'flex';
-        renderTab4FenceScene(t4SunTime);
-      };
+      renderTab4FenceScene(T4_SUN_CONFIGS[0].dir, T4_SUN_CONFIGS[0].label, true);
 
       document.getElementById('t4-q-opt1').onclick = () => {
         document.getElementById('t4-q-opt1').className = 'choice-btn correct';
-        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> 🎉 Chính xác! Vì AB // CD trong thực tế VÀ ánh nắng mặt trời tạo thành phép chiếu song song tự nhiên, bảo toàn tính song song của 2 đường thẳng! Bạn đã hoàn thành bài học!`;
+        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> Chính xác! AB // CD và các tia nắng cùng phương tạo thành phép chiếu song song lên mặt đất, nên hai bóng phải song song (hoặc trùng nhau). Bây giờ hãy đổi thời điểm để kiểm chứng.`;
         document.getElementById('t4-feedback').style.display = 'flex';
-        document.getElementById('btn-next-tab4').style.display = 'inline-flex';
-        setTimeout(() => {
-          document.getElementById('celebration-modal').classList.add('show');
-        }, 800);
+        document.getElementById('btn-t4-sun').style.display = 'inline-flex';
       };
 
       document.getElementById('t4-q-opt2').onclick = () => {
         document.getElementById('t4-q-opt2').className = 'choice-btn wrong';
-        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Góc nắng thay đổi theo thời điểm trong ngày (không chỉ vuông góc), nhưng tính song song vẫn luôn được giữ nguyên!`;
+        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Góc nắng thay đổi từ sáng đến chiều; ánh nắng không phải lúc nào cũng vuông góc với mặt đất.`;
         document.getElementById('t4-feedback').style.display = 'flex';
       };
 
       document.getElementById('t4-q-opt3').onclick = () => {
         document.getElementById('t4-q-opt3').className = 'choice-btn wrong';
-        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Đây là quy tắc toán học bảo toàn tính song song của phép chiếu, không phải ngẫu nhiên!`;
+        document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Đây là hệ quả của tính chất bảo toàn song song, không phải một sự trùng hợp khi lắp hàng rào.`;
         document.getElementById('t4-feedback').style.display = 'flex';
+      };
+
+      document.getElementById('btn-t4-sun').onclick = () => {
+        const button = document.getElementById('btn-t4-sun');
+        const fromIndex = t4SunTime;
+        const toIndex = (t4SunTime + 1) % T4_SUN_CONFIGS.length;
+        const fromDirection = T4_SUN_CONFIGS[fromIndex].dir;
+        const toDirection = T4_SUN_CONFIGS[toIndex].dir;
+        const token = ++t4SunAnimationToken;
+        const startTime = performance.now();
+        const duration = 900;
+        button.disabled = true;
+
+        const tickSun = (now) => {
+          if (token !== t4SunAnimationToken || currentTab !== 4) return;
+          const raw = Math.min((now - startTime) / duration, 1);
+          const eased = raw < 0.5 ? 2 * raw * raw : 1 - Math.pow(-2 * raw + 2, 2) / 2;
+          const direction = fromDirection.clone().lerp(toDirection, eased).normalize();
+          renderTab4FenceScene(direction, 'Góc nắng đang thay đổi…', false);
+          if (raw < 1) {
+            requestAnimationFrame(tickSun);
+            return;
+          }
+
+          t4SunTime = toIndex;
+          t4HasChangedTime = true;
+          button.disabled = false;
+          button.innerHTML = `<i class="ti ti-sun-high"></i> Đổi tiếp: ${T4_SUN_CONFIGS[(toIndex + 1) % 3].label}`;
+          renderTab4FenceScene(toDirection, T4_SUN_CONFIGS[toIndex].label, false);
+          document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> Thời điểm: <b>${T4_SUN_CONFIGS[toIndex].label}</b>. Vị trí và khoảng cách giữa hai bóng thay đổi theo phương nắng, nhưng A'B' // C'D' vẫn luôn được bảo toàn. Bạn đã hoàn thành bài học!`;
+          document.getElementById('btn-next-tab4').style.display = 'inline-flex';
+        };
+        requestAnimationFrame(tickSun);
       };
     }
 
-    function renderTab4FenceScene(sunTimeIdx) {
+    function renderTab4FenceScene(sunDirection, sunLabel, animateShadows = false) {
       clearScene();
 
       // Ground plane
@@ -1620,8 +1713,6 @@
 
       // Wooden Fence Posts & Bars
       const postMat = new THREE.MeshStandardMaterial({ color: 0x8b5cf6, roughness: 0.6 });
-      const barMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, roughness: 0.4 });
-
       // 2 Fence Posts
       const p1Geo = new THREE.BoxGeometry(0.2, 2.5, 0.2);
       const post1 = new THREE.Mesh(p1Geo, postMat); post1.position.set(-1.8, 1.25, 0); scene.add(post1);
@@ -1638,32 +1729,29 @@
       createLabel3D('A (Thanh trên)', A, '#f59e0b'); createLabel3D('B', B, '#f59e0b');
       createLabel3D('C (Thanh dưới)', C, '#f59e0b'); createLabel3D('D', D, '#f59e0b');
 
-      // Sun Angle parameters for 0: Sáng, 1: Trưa, 2: Chiều
-      const sunAngles = [
-        { dir: new THREE.Vector3(-1.2, -1.0, 1.5).normalize(), label: 'Nắng Sáng (Xiên Trái)' },
-        { dir: new THREE.Vector3(0.0, -2.5, 0.8).normalize(), label: 'Nắng Trưa (Gần Đứng)' },
-        { dir: new THREE.Vector3(1.2, -1.0, 1.5).normalize(), label: 'Nắng Chiều (Xiên Phải)' }
-      ];
-      const sunConfig = sunAngles[sunTimeIdx];
-
       // Sun Ray Indicators
-      const arrow1 = new THREE.ArrowHelper(sunConfig.dir, new THREE.Vector3(-1.8, 3.5, -1.0), 2.2, 0xFAC775, 0.4, 0.2);
-      const arrow2 = new THREE.ArrowHelper(sunConfig.dir, new THREE.Vector3(1.8, 3.5, -1.0), 2.2, 0xFAC775, 0.4, 0.2);
+      const arrow1 = new THREE.ArrowHelper(sunDirection, new THREE.Vector3(-1.8, 3.5, -1.0), 2.2, 0xFAC775, 0.4, 0.2);
+      const arrow2 = new THREE.ArrowHelper(sunDirection, new THREE.Vector3(1.8, 3.5, -1.0), 2.2, 0xFAC775, 0.4, 0.2);
       scene.add(arrow1); scene.add(arrow2);
-      createLabel3D(`Tia Nắng Mặt Trời — ${sunConfig.label}`, new THREE.Vector3(0, 3.6, -1.0), '#FAC775');
+      createLabel3D(`Tia nắng mặt trời — ${sunLabel}`, new THREE.Vector3(0, 3.6, -1.0), '#FAC775');
 
       // Shadow Vertices on Ground Y = 0
       // M' = M + t * dir, Y_m + t * dir.y = 0 => t = -Y_m / dir.y
-      const tA = -2.0 / sunConfig.dir.y; const tC = -1.0 / sunConfig.dir.y;
-      const Ap = A.clone().add(sunConfig.dir.clone().multiplyScalar(tA)); Ap.y = 0.01;
-      const Bp = B.clone().add(sunConfig.dir.clone().multiplyScalar(tA)); Bp.y = 0.01;
-      const Cp = C.clone().add(sunConfig.dir.clone().multiplyScalar(tC)); Cp.y = 0.01;
-      const Dp = D.clone().add(sunConfig.dir.clone().multiplyScalar(tC)); Dp.y = 0.01;
+      const tA = -2.0 / sunDirection.y; const tC = -1.0 / sunDirection.y;
+      const Ap = A.clone().add(sunDirection.clone().multiplyScalar(tA)); Ap.y = 0.01;
+      const Bp = B.clone().add(sunDirection.clone().multiplyScalar(tA)); Bp.y = 0.01;
+      const Cp = C.clone().add(sunDirection.clone().multiplyScalar(tC)); Cp.y = 0.01;
+      const Dp = D.clone().add(sunDirection.clone().multiplyScalar(tC)); Dp.y = 0.01;
 
       // Shadow Lines A'B' và C'D' — animate dần để làm nổi bật tính song song
       // Bóng trên (A'B') trước, bóng dưới (C'D') sau 350ms
-      animateLine(Ap, Bp, COLOR_RESULT, 850);
-      setTimeout(() => animateLine(Cp, Dp, COLOR_RESULT, 850), 350);
+      if (animateShadows) {
+        animateLine(Ap, Bp, COLOR_RESULT, 850);
+        setTimeout(() => animateLine(Cp, Dp, COLOR_RESULT, 850), 350);
+      } else {
+        createLineSegment(Ap, Bp, COLOR_RESULT);
+        createLineSegment(Cp, Dp, COLOR_RESULT);
+      }
 
       makeSpherePoint(Ap, COLOR_RESULT); makeSpherePoint(Bp, COLOR_RESULT);
       makeSpherePoint(Cp, COLOR_RESULT); makeSpherePoint(Dp, COLOR_RESULT);

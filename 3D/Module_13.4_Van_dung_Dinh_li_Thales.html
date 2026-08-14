@@ -668,7 +668,7 @@
 
         <div class="sub-pills">
           <button class="sub-pill active" id="t2-pill-case1">Case 1: 3 MP song song</button>
-          <button class="sub-pill" id="t2-pill-case2">Case 2: Chóp S.ABCD</button>
+          <button class="sub-pill" id="t2-pill-case2" disabled title="Hoàn thành Case 1 trước">Case 2: Chóp S.ABCD 🔒</button>
         </div>
 
         <!-- CASE 1 SECTION -->
@@ -677,12 +677,21 @@
             <b>Đề bài:</b> Cho 3 mặt phẳng song song cắt 2 cát tuyến d, d'. Biết <b>AB = 3cm</b>, <b>BC = 5cm</b>, <b>A'B' = 4.5cm</b>. Hãy tính độ dài <b>B'C'</b>.
           </div>
 
-          <div class="form-group">
-            <label class="form-label">Nhập B'C' (cm):</label>
-            <input type="number" class="form-input" id="t2-input-bc" placeholder="Nhập số..." step="any" inputmode="decimal">
+          <div class="info-box hint-box" id="t2-condition-box">
+            <b>Kiểm tra điều kiện:</b> Ba mặt phẳng trong hình đôi một song song. Ta có được phép áp dụng định lí Thalès không gian không?
+            <div style="display:flex; gap:8px; margin-top:8px;">
+              <button class="choice-btn" id="t2-condition-yes" style="flex:1;">Có</button>
+              <button class="choice-btn" id="t2-condition-no" style="flex:1;">Không</button>
+            </div>
+            <div id="t2-condition-feedback" style="margin-top:6px;"></div>
           </div>
 
-          <button class="btn btn-primary" id="t2-btn-check-c1" style="width: 100%;">Kiểm tra kết quả</button>
+          <div class="form-group">
+            <label class="form-label">Nhập B'C' (cm):</label>
+            <input type="number" class="form-input" id="t2-input-bc" placeholder="Xác nhận điều kiện trước..." step="any" inputmode="decimal" disabled>
+          </div>
+
+          <button class="btn btn-primary" id="t2-btn-check-c1" style="width: 100%;" disabled>Kiểm tra kết quả</button>
 
           <div id="t2-fb-c1" class="info-box athena-box" style="display: none; margin-top: 14px;">
             <div class="athena-avatar">A</div>
@@ -714,7 +723,7 @@
 
           <!-- PART 2B: SB -->
           <div id="t2-wrap-2b" style="background: var(--cream); border: 1px solid var(--paper-line); border-radius: 8px; padding: 10px; opacity: 0.5; pointer-events: none;">
-            <div style="font-weight: 700; font-size: 12.5px; color: var(--navy); margin-bottom: 6px;">Phần 2: Tính trên cạnh SB (SB = 12cm) 🔒</div>
+            <div id="t2-title-2b" style="font-weight: 700; font-size: 12.5px; color: var(--navy); margin-bottom: 6px;">Phần 2: Tính trên cạnh SB (SB = 12cm) 🔒</div>
             <div style="display: flex; gap: 8px;">
               <div style="flex:1;">
                 <label class="form-label">SG (cm):</label>
@@ -1190,6 +1199,15 @@
     const Cp_pt = new THREE.Vector3(2.4, 0.0, 1.0);
 
     function initTabA() {
+      planeQMesh = pointBMesh = pointBpMesh = null;
+      labelB = labelBp = null;
+      lineAB = lineBC = lineApBp = lineBpCp = null;
+      document.getElementById('t1-slider-q').value = '1.8';
+      document.getElementById('t1-val-yq').textContent = 'y = 1.80';
+      document.getElementById('t1-btn-yes').className = 'choice-btn';
+      document.getElementById('t1-btn-no').className = 'choice-btn';
+      document.getElementById('t1-feedback-a').style.display = 'none';
+      document.getElementById('btn-next-tab1').style.display = 'none';
       // 3 Mặt phẳng song song (P), (Q), (R)
       createPolygonMesh([new THREE.Vector3(-4, 3, 3), new THREE.Vector3(4, 3, 3), new THREE.Vector3(4, 3, -3), new THREE.Vector3(-4, 3, -3)], COLOR_PLANE_1, 0.22);
       createPolygonMesh([new THREE.Vector3(-4, 0, 3), new THREE.Vector3(4, 0, 3), new THREE.Vector3(4, 0, -3), new THREE.Vector3(-4, 0, -3)], COLOR_PLANE_3, 0.22);
@@ -1230,13 +1248,23 @@
       document.getElementById('t1-btn-no').onclick = () => {
         document.getElementById('t1-btn-no').className = 'choice-btn wrong';
         document.getElementById('t1-btn-yes').className = 'choice-btn';
-        document.getElementById('t1-athena-msg').innerHTML = `<b>Athena:</b> Hãy quan sát lại 2 con số ở góc màn hình khi kéo slider — chúng luôn bằng nhau ở mọi vị trí!`;
+        document.getElementById('t1-athena-msg').innerHTML = `<b>Athena:</b> Thử kéo chậm lại, dừng slider ở một vị trí rồi đọc hai tỉ số tại cùng thời điểm. Chúng có thực sự khác nhau không?`;
         document.getElementById('t1-feedback-a').style.display = 'flex';
       };
     }
 
+    function disposeSceneObject(object) {
+      if (!object) return;
+      scene.remove(object);
+      object.traverse?.(child => {
+        child.geometry?.dispose?.();
+        const materials = Array.isArray(child.material) ? child.material : [child.material];
+        materials.filter(Boolean).forEach(material => material.dispose?.());
+      });
+    }
+
     function updatePlaneQ(yq) {
-      if (planeQMesh) scene.remove(planeQMesh);
+      if (planeQMesh) disposeSceneObject(planeQMesh);
 
       const qVerts = [
         new THREE.Vector3(-4, yq, 3), new THREE.Vector3(4, yq, 3),
@@ -1249,8 +1277,8 @@
       const B_pt = lerpVec(A_pt, C_pt, t);
       const Bp_pt = lerpVec(Ap_pt, Cp_pt, t);
 
-      if (pointBMesh) scene.remove(pointBMesh);
-      if (pointBpMesh) scene.remove(pointBpMesh);
+      if (pointBMesh) disposeSceneObject(pointBMesh);
+      if (pointBpMesh) disposeSceneObject(pointBpMesh);
 
       pointBMesh = makeSpherePoint(B_pt, COLOR_RESULT, 0.11);
       pointBpMesh = makeSpherePoint(Bp_pt, COLOR_RESULT, 0.11);
@@ -1278,12 +1306,16 @@
        7. TAB B: LUYỆN TẬP TÍNH TOÁN (CASE 1 & CASE 2)
        ========================================================================= */
     let t2Case = 1;
+    let case1Completed = false;
     function initTabB() {
       const p1 = document.getElementById('t2-pill-case1');
       const p2 = document.getElementById('t2-pill-case2');
 
       p1.onclick = () => { if (t2Case !== 1) { t2Case = 1; p1.className = 'sub-pill active'; p2.className = 'sub-pill'; initTabB(); } };
-      p2.onclick = () => { if (t2Case !== 2) { t2Case = 2; p2.className = 'sub-pill active'; p1.className = 'sub-pill'; initTabB(); } };
+      p2.disabled = !case1Completed;
+      p2.title = case1Completed ? '' : 'Hoàn thành Case 1 trước';
+      p2.innerHTML = case1Completed ? 'Case 2: Chóp S.ABCD' : 'Case 2: Chóp S.ABCD 🔒';
+      p2.onclick = () => { if (case1Completed && t2Case !== 2) { t2Case = 2; p2.className = 'sub-pill active'; p1.className = 'sub-pill'; initTabB(); } };
 
       clearScene();
 
@@ -1301,6 +1333,8 @@
     }
 
     function setupTabBCase1() {
+      document.getElementById('t2-fb-c1').style.display = 'none';
+      document.getElementById('t2-input-bc').value = case1Completed ? '7.5' : '';
       createPolygonMesh([new THREE.Vector3(-4, 3, 3), new THREE.Vector3(4, 3, 3), new THREE.Vector3(4, 3, -3), new THREE.Vector3(-4, 3, -3)], COLOR_PLANE_1, 0.2);
       createPolygonMesh([new THREE.Vector3(-4, 1.875, 3), new THREE.Vector3(4, 1.875, 3), new THREE.Vector3(4, 1.875, -3), new THREE.Vector3(-4, 1.875, -3)], COLOR_PLANE_2, 0.2);
       createPolygonMesh([new THREE.Vector3(-4, 0, 3), new THREE.Vector3(4, 0, 3), new THREE.Vector3(4, 0, -3), new THREE.Vector3(-4, 0, -3)], COLOR_PLANE_3, 0.2);
@@ -1314,16 +1348,61 @@
       makeSpherePoint(A_pt, COLOR_RESULT, 0.1); makeSpherePoint(B_pt, COLOR_RESULT, 0.1); makeSpherePoint(C_pt, COLOR_RESULT, 0.1);
       makeSpherePoint(Ap_pt, COLOR_RESULT, 0.1); makeSpherePoint(Bp_pt, COLOR_RESULT, 0.1); makeSpherePoint(Cp_pt, COLOR_RESULT, 0.1);
 
-      createLabel3D('A (3cm)', A_pt); createLabel3D('B (5cm)', B_pt); createLabel3D('C', C_pt);
-      createLabel3D("A' (4.5cm)", Ap_pt); createLabel3D("B'", Bp_pt); createLabel3D("C'", Cp_pt);
+      createLabel3D('A', A_pt); createLabel3D('B', B_pt); createLabel3D('C', C_pt);
+      createLabel3D("A'", Ap_pt); createLabel3D("B'", Bp_pt); createLabel3D("C'", Cp_pt);
+      createLabel3D('AB = 3cm', lerpVec(A_pt, B_pt, 0.5), '#FAC775');
+      createLabel3D('BC = 5cm', lerpVec(B_pt, C_pt, 0.5), '#FAC775');
+      createLabel3D("A'B' = 4.5cm", lerpVec(Ap_pt, Bp_pt, 0.5), '#FAC775');
 
       let attempts = 0;
+      let conditionConfirmed = case1Completed;
+      const conditionYes = document.getElementById('t2-condition-yes');
+      const conditionNo = document.getElementById('t2-condition-no');
+      const conditionFeedback = document.getElementById('t2-condition-feedback');
+      const answerInput = document.getElementById('t2-input-bc');
+      const checkButton = document.getElementById('t2-btn-check-c1');
+      conditionYes.className = case1Completed ? 'choice-btn correct' : 'choice-btn';
+      conditionNo.className = 'choice-btn';
+      conditionFeedback.textContent = case1Completed ? 'Điều kiện đã được xác nhận: ba mặt phẳng đôi một song song.' : '';
+      answerInput.disabled = !conditionConfirmed || case1Completed;
+      checkButton.disabled = !conditionConfirmed || case1Completed;
+
+      conditionYes.onclick = () => {
+        conditionConfirmed = true;
+        conditionYes.className = 'choice-btn correct';
+        conditionNo.className = 'choice-btn';
+        conditionFeedback.textContent = 'Đúng. Có đủ điều kiện đôi một song song nên được phép lập tỉ lệ Thalès.';
+        answerInput.disabled = false;
+        answerInput.placeholder = 'Nhập số...';
+        checkButton.disabled = false;
+        answerInput.focus();
+      };
+      conditionNo.onclick = () => {
+        conditionConfirmed = false;
+        conditionNo.className = 'choice-btn wrong';
+        conditionYes.className = 'choice-btn';
+        conditionFeedback.textContent = 'Hãy quan sát lại: (P), (Q), (R) được dựng đôi một song song, vì vậy điều kiện áp dụng đã thỏa mãn.';
+        answerInput.disabled = true;
+        checkButton.disabled = true;
+      };
+
       document.getElementById('t2-btn-check-c1').onclick = () => {
         const val = parseFloat(document.getElementById('t2-input-bc').value);
-        if (isNaN(val)) return;
+        if (isNaN(val)) {
+          document.getElementById('t2-msg-c1').innerHTML = '<b>Athena:</b> Hãy nhập một giá trị số trước khi kiểm tra.';
+          document.getElementById('t2-fb-c1').style.display = 'flex';
+          return;
+        }
 
-        if (Math.abs(val - 7.5) <= 0.15) {
-          document.getElementById('t2-msg-c1').innerHTML = `<b>Athena:</b> Chính xác! Theo Thalès: <b>AB / BC = A'B' / B'C'</b> &rArr; B'C' = (5 &times; 4.5) / 3 = <b>7.5 cm</b>.`;
+        if (Math.abs(val - 7.5) <= 0.1) {
+          case1Completed = true;
+          answerInput.disabled = true;
+          checkButton.disabled = true;
+          const case2Pill = document.getElementById('t2-pill-case2');
+          case2Pill.disabled = false;
+          case2Pill.title = '';
+          case2Pill.textContent = 'Case 2: Chóp S.ABCD';
+          document.getElementById('t2-msg-c1').innerHTML = `<b>Athena:</b> Chính xác! Theo Thalès: <b>AB / BC = A'B' / B'C'</b> &rArr; B'C' = (5 &times; 4.5) / 3 = <b>7.5 cm</b>. Case 2 đã được mở khóa.`;
           document.getElementById('t2-fb-c1').style.display = 'flex';
         } else {
           attempts++;
@@ -1340,6 +1419,22 @@
     }
 
     function setupTabBCase2() {
+      let attempts2a = 0;
+      let attempts2b = 0;
+      document.getElementById('t2-input-sf').disabled = false;
+      document.getElementById('t2-input-fa').disabled = false;
+      document.getElementById('t2-input-sf').value = '';
+      document.getElementById('t2-input-fa').value = '';
+      document.getElementById('t2-input-sg').value = '';
+      document.getElementById('t2-input-gb').value = '';
+      document.getElementById('t2-input-sg').disabled = true;
+      document.getElementById('t2-input-gb').disabled = true;
+      document.getElementById('t2-btn-check-2a').disabled = false;
+      document.getElementById('t2-btn-check-2b').disabled = true;
+      document.getElementById('t2-wrap-2b').style.opacity = '0.5';
+      document.getElementById('t2-wrap-2b').style.pointerEvents = 'none';
+      document.getElementById('t2-title-2b').textContent = 'Phần 2: Tính trên cạnh SB (SB = 12cm) 🔒';
+      document.getElementById('t2-fb-c2').style.display = 'none';
       const S = new THREE.Vector3(0.2, 3.6, -0.2);
       const A = new THREE.Vector3(-2.2, 0, 1.8);
       const B = new THREE.Vector3(1.8, 0, 1.8);
@@ -1382,7 +1477,10 @@
         const sf = parseFloat(document.getElementById('t2-input-sf').value);
         const fa = parseFloat(document.getElementById('t2-input-fa').value);
 
-        if (Math.abs(sf - 4.0) <= 0.1 && Math.abs(fa - 2.0) <= 0.1) {
+        if (isNaN(sf) || isNaN(fa)) {
+          document.getElementById('t2-msg-c2').innerHTML = '<b>Athena:</b> Hãy nhập đủ cả SF và FA trước khi kiểm tra.';
+          document.getElementById('t2-fb-c2').style.display = 'flex';
+        } else if (Math.abs(sf - 4.0) <= 0.1 && Math.abs(fa - 2.0) <= 0.1) {
           step2aDone = true;
           document.getElementById('t2-input-sf').disabled = true;
           document.getElementById('t2-input-fa').disabled = true;
@@ -1396,8 +1494,16 @@
           document.getElementById('t2-input-sg').disabled = false;
           document.getElementById('t2-input-gb').disabled = false;
           document.getElementById('t2-btn-check-2b').disabled = false;
+          document.getElementById('t2-title-2b').textContent = 'Phần 2: Tính trên cạnh SB (SB = 12cm)';
         } else {
-          document.getElementById('t2-msg-c2').innerHTML = `<b>Athena:</b> Chưa đúng. Gợi ý: SF / SA = SE / SC = 2/3. Vì SA = 6cm &rArr; SF = 6 &times; (2/3) = <b>4 cm</b>, FA = 6 - 4 = <b>2 cm</b>.`;
+          attempts2a++;
+          if (attempts2a === 1) {
+            document.getElementById('t2-msg-c2').innerHTML = '<b>Athena:</b> Chưa đúng, hãy kiểm tra lại hai giá trị.';
+          } else if (attempts2a === 2) {
+            document.getElementById('t2-msg-c2').innerHTML = '<b>Athena:</b> Gợi ý: (P) // (ABCD), vì vậy SF / SA = SE / SC = 2/3. Hãy áp dụng tỉ lệ này trên cạnh SA.';
+          } else {
+            document.getElementById('t2-msg-c2').innerHTML = `<b>Athena:</b> Lời giải: SF = 6 &times; 2/3 = <b>4 cm</b>; FA = SA - SF = 6 - 4 = <b>2 cm</b>. Hãy nhập lại hai kết quả để mở Phần 2.`;
+          }
           document.getElementById('t2-fb-c2').style.display = 'flex';
         }
       };
@@ -1407,7 +1513,10 @@
         const gb = parseFloat(document.getElementById('t2-input-gb').value);
 
         // Trap detection for copying SA's answer (4 and 2)
-        if (Math.abs(sg - 4.0) <= 0.1 && Math.abs(gb - 2.0) <= 0.1) {
+        if (isNaN(sg) || isNaN(gb)) {
+          document.getElementById('t2-msg-c2').innerHTML = '<b>Athena:</b> Hãy nhập đủ cả SG và GB trước khi kiểm tra.';
+          document.getElementById('t2-fb-c2').style.display = 'flex';
+        } else if (Math.abs(sg - 4.0) <= 0.1 && Math.abs(gb - 2.0) <= 0.1) {
           document.getElementById('t2-msg-c2').innerHTML = `<b>Athena:</b> Số này giống hệt kết quả của SA (6cm) — nhưng SB có độ dài 12cm khác SA (6cm), thử tính lại theo đúng tỉ lệ 2/3 trên SB nhé!`;
           document.getElementById('t2-fb-c2').style.display = 'flex';
         } else if (Math.abs(sg - 8.0) <= 0.1 && Math.abs(gb - 4.0) <= 0.1) {
@@ -1417,7 +1526,14 @@
             document.getElementById('celebration-modal').classList.add('show');
           }, 1200);
         } else {
-          document.getElementById('t2-msg-c2').innerHTML = `<b>Athena:</b> Chưa đúng. Gợi ý: SG / SB = 2/3. Vì SB = 12cm &rArr; SG = 12 &times; (2/3) = <b>8 cm</b>, GB = 12 - 8 = <b>4 cm</b>.`;
+          attempts2b++;
+          if (attempts2b === 1) {
+            document.getElementById('t2-msg-c2').innerHTML = '<b>Athena:</b> Chưa đúng, hãy tính lại độc lập trên cạnh SB.';
+          } else if (attempts2b === 2) {
+            document.getElementById('t2-msg-c2').innerHTML = '<b>Athena:</b> Gợi ý: SG / SB = SE / SC = 2/3. SB dài 12cm, không phải 6cm như SA.';
+          } else {
+            document.getElementById('t2-msg-c2').innerHTML = `<b>Athena:</b> Lời giải: SG = 12 &times; 2/3 = <b>8 cm</b>; GB = SB - SG = 12 - 8 = <b>4 cm</b>.`;
+          }
           document.getElementById('t2-fb-c2').style.display = 'flex';
         }
       };
@@ -1428,6 +1544,8 @@
 
       document.getElementById('btn-modal-restart').onclick = () => {
         document.getElementById('celebration-modal').classList.remove('show');
+        case1Completed = false;
+        t2Case = 1;
         unlockedTabs = { 1: true, 2: false };
         const b2 = document.querySelector('.tab-btn[data-tab="2"]');
         if (b2) {

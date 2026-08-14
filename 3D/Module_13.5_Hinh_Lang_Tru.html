@@ -612,6 +612,9 @@
         <div style="display: flex; gap: 8px; color: #e2e8f0;"><i class="ti ti-circle-check-filled"
             style="color: #34d399;"></i> <b>Mặt cắt lăng trụ:</b> Mọi MP song song đáy đều cắt lăng trụ tạo lăng trụ mới
           hợp lệ.</div>
+        <div style="display:flex; gap:8px; margin-top:8px; color:#e2e8f0;"><i class="ti ti-circle-check-filled" style="color:#34d399;"></i> <b>Tên gọi:</b> Gọi theo đa giác đáy; hình hộp là trường hợp đặc biệt của lăng trụ tứ giác.</div>
+        <div style="display:flex; gap:8px; margin-top:8px; color:#e2e8f0;"><i class="ti ti-alert-triangle" style="color:#fac775;"></i> Không được kết luận chỉ từ một điều kiện; phải kiểm tra cả mặt bên và cạnh bên.</div>
+        <div style="display:flex; gap:8px; margin-top:8px; color:#e2e8f0;"><i class="ti ti-info-circle" style="color:#60a5fa;"></i> Lăng trụ không bắt buộc cạnh bên vuông góc với đáy; lăng trụ đứng chỉ là trường hợp riêng.</div>
       </div>
 
       <div style="display: flex; gap: 12px;">
@@ -688,7 +691,7 @@
 
         <div class="sub-pills">
           <button class="sub-pill active" id="t2-pill-opt1">Phương án 1: Cắt không đồng phẳng</button>
-          <button class="sub-pill" id="t2-pill-opt2">Phương án 2: Mặt phẳng song song</button>
+          <button class="sub-pill" id="t2-pill-opt2" disabled>Phương án 2: Mặt phẳng song song 🔒</button>
         </div>
 
         <div id="t2-box-opt1">
@@ -772,16 +775,29 @@
           <span id="txt-edge-st">✗ Chưa đạt</span>
         </div>
 
+        <div class="info-box" id="t4-live-metrics" style="font-size:12px; line-height:1.55;">
+          <b>Số liệu trực quan:</b><br>
+          <span id="t4-lengths">AA' = — · BB' = — · CC' = —</span><br>
+          <span id="t4-directions">Độ lệch hướng: —</span>
+        </div>
+
+        <div id="t4-point-selector" class="form-group" style="display:none;">
+          <label class="form-label" for="t4-select-point">GĐ2 — Chọn điểm cần điều chỉnh:</label>
+          <select class="form-input" id="t4-select-point">
+            <option value="A">A'</option><option value="B">B'</option><option value="C">C'</option>
+          </select>
+        </div>
+
         <div class="slider-wrap">
-          <div class="slider-label"><span>Vị trí X điểm C':</span><span id="val-cx">0.80</span></div>
+          <div class="slider-label"><span>Vị trí X điểm đang chọn:</span><span id="val-cx">0.75</span></div>
           <input type="range" id="t4-slider-cx" min="-1.5" max="1.5" step="0.25" value="0.75">
         </div>
         <div class="slider-wrap">
-          <div class="slider-label"><span>Vị trí Z điểm C':</span><span id="val-cz">-0.50</span></div>
+          <div class="slider-label"><span>Vị trí Z điểm đang chọn:</span><span id="val-cz">-0.50</span></div>
           <input type="range" id="t4-slider-cz" min="-2.0" max="0.5" step="0.25" value="-0.50">
         </div>
         <div class="slider-wrap">
-          <div class="slider-label"><span>Độ cao Y điểm C':</span><span id="val-cy">2.25</span></div>
+          <div class="slider-label"><span>Độ cao Y điểm đang chọn:</span><span id="val-cy">2.25</span></div>
           <input type="range" id="t4-slider-cy" min="1.0" max="4.0" step="0.25" value="2.25">
         </div>
 
@@ -790,6 +806,9 @@
           <div id="t4-msg">Athena: Hãy kéo các slider để điều chỉnh điểm C' trùng khớp với vector tịnh tiến (0, 3, 0)
             của A' và B'!</div>
         </div>
+        <button class="btn btn-outline" id="t4-btn-extended" style="display:none; width:100%; margin-top:8px;">
+          Thử thách thêm: dựng lại với cả A', B', C'
+        </button>
       </div>
     </div>
   </div>
@@ -923,22 +942,20 @@
         const obj = scene.children[i];
         if (obj !== gridHelper && obj !== dirLight && !(obj instanceof THREE.AmbientLight)) {
           scene.remove(obj);
-          if (obj.geometry) obj.geometry.dispose();
-          if (obj.material) {
-            if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
-            else obj.material.dispose();
-          }
+          obj.traverse?.(child => {
+            child.geometry?.dispose?.();
+            const materials = Array.isArray(child.material) ? child.material : [child.material];
+            materials.filter(Boolean).forEach(material => material.dispose?.());
+          });
         }
       }
       currentSolidHull = null;
       dynamicEdges = [];
       interactiveMeshes = [];
-      labelCp = null;
       ptCpMesh = null;
-      lineCpAp = null;
-      lineCpBp = null;
-      lineCCp = null;
-      meshTopFace = null;
+      t1HintLine = null;
+      t4DynamicObjects = [];
+      t4DynamicLabels = [];
     }
 
     /* DYNAMIC OCCLUSION ENGINE (05_threejs_engine.md PHẦN 4.20) */
@@ -1024,6 +1041,19 @@
       line.renderOrder = 10;
       scene.add(line);
       return line;
+    }
+
+    function createEdgeHitMesh(p1, p2, name) {
+      const direction = new THREE.Vector3().subVectors(p2, p1);
+      const mesh = new THREE.Mesh(
+        new THREE.CylinderGeometry(0.14, 0.14, direction.length(), 8),
+        new THREE.MeshBasicMaterial({ visible: false })
+      );
+      mesh.position.copy(p1).add(p2).multiplyScalar(0.5);
+      mesh.quaternion.setFromUnitVectors(new THREE.Vector3(0, 1, 0), direction.clone().normalize());
+      mesh.name = name;
+      scene.add(mesh);
+      return mesh;
     }
 
     /* =========================================================================
@@ -1235,6 +1265,7 @@
     }
 
     function loadTabScenario(tabNum) {
+      if (tabNum !== 4) clearTimeout(t4HintTimer);
       clearScene();
       // Handbook button rules (§58 Script): Hidden on Tab 1, Shown from Tab 2+
       const btnHb = document.getElementById('btn-handbook');
@@ -1242,7 +1273,10 @@
       else btnHb.style.display = 'flex';
 
       if (tabNum === 1) { setCameraSideView(); initTab1(); }
-      else if (tabNum === 2) { setCameraSideView(); initTab2(); }
+      else if (tabNum === 2) {
+        setCameraSideView(); initTab2();
+        document.getElementById('handbook-modal').classList.add('show');
+      }
       else if (tabNum === 3) { setCameraStandardSGK(); initTab3(); }
       else if (tabNum === 4) { setCameraStandardSGK(); initTab4(); }
 
@@ -1254,12 +1288,16 @@
        ========================================================================= */
     let t1Step = 1;
     let interactiveMeshes = [];
+    let t1HintLine = null;
+    let t1Targets = null;
     const raycaster = new THREE.Raycaster();
     const mouse = new THREE.Vector2();
 
     function initTab1() {
       t1Step = 1;
       updateTab1ChecklistUI();
+      document.getElementById('btn-next-tab1').style.display = 'none';
+      document.getElementById('t1-msg').innerHTML = `Athena: Hãy click vào <b>Mặt đáy dưới (tam giác ABC)</b> trên hình 3D để bắt đầu!`;
 
       const A = new THREE.Vector3(-1.5, 0, 1.2);
       const B = new THREE.Vector3(1.5, 0, 1.2);
@@ -1273,8 +1311,14 @@
       const botFace = createPolygonMesh([A, B, C], COLOR_PLANE_1, 0.3, 'bot_face');
       const topFace = createPolygonMesh([Ap, Bp, Cp], COLOR_PLANE_2, 0.3, 'top_face');
       const sideFace = createPolygonMesh([A, B, Bp, Ap], COLOR_PLANE_3, 0.3, 'side_face');
+      const sideEdgeHit = createEdgeHitMesh(A, Ap, 'side_edge');
+      const baseEdgeHit = createEdgeHitMesh(A, B, 'base_edge');
 
-      interactiveMeshes = [botFace, topFace, sideFace];
+      interactiveMeshes = [botFace, topFace, sideFace, sideEdgeHit, baseEdgeHit];
+      t1Targets = {
+        1: [A, B, C, A], 2: [Ap, Bp, Cp, Ap], 3: [A, B, Bp, Ap, A],
+        4: [A, Ap], 5: [A, B]
+      };
 
       // Dynamic Occlusion Hull & Edges
       currentSolidHull = createPolyhedronHullMesh([
@@ -1290,6 +1334,7 @@
 
       createLabel3D('A', A); createLabel3D('B', B); createLabel3D('C', C);
       createLabel3D("A'", Ap); createLabel3D("B'", Bp); createLabel3D("C'", Cp);
+      updateTab1TargetHint();
 
       document.getElementById('chk-t1-1').onclick = () => showTab1ClickHint(1);
       document.getElementById('chk-t1-2').onclick = () => showTab1ClickHint(2);
@@ -1343,6 +1388,7 @@
           const intersects = raycaster.intersectObjects(interactiveMeshes, false);
           if (intersects.length > 0) {
             const fb = document.getElementById('t3-feedback');
+            t3BaseInspected = true;
             fb.style.display = 'flex';
             document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Bạn vừa click vào <b>Mặt đáy ABCD</b>. Đếm số cạnh: AB, BC, CD, DA <b>→</b> Đáy có đúng <b>4 cạnh</b>! Chọn tên lăng trụ tương ứng bên dưới.`;
           }
@@ -1360,16 +1406,41 @@
       } else if (t1Step === 3 && hitName === 'side_face') {
         t1Step = 4;
         document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Xuất sắc! Đây là <b>Mặt bên (ABB'A')</b> — luôn có dạng hình bình hành. Giờ hãy click vào <b>Cạnh bên (AA')</b> hoặc mặt đáy trên để qua Bước 4!`;
-      } else if (t1Step === 4) {
+      } else if (t1Step === 4 && hitName === 'side_edge') {
         t1Step = 5;
         document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Đúng rồi! <b>Cạnh bên (AA')</b> nối 2 đỉnh tương ứng, các cạnh bên luôn song song và bằng nhau. Cuối cùng hãy click vào <b>Cạnh đáy (AB)</b>!`;
-      } else if (t1Step === 5) {
+      } else if (t1Step === 5 && hitName === 'base_edge') {
         t1Step = 6;
         document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> 🎉 Hoàn thành! Bạn đã nhận diện đủ 4 thành phần của hình lăng trụ: 2 mặt đáy (song song, bằng nhau) — mặt bên (HBH) — cạnh bên (song song, bằng nhau) — cạnh đáy.`;
         document.getElementById('btn-next-tab1').style.display = 'inline-flex';
         unlockTab(2);
+      } else {
+        const names = {
+          bot_face: 'mặt đáy dưới', top_face: 'mặt đáy trên', side_face: 'mặt bên',
+          side_edge: 'cạnh bên nối hai đáy', base_edge: 'cạnh đáy nằm trong mặt đáy'
+        };
+        const expected = ['mặt đáy dưới ABC', "mặt đáy trên A'B'C'", "mặt bên ABB'A'", "cạnh bên AA'", 'cạnh đáy AB'][t1Step - 1];
+        document.getElementById('t1-msg').innerHTML = `<b>Athena:</b> Bạn vừa chọn <b>${names[hitName] || 'một thành phần khác'}</b>, chưa phải <b>${expected}</b>. Hãy xoay hình nếu cần rồi thử lại.`;
       }
       updateTab1ChecklistUI();
+      updateTab1TargetHint();
+    }
+
+    function updateTab1TargetHint() {
+      if (t1HintLine) {
+        scene.remove(t1HintLine);
+        t1HintLine.geometry?.dispose?.();
+        t1HintLine.material?.dispose?.();
+        t1HintLine = null;
+      }
+      const points = t1Targets?.[t1Step];
+      if (!points) return;
+      t1HintLine = new THREE.Line(
+        new THREE.BufferGeometry().setFromPoints(points),
+        new THREE.LineBasicMaterial({ color: COLOR_RESULT, transparent: true, opacity: 0.95 })
+      );
+      t1HintLine.renderOrder = 20;
+      scene.add(t1HintLine);
     }
 
     function updateTab1ChecklistUI() {
@@ -1392,13 +1463,23 @@
        7. TAB 2: KIỂM CHỨNG MẶT CẮT LĂNG TRỤ TỨ GIÁC
        ========================================================================= */
     let t2Option = 1;
+    let t2Option1Resolved = false;
+    let t2CoplanarChecked = false;
     function initTab2() {
       t2Option = 1;
+      t2Option1Resolved = false;
+      t2CoplanarChecked = false;
       const p1 = document.getElementById('t2-pill-opt1');
       const p2 = document.getElementById('t2-pill-opt2');
 
+      p1.className = 'sub-pill active';
+      p2.className = 'sub-pill';
+      p2.disabled = true;
+      p2.textContent = 'Phương án 2: Mặt phẳng song song 🔒';
+      document.getElementById('btn-next-tab2').style.display = 'none';
+
       p1.onclick = () => { if (t2Option !== 1) { t2Option = 1; p1.className = 'sub-pill active'; p2.className = 'sub-pill'; renderTab2Option(); } };
-      p2.onclick = () => { if (t2Option !== 2) { t2Option = 2; p2.className = 'sub-pill active'; p1.className = 'sub-pill'; renderTab2Option(); } };
+      p2.onclick = () => { if (!p2.disabled && t2Option !== 2) { t2Option = 2; p2.className = 'sub-pill active'; p1.className = 'sub-pill'; renderTab2Option(); } };
 
       renderTab2Option();
 
@@ -1439,6 +1520,9 @@
 
       const fb = document.getElementById('t2-feedback');
       fb.style.display = 'none';
+      ['t2-btn-o1-yes', 't2-btn-o1-no', 't2-btn-o2-yes', 't2-btn-o2-no'].forEach(id => {
+        document.getElementById(id).className = 'choice-btn';
+      });
 
       if (t2Option === 1) {
         document.getElementById('t2-box-opt1').style.display = 'block';
@@ -1457,17 +1541,19 @@
         createLabel3D("C''", Cpp, '#FAC775'); createLabel3D("D''", Dpp, '#FAC775');
 
         document.getElementById('t2-btn-o1-yes').onclick = () => {
-          document.getElementById('t2-btn-o1-yes').className = 'choice-btn wrong';
-          document.getElementById('t2-btn-o1-no').className = 'choice-btn';
-          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chưa chính xác. Hãy bấm nút <b>"Kiểm tra tính đồng phẳng"</b> bên trên để xem mặt cắt có thật sự phẳng hay không!`;
+          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Hãy tạm giữ dự đoán này. Bấm <b>“Kiểm tra tính đồng phẳng”</b> để thử dựng một mặt qua cả bốn điểm trước khi kết luận.`;
           fb.style.display = 'flex';
         };
 
         document.getElementById('t2-btn-o1-no').onclick = () => {
           document.getElementById('t2-btn-o1-no').className = 'choice-btn correct';
           document.getElementById('t2-btn-o1-yes').className = 'choice-btn';
-          document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Chính xác! Các điểm A'', B'', C'', D'' KHÔNG cùng nằm trên 1 mặt phẳng thật sự, khiến các cạnh bên không cùng độ dài và mặt bên không là hình bình hành.`;
+          t2Option1Resolved = true;
+          document.getElementById('t2-msg').innerHTML = t2CoplanarChecked
+            ? `<b>Athena:</b> Chính xác! Bốn điểm không đồng phẳng, các cạnh bên không cùng độ dài và mặt bên không còn là hình bình hành. Phương án 2 đã mở.`
+            : `<b>Athena:</b> Dự đoán hợp lí. Hãy bấm <b>“Kiểm tra tính đồng phẳng”</b> để xác nhận bằng hình trước khi sang phương án 2.`;
           fb.style.display = 'flex';
+          tryUnlockTab2Option2();
         };
 
         document.getElementById('t2-btn-test-coplanar').onclick = () => {
@@ -1480,6 +1566,8 @@
           }, 720);
           document.getElementById('t2-msg').innerHTML = `<b>Athena:</b> Mô phỏng thử vẽ mặt phẳng qua 4 điểm (đèn đỏ): Mặt phẳng bị méo lệch do 4 điểm không đồng phẳng.`;
           fb.style.display = 'flex';
+          t2CoplanarChecked = true;
+          tryUnlockTab2Option2();
         };
 
       } else {
@@ -1524,11 +1612,20 @@
       }
     }
 
+    function tryUnlockTab2Option2() {
+      if (!t2Option1Resolved || !t2CoplanarChecked) return;
+      const p2 = document.getElementById('t2-pill-opt2');
+      p2.disabled = false;
+      p2.textContent = 'Phương án 2: Mặt phẳng song song';
+    }
+
     /* =========================================================================
        8. TAB 3: ĐẶT TÊN THEO ĐA GIÁC ĐÁY
        ========================================================================= */
+    let t3BaseInspected = false;
     function initTab3() {
       clearScene();
+      t3BaseInspected = false;
       const A = new THREE.Vector3(-1.8, 0, 1.5);
       const B = new THREE.Vector3(1.4, 0, 1.5);
       const C = new THREE.Vector3(2.2, 0, -1.5);
@@ -1559,32 +1656,42 @@
 
       const fb = document.getElementById('t3-feedback');
       fb.style.display = 'none';
+      document.getElementById('btn-next-tab3').style.display = 'none';
 
-      document.getElementById('t3-btn-opt1').onclick = () => {
-        document.getElementById('t3-btn-opt1').className = 'choice-btn wrong';
-        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Đếm lại số cạnh của mặt đáy ABCD (có 4 cạnh AB, BC, CD, DA).`;
-        fb.style.display = 'flex';
-      };
-
-      document.getElementById('t3-btn-opt2').onclick = () => {
-        document.getElementById('t3-btn-opt2').className = 'choice-btn correct';
-        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Chính xác! Tên lăng trụ luôn gọi theo tên đa giác đáy. Mặt đáy có 4 cạnh nên gọi là <b>Lăng trụ tứ giác</b>.`;
-        fb.style.display = 'flex';
-        document.getElementById('btn-next-tab3').style.display = 'inline-flex';
-        unlockTab(4);
-      };
-
-      document.getElementById('t3-btn-opt3').onclick = () => {
-        document.getElementById('t3-btn-opt3').className = 'choice-btn wrong';
-        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Đáy ABCD chỉ có 4 cạnh, không phải 5 cạnh.`;
-        fb.style.display = 'flex';
-      };
-
-      document.getElementById('t3-btn-opt4').onclick = () => {
-        document.getElementById('t3-btn-opt4').className = 'choice-btn wrong';
-        document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Chú ý: Hình hộp là 1 trường hợp ĐẶC BIỆT của lăng trụ tứ giác (khi đáy là HBH). Tên gọi tổng quát theo đa giác đáy vẫn là <b>Lăng trụ tứ giác</b>!`;
-        fb.style.display = 'flex';
-      };
+      const namingOptions = [
+        { key: 'tri', text: 'Lăng trụ tam giác' },
+        { key: 'quad', text: 'Lăng trụ tứ giác' },
+        { key: 'penta', text: 'Lăng trụ ngũ giác' },
+        { key: 'box', text: 'Hình hộp' }
+      ].sort(() => Math.random() - 0.5);
+      const buttons = ['t3-btn-opt1', 't3-btn-opt2', 't3-btn-opt3', 't3-btn-opt4'].map(id => document.getElementById(id));
+      buttons.forEach((button, index) => {
+        const option = namingOptions[index];
+        button.className = 'choice-btn';
+        button.disabled = false;
+        button.innerHTML = `<span>${String.fromCharCode(65 + index)}. ${option.text}</span> <i class="ti ti-circle"></i>`;
+        button.onclick = () => {
+          if (!t3BaseInspected) {
+            document.getElementById('t3-msg').innerHTML = '<b>Athena:</b> Trước tiên hãy click trực tiếp vào mặt đáy ABCD trên hình 3D và đếm số cạnh.';
+            fb.style.display = 'flex';
+            return;
+          }
+          if (option.key === 'quad') {
+            button.className = 'choice-btn correct';
+            document.getElementById('t3-msg').innerHTML = '<b>Athena:</b> Chính xác! Đáy ABCD có 4 cạnh nên tên gọi tổng quát là <b>lăng trụ tứ giác</b>.';
+            document.getElementById('btn-next-tab3').style.display = 'inline-flex';
+            unlockTab(4);
+            buttons.forEach(b => { b.disabled = true; });
+          } else if (option.key === 'box') {
+            button.className = 'choice-btn wrong';
+            document.getElementById('t3-msg').innerHTML = '<b>Athena:</b> Hình hộp là trường hợp đặc biệt khi đáy là hình bình hành; tên tổng quát theo số cạnh đáy vẫn là <b>lăng trụ tứ giác</b>.';
+          } else {
+            button.className = 'choice-btn wrong';
+            document.getElementById('t3-msg').innerHTML = `<b>Athena:</b> Chưa đúng. Đáy ABCD có 4 cạnh AB, BC, CD, DA; hãy gọi tên theo số cạnh của đáy.`;
+          }
+          fb.style.display = 'flex';
+        };
+      });
 
       document.getElementById('btn-next-tab3').onclick = () => {
         unlockTab(4);
@@ -1598,53 +1705,75 @@
     /* =========================================================================
        9. TAB 4: THỬ THÁCH TỰ DỰNG LĂNG TRỤ (SNAP GRID 0.25 & REAL-TIME BADGES)
        ========================================================================= */
-    let ptCpMesh = null, labelCp = null, t4Attempts = 0;
+    let ptCpMesh = null, t4Attempts = 0;
+    let t4Stage = 1, t4SelectedPoint = 'C', t4Completed = false, t4HintTimer = 0;
+    let t4Top = null;
+    let t4DynamicObjects = [];
+    let t4DynamicLabels = [];
 
     function initTab4() {
       clearScene();
       t4Attempts = 0;
+      t4Stage = 1;
+      t4SelectedPoint = 'C';
+      t4Completed = false;
+      clearTimeout(t4HintTimer);
 
-      const A = new THREE.Vector3(-1.5, 0, 1.2);
-      const B = new THREE.Vector3(1.5, 0, 1.2);
-      const C = new THREE.Vector3(0, 0, -1.2);
+      const A = new THREE.Vector3(-1.5, 0, 1.25);
+      const B = new THREE.Vector3(1.5, 0, 1.25);
+      const C = new THREE.Vector3(0, 0, -1.25);
 
-      const Ap = new THREE.Vector3(-1.5, 3.0, 1.2);
-      const Bp = new THREE.Vector3(1.5, 3.0, 1.2);
+      t4Top = {
+        A: new THREE.Vector3(-1.5, 3.0, 1.25),
+        B: new THREE.Vector3(1.5, 3.0, 1.25),
+        C: new THREE.Vector3(0.75, 2.25, -0.50)
+      };
 
       createPolygonMesh([A, B, C], COLOR_PLANE_1, 0.25);
 
       makeSpherePoint(A); makeSpherePoint(B); makeSpherePoint(C);
-      makeSpherePoint(Ap); makeSpherePoint(Bp);
 
       createLabel3D('A', A); createLabel3D('B', B); createLabel3D('C', C);
-      createLabel3D("A'", Ap); createLabel3D("B'", Bp);
 
       createLineSegment(A, B, COLOR_EDGE_SOLID); createLineSegment(B, C, COLOR_EDGE_SOLID); createLineSegment(C, A, COLOR_EDGE_SOLID);
-      createLineSegment(A, Ap, COLOR_EDGE_SOLID); createLineSegment(B, Bp, COLOR_EDGE_SOLID);
-      createLineSegment(Ap, Bp, COLOR_EDGE_SOLID);
+      document.getElementById('t4-point-selector').style.display = 'none';
+      document.getElementById('t4-btn-extended').style.display = 'none';
+      document.getElementById('t4-slider-cz').max = '0.5';
+      setTab4ControlsDisabled(false);
+      setT4SlidersFromSelected();
+      updateTab4Geometry();
 
-      updateTab4PointC(0.75, 2.25, -0.50);
+      t4HintTimer = setTimeout(() => {
+        if (!t4Completed && currentTab === 4) showTab4SpecificHint();
+      }, 90000);
 
       document.getElementById('t4-slider-cx').oninput = (e) => {
         const cx = parseFloat(e.target.value);
         document.getElementById('val-cx').textContent = cx.toFixed(2);
-        updateTab4PointC(cx, parseFloat(document.getElementById('t4-slider-cy').value), parseFloat(document.getElementById('t4-slider-cz').value));
+        updateTab4SelectedPoint(cx, parseFloat(document.getElementById('t4-slider-cy').value), parseFloat(document.getElementById('t4-slider-cz').value));
       };
-      document.getElementById('t4-slider-cx').onchange = () => { t4Attempts++; updateTab4PointC(parseFloat(document.getElementById('t4-slider-cx').value), parseFloat(document.getElementById('t4-slider-cy').value), parseFloat(document.getElementById('t4-slider-cz').value)); };
+      document.getElementById('t4-slider-cx').onchange = registerTab4Attempt;
 
       document.getElementById('t4-slider-cz').oninput = (e) => {
         const cz = parseFloat(e.target.value);
         document.getElementById('val-cz').textContent = cz.toFixed(2);
-        updateTab4PointC(parseFloat(document.getElementById('t4-slider-cx').value), parseFloat(document.getElementById('t4-slider-cy').value), cz);
+        updateTab4SelectedPoint(parseFloat(document.getElementById('t4-slider-cx').value), parseFloat(document.getElementById('t4-slider-cy').value), cz);
       };
-      document.getElementById('t4-slider-cz').onchange = () => { t4Attempts++; updateTab4PointC(parseFloat(document.getElementById('t4-slider-cx').value), parseFloat(document.getElementById('t4-slider-cy').value), parseFloat(document.getElementById('t4-slider-cz').value)); };
+      document.getElementById('t4-slider-cz').onchange = registerTab4Attempt;
 
       document.getElementById('t4-slider-cy').oninput = (e) => {
         const cy = parseFloat(e.target.value);
         document.getElementById('val-cy').textContent = cy.toFixed(2);
-        updateTab4PointC(parseFloat(document.getElementById('t4-slider-cx').value), cy, parseFloat(document.getElementById('t4-slider-cz').value));
+        updateTab4SelectedPoint(parseFloat(document.getElementById('t4-slider-cx').value), cy, parseFloat(document.getElementById('t4-slider-cz').value));
       };
-      document.getElementById('t4-slider-cy').onchange = () => { t4Attempts++; updateTab4PointC(parseFloat(document.getElementById('t4-slider-cx').value), parseFloat(document.getElementById('t4-slider-cy').value), parseFloat(document.getElementById('t4-slider-cz').value)); };
+      document.getElementById('t4-slider-cy').onchange = registerTab4Attempt;
+
+      document.getElementById('t4-select-point').onchange = (e) => {
+        t4SelectedPoint = e.target.value;
+        setT4SlidersFromSelected();
+        updateTab4Geometry();
+      };
+      document.getElementById('t4-btn-extended').onclick = startTab4Extended;
     }
 
     /* DIRECT 3D POINT C' DRAG ENGINE WITH 0.25 GRID SNAP */
@@ -1685,7 +1814,8 @@
           let sz = Math.round(planeIntersectPt.z / 0.25) * 0.25;
 
           sx = Math.max(-1.5, Math.min(1.5, sx));
-          sz = Math.max(-2.0, Math.min(0.5, sz));
+          const maxZ = t4Stage === 2 ? 2.0 : 0.5;
+          sz = Math.max(-2.0, Math.min(maxZ, sz));
 
           const currentY = parseFloat(document.getElementById('t4-slider-cy').value);
 
@@ -1695,7 +1825,7 @@
           document.getElementById('t4-slider-cz').value = sz;
           document.getElementById('val-cz').textContent = sz.toFixed(2);
 
-          updateTab4PointC(sx, currentY, sz);
+          updateTab4SelectedPoint(sx, currentY, sz);
         }
       } else {
         const hits = dragRaycaster.intersectObject(ptCpMesh, false);
@@ -1708,54 +1838,68 @@
         isDraggingCp = false;
         orbitControls.enabled = true;
         canvas.style.cursor = 'default';
-        t4Attempts++;
-        updateTab4PointC(
-          parseFloat(document.getElementById('t4-slider-cx').value),
-          parseFloat(document.getElementById('t4-slider-cy').value),
-          parseFloat(document.getElementById('t4-slider-cz').value)
-        );
+        registerTab4Attempt();
       }
     });
 
-    let lineCpAp = null, lineCpBp = null, lineCCp = null, meshTopFace = null;
+    function updateTab4SelectedPoint(x, y, z) {
+      if (t4Completed || !t4Top) return;
+      t4Top[t4SelectedPoint].set(x, y, z);
+      updateTab4Geometry();
+    }
 
-    function updateTab4PointC(cx, cy, cz) {
-      const A = new THREE.Vector3(-1.5, 0, 1.2);
-      const B = new THREE.Vector3(1.5, 0, 1.2);
-      const C = new THREE.Vector3(0, 0, -1.2);
-      const Ap = new THREE.Vector3(-1.5, 3.0, 1.2);
-      const Bp = new THREE.Vector3(1.5, 3.0, 1.2);
-      const Cp = new THREE.Vector3(cx, cy, cz);
+    function disposeTab4Dynamic() {
+      t4DynamicObjects.forEach(object => {
+        scene.remove(object);
+        object.traverse?.(child => {
+          child.geometry?.dispose?.();
+          const mats = Array.isArray(child.material) ? child.material : [child.material];
+          mats.filter(Boolean).forEach(material => material.dispose?.());
+        });
+      });
+      t4DynamicLabels.forEach(label => {
+        label.element?.remove?.();
+        activeLabels = activeLabels.filter(item => item !== label);
+      });
+      t4DynamicObjects = [];
+      t4DynamicLabels = [];
+    }
 
-      if (ptCpMesh) scene.remove(ptCpMesh);
-      if (lineCpAp) scene.remove(lineCpAp);
-      if (lineCpBp) scene.remove(lineCpBp);
-      if (lineCCp) scene.remove(lineCCp);
-      if (meshTopFace) scene.remove(meshTopFace);
-      if (labelCp && labelCp.element && labelCp.element.parentNode) {
-        labelCp.element.parentNode.removeChild(labelCp.element);
-      }
-      activeLabels = activeLabels.filter(l => l !== labelCp);
-      labelCp = null;
+    function updateTab4Geometry() {
+      if (!t4Top) return;
+      const A = new THREE.Vector3(-1.5, 0, 1.25);
+      const B = new THREE.Vector3(1.5, 0, 1.25);
+      const C = new THREE.Vector3(0, 0, -1.25);
+      const Ap = t4Top.A, Bp = t4Top.B, Cp = t4Top.C;
+      disposeTab4Dynamic();
 
-      ptCpMesh = makeSpherePoint(Cp, COLOR_RESULT, 0.12);
-      labelCp = createLabel3D("C'", Cp, '#FAC775');
+      const topMeshes = {};
+      [['A', Ap], ['B', Bp], ['C', Cp]].forEach(([key, point]) => {
+        const mesh = makeSpherePoint(point, key === t4SelectedPoint ? COLOR_RESULT : 0x94a3b8, 0.12);
+        topMeshes[key] = mesh;
+        t4DynamicObjects.push(mesh);
+        const label = createLabel3D(`${key}'`, point, '#FAC775');
+        t4DynamicLabels.push(label);
+      });
+      ptCpMesh = topMeshes[t4SelectedPoint];
+      [[A, Ap], [B, Bp], [C, Cp], [Ap, Bp], [Bp, Cp], [Cp, Ap]].forEach(pair => {
+        t4DynamicObjects.push(createLineSegment(pair[0], pair[1], COLOR_EDGE_SOLID));
+      });
+      t4DynamicObjects.push(createPolygonMesh([Ap, Bp, Cp], COLOR_PLANE_2, 0.25));
 
-      lineCpAp = createLineSegment(Cp, Ap, COLOR_EDGE_SOLID);
-      lineCpBp = createLineSegment(Cp, Bp, COLOR_EDGE_SOLID);
-      lineCCp = createLineSegment(C, Cp, COLOR_EDGE_SOLID);
-      meshTopFace = createPolygonMesh([Ap, Bp, Cp], COLOR_PLANE_2, 0.25);
+      const baseAB = new THREE.Vector3().subVectors(B, A);
+      const baseBC = new THREE.Vector3().subVectors(C, B);
+      const topAB = new THREE.Vector3().subVectors(Bp, Ap);
+      const topBC = new THREE.Vector3().subVectors(Cp, Bp);
+      const edgeA = new THREE.Vector3().subVectors(Ap, A);
+      const edgeB = new THREE.Vector3().subVectors(Bp, B);
+      const edgeC = new THREE.Vector3().subVectors(Cp, C);
+      const EPS = 1e-10;
+      const isFaceHBH = topAB.distanceToSquared(baseAB) < EPS && topBC.distanceToSquared(baseBC) < EPS;
+      const isEdgeOk = edgeA.distanceToSquared(edgeB) < EPS && edgeA.distanceToSquared(edgeC) < EPS;
 
-      // Verify Prism Conditions:
-      // Condition 1: Side Face Parallelogram check (Vector C' - B' should equal C - B)
-      const vCB = new THREE.Vector3().subVectors(C, B);
-      const vCpBp = new THREE.Vector3().subVectors(Cp, Bp);
-      const isFaceHBH = vCB.distanceTo(vCpBp) < 0.15;
-
-      // Condition 2: Equal & Parallel side edges (Vector C' - C should equal A' - A = (0, 3, 0))
-      const vCCp = new THREE.Vector3().subVectors(Cp, C);
-      const targetEdgeVec = new THREE.Vector3(0, 3, 0);
-      const isEdgeOk = vCCp.distanceTo(targetEdgeVec) < 0.15;
+      document.getElementById('t4-lengths').textContent = `AA' = ${edgeA.length().toFixed(2)} · BB' = ${edgeB.length().toFixed(2)} · CC' = ${edgeC.length().toFixed(2)}`;
+      document.getElementById('t4-directions').textContent = `Độ lệch vector cạnh bên: vAA′−vBB′ = ${edgeA.distanceTo(edgeB).toFixed(2)} · vAA′−vCC′ = ${edgeA.distanceTo(edgeC).toFixed(2)}`;
 
       const badgeFace = document.getElementById('badge-face');
       const badgeEdge = document.getElementById('badge-edge');
@@ -1778,21 +1922,83 @@
 
       const fb = document.getElementById('t4-msg');
       if (isFaceHBH && isEdgeOk) {
-        fb.innerHTML = `<b>Athena:</b> 🎉 Chúc mừng! Bạn đã tự tay dựng được 1 <b>Hình lăng trụ tam giác ABC.A'B'C'</b> hợp lệ thỏa mãn tuyệt đối cả 2 điều kiện!`;
-        setTimeout(() => {
-          document.getElementById('celebration-modal').classList.add('show');
-        }, 1000);
-      } else if (t4Attempts < 2) {
+        t4Completed = true;
+        clearTimeout(t4HintTimer);
+        setTab4ControlsDisabled(true);
+        fb.innerHTML = `<b>Athena:</b> 🎉 Chúc mừng! Bạn đã dựng được <b>lăng trụ tam giác ABC.A'B'C'</b>: các mặt bên là hình bình hành và các cạnh bên song song, bằng nhau.`;
+        if (t4Stage === 1) {
+          document.getElementById('t4-btn-extended').style.display = 'inline-flex';
+          setTimeout(() => {
+            if (t4Stage === 1 && t4Completed) document.getElementById('celebration-modal').classList.add('show');
+          }, 800);
+        }
+      } else if (t4Attempts < 5) {
         if (isFaceHBH && !isEdgeOk) {
-          fb.innerHTML = `<b>Athena:</b> Các mặt bên đã là hình bình hành, nhưng các cạnh bên chưa bằng và song song. Thử điều chỉnh độ cao Y của C'!`;
+          fb.innerHTML = `<b>Athena:</b> Các mặt bên đã là hình bình hành, nhưng các cạnh bên chưa bằng và song song. Hãy kiểm tra độ dài và hướng của ${t4SelectedPoint}'!`;
         } else if (!isFaceHBH && isEdgeOk) {
-          fb.innerHTML = `<b>Athena:</b> Các cạnh bên đã bằng nhau, nhưng các mặt bên chưa phải hình bình hành. Thử điều chỉnh vị trí X, Z của C'!`;
+          fb.innerHTML = `<b>Athena:</b> Các cạnh bên đã bằng nhau, nhưng các mặt bên chưa phải hình bình hành. Hãy kiểm tra vị trí ngang của ${t4SelectedPoint}'!`;
         } else {
-          fb.innerHTML = `<b>Athena:</b> Hãy di chuyển đỉnh C' (hoặc dùng slider) sao cho cả 2 điều kiện bên trên đều chuyển sang màu xanh ✓!`;
+          fb.innerHTML = `<b>Athena:</b> Hãy điều chỉnh ${t4SelectedPoint}' sao cho cả hai điều kiện bên trên đều chuyển sang màu xanh ✓!`;
         }
       } else {
-        fb.innerHTML = `<b>Athena (Gợi ý):</b> Hãy điều chỉnh C' về vị trí tọa độ <b>X = 0.00, Z = -1.20, Y = 3.00</b> để hoàn thành lăng trụ!`;
+        showTab4SpecificHint();
       }
+    }
+
+    function registerTab4Attempt() {
+      if (t4Completed) return;
+      t4Attempts++;
+      updateTab4Geometry();
+      if (t4Attempts >= 5) showTab4SpecificHint();
+    }
+
+    function showTab4SpecificHint() {
+      if (t4Completed) return;
+      const targets = {
+        A: [-1.5, 3, 1.25], B: [1.5, 3, 1.25], C: [0, 3, -1.25]
+      };
+      const [x, y, z] = targets[t4SelectedPoint];
+      document.getElementById('t4-msg').innerHTML = `<b>Athena (gợi ý sau khi thử):</b> Với ${t4SelectedPoint}', hãy giữ cùng vector tịnh tiến với các cạnh bên chuẩn; ô lưới mục tiêu là X=${x.toFixed(2)}, Y=${y.toFixed(2)}, Z=${z.toFixed(2)}.`;
+    }
+
+    function setTab4ControlsDisabled(disabled) {
+      ['t4-slider-cx', 't4-slider-cy', 't4-slider-cz', 't4-select-point'].forEach(id => {
+        document.getElementById(id).disabled = disabled;
+      });
+      if (disabled) orbitControls.enabled = true;
+    }
+
+    function setT4SlidersFromSelected() {
+      const point = t4Top[t4SelectedPoint];
+      document.getElementById('t4-slider-cx').value = point.x;
+      document.getElementById('t4-slider-cy').value = point.y;
+      document.getElementById('t4-slider-cz').value = point.z;
+      document.getElementById('val-cx').textContent = point.x.toFixed(2);
+      document.getElementById('val-cy').textContent = point.y.toFixed(2);
+      document.getElementById('val-cz').textContent = point.z.toFixed(2);
+    }
+
+    function startTab4Extended() {
+      document.getElementById('celebration-modal').classList.remove('show');
+      t4Stage = 2;
+      t4Completed = false;
+      t4Attempts = 0;
+      t4SelectedPoint = 'A';
+      t4Top = {
+        A: new THREE.Vector3(-1.0, 2.0, 1.0),
+        B: new THREE.Vector3(1.25, 3.5, 1.5),
+        C: new THREE.Vector3(0.75, 2.25, -0.5)
+      };
+      document.getElementById('t4-point-selector').style.display = 'block';
+      document.getElementById('t4-slider-cz').max = '2.0';
+      document.getElementById('t4-select-point').value = 'A';
+      document.getElementById('t4-btn-extended').style.display = 'none';
+      setTab4ControlsDisabled(false);
+      setT4SlidersFromSelected();
+      updateTab4Geometry();
+      clearTimeout(t4HintTimer);
+      t4HintTimer = setTimeout(() => { if (!t4Completed) showTab4SpecificHint(); }, 90000);
+      document.getElementById('t4-msg').innerHTML = `<b>Athena:</b> GĐ2 mở rộng: cả A', B', C' đã bị xáo. Chọn từng điểm, dùng slider hoặc kéo trực tiếp để dựng lại lăng trụ.`;
     }
 
     /* RESTART BUTTON IN MODAL */
@@ -1819,6 +2025,9 @@
     function animate() {
       requestAnimationFrame(animate);
       orbitControls.update();
+      if (t1HintLine?.material && currentTab === 1) {
+        t1HintLine.material.opacity = 0.55 + Math.sin(performance.now() * 0.006) * 0.35;
+      }
       activeLabels.forEach(l => l.update());
       updateDynamicOcclusion();
       renderer.render(scene, camera);

@@ -4,13 +4,15 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta name="theme-color" content="#14432F">
   <title>Đền thờ Euclid: Hành trình đầu tiên</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="preconnect" href="https://cdn.jsdelivr.net" crossorigin>
   <link
     href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
     rel="stylesheet">
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
-  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
   <style>
     :root {
       /* Tokens hệ thống Jade & Cream chuẩn */
@@ -300,7 +302,7 @@
       justify-content: center;
       cursor: pointer;
       font-size: 13px;
-      transition: all 0.2s ease;
+      transition: background-color .2s ease, color .2s ease, transform .2s ease;
       padding: 0;
       flex-shrink: 0;
     }
@@ -327,7 +329,7 @@
       align-items: center;
       justify-content: center;
       background: rgba(10, 22, 16, 0.5);
-      transition: all .3s ease;
+      transition: background-color .3s ease, border-color .3s ease, box-shadow .3s ease;
     }
 
     .relic-slot.filled {
@@ -414,7 +416,7 @@
       padding: 8px 16px;
       border-radius: 8px;
       cursor: pointer;
-      transition: all .2s ease;
+      transition: background .2s ease, box-shadow .2s ease, opacity .2s ease;
       display: inline-flex;
       align-items: center;
       justify-content: center;
@@ -533,7 +535,7 @@
       cursor: pointer;
       font-family: inherit;
       font-size: 13.5px;
-      transition: all .2s;
+      transition: background-color .2s, border-color .2s, color .2s;
     }
 
     .plane-choice-btn.selected {
@@ -899,6 +901,62 @@
       display: none !important;
     }
 
+    #loading-screen {
+      position: absolute;
+      inset: 0;
+      z-index: 100;
+      display: grid;
+      place-items: center;
+      background: #0a1610;
+      color: var(--gold-bright);
+      transition: opacity .3s ease;
+    }
+
+    #loading-screen.ready {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .loading-spinner {
+      width: 34px;
+      height: 34px;
+      margin: 0 auto 12px;
+      border: 3px solid rgba(255, 255, 255, .18);
+      border-top-color: var(--gold);
+      border-radius: 50%;
+      animation: loading-spin .8s linear infinite;
+    }
+
+    @keyframes loading-spin { to { transform: rotate(360deg); } }
+
+    #btn-quality {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      z-index: 8;
+      min-height: 40px;
+      border: 1px solid rgba(68, 155, 116, .5);
+      border-radius: 8px;
+      padding: 8px 12px;
+      color: #fff;
+      background: rgba(14, 30, 22, .88);
+      font: 600 12px 'Be Vietnam Pro', sans-serif;
+      cursor: pointer;
+    }
+
+    :focus-visible {
+      outline: 3px solid var(--gold-bright);
+      outline-offset: 3px;
+    }
+
+    body.low-quality #sidebar,
+    body.low-quality #station-panel,
+    body.low-quality #keeper-box,
+    body.low-quality #btn-overview-cam,
+    body.low-quality #btn-recall-keeper {
+      backdrop-filter: none;
+    }
+
     #btn-overview-cam {
       position: absolute;
       bottom: 16px;
@@ -916,7 +974,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.2s ease;
+      transition: background-color .2s ease, border-color .2s ease, color .2s ease;
     }
 
     #btn-overview-cam:hover {
@@ -942,7 +1000,7 @@
       display: flex;
       align-items: center;
       gap: 6px;
-      transition: all 0.2s ease;
+      transition: background-color .2s ease, border-color .2s ease, color .2s ease, transform .2s ease;
       box-shadow: 0 4px 14px rgba(0, 0, 0, 0.35);
     }
 
@@ -1142,6 +1200,17 @@
       }
     }
 
+    @media (prefers-reduced-motion: reduce) {
+      *, *::before, *::after {
+        scroll-behavior: auto !important;
+        animation-duration: .01ms !important;
+        animation-iteration-count: 1 !important;
+        transition-duration: .01ms !important;
+      }
+      #bg { filter: brightness(.72) saturate(.85); }
+      .flash-white { display: none; }
+    }
+
     ::-webkit-scrollbar {
       width: 6px;
     }
@@ -1160,12 +1229,16 @@
   </header>
 
   <div id="app-body">
+    <div id="loading-screen" role="status" aria-live="polite">
+      <div><div class="loading-spinner" aria-hidden="true"></div><span id="loading-text">Đang tải không gian 3D…</span></div>
+    </div>
     <div id="bg"></div>
     <div id="warm-overlay"></div>
-    <canvas id="three-canvas"></canvas>
+    <canvas id="three-canvas" aria-label="Không gian hình học 3D tương tác"></canvas>
     <div id="label-layer"></div>
-    <button id="btn-overview-cam" class="hidden"><i class="ti ti-eye"></i> Góc nhìn toàn cảnh</button>
+    <button id="btn-overview-cam" class="hidden" aria-label="Đặt lại góc nhìn toàn cảnh"><i class="ti ti-eye"></i> Góc nhìn toàn cảnh</button>
     <button id="btn-recall-keeper" class="hidden"><i class="ti ti-message-dots"></i> Lời dặn Người Gác Đền</button>
+    <button id="btn-quality" type="button" aria-pressed="false" title="Giảm hiệu ứng để tăng độ mượt"><i class="ti ti-bolt"></i> Chất lượng: Tự động</button>
 
     <div id="ui-layer">
       <div id="sidebar" class="hidden">
@@ -1188,11 +1261,11 @@
       </div>
 
       <div id="station-panel" class="hidden"></div>
-      <div id="wrong-toast"></div>
+      <div id="wrong-toast" role="alert" aria-live="assertive"></div>
 
       <div id="keeper-box" class="hidden">
         <div id="keeper-name">Người Gác Đền</div>
-        <div id="keeper-text"></div>
+        <div id="keeper-text" aria-live="polite"></div>
         <div id="keeper-buttons"></div>
       </div>
 
@@ -1420,14 +1493,29 @@
     let currentHoveredPoint = null;
 
     const canvas = document.getElementById('three-canvas');
-    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: true });
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+    const prefersReducedMotion = window.matchMedia('(prefers-reduced-motion: reduce)');
+    const isMobileDevice = window.matchMedia('(max-width: 768px), (pointer: coarse)').matches;
+    let lowQuality = isMobileDevice || ((navigator.hardwareConcurrency || 8) <= 4);
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: !lowQuality, alpha: true, powerPreference: 'high-performance' });
+
+    function applyRenderQuality() {
+      const maxDpr = lowQuality ? 1 : (isMobileDevice ? 1.5 : 2);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, maxDpr));
+      document.body.classList.toggle('low-quality', lowQuality);
+      const btn = document.getElementById('btn-quality');
+      if (btn) {
+        btn.setAttribute('aria-pressed', String(lowQuality));
+        btn.innerHTML = `<i class="ti ti-bolt"></i> Chất lượng: ${lowQuality ? 'Mượt' : 'Đẹp'}`;
+      }
+    }
+    applyRenderQuality();
 
     function resizeCanvasToWrap() {
       const wrap = document.getElementById('app-body');
       const w = wrap.clientWidth;
       const h = wrap.clientHeight;
-      renderer.setSize(w, h);
+      if (w < 1 || h < 1) return;
+      renderer.setSize(w, h, false);
       camera.aspect = w / h;
       camera.updateProjectionMatrix();
     }
@@ -1451,14 +1539,27 @@
     warmPoint.position.set(0, 3, 2);
     scene.add(warmPoint);
 
-    window.addEventListener('resize', resizeCanvasToWrap);
+    window.addEventListener('resize', resizeCanvasToWrap, { passive: true });
+    const canvasResizeObserver = typeof ResizeObserver !== 'undefined'
+      ? new ResizeObserver(resizeCanvasToWrap) : null;
+    canvasResizeObserver?.observe(document.getElementById('app-body'));
     resizeCanvasToWrap();
 
+    let animationFrameId = 0;
+    let lastFrameTime = 0;
     function animate() {
-      requestAnimationFrame(animate);
-      orbitControls.update();
+      if (document.hidden) {
+        animationFrameId = 0;
+        return;
+      }
+      animationFrameId = requestAnimationFrame(animate);
+      const now = performance.now();
+      const minFrameInterval = lowQuality ? 1000 / 30 : 0;
+      if (now - lastFrameTime < minFrameInterval) return;
+      lastFrameTime = now;
+      if (orbitControls.enabled) orbitControls.update();
 
-      const pulseVal = 0.45 + Math.sin(Date.now() * 0.005) * 0.15;
+      const pulseVal = prefersReducedMotion.matches ? 0.5 : 0.45 + Math.sin(now * 0.005) * 0.15;
       if (Array.isArray(allDraggablePoints)) {
         allDraggablePoints.forEach(pt => {
           if (!pt.locked && !pt.dragging && pt !== currentHoveredPoint) {
@@ -1472,6 +1573,17 @@
     }
     animate();
 
+    document.addEventListener('visibilitychange', () => {
+      lastFrameTime = performance.now();
+      if (!document.hidden && animationFrameId === 0) animate();
+    });
+
+    document.getElementById('btn-quality').addEventListener('click', () => {
+      lowQuality = !lowQuality;
+      applyRenderQuality();
+      resizeCanvasToWrap();
+    });
+
     function setLightingForStation(n) {
       const warmth = [0.35, 0.5, 0.65, 0.8, 0.95, 1.25][n] ?? 0.5;
       ambient.intensity = 0.3 + warmth * 0.35;
@@ -1481,18 +1593,50 @@
       dirLight.color.setHSL(hue, 0.55, 0.7);
     }
 
+    let stationCleanupTasks = [];
+    function addStationCleanup(task) {
+      stationCleanupTasks.push(task);
+      return task;
+    }
+    function stationTimeout(callback, delay) {
+      const id = setTimeout(callback, delay);
+      addStationCleanup(() => clearTimeout(id));
+      return id;
+    }
+    function stationInterval(callback, delay) {
+      const id = setInterval(callback, delay);
+      addStationCleanup(() => clearInterval(id));
+      return id;
+    }
+    function runStationCleanup() {
+      stationCleanupTasks.splice(0).forEach(task => {
+        try { task(); } catch (error) { console.warn('Không thể dọn tài nguyên trạm:', error); }
+      });
+    }
+    function disposeObject3D(object) {
+      if (!object) return;
+      object.traverse?.(child => {
+        child.geometry?.dispose?.();
+        const materials = Array.isArray(child.material) ? child.material : [child.material];
+        materials.filter(Boolean).forEach(material => {
+          Object.values(material).forEach(value => value?.isTexture && value.dispose());
+          material.dispose?.();
+        });
+      });
+    }
+
     function clearScene3D() {
+      runStationCleanup();
+      if (window.__station5Cleanup) {
+        window.__station5Cleanup();
+        window.__station5Cleanup = null;
+      }
       const keep = new Set([ambient, dirLight, warmPoint]);
       while (scene.children.length > 0) {
         const obj = scene.children.find(o => !keep.has(o));
         if (!obj) break;
         scene.remove(obj);
-        obj.traverse?.(o => {
-          if (o.geometry) o.geometry.dispose();
-          if (o.material) {
-            (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m && m.dispose && m.dispose());
-          }
-        });
+        disposeObject3D(obj);
       }
       window.__frameHook = null;
       window.__onDragUpdate = null;
@@ -1686,6 +1830,22 @@
       stationStart: Date.now(),
     };
 
+    const STATION_BACKGROUNDS = [
+      'https://lh3.googleusercontent.com/d/1_Kv5bB17f9Juq1axPkANuCgrKEUwY8wG',
+      'https://lh3.googleusercontent.com/d/1MLlXZkNmPP4rXs9MAC7aYbHKSJBgMOOR',
+      'https://lh3.googleusercontent.com/d/1LblxGJdQxJ51oNkJwIYYO1hKvTUAgbIu',
+      'https://lh3.googleusercontent.com/d/1a-RqkU3rRw0v4M1FtHe1Eq9KuLI4tou2',
+      'https://lh3.googleusercontent.com/d/19Eb4_QRdwzHw__gSMiGqNGNY3JvvJGFy',
+      'https://lh3.googleusercontent.com/d/1q1UsPlQU6ojLTa5eJiJV4iFMtZWXAsnJ'
+    ];
+    function preloadStationBackground(n) {
+      const src = STATION_BACKGROUNDS[n];
+      if (!src) return;
+      const image = new Image();
+      image.decoding = 'async';
+      image.src = src;
+    }
+
     function currentScore() {
       return FLOOR_SCORE + game.bonuses.reduce((a, b) => a + b, 0);
     }
@@ -1728,10 +1888,11 @@
       const sbToggle = document.getElementById('btn-toggle-sidebar');
       if (sbToggle && !sbToggle.__bound) {
         sbToggle.__bound = true;
-        sbToggle.onclick = (e) => {
+          sbToggle.onclick = (e) => {
           e.stopPropagation();
           const sb = document.getElementById('sidebar');
-          sb.classList.toggle('collapsed');
+            sb.classList.toggle('collapsed');
+            sbToggle.setAttribute('aria-expanded', String(!sb.classList.contains('collapsed')));
           const icon = sbToggle.querySelector('i');
           if (icon) {
             icon.className = `ti ${sb.classList.contains('collapsed') ? 'ti-chevron-down' : 'ti-chevron-up'}`;
@@ -1805,8 +1966,13 @@
     }
     function flashWhite(duration = 700) {
       const f = document.getElementById('flash-white');
+      if (prefersReducedMotion.matches) return;
       f.classList.add('on');
-      setTimeout(() => { f.style.transition = 'opacity .6s ease'; f.classList.remove('on'); }, 90);
+      clearTimeout(f.__t);
+      f.__t = setTimeout(() => {
+        f.style.transition = `opacity ${Math.max(150, duration - 90)}ms ease`;
+        f.classList.remove('on');
+      }, Math.min(90, duration));
     }
 
     /* ---------------------- PHẦN F — STATION PANEL HELPER ---------------------- */
@@ -1829,6 +1995,7 @@
         toggleBtn.onclick = (e) => {
           e.stopPropagation();
           p.classList.toggle('collapsed');
+          toggleBtn.setAttribute('aria-expanded', String(!p.classList.contains('collapsed')));
           const icon = toggleBtn.querySelector('i');
           if (icon) {
             icon.className = `ti ${p.classList.contains('collapsed') ? 'ti-chevron-down' : 'ti-chevron-up'}`;
@@ -1911,6 +2078,7 @@
 
       STATION_SETUP[n]();
       setCameraOverview(n);
+      preloadStationBackground(n + 1);
       reportHeight();
     }
     window.goToStation = goToStation;
@@ -2057,7 +2225,7 @@
         gateHole.material.emissiveIntensity = 0.6;
         dirLight.intensity += 0.3;
         let t = 0;
-        const shakeId = setInterval(() => {
+        const shakeId = stationInterval(() => {
           t += 1; gateFrame.position.x = Math.sin(t) * 0.02;
           if (t > 20) { clearInterval(shakeId); gateFrame.position.x = 0; }
         }, 30);
@@ -2497,7 +2665,7 @@
           updatePanel();
           if (identifyDone.apex && identifyDone.face && identifyDone.edge) {
             identifyComplete = true;
-            setTimeout(startPhase2, 400);
+            stationTimeout(startPhase2, 400);
           }
         }
       }
@@ -2646,7 +2814,7 @@
         ${planeOptions.map(o => `<button class="plane-choice-btn ${selectedKeys.includes(o.key) ? 'selected' : ''}" data-key="${o.key}" ${intersectDone ? 'disabled' : ''}>${o.label}</button>`).join('')}
         <button class="btn" id="btn-try-planes" style="width:100%; margin-top:8px;" ${selectedKeys.length !== 2 || intersectDone ? 'disabled' : ''}>Thử</button>
       `);
-          setTimeout(() => {
+          stationTimeout(() => {
             document.querySelectorAll('.plane-choice-btn').forEach(b => {
               b.onclick = () => togglePlane(b.dataset.key);
             });
@@ -2796,7 +2964,11 @@
         const TOLERANCE = 0.02;
 
         function rebuildSection(percent) {
-          if (sectionGroup) { scene.remove(sectionGroup); sectionGroup = null; }
+          if (sectionGroup) {
+            scene.remove(sectionGroup);
+            disposeObject3D(sectionGroup);
+            sectionGroup = null;
+          }
           const data = areaAt(percent);
           if (!data) { currentArea = null; return; }
           currentArea = data.area;
@@ -2881,17 +3053,22 @@
           const inp = document.getElementById('m-percent-input');
           if (inp) {
             inp.addEventListener('keydown', (e) => { if (e.key === 'Enter') onConfirm(); });
+            let previewTimer = 0;
             inp.addEventListener('input', (e) => {
               const v = parseFloat(e.target.value);
               if (!isNaN(v) && v >= 0 && v <= 98) {
                 currentPercent = v;
-                rebuildSection(v);
-                const feedbackEl = document.getElementById('feedback-line');
-                if (feedbackEl) {
-                  feedbackEl.innerHTML = `Diện tích hiện tại (M ở ${v}%): <b>${currentArea.toFixed(2)}</b>${solved ? ' — Chính xác! ✓' : ''}`;
-                }
+                clearTimeout(previewTimer);
+                previewTimer = setTimeout(() => {
+                  rebuildSection(v);
+                  const feedbackEl = document.getElementById('feedback-line');
+                  if (feedbackEl && currentArea !== null) {
+                    feedbackEl.innerHTML = `Diện tích hiện tại (M ở ${v}%): <b>${currentArea.toFixed(2)}</b>${solved ? ' — Chính xác! ✓' : ''}`;
+                  }
+                }, 70);
               }
             });
+            addStationCleanup(() => clearTimeout(previewTimer));
           }
         }
         updateMainPanel();
@@ -3031,7 +3208,7 @@
         game.relics[4] = true;
         renderSidebar();
         flashWhite(750);
-        setTimeout(showEnding, 500);
+        stationTimeout(showEnding, 500);
       }
 
       function showEnding() {
@@ -3050,6 +3227,9 @@
         };
         document.querySelector('#ending-keeper').textContent = farewells[rank.name] || '';
         document.getElementById('ending-overlay').style.display = 'flex';
+        document.getElementById('ending-overlay').setAttribute('role', 'dialog');
+        document.getElementById('ending-overlay').setAttribute('aria-modal', 'true');
+        document.querySelector('#ending-card button, #ending-card input')?.focus();
         loadLeaderboard();
       }
 
@@ -3097,6 +3277,15 @@
 
     /* ---------------------- KHỞI ĐỘNG ---------------------- */
     goToStation(0);
+    preloadStationBackground(1);
+    requestAnimationFrame(() => {
+      const loadingScreen = document.getElementById('loading-screen');
+      if (loadingScreen) {
+        loadingScreen.classList.add('ready');
+        loadingScreen.addEventListener('transitionend', () => loadingScreen.remove(), { once: true });
+        setTimeout(() => loadingScreen.remove(), 800);
+      }
+    });
 
   </script>
 </body>
