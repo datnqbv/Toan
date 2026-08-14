@@ -1,0 +1,1273 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 5b — Luyện tập tổng hợp Phương trình đường thẳng</title>
+
+  <!-- Google Fonts: Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
+
+  <!-- Three.js r128 & OrbitControls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- KaTeX Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    /* =========================================================================
+       1. CORE DESIGN TOKENS & SYSTEM (JADE & CREAM THEME)
+       ========================================================================= */
+    :root {
+      /* Jade/Cream Primary System */
+      --cream: #FAF7F0;
+      --jade-dark: #14432F;
+      --jade-deep: #2D8B6F;
+      --jade-light: #E8F3EF;
+      --paper-line: #E2DDD3;
+      --ink: #1C2826;
+      --ink-2: #4A5855;
+      --ink-3: #7A8A86;
+
+      /* Semantic Status Colors */
+      --correct: #2E7D32;
+      --correct-bg: #E8F5E9;
+      --wrong: #C62828;
+      --wrong-bg: #FFEBEE;
+      --warning: #EF6C00;
+      --warning-bg: #FFF3E0;
+      --info: #0288D1;
+      --info-bg: #E0F7FA;
+
+      /* Legacy & Canvas Aliases */
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+      --canvas-bg: #0a1628;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body, button, input, select, textarea {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    /* =========================================================================
+       2. HEADER & LAYOUT STRUCTURE
+       ========================================================================= */
+    header {
+      height: 50px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+      position: relative;
+      z-index: 10;
+    }
+
+    .header-badge {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    #app-body {
+      display: flex;
+      height: calc(100vh - 50px);
+      max-height: calc(100vh - 50px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* CANVAS 3D AREA */
+    #canvas-wrap {
+      flex: 1;
+      background-color: var(--canvas-bg);
+      position: relative;
+      min-height: 400px;
+      overflow: hidden;
+    }
+
+    #three-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+    }
+
+    /* FLOATING BUTTONS & CANVAS OVERLAYS */
+    #btn-reset-cam {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      background: rgba(15, 23, 42, 0.85);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    #btn-reset-cam:hover {
+      background: rgba(30, 41, 59, 0.95);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* 3D HTML LABELS LAYER */
+    #label-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .point-label {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #ffffff;
+      background: rgba(15, 23, 42, 0.8);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(3px);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* SIDEBAR CONTROL PANEL */
+    #sidebar {
+      width: 400px;
+      background-color: #ffffff;
+      border-left: 1px solid var(--paper-line);
+      display: flex;
+      flex-direction: column;
+      z-index: 5;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .step-tabs {
+      display: flex;
+      gap: 4px;
+      margin-bottom: 12px;
+      overflow-x: auto;
+      padding-bottom: 4px;
+    }
+
+    .step-tab {
+      flex: 1;
+      padding: 8px 6px;
+      background-color: var(--cream);
+      border: 1.5px solid var(--paper-line);
+      border-radius: 8px;
+      font-size: 11.5px;
+      font-weight: 700;
+      color: var(--navy);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      white-space: nowrap;
+      position: relative;
+    }
+
+    .step-tab:hover:not(.locked) {
+      background-color: var(--jade-light);
+      border-color: var(--teal);
+    }
+
+    .step-tab.active {
+      background-color: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
+    }
+
+    .step-tab.completed::after {
+      content: '✓';
+      position: absolute;
+      top: 2px;
+      right: 4px;
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--correct);
+    }
+
+    .step-tab.active.completed::after {
+      color: #ffffff;
+    }
+
+    .step-tab.locked {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    .info-box {
+      background-color: var(--cream);
+      border: 1px solid var(--paper-line);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      line-height: 1.6;
+      overflow-x: auto;
+      word-wrap: break-word;
+    }
+
+    .athena-box {
+      background-color: var(--jade-light);
+      border-color: rgba(27, 77, 62, 0.2);
+    }
+
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+      margin: 0.4em 0 !important;
+      padding: 2px 0;
+    }
+
+    .choice-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 10px;
+      margin-bottom: 12px;
+    }
+
+    .choice-btn {
+      width: 100%;
+      padding: 10px 12px;
+      background-color: #ffffff;
+      border: 1.5px solid var(--paper-line);
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--ink);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: flex-start;
+      gap: 6px;
+      flex-wrap: wrap;
+    }
+
+    .choice-btn:hover {
+      border-color: var(--teal);
+      background-color: var(--cream);
+    }
+
+    .choice-btn.correct {
+      border-color: var(--correct);
+      background-color: var(--correct-bg);
+      color: var(--correct);
+      font-weight: 700;
+    }
+
+    .choice-btn.wrong {
+      border-color: var(--wrong);
+      background-color: var(--wrong-bg);
+      color: var(--wrong);
+    }
+
+    .btn {
+      min-height: 40px;
+      padding: 8px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background-color: var(--teal);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(45, 139, 111, 0.25);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--jade-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-outline {
+      background-color: var(--cream);
+      border: 1.5px solid var(--paper-line);
+      color: var(--navy);
+    }
+
+    .btn-outline:hover {
+      background-color: var(--jade-light);
+      border-color: var(--teal);
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 22, 40, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border: 2px solid var(--teal);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 600px;
+      width: 92%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      color: var(--ink);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-body {
+      overflow-y: auto;
+      padding-right: 6px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      #app-body {
+        flex-direction: column;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+      }
+
+      #canvas-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        flex: none;
+        width: 100%;
+        height: calc((100vh - 50px) * 0.5);
+        height: calc((100dvh - 50px) * 0.5);
+        min-height: 280px;
+      }
+
+      #sidebar {
+        width: 100%;
+        flex: none;
+        border-left: none;
+        border-top: 1px solid var(--paper-line);
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-badge">
+      <i class="ti ti-3d-cube-sphere"></i> 🧊 Hình học không gian
+    </div>
+  </header>
+
+  <!-- CELEBRATION MODAL -->
+  <div class="modal-overlay" id="celebration-modal">
+    <div class="modal-card" style="text-align: center;">
+      <div style="font-size: 40px; margin-bottom: 8px;">🎉</div>
+      <h3 style="margin: 0 0 8px 0; color: var(--navy); font-size: 20px;">Xuất Sắc! Hoàn Thành Module 5b</h3>
+      <div style="font-size: 13.5px; color: var(--ink-2); margin-bottom: 16px;">
+        Bạn đã thành thạo vận dụng Phương trình đường thẳng và phân biệt chính xác giữa <b>Cắt quỹ đạo hình học</b> & <b>Va chạm thực tế</b>!
+      </div>
+      <button class="btn btn-primary" onclick="closeCelebrationModal()">
+        <i class="ti ti-check"></i> Đóng & Xem lại hình 3D
+      </button>
+    </div>
+  </div>
+
+  <div id="app-body">
+    <!-- CANVAS 3D AREA -->
+    <div id="canvas-wrap">
+      <canvas id="three-canvas"></canvas>
+      <div id="label-layer"></div>
+
+      <button id="btn-reset-cam"><i class="ti ti-refresh"></i> Đặt lại góc nhìn</button>
+    </div>
+
+    <!-- SIDEBAR CONTROL PANEL -->
+    <div id="sidebar">
+      <!-- STEP TABS -->
+      <div class="step-tabs">
+        <div class="step-tab active" id="tab-step-1" onclick="switchStep(1)">Vòng 1</div>
+        <div class="step-tab" id="tab-step-2" onclick="switchStep(2)">Vòng 2</div>
+        <div class="step-tab" id="tab-step-3" onclick="switchStep(3)">Vòng 3</div>
+        <div class="step-tab" id="tab-step-4" onclick="switchStep(4)">Vòng 4</div>
+        <div class="step-tab locked" id="tab-step-5" onclick="switchStep(5)">⚡ Radar Drone</div>
+      </div>
+
+      <!-- MAIN STEP PANEL CONTENT -->
+      <div id="step-panel-container">
+        <!-- Rendered dynamically -->
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       THREE.JS ENGINE & INTERACTIVE LOGIC
+       ========================================================================= -->
+  <script>
+    /* =========================================================================
+       1. THREE.JS SCENE SETUP & INFRASTRUCTURE
+       ========================================================================= */
+    const canvas = document.getElementById('three-canvas');
+    const wrap = document.getElementById('canvas-wrap');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a1628);
+
+    const camera = new THREE.PerspectiveCamera(45, wrap.clientWidth / wrap.clientHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    orbitControls.enableDamping = true;
+    orbitControls.dampingFactor = 0.08;
+
+    scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(12, 18, 15);
+    scene.add(dirLight);
+
+    const gridHelper = new THREE.GridHelper(30, 30, 0x30363d, 0x1c2333);
+    gridHelper.position.y = 0;
+    scene.add(gridHelper);
+
+    function resetCamera() {
+      const isMobile = wrap.clientWidth <= 768;
+      camera.position.set(isMobile ? 18 : 14, isMobile ? 14 : 10, isMobile ? 18 : 14);
+      orbitControls.target.set(2, 2, 2);
+      orbitControls.update();
+    }
+    resetCamera();
+    document.getElementById('btn-reset-cam').addEventListener('click', resetCamera);
+
+    /* LMS INTEGRATION */
+    function reportHeight() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'resize', height: document.documentElement.scrollHeight }, '*');
+      }
+    }
+    function LMS() {
+      return {
+        complete: () => {
+          console.log("LMS: Module 5b completed!");
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'complete' }, '*');
+          }
+        }
+      };
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(reportHeight).observe(document.body);
+      new ResizeObserver(() => {
+        camera.aspect = wrap.clientWidth / wrap.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+        activeLabels.forEach(l => l.update());
+      }).observe(wrap);
+    }
+
+    /* KaTeX Helper */
+    function renderKaTeXInElement(element) {
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(element || document.body, {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "$", right: "$", display: false },
+              { left: "\\(", right: "\\)", display: false },
+              { left: "\\[", right: "\\]", display: true }
+            ],
+            throwOnError: false
+          });
+        } catch (err) {
+          console.warn("KaTeX render error:", err);
+        }
+      }
+    }
+
+    /* =========================================================================
+       2. 3D HTML LABELS & CLEAR SCENE INFRASTRUCTURE
+       ========================================================================= */
+    let activeLabels = [];
+    function createLabel3D(text, position, color = '#ffffff', id = null) {
+      const el = document.createElement('div');
+      el.className = 'point-label';
+      if (id) el.id = id;
+      el.innerHTML = text;
+      if (color) el.style.borderColor = color;
+      document.getElementById('label-layer').appendChild(el);
+
+      const labelObj = {
+        element: el,
+        position: position.clone(),
+        update: () => {
+          const wp = labelObj.position.clone();
+          const camDir = new THREE.Vector3();
+          camera.getWorldDirection(camDir);
+          const toLabel = wp.clone().sub(camera.position);
+
+          if (toLabel.dot(camDir) <= 0) {
+            el.style.display = 'none';
+            return;
+          }
+
+          const projected = wp.project(camera);
+          if (projected.z > 1) {
+            el.style.display = 'none';
+            return;
+          }
+
+          const x = (projected.x * 0.5 + 0.5) * wrap.clientWidth;
+          const y = (-projected.y * 0.5 + 0.5) * wrap.clientHeight;
+
+          el.style.display = 'block';
+          el.style.left = `${x}px`;
+          el.style.top = `${y}px`;
+        }
+      };
+
+      activeLabels.push(labelObj);
+      renderKaTeXInElement(el);
+      return labelObj;
+    }
+
+    /* ANIMATION UTILITIES FOR GRADUAL DRAWING */
+    function createAnimatedLine(p1, p2, colorHex, linewidth = 3, duration = 850) {
+      const geo = new THREE.BufferGeometry().setFromPoints([p1, p1.clone()]);
+      const mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth });
+      const line = new THREE.Line(geo, mat);
+      scene.add(line);
+
+      const startTime = performance.now();
+      function updateLine(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1.0);
+        const eased = 1 - (1 - progress) * (1 - progress);
+        const currentEnd = p1.clone().lerp(p2, eased);
+        geo.setFromPoints([p1, currentEnd]);
+        geo.attributes.position.needsUpdate = true;
+
+        if (progress < 1.0) {
+          requestAnimationFrame(updateLine);
+        }
+      }
+      requestAnimationFrame(updateLine);
+      return line;
+    }
+
+    function animateMeshScale(mesh, duration = 450) {
+      mesh.scale.set(0.001, 0.001, 0.001);
+      const startTime = performance.now();
+      function updateScale(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1.0);
+        const eased = Math.sin(progress * Math.PI * 0.5);
+        mesh.scale.set(eased, eased, eased);
+        if (progress < 1.0) {
+          requestAnimationFrame(updateScale);
+        }
+      }
+      requestAnimationFrame(updateScale);
+    }
+
+    function animateMaterialOpacity(mat, targetOpacity, duration = 650) {
+      mat.opacity = 0;
+      const startTime = performance.now();
+      function updateOpacity(now) {
+        const elapsed = now - startTime;
+        const progress = Math.min(elapsed / duration, 1.0);
+        mat.opacity = progress * targetOpacity;
+        if (progress < 1.0) {
+          requestAnimationFrame(updateOpacity);
+        }
+      }
+      requestAnimationFrame(updateOpacity);
+    }
+
+    function clearScene() {
+      // 1. Remove 3D HTML Labels
+      activeLabels.forEach(l => {
+        if (l.element && l.element.parentNode) l.element.parentNode.removeChild(l.element);
+      });
+      activeLabels = [];
+
+      // 2. Remove 3D Meshes (except background grid & lights)
+      for (let i = scene.children.length - 1; i >= 0; i--) {
+        const obj = scene.children[i];
+        if (obj !== gridHelper && obj !== dirLight && !(obj instanceof THREE.AmbientLight)) {
+          scene.remove(obj);
+          if (obj.geometry) obj.geometry.dispose();
+          if (obj.material) {
+            if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+            else obj.material.dispose();
+          }
+        }
+      }
+    }
+
+    /* =========================================================================
+       3. MODULE 5B STATE & INTERACTIVE WORKFLOW
+       ========================================================================= */
+    let currentStep = 1;
+    const completedSteps = new Set();
+    let currentSubQ = 1; // For Rounds 3 & 4 multi-questions
+    let autoAdvanceTimer = null;
+
+    function clearAutoAdvance() {
+      if (autoAdvanceTimer) {
+        clearTimeout(autoAdvanceTimer);
+        autoAdvanceTimer = null;
+      }
+    }
+
+    function manualNextStep(targetStep) {
+      clearAutoAdvance();
+      switchStep(targetStep);
+    }
+
+    function advanceSubQ(round) {
+      clearAutoAdvance();
+      currentSubQ = 2;
+      clearScene();
+      renderStepPanel(round);
+      renderStep3D(round);
+    }
+
+    function switchStep(stepNum) {
+      clearAutoAdvance();
+      if (stepNum === 5 && completedSteps.size < 4 && !completedSteps.has(5)) {
+        alert("🔒 Thử thách Radar Drone sẽ mở khóa khi bạn hoàn thành ít nhất 4/5 vòng luyện tập!");
+        return;
+      }
+
+      currentStep = stepNum;
+      currentSubQ = 1;
+
+      // Update Step Tab UI
+      for (let i = 1; i <= 5; i++) {
+        const tab = document.getElementById(`tab-step-${i}`);
+        if (i === stepNum) tab.classList.add('active');
+        else tab.classList.remove('active');
+
+        if (completedSteps.has(i)) tab.classList.add('completed');
+        if (i === 5 && (completedSteps.size >= 4 || completedSteps.has(5))) {
+          tab.classList.remove('locked');
+        }
+      }
+
+      clearScene();
+      renderStepPanel(stepNum);
+      renderStep3D(stepNum);
+    }
+
+    /* =========================================================================
+       4. 3D SCENE BUILDERS FOR EACH ROUND
+       ========================================================================= */
+    function renderStep3D(stepNum) {
+      if (stepNum === 1) {
+        // Round 1: Cable Tower A(1, 2, 0), u=(2, -1, 3)
+        const ptA = new THREE.Vector3(1, 2, 0);
+        const vecU = new THREE.Vector3(2, -1, 3);
+
+        // Tower Pillar
+        const pillarGeo = new THREE.CylinderGeometry(0.2, 0.35, 6, 16);
+        const pillarMat = new THREE.MeshStandardMaterial({ color: 0x64748b, roughness: 0.4 });
+        const pillar = new THREE.Mesh(pillarGeo, pillarMat);
+        pillar.position.set(1, 3, 0);
+        scene.add(pillar);
+        animateMeshScale(pillar, 450);
+
+        // Point A
+        const pGeo = new THREE.SphereGeometry(0.22, 24, 24);
+        const pMat = new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x059669 });
+        const pMesh = new THREE.Mesh(pGeo, pMat);
+        pMesh.position.copy(ptA);
+        scene.add(pMesh);
+        animateMeshScale(pMesh, 400);
+        createLabel3D("Trụ tháp A(1; 2; 0)", ptA, "#10b981");
+
+        // Cable Line (Gradual Animation)
+        const lineStart = ptA.clone().addScaledVector(vecU, -1.5);
+        const lineEnd = ptA.clone().addScaledVector(vecU, 4.0);
+        createAnimatedLine(lineStart, lineEnd, 0x34d399, 3, 900);
+
+        // Arrow Vector u
+        const arrow = new THREE.ArrowHelper(vecU.clone().normalize(), ptA, vecU.length() * 0.9, 0xfac775, 0.4, 0.25);
+        scene.add(arrow);
+        createLabel3D("$\\vec{u}(2; −1; 3)$", ptA.clone().addScaledVector(vecU, 0.5), "#fac775");
+
+        orbitControls.target.copy(ptA);
+
+      } else if (stepNum === 2) {
+        // Round 2: Oil Pipe M1(0,1,3) -> M2(4,1,7), u=(4,0,4) [y=0]
+        const ptM1 = new THREE.Vector3(0, 1, 3);
+        const ptM2 = new THREE.Vector3(4, 1, 7);
+
+        // Points M1, M2
+        const pGeo = new THREE.SphereGeometry(0.2, 24, 24);
+        const pMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7 });
+
+        const m1Mesh = new THREE.Mesh(pGeo, pMat); m1Mesh.position.copy(ptM1); scene.add(m1Mesh); animateMeshScale(m1Mesh, 400);
+        const m2Mesh = new THREE.Mesh(pGeo, pMat); m2Mesh.position.copy(ptM2); scene.add(m2Mesh); animateMeshScale(m2Mesh, 400);
+        createLabel3D("M1(0; 1; 3)", ptM1, "#38bdf8");
+        createLabel3D("M2(4; 1; 7)", ptM2, "#38bdf8");
+
+        // Pipe Cylinder Line (Gradual Animation)
+        const pipeStart = ptM1.clone().addScaledVector(new THREE.Vector3(4,0,4).normalize(), -2);
+        const pipeEnd = ptM2.clone().addScaledVector(new THREE.Vector3(4,0,4).normalize(), 2);
+        createAnimatedLine(pipeStart, pipeEnd, 0x0284c7, 3, 900);
+
+        // Highlight Constant y=1 Plane Grid (Opacity Fade In)
+        const planeGeo = new THREE.PlaneGeometry(12, 12);
+        const planeMat = new THREE.MeshStandardMaterial({ color: 0xf59e0b, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false });
+        const yPlane = new THREE.Mesh(planeGeo, planeMat);
+        yPlane.position.set(2, 1, 5);
+        yPlane.rotation.x = Math.PI / 2;
+        scene.add(yPlane);
+        animateMaterialOpacity(planeMat, 0.18, 750);
+        createLabel3D("Mặt phẳng $y = 1$ (thành phần $y$ của VTCP $= 0$)", new THREE.Vector3(2, 1, 1), "#f59e0b");
+
+        orbitControls.target.set(2, 1, 5);
+
+      } else if (stepNum === 3) {
+        // Round 3: Railway lines
+        const ptE = new THREE.Vector3(0, 0, 0);
+        const vecP = new THREE.Vector3(1, 1, 0);
+
+        // Ray 1 (Gradual Animation)
+        const r1Start = ptE.clone().addScaledVector(vecP, -3);
+        const r1End = ptE.clone().addScaledVector(vecP, 5);
+        createAnimatedLine(r1Start, r1End, 0x10b981, 3, 900);
+        createLabel3D("Ray 1 (qua E(0;0;0), $\\vec{p}=(1;1;0)$)", new THREE.Vector3(3, 3, 0), "#10b981");
+
+        if (currentSubQ === 1) {
+          // Question 1: Ray 2 qua F(2,2,5), q=(2,2,0) -> Parallel
+          const ptF = new THREE.Vector3(2, 2, 5);
+          const vecQ = new THREE.Vector3(2, 2, 0);
+
+          const r2Start = ptF.clone().addScaledVector(vecQ, -2);
+          const r2End = ptF.clone().addScaledVector(vecQ, 2);
+          createAnimatedLine(r2Start, r2End, 0xf59e0b, 3, 900);
+
+          const fMesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 24, 24), new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706 }));
+          fMesh.position.copy(ptF);
+          scene.add(fMesh);
+          animateMeshScale(fMesh, 400);
+          createLabel3D("Ray 2 qua F(2; 2; 5) [Song song]", ptF, "#f59e0b");
+
+        } else {
+          // Question 2: Ray 2' qua G(1,-1,2), r=(0,1,-1) -> Intersects Ray 1 at (1,1,0)
+          const ptG = new THREE.Vector3(1, -1, 2);
+          const vecR = new THREE.Vector3(0, 1, -1);
+
+          const r2Start = ptG.clone().addScaledVector(vecR, -1.5);
+          const r2End = ptG.clone().addScaledVector(vecR, 3.5);
+          createAnimatedLine(r2Start, r2End, 0xef4444, 3, 900);
+
+          const gMesh = new THREE.Mesh(new THREE.SphereGeometry(0.2, 24, 24), new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xd97706 }));
+          gMesh.position.copy(ptG);
+          scene.add(gMesh);
+          animateMeshScale(gMesh, 400);
+          createLabel3D("Ray 2' qua G(1; −1; 2)", ptG, "#ef4444");
+
+          // Intersection Point (1, 1, 0)
+          const ptInter = new THREE.Vector3(1, 1, 0);
+          const interMesh = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 24), new THREE.MeshStandardMaterial({ color: 0xff0055, emissive: 0xff0055 }));
+          interMesh.position.copy(ptInter);
+          scene.add(interMesh);
+          animateMeshScale(interMesh, 500);
+          createLabel3D("Giao điểm (1; 1; 0)", ptInter, "#ff0055");
+        }
+
+        orbitControls.target.set(1, 1, 1);
+
+      } else if (stepNum === 4) {
+        // Round 4: Lake plane (H): z=0, S(2,3,5)
+        const ptS = new THREE.Vector3(2, 3, 5);
+
+        // Lake Surface Plane z=0 (Opacity Fade In)
+        const lakeGeo = new THREE.PlaneGeometry(16, 16);
+        const lakeMat = new THREE.MeshStandardMaterial({ color: 0x3b82f6, transparent: true, opacity: 0, side: THREE.DoubleSide, depthWrite: false });
+        const lakePlane = new THREE.Mesh(lakeGeo, lakeMat);
+        lakePlane.rotation.x = Math.PI / 2;
+        scene.add(lakePlane);
+        animateMaterialOpacity(lakeMat, 0.25, 750);
+        createLabel3D("Mặt nước hồ (H): z = 0", new THREE.Vector3(-3, 0, 5), "#60a5fa");
+
+        // Point S
+        const sMesh = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 24), new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x059669 }));
+        sMesh.position.copy(ptS);
+        scene.add(sMesh);
+        animateMeshScale(sMesh, 400);
+        createLabel3D("Đỉnh S(2; 3; 5)", ptS, "#10b981");
+
+        if (currentSubQ === 1) {
+          // Slide line: u=(1,1,-5) -> Touches lake at (3,4,0) (Gradual Animation)
+          const vecU = new THREE.Vector3(1, 1, -5);
+          const slideStart = ptS.clone().addScaledVector(vecU, -0.4);
+          const slideEnd = ptS.clone().addScaledVector(vecU, 1.3);
+          createAnimatedLine(slideStart, slideEnd, 0xf59e0b, 3, 900);
+
+          const ptTouch = new THREE.Vector3(3, 4, 0);
+          const touchMesh = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 24), new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xef4444 }));
+          touchMesh.position.copy(ptTouch);
+          scene.add(touchMesh);
+          animateMeshScale(touchMesh, 500);
+          createLabel3D("Điểm chạm nước (3; 4; 0)", ptTouch, "#ef4444");
+
+        } else {
+          // Safety Bar line: v=(1,1,0) -> Parallel to z=0 plane (Gradual Animation)
+          const vecV = new THREE.Vector3(1, 1, 0);
+          const barStart = ptS.clone().addScaledVector(vecV, -3);
+          const barEnd = ptS.clone().addScaledVector(vecV, 4);
+          createAnimatedLine(barStart, barEnd, 0x8b5cf6, 3, 900);
+          createLabel3D("Thanh chắn an toàn (Song song mặt nước)", ptS.clone().addScaledVector(vecV, 2), "#8b5cf6");
+        }
+
+        orbitControls.target.set(2, 2, 2);
+
+      } else if (stepNum === 5) {
+        // Capstone: 2 Drones
+        renderDroneCapstone3D(capstoneSubstep);
+      }
+
+      orbitControls.update();
+      activeLabels.forEach(l => l.update());
+    }
+
+    /* CAPSTONE 3D RENDERER WITH GRADUAL DRAWING */
+    let capstoneSubstep = 1;
+    function renderDroneCapstone3D(substep) {
+      // Drone A: A0(0,0,10), vA=(2,1,-2)
+      // Drone B: B0(14,17,26), vB=(-2,-3,-4)
+      const ptA0 = new THREE.Vector3(0, 0, 10);
+      const vecVA = new THREE.Vector3(2, 1, -2);
+
+      let ptB0 = new THREE.Vector3(14, 17, 26);
+      if (substep === 4) {
+        // Step 4 Variation: B0'(8, 8, 14)
+        ptB0 = new THREE.Vector3(8, 8, 14);
+      }
+      const vecVB = new THREE.Vector3(-2, -3, -4);
+
+      // Trajectory Lines (Gradual Animation)
+      const lineAEnd = ptA0.clone().addScaledVector(vecVA, 4);
+      createAnimatedLine(ptA0, lineAEnd, 0x38bdf8, 3, 1000);
+
+      const lineBEnd = ptB0.clone().addScaledVector(vecVB, 6);
+      createAnimatedLine(ptB0, lineBEnd, 0xf43f5e, 3, 1000);
+
+      // Drone A Start Sphere
+      const meshA = new THREE.Mesh(new THREE.SphereGeometry(0.25, 24, 24), new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7 }));
+      meshA.position.copy(ptA0);
+      scene.add(meshA);
+      animateMeshScale(meshA, 400);
+      createLabel3D("Drone A (t=0)", ptA0, "#38bdf8");
+
+      // Drone B Start Sphere
+      const meshB = new THREE.Mesh(new THREE.SphereGeometry(0.25, 24, 24), new THREE.MeshStandardMaterial({ color: 0xf43f5e, emissive: 0xe11d48 }));
+      meshB.position.copy(ptB0);
+      scene.add(meshB);
+      animateMeshScale(meshB, 400);
+      createLabel3D(substep === 4 ? "Drone B' (Xuất phát)" : "Drone B (t=0)", ptB0, "#f43f5e");
+
+      // Intersection Point Q(4, 2, 6)
+      const ptQ = new THREE.Vector3(4, 2, 6);
+      const isCollision = (substep === 4);
+
+      const meshQ = new THREE.Mesh(
+        new THREE.SphereGeometry(0.3, 24, 24),
+        new THREE.MeshStandardMaterial({
+          color: isCollision ? 0xff0055 : 0xf59e0b,
+          emissive: isCollision ? 0xff0055 : 0xd97706
+        })
+      );
+      meshQ.position.copy(ptQ);
+      scene.add(meshQ);
+      animateMeshScale(meshQ, 550);
+
+      if (substep === 2 || substep === 3) {
+        createLabel3D("Cắt quỹ đạo Q(4; 2; 6)<br><small>(A tại t=2, B tại t=5)</small>", ptQ, "#f59e0b");
+      } else if (substep === 4) {
+        createLabel3D("💥 CÙNG VA CHẠM tại Q(4; 2; 6) lúc t=2!", ptQ, "#ff0055");
+      }
+
+      orbitControls.target.copy(ptQ);
+    }
+
+    /* =========================================================================
+       5. INTERACTIVE SIDEBAR PANELS & MCQ LOGIC
+       ========================================================================= */
+    function renderStepPanel(stepNum) {
+      const container = document.getElementById('step-panel-container');
+
+      if (stepNum === 1) {
+        container.innerHTML = `
+          <div class="step-title"><i class="ti ti-cable"></i> Vòng 1 — Phương trình tham số dây cáp</div>
+          <div class="info-box">
+            <b>Bối cảnh:</b> Dây cáp neo tại trụ tháp $A(1; 2; 0)$, chạy theo VTCP $\\vec{u} = (2; -1; 3)$.<br>
+            <b>Câu hỏi:</b> Phương trình tham số nào đúng cho dây cáp?
+          </div>
+          <div class="choice-group" id="q1-choices">
+            <button class="choice-btn" onclick="submitMCQ(1, 'A')">A. $x=1+2t, y=2+t, z=3t$</button>
+            <button class="choice-btn" onclick="submitMCQ(1, 'B')">B. $x=2+t, y=-1+2t, z=3t$</button>
+            <button class="choice-btn" onclick="submitMCQ(1, 'C')">C. $x=1+2t, y=2-t, z=3t$</button>
+            <button class="choice-btn" onclick="submitMCQ(1, 'D')">D. $x=1+2t, y=2-t, z=t$</button>
+          </div>
+          <div id="q1-feedback" class="info-box athena-box" style="display:none;"></div>
+        `;
+
+      } else if (stepNum === 2) {
+        container.innerHTML = `
+          <div class="step-title"><i class="ti ti-pipette"></i> Vòng 2 — Phương trình chính tắc ống dầu</div>
+          <div class="info-box">
+            <b>Bối cảnh:</b> Đường ống qua 2 điểm $M_1(0; 1; 3)$ và $M_2(4; 1; 7)$. VTCP $\\vec{u} = M_2 - M_1 = (4; 0; 4)$ có thành phần $y = 0$.<br>
+            <b>Câu hỏi:</b> Đường ống này có viết được phương trình chính tắc không?
+          </div>
+          <div class="choice-group" id="q2-choices">
+            <button class="choice-btn" onclick="submitMCQ(2, 'A')">A. Có, dạng $\\frac{x}{4} = \\frac{y-1}{0} = \\frac{z-3}{4}$</button>
+            <button class="choice-btn" onclick="submitMCQ(2, 'B')">B. Không — chỉ viết được phương trình tham số</button>
+            <button class="choice-btn" onclick="submitMCQ(2, 'C')">C. Có, bỏ qua thành phần $y$</button>
+            <button class="choice-btn" onclick="submitMCQ(2, 'D')">D. Không, vì 2 điểm khảo sát trùng nhau</button>
+          </div>
+          <div id="q2-feedback" class="info-box athena-box" style="display:none;"></div>
+        `;
+
+      } else if (stepNum === 3) {
+        if (currentSubQ === 1) {
+          container.innerHTML = `
+            <div class="step-title"><i class="ti ti-route"></i> Vòng 3 (Câu 1/2) — Vị trí 2 đường ray</div>
+            <div class="info-box">
+              <b>Bối cảnh:</b> Ray 1 cố định qua $E(0;0;0)$, VTCP $\\vec{p}=(1;1;0)$.<br>
+              <b>Câu 1:</b> Ray 2 qua $F(2;2;5)$, VTCP $\\vec{q}=(2;2;0)$. Vị trí tương đối?
+            </div>
+            <div class="choice-group">
+              <button class="choice-btn" onclick="submitMCQ(3, 'A')">A. Trùng nhau</button>
+              <button class="choice-btn" onclick="submitMCQ(3, 'B')">B. Cắt nhau</button>
+              <button class="choice-btn" onclick="submitMCQ(3, 'C')">C. Song song</button>
+              <button class="choice-btn" onclick="submitMCQ(3, 'D')">D. Chéo nhau</button>
+            </div>
+            <div id="q3-feedback" class="info-box athena-box" style="display:none;"></div>
+          `;
+        } else {
+          container.innerHTML = `
+            <div class="step-title"><i class="ti ti-route"></i> Vòng 3 (Câu 2/2) — Vị trí 2 đường ray</div>
+            <div class="info-box">
+              <b>Câu 2:</b> Ray 2' qua $G(1;-1;2)$, VTCP $\\vec{r}=(0;1;-1)$. Vị trí tương đối với Ray 1?
+            </div>
+            <div class="choice-group">
+              <button class="choice-btn" onclick="submitMCQ(3, 'A')">A. Song song</button>
+              <button class="choice-btn" onclick="submitMCQ(3, 'B')">B. Chéo nhau</button>
+              <button class="choice-btn" onclick="submitMCQ(3, 'C')">C. Cắt nhau</button>
+              <button class="choice-btn" onclick="submitMCQ(3, 'D')">D. Trùng nhau</button>
+            </div>
+            <div id="q3-feedback" class="info-box athena-box" style="display:none;"></div>
+          `;
+        }
+
+      } else if (stepNum === 4) {
+        if (currentSubQ === 1) {
+          container.innerHTML = `
+            <div class="step-title"><i class="ti ti-droplet"></i> Vòng 4 (Câu 1/2) — Cầu trượt & Mặt nước</div>
+            <div class="info-box">
+              <b>Bối cảnh:</b> Mặt nước hồ $(H): z=0$. Cầu trượt qua $S(2;3;5)$, hướng $\\vec{u}=(1;1;-5)$.<br>
+              <b>Câu 1:</b> Cầu trượt có chạm mặt nước không? Tại đâu?
+            </div>
+            <div class="choice-group">
+              <button class="choice-btn" onclick="submitMCQ(4, 'A')">A. Không chạm, song song mặt nước</button>
+              <button class="choice-btn" onclick="submitMCQ(4, 'B')">B. Chạm tại $(2;3;0)$</button>
+              <button class="choice-btn" onclick="submitMCQ(4, 'C')">C. Chạm tại $(3;4;0)$</button>
+              <button class="choice-btn" onclick="submitMCQ(4, 'D')">D. Chạm tại $(1;1;-5)$</button>
+            </div>
+            <div id="q4-feedback" class="info-box athena-box" style="display:none;"></div>
+          `;
+        } else {
+          container.innerHTML = `
+            <div class="step-title"><i class="ti ti-droplet"></i> Vòng 4 (Câu 2/2) — Thanh chắn & Mặt nước</div>
+            <div class="info-box">
+              <b>Câu 2:</b> Thanh chắn an toàn qua $S(2;3;5)$, hướng $\\vec{v}=(1;1;0)$. Vị trí so với mặt nước?
+            </div>
+            <div class="choice-group">
+              <button class="choice-btn" onclick="submitMCQ(4, 'A')">A. Song song với mặt nước</button>
+              <button class="choice-btn" onclick="submitMCQ(4, 'B')">B. Cắt mặt nước</button>
+              <button class="choice-btn" onclick="submitMCQ(4, 'C')">C. Nằm trong mặt nước</button>
+              <button class="choice-btn" onclick="submitMCQ(4, 'D')">D. Không xác định được</button>
+            </div>
+            <div id="q4-feedback" class="info-box athena-box" style="display:none;"></div>
+          `;
+        }
+
+      } else if (stepNum === 5) {
+        renderCapstonePanel();
+      }
+
+      renderKaTeXInElement(container);
+    }
+
+    /* MCQ SUBMISSION & EXPLANATIONS */
+    function submitMCQ(round, ans) {
+      let isCorrect = false;
+      let msg = "";
+
+      if (round === 1) {
+        if (ans === 'C') {
+          isCorrect = true;
+          msg = "🎉 <b>Chính xác!</b> Điểm $A(1;2;0)$, VTCP $\\vec{u}=(2;-1;3) \\implies x=1+2t, y=2-t, z=3t$.";
+        } else if (ans === 'A') {
+          msg = "❌ <b>Chưa đúng:</b> Sai dấu ở $y$ — VTCP có thành phần thứ hai là $-1$, nên phải là $2-t$, không phải $2+t$.";
+        } else if (ans === 'B') {
+          msg = "❌ <b>Chưa đúng:</b> Tráo ngược vai trò: dùng VTCP làm điểm xuất phát và dùng điểm $A$ làm hệ số $t$.";
+        } else {
+          msg = "❌ <b>Chưa đúng:</b> Thiếu hệ số 3 ở $z$ — chỉ viết $z=t$ thay vì $z=3t$.";
+        }
+
+      } else if (round === 2) {
+        if (ans === 'B') {
+          isCorrect = true;
+          msg = "🎉 <b>Chính xác!</b> VTCP $\\vec{u}=(4;0;4)$ có thành phần $y=0 \\implies$ Không thể viết phương trình chính tắc do vi phạm điều kiện mẫu số $\\neq 0$. Chỉ viết được tham số!";
+        } else if (ans === 'A') {
+          msg = "❌ <b>Lỗi điển hình:</b> Biểu thức $\\frac{y-1}{0}$ không có nghĩa trong toán học! Mẫu số bằng 0 tuyệt đối không được viết chính tắc.";
+        } else {
+          msg = "❌ <b>Chưa đúng:</b> Không thể tự ý bỏ 1 phương trình hay giả định 2 điểm trùng nhau.";
+        }
+
+      } else if (round === 3) {
+        if (currentSubQ === 1) {
+          if (ans === 'C') {
+            isCorrect = true;
+            msg = "🎉 <b>Chính xác!</b> $\\vec{q}=(2;2;0)=2\\vec{p}$ cùng phương, nhưng $F(2;2;5) \\notin \\text{Ray 1} \\implies$ 2 ray song song!";
+          } else {
+            msg = "❌ <b>Chưa đúng:</b> Cùng phương VTCP nhưng thử điểm $F$ không thuộc Ray 1 $\\implies$ không trùng, không cắt.";
+          }
+        } else {
+          if (ans === 'C') {
+            isCorrect = true;
+            msg = "🎉 <b>Chính xác!</b> $\\vec{p}$ và $\\vec{r}$ không cùng phương. Giải hệ 3 phương trình tìm được nghiệm chung $(t=1, s=2) \\implies$ Cắt nhau tại $(1;1;0)$!";
+          } else if (ans === 'B') {
+            msg = "❌ <b>Bẫy thường gặp:</b> VTCP không cùng phương chưa đủ kết luận chéo! Phải giải hệ 3 phương trình. Ở đây hệ CÓ nghiệm $\\implies$ Cắt nhau!";
+          } else {
+            msg = "❌ <b>Chưa đúng:</b> Giải hệ phương trình $x,y,z$ cho nghiệm $(t=1, s=2)$.";
+          }
+        }
+
+      } else if (round === 4) {
+        if (currentSubQ === 1) {
+          if (ans === 'C') {
+            isCorrect = true;
+            msg = "🎉 <b>Chính xác!</b> $\\vec{u}\\cdot\\vec{n}=-5 \\neq 0 \\implies$ cắt mặt nước. Giải $z=5-5t=0 \\implies t=1 \\implies (3;4;0)$!";
+          } else {
+            msg = "❌ <b>Chưa đúng:</b> Thế phương trình tham số vào mặt phẳng $z=0$ giải tìm $t=1$.";
+          }
+        } else {
+          if (ans === 'A') {
+            isCorrect = true;
+            msg = "🎉 <b>Chính xác!</b> $\\vec{v}\\cdot\\vec{n}=0 \\implies$ song song hoặc nằm trong. Vì điểm $S$ có $z=5 \\neq 0 \\implies S \\notin (H) \\implies$ Song song!";
+          } else {
+            msg = "❌ <b>Chưa đúng:</b> $\\vec{v}\\cdot\\vec{n}=0$ và điểm $S$ không thuộc mặt nước.";
+          }
+        }
+      }
+
+      if (isCorrect) {
+        clearAutoAdvance();
+
+        if (round === 3 && currentSubQ === 1) {
+          msg += `<div style="margin-top:10px;"><button class="btn btn-primary" onclick="advanceSubQ(3)">Sang Câu 2 ngay <i class="ti ti-arrow-right"></i></button></div>`;
+          autoAdvanceTimer = setTimeout(() => { advanceSubQ(3); }, 4000);
+        } else if (round === 4 && currentSubQ === 1) {
+          msg += `<div style="margin-top:10px;"><button class="btn btn-primary" onclick="advanceSubQ(4)">Sang Câu 2 ngay <i class="ti ti-arrow-right"></i></button></div>`;
+          autoAdvanceTimer = setTimeout(() => { advanceSubQ(4); }, 4000);
+        } else {
+          completedSteps.add(round);
+          document.getElementById(`tab-step-${round}`).classList.add('completed');
+          if (completedSteps.size >= 4) {
+            document.getElementById('tab-step-5').classList.remove('locked');
+          }
+
+          if (round < 5) {
+            msg += `<div style="margin-top:10px;"><button class="btn btn-primary" onclick="manualNextStep(${round + 1})">Chuyển sang Vòng ${round + 1} ngay <i class="ti ti-arrow-right"></i></button></div>`;
+            autoAdvanceTimer = setTimeout(() => {
+              switchStep(round + 1);
+            }, 4000);
+          }
+        }
+      }
+
+      // Show Feedback Box
+      const fbId = `q${round}-feedback`;
+      const fb = document.getElementById(fbId);
+      if (fb) {
+        fb.style.display = 'block';
+        fb.innerHTML = msg;
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* CAPSTONE 4-STEP INTERACTIVE PANEL */
+    function renderCapstonePanel() {
+      const container = document.getElementById('step-panel-container');
+
+      container.innerHTML = `
+        <div class="step-title"><i class="ti ti-radar"></i> Thử thách Radar Drone — Cắt quỹ đạo vs Va chạm</div>
+        <div class="info-box">
+          <b>Bối cảnh:</b> 2 drone giao hàng bay thẳng đều từ $t=0$:<br>
+          • Drone A: $A_0(0;0;10)$, vận tốc $\\vec{v}_A=(2;1;-2)$<br>
+          • Drone B: $B_0(14;17;26)$, vận tốc $\\vec{v}_B=(-2;-3;-4)$
+        </div>
+
+        <div style="display:flex; gap:4px; margin-bottom:10px;">
+          <button class="btn btn-outline ${capstoneSubstep===1?'btn-primary':''}" style="font-size:11px; padding:6px;" onclick="setCapstoneStep(1)">Bước 1: PT Tham số</button>
+          <button class="btn btn-outline ${capstoneSubstep===2?'btn-primary':''}" style="font-size:11px; padding:6px;" onclick="setCapstoneStep(2)">Bước 2: Cắt quỹ đạo</button>
+          <button class="btn btn-outline ${capstoneSubstep===3?'btn-primary':''}" style="font-size:11px; padding:6px;" onclick="setCapstoneStep(3)">Bước 3: Va chạm?</button>
+          <button class="btn btn-outline ${capstoneSubstep===4?'btn-primary':''}" style="font-size:11px; padding:6px;" onclick="setCapstoneStep(4)">Bước 4: Biến thể B'</button>
+        </div>
+
+        <div id="capstone-step-content" class="info-box athena-box">
+          ${getCapstoneStepContent(capstoneSubstep)}
+        </div>
+      `;
+
+      renderKaTeXInElement(container);
+    }
+
+    function getCapstoneStepContent(substep) {
+      if (substep === 1) {
+        return `
+          <b>Bước 1 — Phương trình tham số theo thời gian $t$:</b><br>
+          • Drone A: $\\begin{cases} x = 2t \\\\ y = t \\\\ z = 10 - 2t \\end{cases}$<br>
+          • Drone B: $\\begin{cases} x = 14 - 2t \\\\ y = 17 - 3t \\\\ z = 26 - 4t \\end{cases}$
+          <button class="btn btn-primary" style="margin-top:10px;" onclick="setCapstoneStep(2)">Sang Bước 2: Tìm giao điểm <i class="ti ti-arrow-right"></i></button>
+        `;
+      } else if (substep === 2) {
+        return `
+          <b>Bước 2 — Tìm giao điểm đường thẳng hình học:</b><br>
+          Giải hệ phương trình với 2 tham số độc lập $t$ (Drone A) và $s$ (Drone B):<br>
+          $$2t = 14 - 2s \\implies t + s = 7$$
+          $$t = 17 - 3s \\implies t + 3s = 17$$
+          $$\\implies s = 5, t = 2$$
+          Tọa độ giao điểm hình học: $Q(4; 2; 6)$.
+          <button class="btn btn-primary" style="margin-top:10px;" onclick="setCapstoneStep(3)">Sang Bước 3: Kiểm tra va chạm <i class="ti ti-arrow-right"></i></button>
+        `;
+      } else if (substep === 3) {
+        return `
+          <b>Bước 3 — Kiểm tra va chạm thời gian thực:</b><br>
+          • Drone A đi qua $Q(4;2;6)$ lúc thời điểm $t = 2$ giây.<br>
+          • Drone B đi qua $Q(4;2;6)$ lúc thời điểm $t = 5$ giây.<br>
+          <b>Kết luận:</b> KHÔNG va chạm! Hai drone chỉ cắt nhau về đường thẳng hình học nhưng qua $Q$ ở 2 thời điểm khác nhau.
+          <button class="btn btn-primary" style="margin-top:10px;" onclick="setCapstoneStep(4)">Sang Bước 4: Tình huống B' <i class="ti ti-arrow-right"></i></button>
+        `;
+      } else if (substep === 4) {
+        return `
+          <b>Bước 4 — Biến thể Drone B' xuất phát từ $B_0'(8; 8; 14)$:</b><br>
+          Drone B' đi qua $Q(4;2;6)$ khi $8 - 2t = 4 \\implies t = 2$ giây.<br>
+          💥 <b>CÙNG thời điểm $t = 2$ giây</b> với Drone A $\\implies$ <b>CÓ VA CHẠM THỰC TẾ!</b>
+          <button class="btn btn-primary" style="margin-top:10px;" onclick="openCelebrationModal()">🎉 Hoàn thành xuất sắc Module 5b</button>
+        `;
+      }
+    }
+
+    function setCapstoneStep(substep) {
+      capstoneSubstep = substep;
+      clearScene();
+      renderStepPanel(5);
+      renderStep3D(5);
+    }
+
+    /* MODAL CELEBRATION */
+    function openCelebrationModal() {
+      completedSteps.add(5);
+      LMS().complete();
+      document.getElementById('celebration-modal').classList.add('show');
+    }
+    function closeCelebrationModal() {
+      document.getElementById('celebration-modal').classList.remove('show');
+    }
+
+    /* =========================================================================
+       6. INIT & ANIMATION LOOP
+       ========================================================================= */
+    function init() {
+      switchStep(1);
+      renderKaTeXInElement(document.body);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        orbitControls.update();
+        renderer.render(scene, camera);
+        activeLabels.forEach(l => l.update());
+      }
+      animate();
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+
+</html>
