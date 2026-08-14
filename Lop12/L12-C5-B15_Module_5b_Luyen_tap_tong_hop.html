@@ -905,53 +905,65 @@
     /* CAPSTONE 3D RENDERER WITH GRADUAL DRAWING */
     let capstoneSubstep = 1;
     function renderDroneCapstone3D(substep) {
-      // Drone A: A0(0,0,10), vA=(2,1,-2)
-      // Drone B: B0(14,17,26), vB=(-2,-3,-4)
       const ptA0 = new THREE.Vector3(0, 0, 10);
       const vecVA = new THREE.Vector3(2, 1, -2);
+      const vecVB = new THREE.Vector3(-2, -3, -4);
+      const ptQ = new THREE.Vector3(4, 2, 6);
+
+      if (substep === 5) {
+        // Tổng kết: Hiện CẢ 3 đường bay để so sánh song song
+        const ptB0orig = new THREE.Vector3(14, 17, 26);
+        const ptB0prime = new THREE.Vector3(8, 8, 14);
+
+        // Drone A (blue)
+        createAnimatedLine(ptA0, ptA0.clone().addScaledVector(vecVA, 4), 0x38bdf8, 3, 900);
+        const mA = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 24), new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7 }));
+        mA.position.copy(ptA0); scene.add(mA); animateMeshScale(mA, 400);
+        createLabel3D("Drone A — t=0", ptA0, "#38bdf8");
+
+        // Drone B original (amber) — không va chạm
+        createAnimatedLine(ptB0orig, ptB0orig.clone().addScaledVector(vecVB, 6), 0xf59e0b, 3, 900);
+        const mBo = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 24), new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706 }));
+        mBo.position.copy(ptB0orig); scene.add(mBo); animateMeshScale(mBo, 400);
+        createLabel3D("Drone B — t=0<br><small>(qua Q lúc t=5)</small>", ptB0orig, "#f59e0b");
+
+        // Drone B' (red) — có va chạm
+        createAnimatedLine(ptB0prime, ptB0prime.clone().addScaledVector(vecVB, 5), 0xf43f5e, 3, 900);
+        const mBp = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 24), new THREE.MeshStandardMaterial({ color: 0xf43f5e, emissive: 0xe11d48 }));
+        mBp.position.copy(ptB0prime); scene.add(mBp); animateMeshScale(mBp, 400);
+        createLabel3D("Drone B' — t=0<br><small>(qua Q lúc t=2)</small>", ptB0prime, "#f43f5e");
+
+        // Điểm Q — amber = giao quỹ đạo, red = va chạm
+        const mQamber = new THREE.Mesh(new THREE.SphereGeometry(0.28, 24, 24), new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706, wireframe: true }));
+        mQamber.position.copy(ptQ); scene.add(mQamber); animateMeshScale(mQamber, 550);
+        const mQred = new THREE.Mesh(new THREE.SphereGeometry(0.22, 24, 24), new THREE.MeshStandardMaterial({ color: 0xff0055, emissive: 0xff0055 }));
+        mQred.position.copy(ptQ); scene.add(mQred); animateMeshScale(mQred, 600);
+        createLabel3D("🔶 Q(4; 2; 6)<br><small>Cắt hình học + 💥 Va chạm</small>", ptQ, "#ff0055");
+        orbitControls.target.copy(ptQ);
+        return;
+      }
 
       let ptB0 = new THREE.Vector3(14, 17, 26);
-      if (substep === 4) {
-        // Step 4 Variation: B0'(8, 8, 14)
-        ptB0 = new THREE.Vector3(8, 8, 14);
-      }
-      const vecVB = new THREE.Vector3(-2, -3, -4);
+      if (substep === 4) ptB0 = new THREE.Vector3(8, 8, 14);
 
       // Trajectory Lines (Gradual Animation)
-      const lineAEnd = ptA0.clone().addScaledVector(vecVA, 4);
-      createAnimatedLine(ptA0, lineAEnd, 0x38bdf8, 3, 1000);
+      createAnimatedLine(ptA0, ptA0.clone().addScaledVector(vecVA, 4), 0x38bdf8, 3, 1000);
+      createAnimatedLine(ptB0, ptB0.clone().addScaledVector(vecVB, 6), 0xf43f5e, 3, 1000);
 
-      const lineBEnd = ptB0.clone().addScaledVector(vecVB, 6);
-      createAnimatedLine(ptB0, lineBEnd, 0xf43f5e, 3, 1000);
-
-      // Drone A Start Sphere
       const meshA = new THREE.Mesh(new THREE.SphereGeometry(0.25, 24, 24), new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7 }));
-      meshA.position.copy(ptA0);
-      scene.add(meshA);
-      animateMeshScale(meshA, 400);
+      meshA.position.copy(ptA0); scene.add(meshA); animateMeshScale(meshA, 400);
       createLabel3D("Drone A (t=0)", ptA0, "#38bdf8");
 
-      // Drone B Start Sphere
       const meshB = new THREE.Mesh(new THREE.SphereGeometry(0.25, 24, 24), new THREE.MeshStandardMaterial({ color: 0xf43f5e, emissive: 0xe11d48 }));
-      meshB.position.copy(ptB0);
-      scene.add(meshB);
-      animateMeshScale(meshB, 400);
+      meshB.position.copy(ptB0); scene.add(meshB); animateMeshScale(meshB, 400);
       createLabel3D(substep === 4 ? "Drone B' (Xuất phát)" : "Drone B (t=0)", ptB0, "#f43f5e");
 
-      // Intersection Point Q(4, 2, 6)
-      const ptQ = new THREE.Vector3(4, 2, 6);
       const isCollision = (substep === 4);
-
       const meshQ = new THREE.Mesh(
         new THREE.SphereGeometry(0.3, 24, 24),
-        new THREE.MeshStandardMaterial({
-          color: isCollision ? 0xff0055 : 0xf59e0b,
-          emissive: isCollision ? 0xff0055 : 0xd97706
-        })
+        new THREE.MeshStandardMaterial({ color: isCollision ? 0xff0055 : 0xf59e0b, emissive: isCollision ? 0xff0055 : 0xd97706 })
       );
-      meshQ.position.copy(ptQ);
-      scene.add(meshQ);
-      animateMeshScale(meshQ, 550);
+      meshQ.position.copy(ptQ); scene.add(meshQ); animateMeshScale(meshQ, 550);
 
       if (substep === 2 || substep === 3) {
         createLabel3D("Cắt quỹ đạo Q(4; 2; 6)<br><small>(A tại t=2, B tại t=5)</small>", ptQ, "#f59e0b");
@@ -1182,11 +1194,12 @@
           • Drone B: $B_0(14;17;26)$, vận tốc $\\vec{v}_B=(-2;-3;-4)$
         </div>
 
-        <div style="display:flex; gap:4px; margin-bottom:10px;">
+        <div style="display:flex; gap:4px; margin-bottom:10px; flex-wrap:wrap;">
           <button class="btn btn-outline ${capstoneSubstep===1?'btn-primary':''}" style="font-size:11px; padding:6px;" onclick="setCapstoneStep(1)">Bước 1: PT Tham số</button>
           <button class="btn btn-outline ${capstoneSubstep===2?'btn-primary':''}" style="font-size:11px; padding:6px;" onclick="setCapstoneStep(2)">Bước 2: Cắt quỹ đạo</button>
           <button class="btn btn-outline ${capstoneSubstep===3?'btn-primary':''}" style="font-size:11px; padding:6px;" onclick="setCapstoneStep(3)">Bước 3: Va chạm?</button>
           <button class="btn btn-outline ${capstoneSubstep===4?'btn-primary':''}" style="font-size:11px; padding:6px;" onclick="setCapstoneStep(4)">Bước 4: Biến thể B'</button>
+          <button class="btn btn-outline ${capstoneSubstep===5?'btn-primary':''}" style="font-size:11px; padding:6px;" onclick="setCapstoneStep(5)">Bước 5: Tổng kết</button>
         </div>
 
         <div id="capstone-step-content" class="info-box athena-box">
@@ -1200,10 +1213,24 @@
     function getCapstoneStepContent(substep) {
       if (substep === 1) {
         return `
-          <b>Bước 1 — Phương trình tham số theo thời gian $t$:</b><br>
-          • Drone A: $\\begin{cases} x = 2t \\\\ y = t \\\\ z = 10 - 2t \\end{cases}$<br>
-          • Drone B: $\\begin{cases} x = 14 - 2t \\\\ y = 17 - 3t \\\\ z = 26 - 4t \\end{cases}$
-          <button class="btn btn-primary" style="margin-top:10px;" onclick="setCapstoneStep(2)">Sang Bước 2: Tìm giao điểm <i class="ti ti-arrow-right"></i></button>
+          <b>Bước 1 — Viết phương trình tham số theo thời gian $t$:</b><br>
+          <i style="font-size:11.5px; color:#64748b;">Mỗi drone bay thẳng đều từ điểm gốc với vận tốc không đổi. Điền hệ số vào ô trống:</i>
+          <div style="margin-top:10px; font-size:12.5px; line-height:2.4;">
+            <b style="color:#38bdf8;">Drone A</b> — $A_0(0;0;10)$, $\\vec{v}_A=(2;1;-2)$:<br>
+            $x =$ <input id="c1-ax" type="number" style="width:42px;padding:2px 4px;border:1.5px solid #cbd5e1;border-radius:4px;" placeholder="?"> $t$,&nbsp;
+            $y =$ <input id="c1-ay" type="number" style="width:42px;padding:2px 4px;border:1.5px solid #cbd5e1;border-radius:4px;" placeholder="?"> $t$,&nbsp;
+            $z = 10-$ <input id="c1-az" type="number" style="width:42px;padding:2px 4px;border:1.5px solid #cbd5e1;border-radius:4px;" placeholder="?"> $t$
+          </div>
+          <div style="margin-top:4px; font-size:12.5px; line-height:2.4;">
+            <b style="color:#f43f5e;">Drone B</b> — $B_0(14;17;26)$, $\\vec{v}_B=(-2;-3;-4)$:<br>
+            $x = 14-$ <input id="c1-bx" type="number" style="width:42px;padding:2px 4px;border:1.5px solid #cbd5e1;border-radius:4px;" placeholder="?"> $t$,&nbsp;
+            $y = 17-$ <input id="c1-by" type="number" style="width:42px;padding:2px 4px;border:1.5px solid #cbd5e1;border-radius:4px;" placeholder="?"> $t$,&nbsp;
+            $z = 26-$ <input id="c1-bz" type="number" style="width:42px;padding:2px 4px;border:1.5px solid #cbd5e1;border-radius:4px;" placeholder="?"> $t$
+          </div>
+          <button class="btn btn-primary" style="margin-top:10px;" onclick="checkCapstoneStep1()">
+            <i class="ti ti-check"></i> Kiểm tra PT tham số
+          </button>
+          <div id="c1-feedback" class="info-box athena-box" style="display:none; margin-top:10px;"></div>
         `;
       } else if (substep === 2) {
         return `
@@ -1231,6 +1258,40 @@
           <button class="btn btn-primary" style="margin-top:10px;" onclick="openCelebrationModal()">🎉 Hoàn thành xuất sắc Module 5b</button>
         `;
       }
+    }
+
+    /* CAPSTONE STEP 1 INPUT VERIFICATION */
+    function checkCapstoneStep1() {
+      const ax = parseFloat(document.getElementById('c1-ax').value);
+      const ay = parseFloat(document.getElementById('c1-ay').value);
+      const az = parseFloat(document.getElementById('c1-az').value);
+      const bx = parseFloat(document.getElementById('c1-bx').value);
+      const by = parseFloat(document.getElementById('c1-by').value);
+      const bz = parseFloat(document.getElementById('c1-bz').value);
+
+      const fb = document.getElementById('c1-feedback');
+      fb.style.display = 'block';
+
+      const isAOk = ax === 2 && ay === 1 && az === 2;
+      const isBOk = bx === 2 && by === 3 && bz === 4;
+
+      if (isAOk && isBOk) {
+        fb.innerHTML = `
+          ✅ <b>Chính xác!</b> Phương trình tham số đúng:<br>
+          • Drone A: $x=2t,\ y=t,\ z=10-2t$<br>
+          • Drone B: $x=14-2t,\ y=17-3t,\ z=26-4t$<br>
+          <i style="font-size:11.5px;">Bước 2 sẽ dùng 2 tham số riêng (t cho A, s cho B) để tìm giao điểm hình học.</i>
+          <div style="margin-top:10px;">
+            <button class="btn btn-primary" onclick="setCapstoneStep(2)">Sang Bước 2: Tìm giao điểm <i class="ti ti-arrow-right"></i></button>
+          </div>
+        `;
+      } else {
+        let hint = '';
+        if (!isAOk) hint += `Drone A: $\\vec{v}_A=(2;1;-2)$ nên hệ số trước $t$ lần lượt là <code>2</code>, <code>1</code>, <code>2</code>. `;
+        if (!isBOk) hint += `Drone B: $\\vec{v}_B=(-2;-3;-4)$ — dấu âm đã viết sẵn, điền <code>2</code>, <code>3</code>, <code>4</code> vào ô. `;
+        fb.innerHTML = `❌ <b>Chưa đúng:</b> ${hint}`;
+      }
+      renderKaTeXInElement(fb);
     }
 
     function setCapstoneStep(substep) {
