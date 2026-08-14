@@ -650,20 +650,30 @@
     const sphereCenter = mVec(1, 2, -1); // Center I(1, 2, -1) -> Three.js (1, -1, 2)
     const R = 5;
 
-    // 1. Sphere (S) Mesh (Semi-transparent cyan glass)
+    // 1. Sphere (S) Mesh (Semi-transparent cyan glass with 3D specular depth & wireframe latitude/longitude grid)
     const sphereGeo = new THREE.SphereGeometry(R, 36, 36);
-    const sphereMat = new THREE.MeshStandardMaterial({
+    const sphereMat = new THREE.MeshPhongMaterial({
       color: 0x38bdf8,
       transparent: true,
       opacity: 0.35,
       side: THREE.DoubleSide,
       depthWrite: false,
-      roughness: 0.1,
-      metalness: 0.2
+      shininess: 45,
+      specular: 0x60a5fa
     });
     const sphereMesh = new THREE.Mesh(sphereGeo, sphereMat);
     sphereMesh.position.copy(sphereCenter);
     scene.add(sphereMesh);
+
+    // Subtle longitude & latitude wireframe overlay to emphasize 3D spherical volume & depth
+    const wfGeo = new THREE.WireframeGeometry(new THREE.SphereGeometry(R, 16, 12));
+    const wfMat = new THREE.LineBasicMaterial({
+      color: 0x38bdf8,
+      transparent: true,
+      opacity: 0.18
+    });
+    const wfMesh = new THREE.LineSegments(wfGeo, wfMat);
+    sphereMesh.add(wfMesh);
 
     // Center point I marker
     const iMarkerMat = new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7 });
