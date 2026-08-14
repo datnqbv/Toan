@@ -1216,32 +1216,43 @@
 
       } else if (stepNum === 2) {
         container.innerHTML = `
-          <div class="step-title"><i class="ti ti-alert-triangle"></i> Bước 1 (Bài 2) — Ép bẫy Tích vô hướng âm</div>
+          <div class="step-title"><i class="ti ti-alert-triangle"></i> Bước 1 (Bài 2) — Bẫy Tích vô hướng âm (Mặt phẳng)</div>
           <div class="info-box">
             <b>Bối cảnh:</b> Thêm vách kính nghiêng hông $(S): -3x + y + 2z - 8 = 0 \\implies \\vec{n}''=(-3;1;2)$.<br>
-            <b>Nhiệm vụ:</b> Tính góc giữa Mái $(R)$ và Vách $(S)$. Chú ý dấu tích vô hướng!
+            <b>Nhiệm vụ:</b> Tính góc giữa Mái $(R)$ và Vách $(S)$.
           </div>
 
-          <div class="input-group">
-            <div class="input-row">
-              <span class="input-label">1. Tích vô hướng $\\vec{n}' \\cdot \\vec{n}''$:</span>
-              <input type="text" class="form-input" id="in-dot2" placeholder="Nhập kết quả...">
+          <!-- GIAI ĐOẠN 1: Xác nhận tích vô hướng -->
+          <div id="ex2-phase1">
+            <div class="input-group">
+              <div class="input-row">
+                <span class="input-label">1. Tích vô hướng $\\vec{n}' \\cdot \\vec{n}''$:</span>
+                <input type="text" class="form-input" id="in-dot2" placeholder="Nhập kết quả...">
+              </div>
             </div>
-            <div class="input-row">
-              <span class="input-label">2. Tính $\\cos(\\beta)$:</span>
-              <input type="text" class="form-input" id="in-cos2" placeholder="Nhập giá trị cos...">
-            </div>
-            <div class="input-row">
-              <span class="input-label">3. Góc $\\beta$ (độ):</span>
-              <input type="text" class="form-input" id="in-ang2" placeholder="Nhập số đo độ...">
-            </div>
+            <button class="btn btn-primary" onclick="submitDotEx2()">
+              <i class="ti ti-check"></i> Xác nhận tích vô hướng
+            </button>
+            <div id="dot2-feedback" class="info-box athena-box" style="display:none; margin-top:12px;"></div>
           </div>
 
-          <button class="btn btn-primary" onclick="submitEx2()">
-            <i class="ti ti-check"></i> Kiểm tra bài 2
-          </button>
-
-          <div id="ex2-feedback" class="info-box athena-box" style="display:none; margin-top:12px;"></div>
+          <!-- GIAI ĐOẠN 2: Tính cos và góc (ẩn cho đến khi xác nhận đúng tích vô hướng) -->
+          <div id="ex2-phase2" style="display:none; margin-top:14px;">
+            <div class="input-group">
+              <div class="input-row">
+                <span class="input-label">2. Tính $\\cos(\\beta)$:</span>
+                <input type="text" class="form-input" id="in-cos2" placeholder="Nhập giá trị cos...">
+              </div>
+              <div class="input-row">
+                <span class="input-label">3. Góc $\\beta$ (độ):</span>
+                <input type="text" class="form-input" id="in-ang2" placeholder="Nhập số đo độ...">
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="submitEx2()">
+              <i class="ti ti-check"></i> Kiểm tra kết quả
+            </button>
+            <div id="ex2-feedback" class="info-box athena-box" style="display:none; margin-top:12px;"></div>
+          </div>
         `;
 
       } else if (stepNum === 3) {
@@ -1289,6 +1300,7 @@
 
     /* STEP SUBMISSIONS & PEDAGOGICAL FEEDBACK WITH ATTEMPT COUNTER */
     let ex1FailCount = 0;
+    let ex2DotFailCount = 0;
     let ex2FailCount = 0;
     let ex3FailCount = 0;
 
@@ -1353,9 +1365,38 @@
       }
       renderKaTeXInElement(fb);
     }
+    function submitDotEx2() {
+      const raw = document.getElementById('in-dot2').value.trim();
+      const dotVal = parseFloat(raw.replace(',', '.'));
+      const fb = document.getElementById('dot2-feedback');
+      fb.style.display = 'block';
 
+      if (dotVal === -2) {
+        ex2DotFailCount = 0;
+        fb.innerHTML = `
+          ✅ <b>Đúng!</b> Tích vô hướng $\\vec{n}' \\cdot \\vec{n}'' = 1(-3) + (-1)(1) + 1(2) = -3 - 1 + 2 = -2$.<br>
+          ⚠️ <b>Quan trọng:</b> Kết quả ra số <b>ÂM (−2)</b> — bước tiếp theo tính $\\cos(\\beta)$,
+          nhớ quan sát dấu trước khi kết luận!
+        `;
+        renderKaTeXInElement(fb);
+        document.getElementById('ex2-phase2').style.display = 'block';
+        document.getElementById('in-dot2').disabled = true;
+      } else {
+        ex2DotFailCount++;
+        if (ex2DotFailCount >= 2) {
+          fb.innerHTML = `
+            💡 <b>Đáp án:</b> $\\vec{n}' \\cdot \\vec{n}'' = 1(-3) + (-1)(1) + 1(2) = -2$.
+            Nhập <code>-2</code> vào ô trên rồi bấm Xác nhận lại nhé!
+          `;
+        } else {
+          fb.innerHTML = `❌ <b>Chưa đúng (Lần ${ex2DotFailCount}/2):</b> Tính lại $\\vec{n}' \\cdot \\vec{n}'' = n'_x n''_x + n'_y n''_y + n'_z n''_z$. Chú ý dấu từng thành phần.`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* GIAI ĐOẠN 2: Kiểm tra cos và góc */
     function submitEx2() {
-      const dotVal = parseFloat(document.getElementById('in-dot2').value.trim());
       const cosRawStr = document.getElementById('in-cos2').value.trim();
       const cosVal = parseFloat(cosRawStr.replace(',', '.'));
       const angVal = parseFloat(document.getElementById('in-ang2').value.replace(',', '.'));
@@ -1363,18 +1404,17 @@
       const fb = document.getElementById('ex2-feedback');
       fb.style.display = 'block';
 
-      // Pedagogy trap check: student enters negative cos
+      // Pedagogy trap: cos âm (quên trị tuyệt đối)
       if (cosVal < 0 || cosRawStr.startsWith('-')) {
-        fb.innerHTML = `⚠️ <b>Cảnh báo bẫy sai lầm:</b> $\\cos$ âm nghĩa là góc tù ($>90^\\circ$) — nhưng góc giữa 2 mặt phẳng <b>luôn $\\le 90^\\circ$</b>. Kiểm tra lại: bạn đã lấy trị tuyệt đối ở tử số chưa?`;
+        fb.innerHTML = `⚠️ <b>Bẫy sai lầm!</b> $\\cos$ âm nghĩa là góc tù ($>90^\\circ$) — góc giữa 2 mặt phẳng cũng <b>luôn $\\le 90^\\circ$</b>, giống góc giữa 2 đường thẳng.<br>Kiểm tra lại: bạn đã lấy trị tuyệt đối $|{-2}|$ ở tử số chưa?`;
         renderKaTeXInElement(fb);
         return;
       }
 
-      const isDotOk = dotVal === -2;
       const isCosOk = Math.abs(cosVal - 0.309) < 0.02 || cosRawStr.includes('sqrt');
       const isAngOk = Math.abs(angVal - 72.0) < 0.3;
 
-      if (isDotOk && isCosOk && isAngOk) {
+      if (isCosOk && isAngOk) {
         ex2FailCount = 0;
         completedSteps.add(2);
         document.getElementById('tab-step-2').classList.add('completed');
@@ -1382,34 +1422,33 @@
 
         fb.innerHTML = `
           🎉 <b>Xuất sắc!</b><br>
-          • Tích vô hướng âm: $\\vec{n}' \\cdot \\vec{n}'' = -2$.<br>
-          • Nhờ trị tuyệt đối $\\implies \\cos(\\beta) = \\frac{|-2|}{\\sqrt{3} \\cdot \\sqrt{14}} = \\frac{2}{\\sqrt{42}} \\approx 0.309 \\implies \\beta \\approx 72.0^\\circ$.
-          
-          <div style="margin-top:10px; padding:8px; background:#fff; border-radius:6px; border:1px solid var(--paper-line); font-size:12px;">
-            💡 <b>Ghi nhớ quan trọng:</b> Quy tắc trị tuyệt đối áp dụng <b>CHO CẢ 3 LOẠI GÓC</b> (Đường–Đường, Đường–Mặt, Mặt–Mặt) — vì tất cả các góc này đều được định nghĩa trong khoảng $[0^\\circ; 90^\\circ]$.
-          </div>
-
+          • Lấy trị tuyệt đối tử số $|-2| = 2 \\implies \\cos(\\beta) = \\frac{2}{\\sqrt{3} \\cdot \\sqrt{14}} = \\frac{2}{\\sqrt{42}} \\approx 0.309$<br>
+          • Góc $\\beta \\approx 72.0^\\circ$.
           <div style="margin-top:10px;">
             <button class="btn btn-primary" onclick="manualNextStep(3)">Sang Bước 2 (Tổng hợp) ngay <i class="ti ti-arrow-right"></i></button>
           </div>
         `;
-        autoAdvanceTimer = setTimeout(() => { switchStep(3); }, 4500);
+
+        // GHI CHÚ CỐ ĐỊNH — box riêng, luôn hiện sau khi hoàn thành
+        const noteBox = document.createElement('div');
+        noteBox.className = 'info-box';
+        noteBox.style.cssText = 'margin-top:12px; border-left:4px solid #f59e0b; background:#fffbeb;';
+        noteBox.innerHTML = `💡 <b>Ghi nhớ:</b> Quy tắc trị tuyệt đối áp dụng <b>CHO CẢ 3 LOẠI GÓC</b> (Đường–Đường, Đường–Mặt, Mặt–Mặt) — vì cả 3 loại góc này đều được định nghĩa trong khoảng $[0^\\circ; 90^\\circ]$, không phải chỉ riêng góc giữa 2 đường thẳng.`;
+        fb.parentNode.appendChild(noteBox);
+        renderKaTeXInElement(noteBox);
+
+        autoAdvanceTimer = setTimeout(() => { switchStep(3); }, 5000);
       } else {
         ex2FailCount++;
         if (ex2FailCount >= 2) {
           fb.innerHTML = `
-            💡 <b>Hướng dẫn đáp án chi tiết (sau ${ex2FailCount} lần chưa đúng):</b><br>
-            • Tích vô hướng $\\vec{n}' \\cdot \\vec{n}''$: nhập <code>-2</code><br>
-            • Trị tuyệt đối $|-2|=2 \\implies \\cos(\\beta) = \\frac{2}{\\sqrt{42}} \\approx 0.309$ (nhập <code>0.309</code> hoặc <code>2/sqrt(42)</code>)<br>
+            💡 <b>Hướng dẫn đáp án (sau ${ex2FailCount} lần chưa đúng):</b><br>
+            • Lấy trị tuyệt đối $|-2| = 2 \\implies \\cos(\\beta) = \\frac{2}{\\sqrt{42}} \\approx 0.309$ (nhập <code>0.309</code>)<br>
             • Góc $\\beta \\approx 72.0^\\circ$ (nhập <code>72.0</code>)<br>
-            👉 <i>Bạn hãy đọc hướng dẫn trên và nhập lại các số vào các ô để hoàn thành Bài 2!</i>
+            👉 <i>Đọc hướng dẫn trên và nhập lại vào các ô!</i>
           `;
         } else {
-          if (!isDotOk) {
-            fb.innerHTML = `❌ <b>Tích vô hướng chưa đúng (Lần ${ex2FailCount}/2):</b> Tính lại $\\vec{n}' \\cdot \\vec{n}'' = 1(-3) + (-1)(1) + 1(2) = -2$.`;
-          } else {
-            fb.innerHTML = `❌ <b>Tích vô hướng -2 đã đúng! (Lần ${ex2FailCount}/2):</b> Hãy lấy trị tuyệt đối $|-2|=2$ và mẫu số $\\sqrt{42}$ để tính $\\cos(\\beta)$ và làm tròn góc đến 1 chữ số thập phân.`;
-          }
+          fb.innerHTML = `❌ <b>Chưa đúng (Lần ${ex2FailCount}/2):</b> Kiểm tra lại tử số $|-2| = 2$, mẫu $\\sqrt{3} \\cdot \\sqrt{14} = \\sqrt{42}$ và góc làm tròn 1 chữ số thập phân.`;
         }
       }
       renderKaTeXInElement(fb);
