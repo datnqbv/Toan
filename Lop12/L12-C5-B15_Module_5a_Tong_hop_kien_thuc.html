@@ -1,0 +1,1097 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 5a — Tổng hợp kiến thức Phương trình đường thẳng</title>
+
+  <!-- Google Fonts: Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
+
+  <!-- Three.js r128 & OrbitControls -->
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+
+  <!-- KaTeX Math Rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    /* =========================================================================
+       1. CORE DESIGN TOKENS & SYSTEM (JADE & CREAM THEME)
+       ========================================================================= */
+    :root {
+      /* Jade/Cream Primary System */
+      --cream: #FAF7F0;
+      --jade-dark: #14432F;
+      --jade-deep: #2D8B6F;
+      --jade-light: #E8F3EF;
+      --paper-line: #E2DDD3;
+      --ink: #1C2826;
+      --ink-2: #4A5855;
+      --ink-3: #7A8A86;
+
+      /* Semantic Status Colors */
+      --correct: #2E7D32;
+      --correct-bg: #E8F5E9;
+      --wrong: #C62828;
+      --wrong-bg: #FFEBEE;
+      --warning: #EF6C00;
+      --warning-bg: #FFF3E0;
+      --info: #0288D1;
+      --info-bg: #E0F7FA;
+
+      /* Legacy & Canvas Aliases */
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+      --canvas-bg: #0a1628;
+    }
+
+    * {
+      box-sizing: border-box;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body, button, input, select, textarea {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+    }
+
+    body {
+      margin: 0;
+      padding: 0;
+      background-color: var(--bg);
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    /* =========================================================================
+       2. HEADER & LAYOUT STRUCTURE
+       ========================================================================= */
+    header {
+      height: 50px;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 20px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+      position: relative;
+      z-index: 10;
+    }
+
+    .header-badge {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      letter-spacing: 0.3px;
+    }
+
+    #app-body {
+      display: flex;
+      height: calc(100vh - 50px);
+      max-height: calc(100vh - 50px);
+      overflow: hidden;
+      position: relative;
+    }
+
+    /* CANVAS 3D AREA */
+    #canvas-wrap {
+      flex: 1;
+      background-color: var(--canvas-bg);
+      position: relative;
+      min-height: 400px;
+      overflow: hidden;
+    }
+
+    #three-canvas {
+      width: 100%;
+      height: 100%;
+      display: block;
+      touch-action: none;
+    }
+
+    /* FLOATING BUTTONS & CANVAS OVERLAYS */
+    #btn-reset-cam {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      background: rgba(15, 23, 42, 0.85);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      border-radius: 8px;
+      padding: 8px 14px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      backdrop-filter: blur(4px);
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    #btn-reset-cam:hover {
+      background: rgba(30, 41, 59, 0.95);
+      border-color: rgba(255, 255, 255, 0.4);
+    }
+
+    /* 3D HTML LABELS LAYER */
+    #label-layer {
+      position: absolute;
+      inset: 0;
+      pointer-events: none;
+      z-index: 2;
+    }
+
+    .point-label {
+      position: absolute;
+      transform: translate(-50%, -100%);
+      font-size: 12.5px;
+      font-weight: 800;
+      color: #ffffff;
+      background: rgba(15, 23, 42, 0.75);
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      backdrop-filter: blur(3px);
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
+      white-space: nowrap;
+      pointer-events: none;
+    }
+
+    /* SIDEBAR CONTROL PANEL */
+    #sidebar {
+      width: 380px;
+      background-color: #ffffff;
+      border-left: 1px solid var(--paper-line);
+      display: flex;
+      flex-direction: column;
+      z-index: 5;
+      overflow-y: auto;
+      padding: 16px;
+    }
+
+    .step-title {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--navy);
+      margin-bottom: 10px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .progress-bar-wrap {
+      background: var(--cream);
+      border: 1px solid var(--paper-line);
+      border-radius: 10px;
+      padding: 10px 12px;
+      margin-bottom: 14px;
+    }
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 6px;
+    }
+
+    .progress-track {
+      height: 8px;
+      background: #E2DDD3;
+      border-radius: 4px;
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--teal), #10b981);
+      transition: width 0.3s ease;
+    }
+
+    .nav-label-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      margin-bottom: 14px;
+    }
+
+    .label-btn {
+      padding: 10px 8px;
+      background-color: var(--cream);
+      border: 1.5px solid var(--paper-line);
+      border-radius: 8px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--navy);
+      cursor: pointer;
+      transition: all 0.2s ease;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      position: relative;
+    }
+
+    .label-btn:hover {
+      background-color: var(--jade-light);
+      border-color: var(--teal);
+    }
+
+    .label-btn.active {
+      background-color: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
+    }
+
+    .label-btn.visited::after {
+      content: '✓';
+      position: absolute;
+      top: 3px;
+      right: 6px;
+      font-size: 10px;
+      font-weight: 900;
+      color: var(--correct);
+    }
+
+    .label-btn.active.visited::after {
+      color: #ffffff;
+    }
+
+    .info-box {
+      background-color: var(--cream);
+      border: 1px solid var(--paper-line);
+      border-radius: 10px;
+      padding: 14px;
+      font-size: 13px;
+      margin-bottom: 14px;
+      line-height: 1.6;
+      overflow-x: auto;
+      word-wrap: break-word;
+    }
+
+    .katex-display {
+      overflow-x: auto;
+      overflow-y: hidden;
+      max-width: 100%;
+      margin: 0.4em 0 !important;
+      padding: 2px 0;
+    }
+
+    .athena-box {
+      background-color: var(--jade-light);
+      border-color: rgba(27, 77, 62, 0.2);
+    }
+
+    .state-btn-group {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 6px;
+      margin-top: 10px;
+      margin-bottom: 10px;
+    }
+
+    .state-btn {
+      padding: 8px 6px;
+      background-color: #ffffff;
+      border: 1.5px solid var(--paper-line);
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-2);
+      cursor: pointer;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .state-btn:hover {
+      border-color: var(--teal);
+      background-color: var(--cream);
+    }
+
+    .state-btn.active {
+      background-color: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
+    }
+
+    .btn {
+      min-height: 42px;
+      padding: 10px 16px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      border: none;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+      width: 100%;
+    }
+
+    .btn-primary {
+      background-color: var(--teal);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(45, 139, 111, 0.25);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background-color: var(--jade-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-primary:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+    }
+
+    /* MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(10, 22, 40, 0.85);
+      backdrop-filter: blur(8px);
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.3s ease;
+    }
+
+    .modal-overlay.show {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border: 2px solid var(--teal);
+      border-radius: 16px;
+      padding: 24px;
+      max-width: 600px;
+      width: 92%;
+      max-height: 85vh;
+      display: flex;
+      flex-direction: column;
+      color: var(--ink);
+      box-shadow: 0 20px 50px rgba(0, 0, 0, 0.4);
+    }
+
+    .modal-body {
+      overflow-y: auto;
+      padding-right: 6px;
+      font-size: 13px;
+      line-height: 1.6;
+    }
+
+    .summary-item {
+      background: var(--cream);
+      border: 1px solid var(--paper-line);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+    }
+
+    .summary-item-title {
+      font-weight: 800;
+      color: var(--navy);
+      font-size: 13.5px;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      #app-body {
+        flex-direction: column;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+      }
+
+      #canvas-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        flex: none;
+        width: 100%;
+        height: calc((100vh - 50px) * 0.5);
+        height: calc((100dvh - 50px) * 0.5);
+        min-height: 280px;
+      }
+
+      #sidebar {
+        width: 100%;
+        flex: none;
+        border-left: none;
+        border-top: 1px solid var(--paper-line);
+      }
+
+      .nav-label-grid {
+        grid-template-columns: 1fr 1fr;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-badge">
+      <i class="ti ti-3d-cube-sphere"></i> 🧊 Hình học không gian
+    </div>
+  </header>
+
+  <!-- SUMMARY MODAL -->
+  <div class="modal-overlay" id="summary-modal">
+    <div class="modal-card">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 16px; border-bottom: 1.5px solid var(--paper-line); padding-bottom: 12px;">
+        <h3 style="margin: 0; color: var(--navy); font-size: 17px; display: flex; align-items: center; gap: 8px;">
+          <i class="ti ti-book" style="color: var(--teal);"></i> Tổng hợp kiến thức Bài 15 (Oxyz)
+        </h3>
+        <button id="btn-modal-close" style="background: none; border: none; color: var(--ink-3); font-size: 22px; cursor: pointer;"><i class="ti ti-x"></i></button>
+      </div>
+
+      <div class="modal-body" id="modal-summary-content">
+        <!-- Filled dynamically -->
+      </div>
+
+      <div style="margin-top: 16px; text-align: right;">
+        <button class="btn btn-primary" id="btn-modal-done" style="width: auto; display: inline-flex;">
+          <i class="ti ti-check"></i> Đã hiểu toàn bộ
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <div id="app-body">
+    <!-- CANVAS 3D AREA -->
+    <div id="canvas-wrap">
+      <canvas id="three-canvas"></canvas>
+      <div id="label-layer"></div>
+
+      <button id="btn-reset-cam"><i class="ti ti-refresh"></i> Đặt lại góc nhìn</button>
+    </div>
+
+    <!-- SIDEBAR CONTROL PANEL -->
+    <div id="sidebar">
+      <div class="step-title">
+        <i class="ti ti-compass"></i> Khám phá các thành phần 3D
+      </div>
+
+      <!-- PROGRESS TRACKER -->
+      <div class="progress-bar-wrap">
+        <div class="progress-header">
+          <span>Tiến độ khám phá:</span>
+          <span id="progress-text">0 / 6 nhãn</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progress-fill"></div>
+        </div>
+      </div>
+
+      <!-- 6 CLICKABLE LABELS GRID -->
+      <div class="nav-label-grid">
+        <button class="label-btn" id="lbl-btn-u1" onclick="selectLabel(1)">
+          1. VTCP $\vec{u}_1$
+        </button>
+        <button class="label-btn" id="lbl-btn-pts" onclick="selectLabel(2)">
+          2. PT tham số $d_1$
+        </button>
+        <button class="label-btn" id="lbl-btn-ptct" onclick="selectLabel(3)">
+          3. PT chính tắc $d_1$
+        </button>
+        <button class="label-btn" id="lbl-btn-d2" onclick="selectLabel(4)">
+          4. Đường $d_2$
+        </button>
+        <button class="label-btn" id="lbl-btn-plane" onclick="selectLabel(5)">
+          5. Mặt phẳng $(P)$
+        </button>
+        <button class="label-btn" id="lbl-btn-inter" onclick="selectLabel(6)">
+          6. $d_1 \cap (P)$
+        </button>
+      </div>
+
+      <!-- EXPLANATION CARD AREA -->
+      <div class="info-box athena-box" id="info-card-content">
+        <!-- Filled dynamically -->
+      </div>
+
+      <!-- COMPLETE / SUMMARY BUTTON -->
+      <button class="btn btn-primary" id="btn-show-summary" disabled onclick="openSummaryModal()">
+        <i class="ti ti-award"></i> Xem tổng kết kiến thức
+      </button>
+    </div>
+  </div>
+
+  <!-- =========================================================================
+       THREE.JS ENGINE & INTERACTIVE LOGIC
+       ========================================================================= -->
+  <script>
+    /* =========================================================================
+       1. THREE.JS SCENE SETUP & CONSTANTS
+       ========================================================================= */
+    const canvas = document.getElementById('three-canvas');
+    const wrap = document.getElementById('canvas-wrap');
+    const scene = new THREE.Scene();
+    scene.background = new THREE.Color(0x0a1628);
+
+    const camera = new THREE.PerspectiveCamera(45, wrap.clientWidth / wrap.clientHeight, 0.1, 1000);
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
+    renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+
+    const orbitControls = new THREE.OrbitControls(camera, renderer.domElement);
+    orbitControls.enableDamping = true;
+    orbitControls.dampingFactor = 0.08;
+
+    // Lights
+    scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.8);
+    dirLight.position.set(12, 18, 15);
+    scene.add(dirLight);
+
+    // Grid Helper
+    const gridHelper = new THREE.GridHelper(24, 24, 0x30363d, 0x1c2333);
+    gridHelper.position.y = -6;
+    scene.add(gridHelper);
+
+    // Reset Camera Function
+    function resetCamera() {
+      const isMobile = wrap.clientWidth <= 768;
+      camera.position.set(isMobile ? 14 : 11, isMobile ? 12 : 9, isMobile ? 16 : 13);
+      orbitControls.target.set(1.5, 3.5, -1.5);
+      orbitControls.update();
+    }
+    resetCamera();
+
+    document.getElementById('btn-reset-cam').addEventListener('click', resetCamera);
+
+    /* LMS RESIZE INTEGRATION */
+    function reportHeight() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'resize', height: document.documentElement.scrollHeight }, '*');
+      }
+    }
+    function LMS() {
+      return {
+        complete: () => {
+          console.log("LMS: Module completed!");
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'complete' }, '*');
+          }
+        }
+      };
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(reportHeight).observe(document.body);
+      new ResizeObserver(() => {
+        camera.aspect = wrap.clientWidth / wrap.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(wrap.clientWidth, wrap.clientHeight);
+        activeLabels.forEach(l => l.update());
+      }).observe(wrap);
+    }
+
+    /* KaTeX Helper */
+    function renderKaTeXInElement(element) {
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(element || document.body, {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "$", right: "$", display: false },
+              { left: "\\(", right: "\\)", display: false },
+              { left: "\\[", right: "\\]", display: true }
+            ],
+            throwOnError: false
+          });
+        } catch (err) {
+          console.warn("KaTeX render error:", err);
+        }
+      }
+    }
+
+    /* =========================================================================
+       2. 3D HTML LABELS MANAGEMENT
+       ========================================================================= */
+    let activeLabels = [];
+    function createLabel3D(text, position, color = '#ffffff', id = null) {
+      const el = document.createElement('div');
+      el.className = 'point-label';
+      if (id) el.id = id;
+      el.innerHTML = text;
+      if (color) el.style.borderColor = color;
+      document.getElementById('label-layer').appendChild(el);
+
+      const labelObj = {
+        element: el,
+        position: position.clone(),
+        update: () => {
+          const wp = labelObj.position.clone();
+          const camDir = new THREE.Vector3();
+          camera.getWorldDirection(camDir);
+          const toLabel = wp.clone().sub(camera.position);
+
+          if (toLabel.dot(camDir) <= 0) {
+            el.style.display = 'none';
+            return;
+          }
+
+          const projected = wp.project(camera);
+          if (projected.z > 1) {
+            el.style.display = 'none';
+            return;
+          }
+
+          const x = (projected.x * 0.5 + 0.5) * wrap.clientWidth;
+          const y = (-projected.y * 0.5 + 0.5) * wrap.clientHeight;
+
+          el.style.display = 'block';
+          el.style.left = `${x}px`;
+          el.style.top = `${y}px`;
+        }
+      };
+
+      activeLabels.push(labelObj);
+      renderKaTeXInElement(el);
+      return labelObj;
+    }
+
+    function clearLabels() {
+      activeLabels.forEach(l => {
+        if (l.element && l.element.parentNode) l.element.parentNode.removeChild(l.element);
+      });
+      activeLabels = [];
+    }
+
+    /* =========================================================================
+       3. GEOMETRY OBJECT CREATION & MATH DATA
+       ========================================================================= */
+    // Data definition for d1: A(0, 1, -2), u1=(1, 2, -1)
+    const ptA = new THREE.Vector3(0, 1, -2);
+    const vecU1 = new THREE.Vector3(1, 2, -1);
+
+    // Plane (P): x + y + z - 6 = 0, Normal n = (1, 1, 1)
+    const vecN = new THREE.Vector3(1, 1, 1).normalize();
+    const ptPlaneIntersection = new THREE.Vector3(3.5, 8, -5.5);
+
+    // Lines & Static Meshes
+    let meshD1Line, meshD1ArrowU1, meshPointA, meshPlaneP, meshPlaneNormal, meshPlaneIntersection;
+    let meshD2Group = new THREE.Group();
+    scene.add(meshD2Group);
+
+    function createStaticScene() {
+      // 1. Line d1 (pass through A with u1)
+      const d1Start = ptA.clone().addScaledVector(vecU1, -4);
+      const d1End = ptA.clone().addScaledVector(vecU1, 7.5);
+      const d1Geo = new THREE.BufferGeometry().setFromPoints([d1Start, d1End]);
+      const d1Mat = new THREE.LineBasicMaterial({ color: 0x10b981, linewidth: 3 });
+      meshD1Line = new THREE.Line(d1Geo, d1Mat);
+      scene.add(meshD1Line);
+
+      // Point A
+      const pAGeo = new THREE.SphereGeometry(0.18, 24, 24);
+      const pAMat = new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x059669, roughness: 0.2 });
+      meshPointA = new THREE.Mesh(pAGeo, pAMat);
+      meshPointA.position.copy(ptA);
+      scene.add(meshPointA);
+      createLabel3D("A(0; 1; −2)", ptA, "#10b981");
+
+      // Arrow Vector u1
+      meshD1ArrowU1 = new THREE.ArrowHelper(vecU1.clone().normalize(), ptA, vecU1.length() * 1.2, 0x34d399, 0.4, 0.25);
+      meshD1ArrowU1.line.material.linewidth = 3;
+      scene.add(meshD1ArrowU1);
+      const ptU1Mid = ptA.clone().addScaledVector(vecU1, 0.6);
+      createLabel3D("$\\vec{u}_1(1; 2; −1)$", ptU1Mid, "#34d399");
+
+      // 2. Plane (P): x + y + z - 6 = 0
+      const planeGeo = new THREE.PlaneGeometry(16, 16);
+      const planeMat = new THREE.MeshStandardMaterial({
+        color: 0x3b82f6,
+        transparent: true,
+        opacity: 0.22,
+        side: THREE.DoubleSide,
+        roughness: 0.3,
+        depthWrite: false
+      });
+      meshPlaneP = new THREE.Mesh(planeGeo, planeMat);
+      // Position plane centered at (2, 2, 2)
+      meshPlaneP.position.set(2, 2, 2);
+      meshPlaneP.quaternion.setFromUnitVectors(new THREE.Vector3(0, 0, 1), vecN);
+      scene.add(meshPlaneP);
+
+      // Plane Border Wireframe
+      const planeWire = new THREE.LineSegments(
+        new THREE.EdgesGeometry(planeGeo),
+        new THREE.LineBasicMaterial({ color: 0x60a5fa, transparent: true, opacity: 0.5 })
+      );
+      meshPlaneP.add(planeWire);
+
+      createLabel3D("Mặt phẳng (P): x + y + z − 6 = 0", new THREE.Vector3(-2, -2, 10), "#60a5fa");
+
+      // Normal Vector n = (1, 1, 1)
+      const ptPlaneCenter = new THREE.Vector3(2, 2, 2);
+      meshPlaneNormal = new THREE.ArrowHelper(vecN, ptPlaneCenter, 2.0, 0x60a5fa, 0.4, 0.25);
+      scene.add(meshPlaneNormal);
+      createLabel3D("$\\vec{n}(1; 1; 1)$", ptPlaneCenter.clone().addScaledVector(vecN, 1.8), "#60a5fa");
+
+      // Intersection Point d1 ∩ (P) = (3.5, 8, -5.5)
+      const pInterGeo = new THREE.SphereGeometry(0.22, 24, 24);
+      const pInterMat = new THREE.MeshStandardMaterial({ color: 0xf43f5e, emissive: 0xe11d48, roughness: 0.2 });
+      meshPlaneIntersection = new THREE.Mesh(pInterGeo, pInterMat);
+      meshPlaneIntersection.position.copy(ptPlaneIntersection);
+      scene.add(meshPlaneIntersection);
+      createLabel3D("Giao điểm $d_1 \\cap (P)$: (3.5; 8; −5.5)", ptPlaneIntersection, "#f43f5e");
+    }
+
+    /* 4 D2 STATES MANAGEMENT WITH CLEANUP */
+    let currentD2State = 'parallel';
+
+    function clearD2Group() {
+      // Memory cleanup for d2 meshes
+      while (meshD2Group.children.length > 0) {
+        const obj = meshD2Group.children[0];
+        meshD2Group.remove(obj);
+        if (obj.geometry) obj.geometry.dispose();
+        if (obj.material) {
+          if (Array.isArray(obj.material)) obj.material.forEach(m => m.dispose());
+          else obj.material.dispose();
+        }
+      }
+      // Remove any d2 specific labels
+      const d2Label = document.getElementById('label-d2-point');
+      if (d2Label && d2Label.parentNode) d2Label.parentNode.removeChild(d2Label);
+      const d2InterLabel = document.getElementById('label-d2-inter');
+      if (d2InterLabel && d2InterLabel.parentNode) d2InterLabel.parentNode.removeChild(d2InterLabel);
+
+      activeLabels = activeLabels.filter(l => l.element.id !== 'label-d2-point' && l.element.id !== 'label-d2-inter');
+    }
+
+    function renderD2State(state) {
+      clearD2Group();
+      currentD2State = state;
+
+      let colorHex, ptAnchor, vecU2, labelText, ptAnchorName;
+
+      if (state === 'parallel') {
+        // Song song: B(3, 0, 4), u2=(2, 4, -2)
+        colorHex = 0xf59e0b; // Amber
+        ptAnchor = new THREE.Vector3(3, 0, 4);
+        vecU2 = new THREE.Vector3(2, 4, -2);
+        ptAnchorName = "B(3; 0; 4)";
+      } else if (state === 'coincident') {
+        // Trùng: B'(2, 5, -4), u2=(2, 4, -2)
+        colorHex = 0x8b5cf6; // Purple
+        ptAnchor = new THREE.Vector3(2, 5, -4);
+        vecU2 = new THREE.Vector3(2, 4, -2);
+        ptAnchorName = "B'(2; 5; −4)";
+      } else if (state === 'intersect') {
+        // Cắt: C(-1, 5, -5), u3=(1, -1, 1) -> Intersects at P0(1, 3, -3)
+        colorHex = 0xef4444; // Red
+        ptAnchor = new THREE.Vector3(-1, 5, -5);
+        vecU2 = new THREE.Vector3(1, -1, 1);
+        ptAnchorName = "C(−1; 5; −5)";
+      } else if (state === 'skew') {
+        // Chéo: D(4, 4, 4), u4=(1, 0, 1)
+        colorHex = 0xec4899; // Pink
+        ptAnchor = new THREE.Vector3(4, 4, 4);
+        vecU2 = new THREE.Vector3(1, 0, 1);
+        ptAnchorName = "D(4; 4; 4)";
+      }
+
+      // Draw d2 Line
+      const d2Start = ptAnchor.clone().addScaledVector(vecU2, -3.5);
+      const d2End = ptAnchor.clone().addScaledVector(vecU2, 4.5);
+      const d2Geo = new THREE.BufferGeometry().setFromPoints([d2Start, d2End]);
+      const d2Mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 3 });
+      const d2LineMesh = new THREE.Line(d2Geo, d2Mat);
+      meshD2Group.add(d2LineMesh);
+
+      // Anchor Point Sphere
+      const pGeo = new THREE.SphereGeometry(0.18, 24, 24);
+      const pMat = new THREE.MeshStandardMaterial({ color: colorHex, emissive: colorHex, roughness: 0.2 });
+      const pMesh = new THREE.Mesh(pGeo, pMat);
+      pMesh.position.copy(ptAnchor);
+      meshD2Group.add(pMesh);
+
+      createLabel3D(ptAnchorName, ptAnchor, `#${colorHex.toString(16)}`, 'label-d2-point');
+
+      // Extra Intersection Point P0 for Intersecting state
+      if (state === 'intersect') {
+        const ptP0 = new THREE.Vector3(1, 3, -3);
+        const p0Geo = new THREE.SphereGeometry(0.22, 24, 24);
+        const p0Mat = new THREE.MeshStandardMaterial({ color: 0xff0055, emissive: 0xff0055, roughness: 0.1 });
+        const p0Mesh = new THREE.Mesh(p0Geo, p0Mat);
+        p0Mesh.position.copy(ptP0);
+        meshD2Group.add(p0Mesh);
+
+        createLabel3D("Giao điểm $P_0(1; 3; −3)$", ptP0, "#ff0055", 'label-d2-inter');
+      }
+
+      activeLabels.forEach(l => l.update());
+    }
+
+    /* =========================================================================
+       4. INTERACTION & EXPLANATION CONTENT LOGIC
+       ========================================================================= */
+    const visitedLabels = new Set();
+    let currentLabel = 1;
+
+    function selectLabel(num) {
+      currentLabel = num;
+      visitedLabels.add(num);
+
+      // Update Label Button UI
+      for (let i = 1; i <= 6; i++) {
+        const btn = document.querySelectorAll('.label-btn')[i - 1];
+        if (i === num) btn.classList.add('active');
+        else btn.classList.remove('active');
+
+        if (visitedLabels.has(i)) btn.classList.add('visited');
+      }
+
+      // Update Progress Bar
+      const count = visitedLabels.size;
+      document.getElementById('progress-text').textContent = `${count} / 6 nhãn`;
+      document.getElementById('progress-fill').style.width = `${(count / 6) * 100}%`;
+
+      if (count === 6) {
+        const btnSum = document.getElementById('btn-show-summary');
+        btnSum.disabled = false;
+        LMS().complete();
+      }
+
+      // Render Card Content
+      const card = document.getElementById('info-card-content');
+      card.innerHTML = getExplanationHTML(num);
+      renderKaTeXInElement(card);
+
+      // Highlight/Focus logic in 3D
+      highlight3DObject(num);
+    }
+
+    function getExplanationHTML(num) {
+      switch (num) {
+        case 1:
+          return `
+            <div style="font-weight:800; color:var(--navy); font-size:14px; margin-bottom:6px;">
+              <i class="ti ti-arrow-up-right"></i> 1. Vectơ chỉ phương $\\vec{u}_1$ của $d_1$
+            </div>
+            <div>
+              $\\vec{u}_1 = (1; 2; -1)$ là VTCP của $d_1$. Giá của $\\vec{u}_1$ song song hoặc trùng với $d_1$.
+            </div>
+          `;
+
+        case 2:
+          return `
+            <div style="font-weight:800; color:var(--navy); font-size:14px; margin-bottom:6px;">
+              <i class="ti ti-variable"></i> 2. Phương trình tham số của $d_1$
+            </div>
+            <div>
+              Với điểm $A(0; 1; -2)$ và VTCP $\\vec{u}_1=(1; 2; -1)$:<br>
+              $$\\begin{cases} x = t \\\\ y = 1 + 2t \\\\ z = -2 - t \\end{cases} \\quad (t \\in \\mathbb{R})$$
+              Mỗi giá trị của $t$ tương ứng với đúng $1$ điểm thuộc đường thẳng $d_1$.
+            </div>
+          `;
+
+        case 3:
+          return `
+            <div style="font-weight:800; color:var(--navy); font-size:14px; margin-bottom:6px;">
+              <i class="ti ti-math-symbols"></i> 3. Phương trình chính tắc của $d_1$
+            </div>
+            <div>
+              Vì cả 3 thành phần của $\\vec{u}_1 = (1; 2; -1)$ đều khác $0$, ta viết được dạng chính tắc:<br>
+              $$\\frac{x - 0}{1} = \\frac{y - 1}{2} = \\frac{z + 2}{-1}$$
+            </div>
+          `;
+
+        case 4:
+          return `
+            <div style="font-weight:800; color:var(--navy); font-size:14px; margin-bottom:6px;">
+              <i class="ti ti-route"></i> 4. Vị trí tương đối của $d_2$ với $d_1$
+            </div>
+            <div style="margin-bottom:8px;">Chọn từng vị trí của đường thẳng $d_2$ để đối chiếu:</div>
+            <div class="state-btn-group">
+              <button class="state-btn ${currentD2State==='parallel'?'active':''}" onclick="setD2State('parallel')">1. Song song</button>
+              <button class="state-btn ${currentD2State==='coincident'?'active':''}" onclick="setD2State('coincident')">2. Trùng nhau</button>
+              <button class="state-btn ${currentD2State==='intersect'?'active':''}" onclick="setD2State('intersect')">3. Cắt nhau</button>
+              <button class="state-btn ${currentD2State==='skew'?'active':''}" onclick="setD2State('skew')">4. Chéo nhau</button>
+            </div>
+            <div id="d2-state-detail" style="font-size:12.5px; background:#ffffff; padding:10px; border-radius:8px; border:1px solid var(--paper-line);">
+              ${getD2StateDetailHTML(currentD2State)}
+            </div>
+          `;
+
+        case 5:
+          return `
+            <div style="font-weight:800; color:var(--navy); font-size:14px; margin-bottom:6px;">
+              <i class="ti ti-square"></i> 5. Mặt phẳng $(P)$ & VTPT $\\vec{n}$
+            </div>
+            <div>
+              Mặt phẳng $(P)$ có phương trình tổng quát:<br>
+              $$(P): x + y + z - 6 = 0$$
+              Vectơ pháp tuyến của $(P)$ là $\\vec{n} = (1; 1; 1)$.
+            </div>
+          `;
+
+        case 6:
+          return `
+            <div style="font-weight:800; color:var(--navy); font-size:14px; margin-bottom:6px;">
+              <i class="ti ti-point"></i> 6. Giao điểm giữa $d_1$ và $(P)$
+            </div>
+            <div>
+              • Tích vô hướng: $\\vec{u}_1 \\cdot \\vec{n} = 1(1) + 2(1) + (-1)(1) = 2 \\neq 0 \\implies d_1$ cắt $(P)$.<br>
+              • Thế tham số $d_1$ vào $(P)$:<br>
+              $$t + (1+2t) + (-2-t) - 6 = 0$$
+              $$\\implies 2t - 7 = 0 \\implies t = 3.5$$
+              • Tọa độ giao điểm: $(3.5; 8; -5.5)$ — đây chính là kỹ năng của Module 4.
+            </div>
+          `;
+      }
+    }
+
+    function getD2StateDetailHTML(state) {
+      switch (state) {
+        case 'parallel':
+          return `<b>Song song:</b> $\\vec{u}_2=(2;4;-2) = 2\\vec{u}_1$ (cùng phương). Điểm $B(3;0;4) \\notin d_1$ (thử $t$: không tồn tại $t$) $\\implies d_2 // d_1$.`;
+        case 'coincident':
+          return `<b>Trùng nhau:</b> $\\vec{u}_2=(2;4;-2) = 2\\vec{u}_1$ (cùng phương). Điểm $B'(2;5;-4) \\in d_1$ (ứng với $t=2$) $\\implies d_2 \\equiv d_1$.`;
+        case 'intersect':
+          return `<b>Cắt nhau:</b> $\\vec{u}_3=(1;-1;1)$ không cùng phương $\\vec{u}_1$. Giải hệ phương trình tìm được 1 giao điểm duy nhất $P_0(1; 3; -3)$.`;
+        case 'skew':
+          return `<b>Chéo nhau:</b> $\\vec{u}_4=(1;0;1)$ không cùng phương $\\vec{u}_1$. Hệ phương trình vô nghiệm $\\implies$ không có điểm chung và không đồng phẳng.`;
+      }
+    }
+
+    function setD2State(state) {
+      renderD2State(state);
+      const detailEl = document.getElementById('d2-state-detail');
+      if (detailEl) {
+        detailEl.innerHTML = getD2StateDetailHTML(state);
+        renderKaTeXInElement(detailEl);
+      }
+      // Update button active UI
+      const btns = document.querySelectorAll('.state-btn');
+      btns.forEach(b => b.classList.remove('active'));
+      const activeIdx = ['parallel', 'coincident', 'intersect', 'skew'].indexOf(state);
+      if (activeIdx !== -1 && btns[activeIdx]) btns[activeIdx].classList.add('active');
+    }
+
+    function highlight3DObject(num) {
+      // Adjust controls target / camera focus depending on tab
+      if (num === 1 || num === 2 || num === 3) {
+        orbitControls.target.copy(ptA);
+      } else if (num === 4) {
+        orbitControls.target.set(1, 3, -2);
+      } else if (num === 5) {
+        orbitControls.target.set(2, 2, 2);
+      } else if (num === 6) {
+        orbitControls.target.copy(ptPlaneIntersection);
+      }
+      orbitControls.update();
+    }
+
+    /* SUMMARY MODAL LOGIC */
+    function openSummaryModal() {
+      const modal = document.getElementById('summary-modal');
+      const body = document.getElementById('modal-summary-content');
+
+      body.innerHTML = `
+        <div class="summary-item">
+          <div class="summary-item-title"><i class="ti ti-arrow-up-right"></i> 1. Vectơ chỉ phương (VTCP)</div>
+          Vectơ $\\vec{u} \\neq \\vec{0}$ có giá song song hoặc trùng với đường thẳng $d$ gọi là VTCP của $d$. Nếu $\\vec{u}$ là VTCP thì $k\\vec{u}$ ($k \\neq 0$) cũng là VTCP.
+        </div>
+
+        <div class="summary-item">
+          <div class="summary-item-title"><i class="ti ti-variable"></i> 2. Phương trình tham số của đường thẳng</div>
+          Đường thẳng $d$ qua $M_0(x_0; y_0; z_0)$ có VTCP $\\vec{u}=(a; b; c)$ có PT tham số:<br>
+          $$\\begin{cases} x = x_0 + at \\\\ y = y_0 + bt \\\\ z = z_0 + ct \\end{cases} \\quad (t \\in \\mathbb{R})$$
+        </div>
+
+        <div class="summary-item">
+          <div class="summary-item-title"><i class="ti ti-math-symbols"></i> 3. Phương trình chính tắc của đường thẳng</div>
+          Nếu $a, b, c$ đều khác $0$, đường thẳng $d$ có PT chính tắc:<br>
+          $$\\frac{x - x_0}{a} = \\frac{y - y_0}{b} = \\frac{z - z_0}{c}$$
+        </div>
+
+        <div class="summary-item">
+          <div class="summary-item-title"><i class="ti ti-route"></i> 4. Vị trí tương đối giữa hai đường thẳng</div>
+          Cho $d_1$ qua $A$, VTCP $\\vec{u}_1$ và $d_2$ qua $B$, VTCP $\\vec{u}_2$:<br>
+          • <b>Song song:</b> $\\vec{u}_1, \\vec{u}_2$ cùng phương và $A \\notin d_2$.<br>
+          • <b>Trùng nhau:</b> $\\vec{u}_1, \\vec{u}_2$ cùng phương và $A \\in d_2$.<br>
+          • <b>Cắt nhau:</b> $\\vec{u}_1, \\vec{u}_2$ không cùng phương và hệ PT có $1$ nghiệm.<br>
+          • <b>Chéo nhau:</b> $\\vec{u}_1, \\vec{u}_2$ không cùng phương và hệ PT vô nghiệm.
+        </div>
+
+        <div class="summary-item">
+          <div class="summary-item-title"><i class="ti ti-square"></i> 5. Vị trí tương đối giữa đường thẳng và mặt phẳng</div>
+          Cho $d$ qua $A$, VTCP $\\vec{u}$ và mặt phẳng $(P)$ có VTPT $\\vec{n}$:<br>
+          • $\\vec{u} \\cdot \\vec{n} \\neq 0 \\implies d$ cắt $(P)$.<br>
+          • $\\vec{u} \\cdot \\vec{n} = 0$ và $A \\notin (P) \\implies d // (P)$.<br>
+          • $\\vec{u} \\cdot \\vec{n} = 0$ và $A \\in (P) \\implies d \\subset (P)$.
+        </div>
+      `;
+
+      renderKaTeXInElement(body);
+      modal.classList.add('show');
+    }
+
+    document.getElementById('btn-modal-close').addEventListener('click', () => {
+      document.getElementById('summary-modal').classList.remove('show');
+    });
+    document.getElementById('btn-modal-done').addEventListener('click', () => {
+      document.getElementById('summary-modal').classList.remove('show');
+    });
+
+    /* =========================================================================
+       5. INIT & ANIMATION LOOP
+       ========================================================================= */
+    function init() {
+      createStaticScene();
+      renderD2State('parallel');
+      renderKaTeXInElement(document.body);
+      selectLabel(1);
+
+      function animate() {
+        requestAnimationFrame(animate);
+        orbitControls.update();
+        renderer.render(scene, camera);
+
+        // Update 3D labels positioning
+        activeLabels.forEach(l => l.update());
+      }
+      animate();
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+
+</html>
