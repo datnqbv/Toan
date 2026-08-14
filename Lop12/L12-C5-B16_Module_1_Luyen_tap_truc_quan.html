@@ -123,27 +123,32 @@
     }
 
     /* FLOATING BUTTONS & CANVAS OVERLAYS */
-    #btn-reset-cam {
+    .canvas-tools {
       position: absolute;
-      bottom: 16px;
-      left: 16px;
+      bottom: 14px;
+      left: 14px;
+      display: flex;
+      gap: 6px;
+      z-index: 5;
+    }
+
+    .canvas-btn {
       background: rgba(15, 23, 42, 0.85);
       color: #ffffff;
       border: 1px solid rgba(255, 255, 255, 0.2);
       border-radius: 8px;
-      padding: 8px 14px;
-      font-size: 12.5px;
+      padding: 7px 12px;
+      font-size: 12px;
       font-weight: 600;
       cursor: pointer;
       backdrop-filter: blur(4px);
       transition: all 0.2s ease;
       display: flex;
       align-items: center;
-      gap: 6px;
-      z-index: 5;
+      gap: 5px;
     }
 
-    #btn-reset-cam:hover {
+    .canvas-btn:hover {
       background: rgba(30, 41, 59, 0.95);
       border-color: rgba(255, 255, 255, 0.4);
     }
@@ -159,17 +164,18 @@
     .point-label {
       position: absolute;
       transform: translate(-50%, -100%);
-      font-size: 12.5px;
-      font-weight: 800;
+      font-size: 12px;
+      font-weight: 700;
       color: #ffffff;
-      background: rgba(15, 23, 42, 0.8);
-      padding: 3px 8px;
+      background: rgba(15, 23, 42, 0.85);
+      padding: 3px 7px;
       border-radius: 6px;
       border: 1px solid rgba(255, 255, 255, 0.25);
       backdrop-filter: blur(3px);
       text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8);
       white-space: nowrap;
       pointer-events: none;
+      max-width: 220px;
     }
 
     /* SIDEBAR CONTROL PANEL */
@@ -182,6 +188,46 @@
       z-index: 5;
       overflow-y: auto;
       padding: 16px;
+    }
+
+    /* RESPONSIVE */
+    @media (max-width: 768px) {
+      #app-body {
+        flex-direction: column;
+        height: auto;
+        max-height: none;
+        overflow: visible;
+      }
+
+      #canvas-wrap {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        flex: none;
+        width: 100%;
+        height: calc((100vh - 50px) * 0.45);
+        height: calc((100dvh - 50px) * 0.45);
+        min-height: 260px;
+      }
+
+      #sidebar {
+        width: 100%;
+        flex: none;
+        border-left: none;
+        border-top: 1px solid var(--paper-line);
+      }
+
+      .point-label {
+        font-size: 10.5px;
+        padding: 2px 5px;
+        border-radius: 4px;
+        max-width: 160px;
+      }
+
+      .canvas-btn {
+        padding: 5px 9px;
+        font-size: 11px;
+      }
     }
 
     .step-tabs {
@@ -464,7 +510,10 @@
       <canvas id="three-canvas"></canvas>
       <div id="label-layer"></div>
 
-      <button id="btn-reset-cam"><i class="ti ti-refresh"></i> Đặt lại góc nhìn</button>
+      <div class="canvas-tools">
+        <button class="canvas-btn" id="btn-reset-cam"><i class="ti ti-refresh"></i> Góc nhìn</button>
+        <button class="canvas-btn" id="btn-toggle-labels" onclick="toggleLabelsMode()"><i class="ti ti-filter"></i> Nhãn bước này</button>
+      </div>
     </div>
 
     <!-- SIDEBAR CONTROL PANEL -->
@@ -515,7 +564,7 @@
 
     function resetCamera() {
       const isMobile = wrap.clientWidth <= 768;
-      camera.position.set(isMobile ? 12 : 9, isMobile ? 10 : 7, isMobile ? 12 : 9);
+      camera.position.set(isMobile ? 13 : 9, isMobile ? 10 : 7, isMobile ? 13 : 9);
       orbitControls.target.set(2, 2, 2.5);
       orbitControls.update();
     }
@@ -572,7 +621,18 @@
        2. 3D HTML LABELS & ANIMATION UTILITIES
        ========================================================================= */
     let activeLabels = [];
-    function createLabel3D(text, position, color = '#ffffff', id = null) {
+    let showAllLabels = false;
+
+    function toggleLabelsMode() {
+      showAllLabels = !showAllLabels;
+      const btn = document.getElementById('btn-toggle-labels');
+      if (btn) {
+        btn.innerHTML = showAllLabels ? `<i class="ti ti-eye"></i> Tất cả nhãn` : `<i class="ti ti-filter"></i> Nhãn bước này`;
+      }
+      activeLabels.forEach(l => l.update());
+    }
+
+    function createLabel3D(text, position, color = '#ffffff', id = null, stepOwner = 1) {
       const el = document.createElement('div');
       el.className = 'point-label';
       if (id) el.id = id;
@@ -583,7 +643,13 @@
       const labelObj = {
         element: el,
         position: position.clone(),
+        stepOwner: stepOwner,
         update: () => {
+          if (!showAllLabels && labelObj.stepOwner !== currentStep) {
+            el.style.display = 'none';
+            return;
+          }
+
           const wp = labelObj.position.clone();
           const camDir = new THREE.Vector3();
           camera.getWorldDirection(camDir);
@@ -756,12 +822,12 @@
 
         const mE1 = new THREE.Mesh(new THREE.SphereGeometry(0.18, 24, 24), new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x059669 }));
         mE1.position.copy(ptE1); scene.add(mE1); animateMeshScale(mE1, 400);
-        createLabel3D("E1(0; 0; 3)", ptE1, "#10b981");
+        createLabel3D("E1(0; 0; 3)", ptE1, "#10b981", null, 1);
 
         // Arrow Vector v1
         const arrowV1 = new THREE.ArrowHelper(vecV1.clone().normalize(), ptE1, 2.2, 0x10b981, 0.4, 0.25);
         scene.add(arrowV1);
-        createLabel3D("VTCP $\\vec{v}_1(2; 1; 0)$", ptE1.clone().add(new THREE.Vector3(1, 0.5, 0)), "#10b981");
+        createLabel3D("VTCP $\\vec{v}_1(2; 1; 0)$", ptE1.clone().add(new THREE.Vector3(1, 0.5, 0)), "#10b981", null, 1);
 
         // Steel 2: E2(4,0,5), v2=(1,-1,2) -> E2'(6,-2,9)
         const ptE2 = new THREE.Vector3(4, 0, 5);
@@ -771,12 +837,12 @@
 
         const mE2 = new THREE.Mesh(new THREE.SphereGeometry(0.18, 24, 24), new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7 }));
         mE2.position.copy(ptE2); scene.add(mE2); animateMeshScale(mE2, 400);
-        createLabel3D("E2(4; 0; 5)", ptE2, "#38bdf8");
+        createLabel3D("E2(4; 0; 5)", ptE2, "#38bdf8", null, 1);
 
         // Arrow Vector v2
         const arrowV2 = new THREE.ArrowHelper(vecV2.clone().normalize(), ptE2, 2.4, 0x38bdf8, 0.4, 0.25);
         scene.add(arrowV2);
-        createLabel3D("VTCP $\\vec{v}_2(1; −1; 2)$", ptE2.clone().add(new THREE.Vector3(0.5, -0.5, 1)), "#38bdf8");
+        createLabel3D("VTCP $\\vec{v}_2(1; −1; 2)$", ptE2.clone().add(new THREE.Vector3(0.5, -0.5, 1)), "#38bdf8", null, 1);
       }
 
       if (stepNum >= 2 && !renderedStep1Ex2) {
@@ -789,12 +855,12 @@
 
         const mG1 = new THREE.Mesh(new THREE.SphereGeometry(0.18, 24, 24), new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706 }));
         mG1.position.copy(ptG1); scene.add(mG1); animateMeshScale(mG1, 400);
-        createLabel3D("G1(0; 4; 3)", ptG1, "#f59e0b");
+        createLabel3D("G1(0; 4; 3)", ptG1, "#f59e0b", null, 2);
 
         // Arrow Vector v3
         const arrowV3 = new THREE.ArrowHelper(vecV3.clone().normalize(), ptG1, 2.2, 0xf59e0b, 0.4, 0.25);
         scene.add(arrowV3);
-        createLabel3D("VTCP $\\vec{v}_3(2; 1; 0)$", ptG1.clone().add(new THREE.Vector3(1, 0.5, 0)), "#f59e0b");
+        createLabel3D("VTCP $\\vec{v}_3(2; 1; 0)$", ptG1.clone().add(new THREE.Vector3(1, 0.5, 0)), "#f59e0b", null, 2);
 
         // Steel 4: G2(4,4,5), v4=(-1,-1,2) -> G2'(2,2,9)
         const ptG2 = new THREE.Vector3(4, 4, 5);
@@ -804,12 +870,12 @@
 
         const mG2 = new THREE.Mesh(new THREE.SphereGeometry(0.18, 24, 24), new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xd97706 }));
         mG2.position.copy(ptG2); scene.add(mG2); animateMeshScale(mG2, 400);
-        createLabel3D("G2(4; 4; 5)", ptG2, "#ef4444");
+        createLabel3D("G2(4; 4; 5)", ptG2, "#ef4444", null, 2);
 
         // Arrow Vector v4
         const arrowV4 = new THREE.ArrowHelper(vecV4.clone().normalize(), ptG2, 2.4, 0xef4444, 0.4, 0.25);
         scene.add(arrowV4);
-        createLabel3D("VTCP $\\vec{v}_4(−1; −1; 2)$", ptG2.clone().add(new THREE.Vector3(-0.5, -0.5, 1)), "#ef4444");
+        createLabel3D("VTCP $\\vec{v}_4(−1; −1; 2)$", ptG2.clone().add(new THREE.Vector3(-0.5, -0.5, 1)), "#ef4444", null, 2);
       }
 
       if (stepNum >= 3 && !renderedStep2) {
@@ -827,7 +893,7 @@
         pMesh.lookAt(planeCenter.clone().add(planeNormal));
         scene.add(pMesh);
         animateMaterialOpacity(pMat, 0.22, 750);
-        createLabel3D("Mái kính (Q): 2x + y + 2z − 12 = 0", new THREE.Vector3(0, 4, 4), "#8b5cf6");
+        createLabel3D("Mái kính (Q)", new THREE.Vector3(0, 4, 4), "#8b5cf6", null, 3);
 
         // Inclined Strut: F(2,2,4), w=(1,-2,3) -> F'(3,0,7)
         const ptF = new THREE.Vector3(2, 2, 4);
@@ -837,17 +903,17 @@
 
         const mF = new THREE.Mesh(new THREE.SphereGeometry(0.18, 24, 24), new THREE.MeshStandardMaterial({ color: 0xec4899, emissive: 0xbe185d }));
         mF.position.copy(ptF); scene.add(mF); animateMeshScale(mF, 400);
-        createLabel3D("Thanh chống F(2; 2; 4)", ptF, "#ec4899");
+        createLabel3D("Thanh chống F(2; 2; 4)", ptF, "#ec4899", null, 3);
 
         // Arrow Vector w
         const arrowW = new THREE.ArrowHelper(vecW.clone().normalize(), ptF, 2.4, 0xec4899, 0.4, 0.25);
         scene.add(arrowW);
-        createLabel3D("VTCP $\\vec{w}(1; −2; 3)$", ptF.clone().add(new THREE.Vector3(0.5, -1, 1.5)), "#ec4899");
+        createLabel3D("VTCP $\\vec{w}(1; −2; 3)$", ptF.clone().add(new THREE.Vector3(0.5, -1, 1.5)), "#ec4899", null, 3);
 
         // Normal Vector Arrow n
         const arrow = new THREE.ArrowHelper(planeNormal, planeCenter, 2.5, 0xa855f7, 0.4, 0.25);
         scene.add(arrow);
-        createLabel3D("VTPT $\\vec{n}(2; 1; 2)$", planeCenter.clone().addScaledVector(planeNormal, 1.3), "#a855f7");
+        createLabel3D("VTPT $\\vec{n}(2; 1; 2)$", planeCenter.clone().addScaledVector(planeNormal, 1.3), "#a855f7", null, 3);
       }
 
       orbitControls.update();
