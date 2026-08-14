@@ -565,9 +565,8 @@
     dirLight.position.set(10, 15, 12);
     scene.add(dirLight);
 
-    const gridHelper = new THREE.GridHelper(20, 20, 0x30363d, 0x1c2333);
-    gridHelper.position.y = 0;
-    scene.add(gridHelper);
+    // Tắt grid mặc định — ground plane đã thay thế
+    // const gridHelper = new THREE.GridHelper(20, 20, 0x30363d, 0x1c2333);
 
     function resetCamera() {
       const isMobile = wrap.clientWidth <= 768;
@@ -832,6 +831,57 @@
     }
 
     /* =========================================================================
+       3b. 3D STEEL BEAM & ANGLE ARC HELPERS
+       ========================================================================= */
+
+    /* Solid cylinder beam — 2 điểm đầu + màu + bán kính */
+    function create3DSteelBeam(p1, p2, colorHex, radius = 0.09) {
+      const dir = new THREE.Vector3().subVectors(p2, p1);
+      const len = dir.length();
+      if (len < 0.001) return null;
+      const geo = new THREE.CylinderGeometry(radius, radius, len, 20);
+      const mat = new THREE.MeshStandardMaterial({
+        color: colorHex,
+        metalness: 0.55,
+        roughness: 0.3,
+        emissive: colorHex,
+        emissiveIntensity: 0.22
+      });
+      const mesh = new THREE.Mesh(geo, mat);
+      const mid = new THREE.Vector3().addVectors(p1, p2).multiplyScalar(0.5);
+      mesh.position.copy(mid);
+      const quat = new THREE.Quaternion().setFromUnitVectors(
+        new THREE.Vector3(0, 1, 0),
+        dir.clone().normalize()
+      );
+      mesh.quaternion.copy(quat);
+      scene.add(mesh);
+      animateMeshScale(mesh, 500);
+      return mesh;
+    }
+
+    /* Cung góc arc giữa 2 vector tại 1 gốc — dùng Line+Points */
+    function createAngleArc(origin, dir1, dir2, radius, colorHex, segments = 32) {
+      const d1n = dir1.clone().normalize();
+      const d2n = dir2.clone().normalize();
+      const angle = d1n.angleTo(d2n);
+      const points = [];
+      for (let i = 0; i <= segments; i++) {
+        const t = i / segments;
+        // Spherical interpolation giữa 2 direction
+        const quat = new THREE.Quaternion().setFromUnitVectors(d1n, d2n);
+        const q = new THREE.Quaternion().slerp(quat, t);
+        const v = d1n.clone().applyQuaternion(q).multiplyScalar(radius).add(origin);
+        points.push(v);
+      }
+      const geo = new THREE.BufferGeometry().setFromPoints(points);
+      const mat = new THREE.LineBasicMaterial({ color: colorHex, linewidth: 3 });
+      const arc = new THREE.Line(geo, mat);
+      scene.add(arc);
+      return arc;
+    }
+
+    /* =========================================================================
        4. MODULE 1 WORKFLOW & STEP SWITCHING
        ========================================================================= */
     let currentStep = 1;
@@ -863,6 +913,24 @@
 
       currentStep = stepNum;
 
+      // Camera focus cận cảnh từng bước — nhìn từ trên cao xuống (+Y > 0)
+      if (stepNum === 1) {
+        // Zoom vào phía trước mái nhà kính từ góc cao
+        orbitControls.target.set(2, 3.8, 1.5);
+        camera.position.set(8.5, 6.5, 7.5);
+        orbitControls.update();
+      } else if (stepNum === 2) {
+        // Mở rộng thấy cả 4 thanh trên mái
+        orbitControls.target.set(2, 3.8, 3.0);
+        camera.position.set(10, 7.0, 9.0);
+        orbitControls.update();
+      } else if (stepNum === 3) {
+        // Nhìn mái kính (Q) + thanh chống F
+        orbitControls.target.set(1.5, 3.8, 2.0);
+        camera.position.set(8.5, 6.8, 7.5);
+        orbitControls.update();
+      }
+
       // Update Tab UI
       for (let i = 1; i <= 3; i++) {
         const tab = document.getElementById(`tab-step-${i}`);
@@ -878,78 +946,171 @@
       renderStep3DCumulative(stepNum);
     }
 
-    /* CUMULATIVE 3D RENDERER */
+    /* =========================================================================
+       5. CUMULATIVE 3D RENDERER — Từng bước chỉ hiện đúng đối tượng liên quan
+       ========================================================================= */
     function renderStep3DCumulative(stepNum) {
       if (stepNum >= 1 && !renderedStep1Ex1) {
         renderedStep1Ex1 = true;
-        // Steel 1: E1(0,0,3), v1=(2,1,0) -> E1'(4,2,3)
+
+        /* -------- THANH 1 --------
+           Đường thẳng qua E1(0,0,3) có VTCP v1=(2,1,0)
+           → rút ngắn: hiện đoạn từ E1 đến E1+(2,1,0)×1.6 ≈ ptE1End
+        */
         const ptE1 = mVec(0, 0, 3);
-        const ptE1End = mVec(4, 2, 3);
-        const vecV1 = mVec(2, 1, 0);
-        createAnimatedLine(ptE1, ptE1End, 0x10b981, 3.5, 900);
+        const v1 = new THREE.Vector3(2, 0, 1);  // mVec(2,1,0)=Vector3(2,0,1)
+        const ptE1End = ptE1.clone().add(v1.clone().normalize().multiplyScalar(2.2));
 
-        const mE1 = new THREE.Mesh(new THREE.SphereGeometry(0.16, 24, 24), new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x059669 }));
-        mE1.position.copy(ptE1); scene.add(mE1); animateMeshScale(mE1, 400);
-        createLabel3D("E1(0; 0; 3)", ptE1, "#10b981", null, 1);
+        create3DSteelBeam(ptE1, ptE1End, 0x10b981, 0.10);
 
-        // Arrow Vector v1
-        const arrowV1 = new THREE.ArrowHelper(vecV1.clone().normalize(), ptE1, 1.8, 0x10b981, 0.35, 0.2);
+        // Điểm gốc E1
+        const dotE1 = new THREE.Mesh(
+          new THREE.SphereGeometry(0.15, 20, 20),
+          new THREE.MeshStandardMaterial({ color: 0x10b981, emissive: 0x059669, emissiveIntensity: 0.5 })
+        );
+        dotE1.position.copy(ptE1);
+        scene.add(dotE1);
+        createLabel3D("E₁(0;0;3)", ptE1.clone().add(new THREE.Vector3(-0.3, 0.35, 0)), "#10b981", null, 1);
+
+        // Vector chỉ phương v1 — mũi tên nổi bật từ E1
+        const arrowV1 = new THREE.ArrowHelper(
+          v1.clone().normalize(), ptE1, 1.9, 0x34d399, 0.45, 0.25
+        );
         scene.add(arrowV1);
-        createLabel3D("VTCP $\\vec{v}_1(2; 1; 0)$", ptE1.clone().add(mVec(1, 0.5, 0)), "#10b981", null, 1);
+        createLabel3D("$\\vec{v}_1(2;1;0)$", ptE1.clone().add(new THREE.Vector3(0.6, 0.5, 0.8)), "#34d399", null, 1);
 
-        // Steel 2: E2(4,0,5), v2=(1,-1,2) -> E2'(6,-2,9)
+        // Nhãn thanh ở giữa
+        createLabel3D("Thanh 1", ptE1.clone().lerp(ptE1End, 0.55).add(new THREE.Vector3(0, 0.4, 0)), "#10b981", null, 1);
+
+        /* -------- THANH 2 --------
+           Đường thẳng qua E2(4,0,5) có VTCP v2=(1,-1,2)
+           E2 ở đỉnh mái phải trước — khi đi theo +v2 thì bay ra ngoài
+           → Hiện đoạn theo -v2 (ngược chiều) để thanh đi vào trong mái
+        */
         const ptE2 = mVec(4, 0, 5);
-        const ptE2End = mVec(6, -2, 9);
-        const vecV2 = mVec(1, -1, 2);
-        createAnimatedLine(ptE2, ptE2End, 0x38bdf8, 3.5, 900);
+        const v2 = new THREE.Vector3(1, 2, -1);  // mVec(1,-1,2)=Vector3(1,2,-1)
+        // -v2 direction: đi vào trong nhà, nằm trong khung mái
+        const ptE2End = ptE2.clone().add(v2.clone().normalize().multiplyScalar(-2.2));
 
-        const mE2 = new THREE.Mesh(new THREE.SphereGeometry(0.16, 24, 24), new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7 }));
-        mE2.position.copy(ptE2); scene.add(mE2); animateMeshScale(mE2, 400);
-        createLabel3D("E2(4; 0; 5)", ptE2, "#38bdf8", null, 1);
+        create3DSteelBeam(ptE2End, ptE2, 0x38bdf8, 0.10);
 
-        // Arrow Vector v2
-        const arrowV2 = new THREE.ArrowHelper(vecV2.clone().normalize(), ptE2, 2.0, 0x38bdf8, 0.35, 0.2);
+        // Điểm gốc E2
+        const dotE2 = new THREE.Mesh(
+          new THREE.SphereGeometry(0.15, 20, 20),
+          new THREE.MeshStandardMaterial({ color: 0x38bdf8, emissive: 0x0284c7, emissiveIntensity: 0.5 })
+        );
+        dotE2.position.copy(ptE2);
+        scene.add(dotE2);
+        createLabel3D("E₂(4;0;5)", ptE2.clone().add(new THREE.Vector3(0.3, 0.35, 0)), "#38bdf8", null, 1);
+
+        // Vector chỉ phương v2 — mũi tên nổi bật từ E2
+        const arrowV2 = new THREE.ArrowHelper(
+          v2.clone().normalize(), ptE2, 1.6, 0x7dd3fc, 0.42, 0.24
+        );
         scene.add(arrowV2);
-        createLabel3D("VTCP $\\vec{v}_2(1; −1; 2)$", ptE2.clone().add(mVec(0.5, -0.5, 1)), "#38bdf8", null, 1);
+        createLabel3D("$\\vec{v}_2(1;\\!-\\!1;2)$", ptE2.clone().add(new THREE.Vector3(0.5, 0.9, -0.5)), "#7dd3fc", null, 1);
+
+        // Nhãn thanh ở giữa đoạn (pha nửa đường từ ptE2End về ptE2)
+        createLabel3D("Thanh 2", ptE2End.clone().lerp(ptE2, 0.45).add(new THREE.Vector3(-0.2, 0.35, 0.2)), "#38bdf8", null, 1);
+
+        /* -------- CUNG GÓC THETA TẠI E1 --------
+           Dịch chuyển v2 về E1 để vẽ cung minh hoạ góc giữa 2 đường thẳng
+           Dùng màu vàng cam nổi bật, tách hẳn với 2 màu thanh thép
+        */
+        // v2 dịch về E1 — mũi tên phụ màu cam
+        const arrowV2shift = new THREE.ArrowHelper(
+          v2.clone().normalize(), ptE1, 1.4, 0xfbbf24, 0.38, 0.22
+        );
+        scene.add(arrowV2shift);
+
+        // Cung góc giữa v1 và v2 tại E1
+        createAngleArc(
+          ptE1,
+          v1.clone().normalize(),
+          v2.clone().normalize(),
+          0.75,
+          0xf59e0b
+        );
+
+        // Nhãn góc θ  
+        const arcMid = ptE1.clone()
+          .add(v1.clone().normalize().multiplyScalar(0.55))
+          .add(v2.clone().normalize().multiplyScalar(0.55))
+          .multiplyScalar(0.5)
+          .add(ptE1.clone().multiplyScalar(0.5));
+        createLabel3D(
+          "$\\theta \\approx 79.5^\\circ$",
+          ptE1.clone().add(new THREE.Vector3(0.9, 1.0, 0.3)),
+          "#f59e0b", null, 1
+        );
       }
 
       if (stepNum >= 2 && !renderedStep1Ex2) {
         renderedStep1Ex2 = true;
-        // Steel 3: G1(0,4,3), v3=(2,1,0) -> G1'(4,6,3)
+
+        /* -------- THANH 3 --------  G1(0,4,3), v3=(2,1,0) */
         const ptG1 = mVec(0, 4, 3);
-        const ptG1End = mVec(4, 6, 3);
-        const vecV3 = mVec(2, 1, 0);
-        createAnimatedLine(ptG1, ptG1End, 0xf59e0b, 3.5, 900);
+        const v3 = new THREE.Vector3(2, 0, 1);  // mVec(2,1,0)
+        const ptG1End = ptG1.clone().add(v3.clone().normalize().multiplyScalar(2.2));
 
-        const mG1 = new THREE.Mesh(new THREE.SphereGeometry(0.16, 24, 24), new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706 }));
-        mG1.position.copy(ptG1); scene.add(mG1); animateMeshScale(mG1, 400);
-        createLabel3D("G1(0; 4; 3)", ptG1, "#f59e0b", null, 2);
+        create3DSteelBeam(ptG1, ptG1End, 0xf59e0b, 0.10);
 
-        // Arrow Vector v3
-        const arrowV3 = new THREE.ArrowHelper(vecV3.clone().normalize(), ptG1, 1.8, 0xf59e0b, 0.35, 0.2);
+        const dotG1 = new THREE.Mesh(
+          new THREE.SphereGeometry(0.15, 20, 20),
+          new THREE.MeshStandardMaterial({ color: 0xf59e0b, emissive: 0xd97706, emissiveIntensity: 0.5 })
+        );
+        dotG1.position.copy(ptG1);
+        scene.add(dotG1);
+        createLabel3D("G₁(0;4;3)", ptG1.clone().add(new THREE.Vector3(-0.3, 0.35, 0)), "#f59e0b", null, 2);
+
+        const arrowV3 = new THREE.ArrowHelper(
+          v3.clone().normalize(), ptG1, 1.9, 0xfcd34d, 0.42, 0.24
+        );
         scene.add(arrowV3);
-        createLabel3D("VTCP $\\vec{v}_3(2; 1; 0)$", ptG1.clone().add(mVec(1, 0.5, 0)), "#f59e0b", null, 2);
+        createLabel3D("$\\vec{v}_3(2;1;0)$", ptG1.clone().add(new THREE.Vector3(0.6, 0.5, 0.8)), "#fcd34d", null, 2);
+        createLabel3D("Thanh 3", ptG1.clone().lerp(ptG1End, 0.55).add(new THREE.Vector3(0, 0.4, 0)), "#f59e0b", null, 2);
 
-        // Steel 4: G2(4,4,5), v4=(-1,-1,2) -> G2'(2,2,9)
+        /* -------- THANH 4 --------  G2(4,4,5), v4=(-1,-1,2)
+           Tương tự Thanh 2: G2 ở đỉnh mái phải sau — đi theo +v4 cũng bay lên
+           → Hiện đoạn theo -v4 để thanh đi vào trong không gian mái
+        */
         const ptG2 = mVec(4, 4, 5);
-        const ptG2End = mVec(2, 2, 9);
-        const vecV4 = mVec(-1, -1, 2);
-        createAnimatedLine(ptG2, ptG2End, 0xef4444, 3.5, 900);
+        const v4 = new THREE.Vector3(-1, 2, -1);  // mVec(-1,-1,2)=Vector3(-1,2,-1)
+        const ptG2End = ptG2.clone().add(v4.clone().normalize().multiplyScalar(-2.2));
 
-        const mG2 = new THREE.Mesh(new THREE.SphereGeometry(0.16, 24, 24), new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xd97706 }));
-        mG2.position.copy(ptG2); scene.add(mG2); animateMeshScale(mG2, 400);
-        createLabel3D("G2(4; 4; 5)", ptG2, "#ef4444", null, 2);
+        create3DSteelBeam(ptG2End, ptG2, 0xef4444, 0.10);
 
-        // Arrow Vector v4
-        const arrowV4 = new THREE.ArrowHelper(vecV4.clone().normalize(), ptG2, 2.0, 0xef4444, 0.35, 0.2);
+        const dotG2 = new THREE.Mesh(
+          new THREE.SphereGeometry(0.15, 20, 20),
+          new THREE.MeshStandardMaterial({ color: 0xef4444, emissive: 0xb91c1c, emissiveIntensity: 0.5 })
+        );
+        dotG2.position.copy(ptG2);
+        scene.add(dotG2);
+        createLabel3D("G₂(4;4;5)", ptG2.clone().add(new THREE.Vector3(0.3, 0.35, 0)), "#ef4444", null, 2);
+
+        const arrowV4 = new THREE.ArrowHelper(
+          v4.clone().normalize(), ptG2, 1.6, 0xf87171, 0.42, 0.24
+        );
         scene.add(arrowV4);
-        createLabel3D("VTCP $\\vec{v}_4(−1; −1; 2)$", ptG2.clone().add(mVec(-0.5, -0.5, 1)), "#ef4444", null, 2);
+        createLabel3D("$\\vec{v}_4(\\!-\\!1;\\!-\\!1;2)$", ptG2.clone().add(new THREE.Vector3(-0.5, 0.9, 0.4)), "#f87171", null, 2);
+        createLabel3D("Thanh 4", ptG2End.clone().lerp(ptG2, 0.45).add(new THREE.Vector3(0.2, 0.35, 0.2)), "#ef4444", null, 2);
+
+        // Cung góc tại G1
+        const arrowV4shift = new THREE.ArrowHelper(
+          v4.clone().normalize(), ptG1, 1.4, 0xfbbf24, 0.38, 0.22
+        );
+        scene.add(arrowV4shift);
+        createAngleArc(ptG1, v3.clone().normalize(), v4.clone().normalize(), 0.75, 0xf59e0b);
+        createLabel3D(
+          "$\\theta \\approx 56.8^\\circ$",
+          ptG1.clone().add(new THREE.Vector3(0.9, 1.0, 0.3)),
+          "#f59e0b", null, 2
+        );
       }
 
       if (stepNum >= 3 && !renderedStep2) {
         renderedStep2 = true;
-        // Glass Roof Panel (Q) lying 100% FLAT on Left Roof Slope:
-        // Corners: P1(0,0,3), P2(2,0,5), P3(2,4,5), P4(0,4,3)
+        // Glass Roof Panel (Q) — Mái kính
         const p1 = mVec(0, 0, 3);
         const p2 = mVec(2, 0, 5);
         const p3 = mVec(2, 4, 5);
@@ -964,26 +1125,31 @@
         const planeQCenter = mVec(1, 2, 4);
         createLabel3D("Mái kính (Q)", planeQCenter.clone().add(mVec(0, 0, 0.3)), "#8b5cf6", null, 3);
 
-        // Inclined Strut: F(2,2,4), w=(1,-2,3) -> F'(3.5,-1,8.5)
+        // Thanh chống F(2,2,4), VTCP w=(1,-2,3)
         const ptF = mVec(2, 2, 4);
-        const ptFEnd = mVec(3.5, -1, 8.5);
-        const vecW = mVec(1, -2, 3);
-        createAnimatedLine(ptF, ptFEnd, 0xec4899, 3.5, 900);
+        const vecW3 = new THREE.Vector3(1, 3, -2); // mVec(1,-2,3)=Vector3(1,3,-2)
+        const ptFEnd = ptF.clone().add(vecW3.clone().normalize().multiplyScalar(2.0));
+        create3DSteelBeam(ptF, ptFEnd, 0xec4899, 0.10);
 
-        const mF = new THREE.Mesh(new THREE.SphereGeometry(0.16, 24, 24), new THREE.MeshStandardMaterial({ color: 0xec4899, emissive: 0xbe185d }));
-        mF.position.copy(ptF); scene.add(mF); animateMeshScale(mF, 400);
-        createLabel3D("Thanh chống F(2; 2; 4)", ptF, "#ec4899", null, 3);
+        const dotF = new THREE.Mesh(
+          new THREE.SphereGeometry(0.15, 20, 20),
+          new THREE.MeshStandardMaterial({ color: 0xec4899, emissive: 0xbe185d, emissiveIntensity: 0.5 })
+        );
+        dotF.position.copy(ptF);
+        scene.add(dotF);
+        createLabel3D("F(2;2;4)", ptF.clone().add(new THREE.Vector3(0.3, 0.3, 0)), "#ec4899", null, 3);
 
-        // Arrow Vector w
-        const arrowW = new THREE.ArrowHelper(vecW.clone().normalize(), ptF, 2.0, 0xec4899, 0.35, 0.2);
+        const arrowW = new THREE.ArrowHelper(
+          vecW3.clone().normalize(), ptF, 1.8, 0xec4899, 0.42, 0.24
+        );
         scene.add(arrowW);
-        createLabel3D("VTCP $\\vec{w}(1; −2; 3)$", ptF.clone().add(mVec(0.5, -1, 1.5)), "#ec4899", null, 3);
+        createLabel3D("$\\vec{w}(1;\\!-\\!2;3)$", ptF.clone().add(new THREE.Vector3(0.5, 0.9, -0.4)), "#ec4899", null, 3);
 
-        // Normal Vector Arrow n
-        const planeQNormal = mVec(2, 1, 2).normalize();
-        const arrowN = new THREE.ArrowHelper(planeQNormal, planeQCenter, 1.8, 0xa855f7, 0.35, 0.2);
+        // Pháp vector n của mặt phẳng (Q)
+        const nVec = new THREE.Vector3(2, 2, 1).normalize(); // mVec(2,1,2).normalize()
+        const arrowN = new THREE.ArrowHelper(nVec, planeQCenter, 1.6, 0xa855f7, 0.4, 0.22);
         scene.add(arrowN);
-        createLabel3D("VTPT $\\vec{n}(2; 1; 2)$", planeQCenter.clone().addScaledVector(planeQNormal, 1.2), "#a855f7", null, 3);
+        createLabel3D("$\\vec{n}(2;1;2)$", planeQCenter.clone().addScaledVector(nVec, 1.3), "#a855f7", null, 3);
       }
 
       orbitControls.update();
@@ -1031,31 +1197,43 @@
 
       } else if (stepNum === 2) {
         container.innerHTML = `
-          <div class="step-title"><i class="ti ti-alert-triangle"></i> Bước 1 (Bài 2) — Ép bẫy Tích vô hướng âm</div>
+          <div class="step-title"><i class="ti ti-alert-triangle"></i> Bước 1 (Bài 2) — Bẫy Tích vô hướng âm</div>
           <div class="info-box">
-            <b>Bối cảnh:</b> Thêm Thanh 3 qua $G_1(0; 4; 3)$ đến $(4; 6; 3)$ & Thanh 4 qua $G_2(4; 4; 5)$ đến $(2; 2; 9)$.<br>
-            <b>Chú ý:</b> Tính tích vô hướng $\\vec{v}_3 \\cdot \\vec{v}_4$ trước khi tính $\\cos(\\theta)$.
+            <b>Bối cảnh:</b> Thêm Thanh 3 qua $G_1(0; 4; 3)$ đến $(4; 6; 3)$ &amp; Thanh 4 qua $G_2(4; 4; 5)$ đến $(2; 2; 9)$.<br>
+            <b>VTCP:</b> $\\vec{v}_3 = (2;1;0)$, $\\vec{v}_4 = (-1;-1;2)$.
           </div>
 
-          <div class="input-group">
-            <div class="input-row">
-              <span class="input-label">1. Tích vô hướng $\\vec{v}_3 \\cdot \\vec{v}_4$:</span>
-              <input type="text" class="form-input" id="in-dot2" placeholder="Nhập kết quả...">
+          <!-- GIAI ĐOẠN 1: Xác nhận tích vô hướng -->
+          <div id="ex2-phase1">
+            <div class="input-group">
+              <div class="input-row">
+                <span class="input-label">1. Tính tích vô hướng $\\vec{v}_3 \\cdot \\vec{v}_4$:</span>
+                <input type="text" class="form-input" id="in-dot2" placeholder="Nhập kết quả...">
+              </div>
             </div>
-            <div class="input-row">
-              <span class="input-label">2. Tính $\\cos(\\theta)$:</span>
-              <input type="text" class="form-input" id="in-cos2" placeholder="Nhập giá trị cos...">
-            </div>
-            <div class="input-row">
-              <span class="input-label">3. Góc $\\theta$ (độ):</span>
-              <input type="text" class="form-input" id="in-ang2" placeholder="Nhập số đo độ...">
-            </div>
+            <button class="btn btn-primary" onclick="submitDotEx2()">
+              <i class="ti ti-check"></i> Xác nhận tích vô hướng
+            </button>
+            <div id="dot2-feedback" class="info-box athena-box" style="display:none; margin-top:12px;"></div>
           </div>
 
-          <button class="btn btn-primary" onclick="submitEx2()">
-            <i class="ti ti-check"></i> Kiểm tra bài 2
-          </button>
-          <div id="ex2-feedback" class="info-box athena-box" style="display:none; margin-top:12px;"></div>
+          <!-- GIAI ĐOẠN 2: Tính cos và góc (ẩn cho đến khi xác nhận đúng tích vô hướng) -->
+          <div id="ex2-phase2" style="display:none; margin-top:14px;">
+            <div class="input-group">
+              <div class="input-row">
+                <span class="input-label">2. Tính $\\cos(\\theta)$:</span>
+                <input type="text" class="form-input" id="in-cos2" placeholder="Nhập giá trị cos...">
+              </div>
+              <div class="input-row">
+                <span class="input-label">3. Góc $\\theta$ (độ):</span>
+                <input type="text" class="form-input" id="in-ang2" placeholder="Nhập số đo độ...">
+              </div>
+            </div>
+            <button class="btn btn-primary" onclick="submitEx2()">
+              <i class="ti ti-check"></i> Kiểm tra kết quả
+            </button>
+            <div id="ex2-feedback" class="info-box athena-box" style="display:none; margin-top:12px;"></div>
+          </div>
         `;
 
       } else if (stepNum === 3) {
@@ -1103,6 +1281,7 @@
 
     /* STEP SUBMISSIONS & PEDAGOGICAL FEEDBACK WITH ATTEMPT COUNTER */
     let ex1FailCount = 0;
+    let ex2DotFailCount = 0;
     let ex2FailCount = 0;
     let ex3FailCount = 0;
 
@@ -1166,8 +1345,42 @@
       renderKaTeXInElement(fb);
     }
 
+    /* GIAI ĐOẠN 1: Xác nhận tích vô hướng v3·v4 */
+    function submitDotEx2() {
+      const raw = document.getElementById('in-dot2').value.trim();
+      const dotVal = parseFloat(raw.replace(',', '.'));
+      const fb = document.getElementById('dot2-feedback');
+      fb.style.display = 'block';
+
+      if (dotVal === -3) {
+        // Đúng — xác nhận + nhắc nhở quan sát dấu, hiện giai đoạn 2
+        ex2DotFailCount = 0;
+        fb.innerHTML = `
+          ✅ <b>Đúng!</b> Tích vô hướng $\\vec{v}_3 \\cdot \\vec{v}_4 = 2 \\cdot(-1) + 1 \\cdot(-1) + 0 \\cdot 2 = -3$.<br>
+          ⚠️ <b>Quan trọng:</b> Kết quả ra số <b>ÂM (−3)</b> — bước tiếp theo tính $\\cos(\\theta)$,
+          nhớ quan sát dấu trước khi kết luận!
+        `;
+        renderKaTeXInElement(fb);
+        // Hiện giai đoạn 2
+        document.getElementById('ex2-phase2').style.display = 'block';
+        // Tắt nút giai đoạn 1 để tránh nhập lại
+        document.getElementById('in-dot2').disabled = true;
+      } else {
+        ex2DotFailCount++;
+        if (ex2DotFailCount >= 2) {
+          fb.innerHTML = `
+            💡 <b>Đáp án:</b> $\\vec{v}_3 \\cdot \\vec{v}_4 = 2 \\cdot(-1) + 1 \\cdot(-1) + 0 \\cdot 2 = -2 - 1 + 0 = -3$.
+            Nhập <code>-3</code> vào ô trên rồi bấm Xác nhận lại nhé!
+          `;
+        } else {
+          fb.innerHTML = `❌ <b>Chưa đúng (Lần ${ex2DotFailCount}/2):</b> Tính lại $\\vec{v}_3 \\cdot \\vec{v}_4 = v_{3x} \\cdot v_{4x} + v_{3y} \\cdot v_{4y} + v_{3z} \\cdot v_{4z}$. Chú ý dấu từng thành phần.`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* GIAI ĐOẠN 2: Kiểm tra cos và góc */
     function submitEx2() {
-      const dotVal = parseFloat(document.getElementById('in-dot2').value.trim());
       const cosRawStr = document.getElementById('in-cos2').value.trim();
       const cosVal = parseFloat(cosRawStr.replace(',', '.'));
       const angVal = parseFloat(document.getElementById('in-ang2').value.replace(',', '.'));
@@ -1175,18 +1388,17 @@
       const fb = document.getElementById('ex2-feedback');
       fb.style.display = 'block';
 
-      // Pedagogy trap check: student enters negative cos
+      // Pedagogy trap: cos âm (quên trị tuyệt đối)
       if (cosVal < 0 || cosRawStr.startsWith('-')) {
-        fb.innerHTML = `⚠️ <b>Cảnh báo bẫy sai lầm:</b> $\\cos$ âm nghĩa là góc tù ($>90^\\circ$) — nhưng góc giữa 2 đường thẳng trong không gian <b>luôn $\\le 90^\\circ$</b>. Kiểm tra lại: bạn đã lấy trị tuyệt đối ở tử số chưa?`;
+        fb.innerHTML = `⚠️ <b>Bẫy sai lầm!</b> $\\cos$ âm nghĩa là góc tù ($>90^\\circ$) — nhưng góc giữa 2 đường thẳng trong không gian <b>luôn $\\le 90^\\circ$</b>.<br>Kiểm tra lại: bạn đã lấy trị tuyệt đối $|{-3}|$ ở tử số chưa?`;
         renderKaTeXInElement(fb);
         return;
       }
 
-      const isDotOk = dotVal === -3;
       const isCosOk = Math.abs(cosVal - 0.548) < 0.02 || cosRawStr.includes('sqrt');
       const isAngOk = Math.abs(angVal - 56.8) < 0.3;
 
-      if (isDotOk && isCosOk && isAngOk) {
+      if (isCosOk && isAngOk) {
         ex2FailCount = 0;
         completedSteps.add(2);
         document.getElementById('tab-step-2').classList.add('completed');
@@ -1194,34 +1406,33 @@
 
         fb.innerHTML = `
           🎉 <b>Xuất sắc!</b><br>
-          • Tích vô hướng âm: $\\vec{v}_3 \\cdot \\vec{v}_4 = -3$.<br>
-          • Nhờ trị tuyệt đối $\\implies \\cos(\\theta) = \\frac{|-3|}{\\sqrt{30}} = \\frac{3}{\\sqrt{30}} \\approx 0.548 \\implies \\theta \\approx 56.8^\\circ$.
-          
-          <div style="margin-top:10px; padding:8px; background:#fff; border-radius:6px; border:1px solid var(--paper-line); font-size:12px;">
-            💡 <b>Ghi nhớ quan trọng:</b> Tích vô hướng có thể ÂM, nhưng góc giữa 2 đường thẳng <b>LUÔN nằm trong $[0^\\circ; 90^\\circ]$</b>. Đó là lý do công thức bắt buộc phải có dấu trị tuyệt đối!
-          </div>
-
+          • $\\cos(\\theta) = \\frac{|-3|}{\\sqrt{30}} = \\frac{3}{\\sqrt{30}} \\approx 0.548$<br>
+          • Góc $\\theta \\approx 56.8^\\circ$.
           <div style="margin-top:10px;">
             <button class="btn btn-primary" onclick="manualNextStep(3)">Sang Bước 2 (Mái kính) ngay <i class="ti ti-arrow-right"></i></button>
           </div>
         `;
-        autoAdvanceTimer = setTimeout(() => { switchStep(3); }, 4500);
+
+        // GHI CHÚ CỐ ĐỊNH sau khi hoàn thành — hiện luôn, không phụ thuộc đúng/sai
+        const noteBox = document.createElement('div');
+        noteBox.className = 'info-box';
+        noteBox.style.cssText = 'margin-top:12px; border-left:4px solid #f59e0b; background:#fffbeb;';
+        noteBox.innerHTML = `💡 <b>Ghi nhớ:</b> Tích vô hướng $\\vec{v}_3 \\cdot \\vec{v}_4$ ra số <b>ÂM (−3)</b> — nếu không lấy trị tuyệt đối ở tử số, $\\cos$ sẽ âm, dẫn đến góc tù (>90°). Nhưng góc giữa 2 đường thẳng trong không gian <b>LUÔN nằm trong [0°;90°]</b> — đây là lý do công thức bắt buộc phải có dấu trị tuyệt đối, không phải quy ước tuỳ ý.`;
+        fb.parentNode.appendChild(noteBox);
+        renderKaTeXInElement(noteBox);
+
+        autoAdvanceTimer = setTimeout(() => { switchStep(3); }, 5000);
       } else {
         ex2FailCount++;
         if (ex2FailCount >= 2) {
           fb.innerHTML = `
-            💡 <b>Hướng dẫn đáp án chi tiết (sau ${ex2FailCount} lần chưa đúng):</b><br>
-            • Tích vô hướng $\\vec{v}_3 \\cdot \\vec{v}_4$: nhập <code>-3</code><br>
-            • Lấy trị tuyệt đối tử số $|-3| = 3 \\implies \\cos(\\theta) = \\frac{3}{\\sqrt{30}} \\approx 0.548$ (nhập <code>0.548</code> hoặc <code>3/sqrt(30)</code>)<br>
+            💡 <b>Hướng dẫn đáp án (sau ${ex2FailCount} lần chưa đúng):</b><br>
+            • Lấy trị tuyệt đối tử số $|-3| = 3 \\implies \\cos(\\theta) = \\frac{3}{\\sqrt{30}} \\approx 0.548$ (nhập <code>0.548</code>)<br>
             • Góc $\\theta \\approx 56.8^\\circ$ (nhập <code>56.8</code>)<br>
-            👉 <i>Bạn hãy đọc hướng dẫn trên và nhập lại các số vào các ô để hoàn thành Bài 2!</i>
+            👉 <i>Đọc hướng dẫn trên và nhập lại vào các ô!</i>
           `;
         } else {
-          if (!isDotOk) {
-            fb.innerHTML = `❌ <b>Tích vô hướng chưa đúng (Lần ${ex2FailCount}/2):</b> Tính lại $\\vec{v}_3 \\cdot \\vec{v}_4 = 2(-1) + 1(-1) + 0(2)$. Lưu ý dấu âm/dương của từng tích thành phần.`;
-          } else {
-            fb.innerHTML = `❌ <b>Tích vô hướng $-3$ đã đúng! (Lần ${ex2FailCount}/2):</b> Hãy kiểm tra lại tử số $|-3| = 3$ và mẫu số $\\sqrt{5} \\cdot \\sqrt{6} = \\sqrt{30}$ để tính $\\cos(\\theta)$ và làm tròn góc đến 1 chữ số thập phân.`;
-          }
+          fb.innerHTML = `❌ <b>Chưa đúng (Lần ${ex2FailCount}/2):</b> Kiểm tra lại tử số $|-3| = 3$, mẫu $\\sqrt{5} \\cdot \\sqrt{6} = \\sqrt{30}$ và góc làm tròn 1 chữ số thập phân.`;
         }
       }
       renderKaTeXInElement(fb);
