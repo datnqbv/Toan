@@ -50,7 +50,7 @@
 
       --purple: #8b5cf6;
       --purple-bg: #f5f3ff;
-      --canvas-bg: #0a1628;    /* Dark theme for Canvas */
+      --canvas-bg: #ffffff;    /* Light Cream White theme for Canvas */
     }
 
     * {
@@ -202,31 +202,34 @@
       left: 12px;
       display: flex;
       gap: 6px;
-      background: rgba(15, 23, 42, 0.85);
+      background: rgba(255, 255, 255, 0.9);
       backdrop-filter: blur(8px);
       padding: 4px 8px;
       border-radius: 8px;
-      border: 1px solid rgba(255, 255, 255, 0.15);
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
       z-index: 10;
     }
 
     .tool-btn {
-      background: transparent;
-      color: #ffffff;
-      border: none;
+      background: #ffffff;
+      color: var(--navy);
+      border: 1px solid var(--border);
       padding: 4px 8px;
       border-radius: 4px;
       font-size: 11.5px;
-      font-weight: 500;
+      font-weight: 600;
       cursor: pointer;
       display: inline-flex;
       align-items: center;
       gap: 4px;
-      transition: background 0.2s ease;
+      transition: all 0.2s ease;
     }
 
     .tool-btn:hover {
-      background: rgba(255, 255, 255, 0.2);
+      background: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
     }
 
     /* RIGHT SIDEBAR INTERACTIVE PANEL */
@@ -585,17 +588,128 @@
       cursor: pointer;
     }
 
-    /* RESPONSIVE LAYOUT */
-    @media (max-width: 768px) {
+    /* RESPONSIVE MOBILE & TABLET LAYOUT (max-width: 992px) */
+    @media (max-width: 992px) {
+      body {
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+
+      header {
+        padding: 6px 10px;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .header-title-group {
+        gap: 4px;
+      }
+
+      .header-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        white-space: nowrap;
+      }
+
+      .btn-header {
+        padding: 4px 8px;
+        font-size: 11px;
+        white-space: nowrap;
+      }
+
+      .sub-nav {
+        padding: 0 8px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .sub-nav-btn {
+        padding: 6px 10px;
+        font-size: 11.5px;
+        white-space: nowrap;
+      }
+
       .app-body {
-        flex-direction: column;
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
       }
+
       .viewport-container {
-        min-height: 320px;
-        height: 340px;
+        width: 100% !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 50 !important;
+        height: calc((100vh - 48px) * 0.45) !important;
+        height: calc((100dvh - 48px) * 0.45) !important;
+        min-height: 280px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
       }
+
       .sidebar {
-        max-height: none;
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .sidebar-content {
+        padding: 8px;
+        gap: 8px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .card {
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+      }
+
+      .info-box {
+        padding: 6px 10px;
+        font-size: 12px;
+        overflow-x: auto;
+      }
+
+      .text-input {
+        padding: 6px 8px;
+        font-size: 12.5px;
+        box-sizing: border-box;
+      }
+
+      .btn {
+        padding: 7px 10px;
+        font-size: 12.5px;
+        min-height: 36px;
+      }
+
+      .sign-table {
+        margin: 4px 0;
+        font-size: 11px;
+      }
+
+      .sign-table th, .sign-table td {
+        padding: 4px 2px;
+        font-size: 10.5px;
+      }
+
+      .sign-cell-btn {
+        width: 30px;
+        height: 26px;
+        font-size: 12px;
+      }
+
+      .katex-display {
+        overflow-x: auto;
+        overflow-y: hidden;
+        padding: 2px 0;
       }
     }
   </style>
@@ -633,7 +747,7 @@
       <div class="canvas-wrapper">
         <canvas id="main-canvas"></canvas>
         <div class="canvas-toolbar">
-          <button class="tool-btn" onclick="autoFitViewport()"><i class="ti ti-focus-2"></i> Fit Khung nhìn</button>
+          <button class="tool-btn" onclick="resetViewport()"><i class="ti ti-focus-2"></i> Fit Khung nhìn</button>
           <button class="tool-btn" onclick="zoomViewport(0.85)"><i class="ti ti-zoom-in"></i> Phóng to</button>
           <button class="tool-btn" onclick="zoomViewport(1.18)"><i class="ti ti-zoom-out"></i> Thu nhỏ</button>
         </div>
@@ -788,12 +902,20 @@
     };
 
     function resizeCanvas() {
+      if (!canvas || !canvas.parentElement) return;
       const rect = canvas.parentElement.getBoundingClientRect();
-      canvas.width = rect.width * window.devicePixelRatio;
-      canvas.height = rect.height * window.devicePixelRatio;
-      autoFitViewport();
+      if (rect.width > 0 && rect.height > 0) {
+        canvas.width = rect.width * (window.devicePixelRatio || 1);
+        canvas.height = rect.height * (window.devicePixelRatio || 1);
+        autoFitViewport();
+      }
     }
     window.addEventListener('resize', resizeCanvas);
+
+    function resetViewport() {
+      viewport.zoomFactor = 1.0;
+      autoFitViewport();
+    }
 
     function toPxX(x) {
       return (x - viewport.xMin) / (viewport.xMax - viewport.xMin) * canvas.width;
@@ -867,15 +989,15 @@
 
       ctx.clearRect(0, 0, canvas.width, canvas.height);
 
-      // Background
-      ctx.fillStyle = '#0a1628';
+      // Background - Light Cream White
+      ctx.fillStyle = '#ffffff';
       ctx.fillRect(0, 0, canvas.width, canvas.height);
 
       const px0 = toPxX(0);
       const py0 = toPxY(0);
 
       // Grid Lines
-      ctx.strokeStyle = '#1e293b';
+      ctx.strokeStyle = '#e2e8f0';
       ctx.lineWidth = 1;
       for (let x = Math.ceil(viewport.xMin); x <= Math.floor(viewport.xMax); x++) {
         const px = toPxX(x);
@@ -887,13 +1009,13 @@
       }
 
       // Axis Ox & Oy
-      ctx.strokeStyle = '#64748b';
+      ctx.strokeStyle = '#334155';
       ctx.lineWidth = 2;
       ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(canvas.width, py0); ctx.stroke();
       ctx.beginPath(); ctx.moveTo(px0, canvas.height); ctx.lineTo(px0, 0); ctx.stroke();
 
       // Labels & Ticks
-      ctx.fillStyle = '#94a3b8';
+      ctx.fillStyle = '#64748b';
       ctx.font = '11px "Plus Jakarta Sans", sans-serif';
       for (let x = Math.ceil(viewport.xMin); x <= Math.floor(viewport.xMax); x++) {
         if (x === 0) continue;
@@ -907,7 +1029,7 @@
         ctx.beginPath(); ctx.moveTo(px0 - 3, py); ctx.lineTo(px0 + 3, py); ctx.stroke();
         ctx.fillText(y.toString(), px0 - 20, py + 4);
       }
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#0f172a';
       ctx.font = 'bold 12px "Plus Jakarta Sans", sans-serif';
       ctx.fillText('x', canvas.width - 14, py0 + 16);
       ctx.fillText('y', px0 + 10, 14);
@@ -998,7 +1120,7 @@
       ctx.strokeRect(pxTruck - 15, pyTruckTop, 30, pyRoad - pyTruckTop);
 
       drawPoint(pxTruck, pyTruckTop, '#ef4444', 5);
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#0f172a';
       ctx.fillText(`Xe (x=${tx.toFixed(1)}m)`, pxTruck - 25, pyTruckTop - 10);
     }
 
@@ -1033,7 +1155,7 @@
       const sx = state.part3B.sliderX_3b;
       const sy = R(sx);
       drawPoint(toPxX(sx), toPxY(sy), '#38bdf8', 6);
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#0f172a';
       ctx.fillText(`x=${sx.toFixed(1)} (R=${sy.toFixed(2)} triệu)`, toPxX(sx) + 8, toPxY(sy) - 8);
     }
 
@@ -1069,7 +1191,7 @@
       const sy = O(st);
       const pointColor = sy < 4 ? '#ef4444' : '#10b981';
       drawPoint(toPxX(st), toPxY(sy), pointColor, 6);
-      ctx.fillStyle = '#ffffff';
+      ctx.fillStyle = '#0f172a';
       ctx.fillText(`t=${st.toFixed(1)}h (O2=${sy.toFixed(2)}mg/L)`, toPxX(st) + 8, toPxY(sy) - 8);
     }
 
@@ -1092,7 +1214,8 @@
       document.getElementById('subnav-3b').className = `sub-nav-btn ${part==='3B'?'active':''}`;
 
       renderSidebar();
-      autoFitViewport();
+      resizeCanvas();
+      resetViewport();
     }
 
     function renderSidebar() {
@@ -1341,7 +1464,7 @@
       state.part3A.step3Completed = false;
 
       renderSidebar();
-      autoFitViewport();
+      resetViewport();
     }
 
     /* =========================================================================
@@ -1350,7 +1473,7 @@
     function switchTab3B(tab) {
       state.part3B.currentTab = tab;
       renderSidebar();
-      autoFitViewport();
+      resetViewport();
     }
 
     function renderPart3BSidebar(container) {

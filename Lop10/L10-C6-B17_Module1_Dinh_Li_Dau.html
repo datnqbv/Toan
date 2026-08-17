@@ -523,7 +523,7 @@
 
       <!-- CANVAS FLOATING TOOLBAR FOR VIEWPORT FRAMING & AUTO-FITTING -->
       <div class="canvas-toolbar">
-        <button class="ctrl-btn" onclick="autoFitViewport()" title="Auto-Fit Viewport">
+        <button class="ctrl-btn" onclick="resetViewport()" title="Auto-Fit Viewport">
           <i class="ti ti-focus-2"></i> Fit Đồ thị
         </button>
         <button class="ctrl-btn" onclick="zoomViewport(0.85)" title="Phóng to">
@@ -740,6 +740,11 @@
     function zoomViewport(factor) {
       viewport.zoomFactor *= factor;
       viewport.zoomFactor = Math.max(0.5, Math.min(2.5, viewport.zoomFactor));
+      autoFitViewport();
+    }
+
+    function resetViewport() {
+      viewport.zoomFactor = 1.0;
       autoFitViewport();
     }
 
