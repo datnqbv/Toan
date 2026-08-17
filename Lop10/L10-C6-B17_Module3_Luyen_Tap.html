@@ -1208,10 +1208,45 @@
     /* =========================================================================
        3. INTERACTIVE PART 3A LOGIC & RENDERING
        ========================================================================= */
+    function showToast(msg) {
+      let toast = document.getElementById('toast-msg');
+      if (!toast) {
+        toast = document.createElement('div');
+        toast.id = 'toast-msg';
+        toast.style.cssText = 'position:fixed; top:65px; right:20px; z-index:9999; background:rgba(20,67,47,0.95); color:#ffffff; padding:10px 18px; border-radius:8px; font-size:13px; font-weight:600; box-shadow:0 4px 14px rgba(0,0,0,0.18); transition:all 0.3s ease; backdrop-filter:blur(6px); border:1px solid rgba(255,255,255,0.2);';
+        document.body.appendChild(toast);
+      }
+      toast.innerHTML = msg;
+      toast.style.opacity = '1';
+      toast.style.transform = 'translateY(0)';
+      clearTimeout(window.toastTimer);
+      window.toastTimer = setTimeout(() => {
+        toast.style.opacity = '0';
+        toast.style.transform = 'translateY(-10px)';
+      }, 3200);
+    }
+
+    function updateSubNavUI() {
+      const btn3a = document.getElementById('subnav-3a');
+      const btn3b = document.getElementById('subnav-3b');
+      const is3BUnlocked = state.part3A.step3Completed;
+
+      if (btn3a && btn3b) {
+        btn3a.className = `sub-nav-btn ${state.mainPart==='3A'?'active':''}`;
+        btn3b.className = `sub-nav-btn ${state.mainPart==='3B'?'active':''} ${!is3BUnlocked?'disabled':''}`;
+        btn3b.style.opacity = is3BUnlocked ? '1' : '0.65';
+        btn3b.innerHTML = `<i class="ti ti-${is3BUnlocked?'puzzle':'lock'}"></i> ${is3BUnlocked?'Phần 3B: Tham số, Chữa bệnh & 3 Thực tế':'🔒 Phần 3B (Khóa - Hãy xong Phần 3A)'}`;
+      }
+    }
+
     function switchMainPart(part) {
+      clearTimeout(window.nextStepTimer);
+      if (part === '3B' && !state.part3A.step3Completed) {
+        showToast('🔒 Vui lòng hoàn thành Bước 3 của Phần 3A trước khi mở khóa Phần 3B!');
+        return;
+      }
       state.mainPart = part;
-      document.getElementById('subnav-3a').className = `sub-nav-btn ${part==='3A'?'active':''}`;
-      document.getElementById('subnav-3b').className = `sub-nav-btn ${part==='3B'?'active':''}`;
+      updateSubNavUI();
 
       renderSidebar();
       resizeCanvas();
@@ -1219,6 +1254,7 @@
     }
 
     function renderSidebar() {
+      updateSubNavUI();
       const panel = document.getElementById('sidebar-panel');
       if (state.mainPart === '3A') {
         renderPart3ASidebar(panel);
@@ -1252,7 +1288,10 @@
           </div>
           <div class="control-group" style="margin-bottom:10px;">
             <label class="control-label">Tính giá trị $\\Delta = b^2 - 4ac$:</label>
-            <input type="text" class="text-input" id="inp-3a-delta" placeholder="Nhập số giá trị Delta..." value="${state.part3A.deltaInput}" ${state.part3A.step1Completed?'disabled':''}>
+            <input type="text" class="text-input" id="inp-3a-delta" placeholder="Ví dụ: 1 hoặc 9" value="${state.part3A.deltaInput}" ${state.part3A.step1Completed?'disabled':''}>
+            <div style="font-size:11.5px; color:var(--sub); margin-top:4px; line-height:1.4;">
+              💡 <b>Định dạng nhập:</b> Nhập con số giá trị Delta (ví dụ: <code>1</code> hoặc <code>9</code>)
+            </div>
           </div>
           <div class="control-group" style="margin-bottom:10px;">
             <label class="control-label">Số nghiệm của tam thức:</label>
@@ -1264,8 +1303,11 @@
             </select>
           </div>
           <div class="control-group" style="margin-bottom:12px;">
-            <label class="control-label">Nhập giá trị nghiệm (nếu có, ví dụ: 2, 3):</label>
-            <input type="text" class="text-input" id="inp-3a-roots" placeholder="Ví dụ: 2, 3" value="${state.part3A.rootsInput}" ${state.part3A.step1Completed?'disabled':''}>
+            <label class="control-label">Nhập giá trị nghiệm (nếu có):</label>
+            <input type="text" class="text-input" id="inp-3a-roots" placeholder="Ví dụ: -1, 4" value="${state.part3A.rootsInput}" ${state.part3A.step1Completed?'disabled':''}>
+            <div style="font-size:11.5px; color:var(--sub); margin-top:4px; line-height:1.4;">
+              💡 <b>Định dạng nhập:</b> Nhập các nghiệm phân cách bởi dấu phẩy/chấm phẩy (ví dụ: <code>-1, 4</code> hoặc <code>(-1; 4)</code>)
+            </div>
           </div>
 
           <div id="fb-3a-step1"></div>
@@ -1282,8 +1324,8 @@
           <div class="card-title">
             <span class="step-badge ${currentStep>=2?'':'locked'}">2</span> Bước 2: Lập bảng xét dấu của $f(x)$
           </div>
-          <div class="info-box" style="margin-bottom:10px;">
-            Click vào ô để chọn dấu ($+$ hoặc $-$) cho từng khoảng của $f(x)$:
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:8px;">
+            Click vào các ô bên dưới để đổi dấu ($+$ hoặc $-$) cho từng khoảng của $f(x)$:
           </div>
 
           <table class="sign-table">
@@ -1297,10 +1339,22 @@
             </thead>
             <tbody>
               <tr>
-                <td><b>Dấu $f(x)$</b></td>
-                <td><button class="sign-cell-btn ${state.part3A.signCells[0]==='+'?'plus':'minus'}" onclick="toggleSignCell(0)">${state.part3A.signCells[0]}</button></td>
-                <td><button class="sign-cell-btn ${state.part3A.signCells[1]==='+'?'plus':'minus'}" onclick="toggleSignCell(1)">${state.part3A.signCells[1]}</button></td>
-                <td><button class="sign-cell-btn ${state.part3A.signCells[2]==='+'?'plus':'minus'}" onclick="toggleSignCell(2)">${state.part3A.signCells[2]}</button></td>
+                <td style="font-weight:600;">Dấu $f(x)$</td>
+                <td>
+                  <button class="sign-cell-btn ${state.part3A.signCells[0]==='+'?'plus':'minus'}" onclick="toggleSignCell(0)">
+                    ${state.part3A.signCells[0]}
+                  </button>
+                </td>
+                <td>
+                  <button class="sign-cell-btn ${state.part3A.signCells[1]==='+'?'plus':'minus'}" onclick="toggleSignCell(1)">
+                    ${state.part3A.signCells[1]}
+                  </button>
+                </td>
+                <td>
+                  <button class="sign-cell-btn ${state.part3A.signCells[2]==='+'?'plus':'minus'}" onclick="toggleSignCell(2)">
+                    ${state.part3A.signCells[2]}
+                  </button>
+                </td>
               </tr>
             </tbody>
           </table>
@@ -1320,8 +1374,11 @@
             <span class="step-badge ${currentStep>=3?'':'locked'}">3</span> Bước 3: Đọc tập nghiệm của BPT
           </div>
           <div class="control-group" style="margin-bottom:10px;">
-            <label class="control-label">Nhập khoảng nghiệm BPT (ví dụ: $(-\\infty; 2] \\cup [3; +\\infty)$):</label>
-            <input type="text" class="text-input" id="inp-3a-interval" placeholder="Nhập khoảng nghiệm..." value="${state.part3A.intervalInput}" ${state.part3A.step3Completed?'disabled':''}>
+            <label class="control-label">Nhập khoảng nghiệm BPT:</label>
+            <input type="text" class="text-input" id="inp-3a-interval" placeholder="Ví dụ: (-inf; -1] U [4; +inf)" value="${state.part3A.intervalInput}" ${state.part3A.step3Completed?'disabled':''}>
+            <div style="font-size:11.5px; color:var(--sub); margin-top:5px; line-height:1.4;">
+              💡 <b>Cách nhập nhanh từ bàn phím:</b> Gõ <code>(-inf; -1] U [4; +inf)</code> hoặc <code>x <= -1 hoặc x >= 4</code>
+            </div>
           </div>
 
           <div id="fb-3a-step3"></div>
@@ -1365,6 +1422,7 @@
         state.part3A.step1Completed = true;
         state.part3A.currentStep = 2;
         fb.innerHTML = `<div class="info-box correct">✓ ĐÚNG! $\\Delta = ${trueDelta}$, xác định đúng loại nghiệm. Chuyển sang Bước 2!</div>`;
+        renderKaTeXInElement(fb);
         setTimeout(renderSidebar, 800);
       } else {
         state.part3A.step1Attempts++;
@@ -1373,13 +1431,19 @@
         } else if (state.part3A.step1Attempts === 2) {
           fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $a=${a}, b=${b}, c=${c} \\to \\Delta = (${b})^2 - 4(${a})(${c})$.</div>`;
         } else {
-          state.part3A.step1Completed = true;
-          state.part3A.currentStep = 2;
-          state.part3A.deltaInput = trueDelta.toString();
-          state.part3A.rootTypeInput = expectedType;
-          fb.innerHTML = `<div class="info-box athena">Đáp án chuẩn: $\\Delta = ${trueDelta}$. Chuyển sang Bước 2!</div>`;
-          setTimeout(renderSidebar, 1200);
+          let typeLabel = "Có 2 nghiệm phân biệt";
+          if (expectedType === 'double') typeLabel = "Có 1 nghiệm kép";
+          else if (expectedType === 'none') typeLabel = "Vô nghiệm";
+          fb.innerHTML = `
+            <div class="info-box athena">
+              💡 <b>Gợi ý đáp án chuẩn:</b><br>
+              • Giá trị $\\Delta = ${trueDelta}$<br>
+              • Số nghiệm: <b>${typeLabel}</b><br>
+              <i>Hãy điền/chọn đáp án chuẩn này vào các ô tương ứng rồi bấm <b>Xác nhận Bước 1</b> nhé!</i>
+            </div>
+          `;
         }
+        renderKaTeXInElement(fb);
       }
     }
 
@@ -1400,18 +1464,22 @@
         state.part3A.step2Completed = true;
         state.part3A.currentStep = 3;
         fb.innerHTML = `<div class="info-box correct">✓ ĐÚNG! Bạn đã lập đúng bảng xét dấu theo định lý dấu tam thức. Chuyển sang Bước 3!</div>`;
+        renderKaTeXInElement(fb);
         setTimeout(renderSidebar, 800);
       } else {
         state.part3A.step2Attempts++;
         if (state.part3A.step2Attempts === 1) {
           fb.innerHTML = `<div class="info-box error">Chưa chính xác. Nhớ quy tắc: Khoảng ngoài nghiệm cùng dấu $a$ ($a=${a}$), khoảng trong trái dấu $a$.</div>`;
         } else {
-          state.part3A.signCells = expectedSigns;
-          state.part3A.step2Completed = true;
-          state.part3A.currentStep = 3;
-          fb.innerHTML = `<div class="info-box athena">Đáp án chuẩn bảng xét dấu đã được cập nhật. Chuyển sang Bước 3!</div>`;
-          setTimeout(renderSidebar, 1200);
+          fb.innerHTML = `
+            <div class="info-box athena">
+              💡 <b>Gợi ý đáp án chuẩn bảng xét dấu:</b><br>
+              Dấu 3 khoảng từ trái sang phải là: <b>${expectedSigns.join(' , ')}</b>.<br>
+              <i>Hãy click đổi dấu các ô cho đúng như trên rồi bấm <b>Xác nhận Bước 2</b> nhé!</i>
+            </div>
+          `;
         }
+        renderKaTeXInElement(fb);
       }
     }
 
@@ -1422,18 +1490,36 @@
 
       if (val.length > 0) {
         state.part3A.step3Completed = true;
+        updateSubNavUI();
+        showToast('🔓 Chúc mừng! Bạn đã hoàn thành Phần 3A và mở khóa Phần 3B!');
         fb.innerHTML = `
           <div class="info-box correct">
-            <b>✓ Chính xác!</b> Bạn đã đọc đúng tập nghiệm từ bảng xét dấu khớp với BPT.
+            <b>✓ Chính xác!</b> Bạn đã đọc đúng tập nghiệm từ bảng xét dấu khớp với BPT.<br>
+            🔓 <b>Phần 3B (Tham số, Chữa bệnh & Thực tế) đã được mở khóa!</b>
           </div>
-          <button class="btn btn-outline-teal" style="width:100%; margin-top:10px;" onclick="generateRandom3AQuestion()">
-            <i class="ti ti-refresh"></i> Làm thêm bài mới 🔄
+          <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="switchMainPart('3B')">
+            Chuyển sang Phần 3B ngay ➡️
+          </button>
+          <button class="btn btn-outline-teal" style="width:100%; margin-top:6px;" onclick="generateRandom3AQuestion()">
+            <i class="ti ti-refresh"></i> Làm thêm bài 3A mới 🔄
           </button>
         `;
         LMS().complete();
+        clearTimeout(window.nextStepTimer);
+        window.nextStepTimer = setTimeout(() => switchMainPart('3B'), 2800);
       } else {
-        fb.innerHTML = `<div class="info-box error">Vui lòng nhập khoảng tập nghiệm.</div>`;
+        state.part3A.step3Attempts++;
+        if (state.part3A.step3Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Vui lòng nhập khoảng tập nghiệm.</div>`;
+        } else {
+          fb.innerHTML = `
+            <div class="info-box athena">
+              💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>(-inf; 2] U [3; +inf)</b> (hoặc <b>x <= 2 hoặc x >= 3</b>) rồi bấm <b>Xác nhận Hoàn thành BPT</b>.
+            </div>
+          `;
+        }
       }
+      renderKaTeXInElement(fb);
     }
 
     function generateRandom3AQuestion() {
@@ -1471,6 +1557,29 @@
        4. INTERACTIVE PART 3B LOGIC & RENDERING
        ========================================================================= */
     function switchTab3B(tab) {
+      clearTimeout(window.nextStepTimer);
+      const isB2Unlocked = state.part3B.b1Completed;
+      const isB3aUnlocked = isB2Unlocked && state.part3B.b2_1Completed && state.part3B.b2_2Completed;
+      const isB3bUnlocked = isB3aUnlocked && state.part3B.b3aCompleted;
+      const isB3cUnlocked = isB3bUnlocked && state.part3B.b3bCompleted;
+
+      if (tab === 'B2' && !isB2Unlocked) {
+        showToast('🔒 Vui lòng hoàn thành bài B1 (Tham số) trước khi chuyển sang B2!');
+        return;
+      }
+      if (tab === 'B3a' && !isB3aUnlocked) {
+        showToast('🔒 Vui lòng hoàn thành cả 2 bài ở B2 (Chữa bệnh) trước khi chuyển sang B3a!');
+        return;
+      }
+      if (tab === 'B3b' && !isB3bUnlocked) {
+        showToast('🔒 Vui lòng hoàn thành bài B3a (Hầm chui) trước khi chuyển sang B3b!');
+        return;
+      }
+      if (tab === 'B3c' && !isB3cUnlocked) {
+        showToast('🔒 Vui lòng hoàn thành bài B3b (Vé Robotics) trước khi chuyển sang B3c!');
+        return;
+      }
+
       state.part3B.currentTab = tab;
       renderSidebar();
       resetViewport();
@@ -1479,13 +1588,18 @@
     function renderPart3BSidebar(container) {
       const tab = state.part3B.currentTab;
 
+      const isB2Unlocked = state.part3B.b1Completed;
+      const isB3aUnlocked = isB2Unlocked && state.part3B.b2_1Completed && state.part3B.b2_2Completed;
+      const isB3bUnlocked = isB3aUnlocked && state.part3B.b3aCompleted;
+      const isB3cUnlocked = isB3bUnlocked && state.part3B.b3bCompleted;
+
       let html = `
-        <div style="display:flex; gap:6px; overflow-x:auto; margin-bottom:10px;">
-          <button class="btn ${tab==='B1'?'btn-primary':'btn-secondary'}" style="font-size:12.5px; padding:6px 12px;" onclick="switchTab3B('B1')">B1. Tham số</button>
-          <button class="btn ${tab==='B2'?'btn-primary':'btn-secondary'}" style="font-size:12.5px; padding:6px 12px;" onclick="switchTab3B('B2')">B2. Chữa bệnh</button>
-          <button class="btn ${tab==='B3a'?'btn-primary':'btn-secondary'}" style="font-size:12.5px; padding:6px 12px;" onclick="switchTab3B('B3a')">B3a. Hầm chui</button>
-          <button class="btn ${tab==='B3b'?'btn-primary':'btn-secondary'}" style="font-size:12.5px; padding:6px 12px;" onclick="switchTab3B('B3b')">B3b. Vé Robotics</button>
-          <button class="btn ${tab==='B3c'?'btn-primary':'btn-secondary'}" style="font-size:12.5px; padding:6px 12px;" onclick="switchTab3B('B3c')">B3c. Oxy ao cá</button>
+        <div style="display:flex; gap:5px; overflow-x:auto; margin-bottom:10px;">
+          <button class="btn ${tab==='B1'?'btn-primary':'btn-secondary'}" style="font-size:12px; padding:6px 9px;" onclick="switchTab3B('B1')">B1. Tham số</button>
+          <button class="btn ${tab==='B2'?'btn-primary':'btn-secondary'} ${!isB2Unlocked?'disabled':''}" style="font-size:12px; padding:6px 9px; opacity:${isB2Unlocked?1:0.6};" onclick="switchTab3B('B2')">${isB2Unlocked?'':'🔒 '}B2. Chữa bệnh</button>
+          <button class="btn ${tab==='B3a'?'btn-primary':'btn-secondary'} ${!isB3aUnlocked?'disabled':''}" style="font-size:12px; padding:6px 9px; opacity:${isB3aUnlocked?1:0.6};" onclick="switchTab3B('B3a')">${isB3aUnlocked?'':'🔒 '}B3a. Hầm chui</button>
+          <button class="btn ${tab==='B3b'?'btn-primary':'btn-secondary'} ${!isB3bUnlocked?'disabled':''}" style="font-size:12px; padding:6px 9px; opacity:${isB3bUnlocked?1:0.6};" onclick="switchTab3B('B3b')">${isB3bUnlocked?'':'🔒 '}B3b. Robotics</button>
+          <button class="btn ${tab==='B3c'?'btn-primary':'btn-secondary'} ${!isB3cUnlocked?'disabled':''}" style="font-size:12px; padding:6px 9px; opacity:${isB3cUnlocked?1:0.6};" onclick="switchTab3B('B3c')">${isB3cUnlocked?'':'🔒 '}B3c. Oxy ao cá</button>
         </div>
       `;
 
@@ -1497,8 +1611,11 @@
               Tìm tất cả giá trị của $m$ để tam thức $f(x) = x^2 - 2mx + m + 6$ luôn DƯƠNG với mọi $x \\in \\mathbb{R}$.
             </div>
             <div class="control-group" style="margin-bottom:12px;">
-              <label class="control-label">Nhập khoảng giá trị của $m$ (dạng khoảng (a; b)):</label>
-              <input type="text" class="text-input" id="inp-b1-m" placeholder="Ví dụ: (-2; 3)" value="${state.part3B.b1Input}" ${state.part3B.b1Completed?'disabled':''}>
+              <label class="control-label">Nhập khoảng giá trị của $m$:</label>
+              <input type="text" class="text-input" id="inp-b1-m" placeholder="Ví dụ: (-1; 5)" value="${state.part3B.b1Input}" ${state.part3B.b1Completed?'disabled':''}>
+              <div style="font-size:11.5px; color:var(--sub); margin-top:4px; line-height:1.4;">
+                💡 <b>Định dạng nhập:</b> Ưu tiên gõ bất phương trình <code>-1 < m < 5</code> hoặc dạng khoảng <code>(-1; 5)</code>
+              </div>
             </div>
 
             <div id="fb-3b-b1"></div>
@@ -1569,7 +1686,10 @@
 
             <div class="control-group" style="margin-bottom:12px;">
               <label class="control-label">Khoảng cách $x$ tối đa tính từ tim hầm:</label>
-              <input type="text" class="text-input" id="inp-b3a" placeholder="Ví dụ: 5.1" value="${state.part3B.b3aInput}" ${state.part3B.b3aCompleted?'disabled':''}>
+              <input type="text" class="text-input" id="inp-b3a" placeholder="Ví dụ: 3.8" value="${state.part3B.b3aInput}" ${state.part3B.b3aCompleted?'disabled':''}>
+              <div style="font-size:11.5px; color:var(--sub); margin-top:4px; line-height:1.4;">
+                💡 <b>Định dạng nhập:</b> Nhập số thập phân (ví dụ: <code>3.8</code> hoặc <code>3,8</code>) hoặc căn thức <code>sqrt(26)</code>
+              </div>
             </div>
 
             <div id="fb-3b-b3a"></div>
@@ -1598,8 +1718,11 @@
             </div>
 
             <div class="control-group" style="margin-bottom:12px;">
-              <label class="control-label">Nhập khoảng số lần giảm giá $x$ (ví dụ: [2; 5]):</label>
-              <input type="text" class="text-input" id="inp-b3b" placeholder="Ví dụ: 2 đến 5" value="${state.part3B.b3bInput}" ${state.part3B.b3bCompleted?'disabled':''}>
+              <label class="control-label">Nhập khoảng số lần giảm giá $x$:</label>
+              <input type="text" class="text-input" id="inp-b3b" placeholder="Ví dụ: 1 đến 6" value="${state.part3B.b3bInput}" ${state.part3B.b3bCompleted?'disabled':''}>
+              <div style="font-size:11.5px; color:var(--sub); margin-top:4px; line-height:1.4;">
+                💡 <b>Định dạng nhập:</b> Nhập dạng khoảng <code>[1; 6]</code> hoặc gõ <code>1 đến 6</code> (hay <code>1 và 6</code>)
+              </div>
             </div>
 
             <div id="fb-3b-b3b"></div>
@@ -1628,8 +1751,11 @@
             </div>
 
             <div class="control-group" style="margin-bottom:12px;">
-              <label class="control-label">Khoảng giờ $t$ cần bật máy sục khí (ví dụ: (3; 7)):</label>
-              <input type="text" class="text-input" id="inp-b3c" placeholder="Ví dụ: từ 3 đến 7" value="${state.part3B.b3cInput}" ${state.part3B.b3cCompleted?'disabled':''}>
+              <label class="control-label">Khoảng giờ $t$ cần bật máy sục khí:</label>
+              <input type="text" class="text-input" id="inp-b3c" placeholder="Ví dụ: từ 2 đến 8" value="${state.part3B.b3cInput}" ${state.part3B.b3cCompleted?'disabled':''}>
+              <div style="font-size:11.5px; color:var(--sub); margin-top:4px; line-height:1.4;">
+                💡 <b>Định dạng nhập:</b> Nhập dạng khoảng <code>(2; 8)</code> hoặc gõ <code>từ 2 đến 8</code> (hay <code>2 và 8</code>)
+              </div>
             </div>
 
             <div id="fb-3b-b3c"></div>
@@ -1657,10 +1783,21 @@
           <div class="info-box correct">
             <b>✓ Chính xác!</b> $a=1>0$, $\\Delta' = m^2 - m - 6 < 0 \\iff -2 < m < 3$. Tam thức luôn dương khi $\\Delta' < 0$ nghiêm ngặt!
           </div>
+          <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="switchTab3B('B2')">
+            Chuyển sang B2 (Chữa bệnh) ➡️
+          </button>
         `;
+        clearTimeout(window.nextStepTimer);
+        window.nextStepTimer = setTimeout(() => switchTab3B('B2'), 2800);
       } else {
-        fb.innerHTML = `<div class="info-box error">Chưa chính xác. $\\Delta' = m^2 - m - 6 < 0 \\implies -2 < m < 3$.</div>`;
+        state.part3B.b1Attempts++;
+        if (state.part3B.b1Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa chính xác. $\\Delta' = m^2 - m - 6 < 0 \\implies -2 < m < 3$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>-2 < m < 3</b> (hoặc <b>(-2; 3)</b>) rồi bấm <b>Xác nhận kết quả</b>.</div>`;
+        }
       }
+      renderKaTeXInElement(fb);
     }
 
     function selectDebugLine(gameNum, lineNum) {
@@ -1671,7 +1808,12 @@
           state.part3B.b2_1Completed = true;
           fb.innerHTML = `<div class="info-box correct"><b>✓ Giỏi lắm!</b> Dòng 1 sai ở phép nhân với -1. Khi nhân số ÂM phải ĐỔI CHIỀU BPT $\\to 2x^2 - 3x + 1 \\le 0 \\iff 1/2 \\le x \\le 1$.</div>`;
         } else {
-          fb.innerHTML = `<div class="info-box error">Dòng này không sai. Hãy tìm dòng nhân số âm nhưng quên đổi chiều BPT!</div>`;
+          state.part3B.b2_1Attempts++;
+          if (state.part3B.b2_1Attempts === 1) {
+            fb.innerHTML = `<div class="info-box error">Dòng này không sai. Hãy tìm dòng nhân số âm nhưng quên đổi chiều BPT!</div>`;
+          } else {
+            fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Click chọn <b>Dòng 1</b> (Phép nhân số âm chưa đổi chiều BPT).</div>`;
+          }
         }
       } else if (gameNum === 2) {
         state.part3B.b2_2SelectedLine = lineNum;
@@ -1680,10 +1822,28 @@
           state.part3B.b2_2Completed = true;
           fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> "2 nghiệm phân biệt" yêu cầu $\\Delta > 0$ nghiêm ngặt, không được đặt $\\Delta \\ge 0$. Sửa lại: $16-4m>0 \\iff m < 4$.</div>`;
         } else {
-          fb.innerHTML = `<div class="info-box error">Dòng này không sai. Hãy tìm dòng nhầm lẫn điều kiện $\\Delta > 0$ thành $\\Delta \\ge 0$!</div>`;
+          state.part3B.b2_2Attempts++;
+          if (state.part3B.b2_2Attempts === 1) {
+            fb.innerHTML = `<div class="info-box error">Dòng này không sai. Hãy tìm dòng nhầm lẫn điều kiện $\\Delta > 0$ thành $\\Delta \\ge 0$!</div>`;
+          } else {
+            fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Click chọn <b>Dòng 1</b> (Điều kiện 2 nghiệm phân biệt phải là $\\Delta > 0$).</div>`;
+          }
         }
       }
       renderSidebar();
+      if (state.part3B.b2_1Completed && state.part3B.b2_2Completed) {
+        const fb2 = document.getElementById('fb-3b-b2-2');
+        if (fb2) {
+          fb2.innerHTML += `
+            <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="switchTab3B('B3a')">
+              Chuyển sang B3a (Hầm chui) ➡️
+            </button>
+          `;
+          renderKaTeXInElement(fb2);
+        }
+        clearTimeout(window.nextStepTimer);
+        window.nextStepTimer = setTimeout(() => switchTab3B('B3a'), 2800);
+      }
     }
 
     function onSlider3A(val) {
@@ -1697,10 +1857,25 @@
 
       if (val.includes('5.1') || val.includes('26')) {
         state.part3B.b3aCompleted = true;
-        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> $5,5 - 0,05x^2 \\ge 4,2 \\iff x^2 \\le 26 \\iff |x| \\le \\sqrt{26} \\approx 5,1\\text{m}$. Xe phải đi cách tim hầm không quá $5,1\\text{m}$ mỗi bên!</div>`;
+        fb.innerHTML = `
+          <div class="info-box correct">
+            <b>✓ Chính xác!</b> $5,5 - 0,05x^2 \\ge 4,2 \\iff x^2 \\le 26 \\iff |x| \\le \\sqrt{26} \\approx 5,1\\text{m}$. Xe phải đi cách tim hầm không quá $5,1\\text{m}$ mỗi bên!
+          </div>
+          <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="switchTab3B('B3b')">
+            Chuyển sang B3b (Vé Robotics) ➡️
+          </button>
+        `;
+        clearTimeout(window.nextStepTimer);
+        window.nextStepTimer = setTimeout(() => switchTab3B('B3b'), 2800);
       } else {
-        fb.innerHTML = `<div class="info-box error">Chưa đúng. BPT $5,5 - 0,05x^2 \\ge 4,2 \\implies x^2 \\le 26 \\implies |x| \\le 5,1\\text{m}$.</div>`;
+        state.part3B.b3aAttempts++;
+        if (state.part3B.b3aAttempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. BPT $5,5 - 0,05x^2 \\ge 4,2 \\implies x^2 \\le 26 \\implies |x| \\le 5,1\\text{m}$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>5.1</b> (hoặc <b>sqrt(26)</b>) rồi bấm <b>Xác nhận kết quả</b>.</div>`;
+        }
       }
+      renderKaTeXInElement(fb);
     }
 
     function onSlider3B(val) {
@@ -1714,10 +1889,25 @@
 
       if (val.includes('2') && val.includes('5')) {
         state.part3B.b3bCompleted = true;
-        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> $R(x) \\ge 8.000.000 \\iff x^2 - 7x + 10 \\le 0 \\iff 2 \\le x \\le 5$. Giá vé từ $100.000$đ đến $160.000$đ!</div>`;
+        fb.innerHTML = `
+          <div class="info-box correct">
+            <b>✓ Chính xác!</b> $R(x) \\ge 8.000.000 \\iff x^2 - 7x + 10 \\le 0 \\iff 2 \\le x \\le 5$. Giá vé từ $100.000$đ đến $160.000$đ!
+          </div>
+          <button class="btn btn-primary" style="width:100%; margin-top:10px;" onclick="switchTab3B('B3c')">
+            Chuyển sang B3c (Oxy ao cá) ➡️
+          </button>
+        `;
+        clearTimeout(window.nextStepTimer);
+        window.nextStepTimer = setTimeout(() => switchTab3B('B3c'), 2800);
       } else {
-        fb.innerHTML = `<div class="info-box error">Chưa đúng. Chia cho -200.000 nhớ ĐỔI CHIỀU BPT $\\implies x^2 - 7x + 10 \\le 0 \\implies 2 \\le x \\le 5$.</div>`;
+        state.part3B.b3bAttempts++;
+        if (state.part3B.b3bAttempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Chia cho -200.000 nhớ ĐỔI CHIỀU BPT $\\implies x^2 - 7x + 10 \\le 0 \\implies 2 \\le x \\le 5$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>2 và 5</b> (hoặc <b>2 đến 5</b>) rồi bấm <b>Xác nhận kết quả</b>.</div>`;
+        }
       }
+      renderKaTeXInElement(fb);
     }
 
     function onSlider3C(val) {
@@ -1735,8 +1925,14 @@
         openSummaryModal();
         LMS().complete();
       } else {
-        fb.innerHTML = `<div class="info-box error">Chưa đúng. BPT $0,25t^2 - 2,5t + 9,25 < 4 \\implies t^2 - 10t + 21 < 0 \\implies 3 < t < 7$.</div>`;
+        state.part3B.b3cAttempts++;
+        if (state.part3B.b3cAttempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. BPT $0,25t^2 - 2,5t + 9,25 < 4 \\implies t^2 - 10t + 21 < 0 \\implies 3 < t < 7$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>3 và 7</b> (hoặc <b>từ 3 đến 7</b>) rồi bấm <b>Xác nhận hoàn thành B3c</b>.</div>`;
+        }
       }
+      renderKaTeXInElement(fb);
     }
 
     /* =========================================================================
@@ -1761,14 +1957,31 @@
     }
 
     function renderKaTeXInElement(el) {
+      const target = el || document.body;
+      const doRender = () => {
+        if (window.renderMathInElement) {
+          try {
+            window.renderMathInElement(target, {
+              delimiters: [
+                { left: "$$", right: "$$", display: true },
+                { left: "$", right: "$", display: false },
+                { left: "\\(", right: "\\)", display: false },
+                { left: "\\[", right: "\\]", display: true }
+              ],
+              throwOnError: false
+            });
+          } catch (err) {
+            console.warn("KaTeX render error:", err);
+          }
+        }
+      };
+
       if (window.renderMathInElement) {
-        window.renderMathInElement(el, {
-          delimiters: [
-            {left: '$$', right: '$$', display: true},
-            {left: '$', right: '$', display: false}
-          ],
-          throwOnError: false
-        });
+        doRender();
+      } else {
+        window.addEventListener('load', doRender);
+        setTimeout(doRender, 200);
+        setTimeout(doRender, 800);
       }
     }
 
@@ -1776,6 +1989,7 @@
     window.addEventListener('DOMContentLoaded', () => {
       resizeCanvas();
       renderSidebar();
+      renderKaTeXInElement(document.body);
     });
   </script>
 </body>
