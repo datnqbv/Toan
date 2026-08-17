@@ -9,7 +9,9 @@
   <!-- Google Fonts: Be Vietnam Pro -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    rel="stylesheet">
 
   <!-- Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
@@ -460,17 +462,24 @@
   <div class="modal-overlay" id="handbook-modal">
     <div class="modal-card">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 14px;">
-        <h3 style="margin: 0; color: #fac775; font-size: 18px;"><i class="ti ti-book"></i> Sổ tay Kiến thức Vị trí Đường - Mặt</h3>
-        <button id="btn-handbook-close" style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;"><i class="ti ti-x"></i></button>
+        <h3 style="margin: 0; color: #fac775; font-size: 18px;"><i class="ti ti-book"></i> Sổ tay Kiến thức Vị trí Đường
+          - Mặt</h3>
+        <button id="btn-handbook-close"
+          style="background: none; border: none; color: #94a3b8; font-size: 20px; cursor: pointer;"><i
+            class="ti ti-x"></i></button>
       </div>
-      <div style="font-size: 13px; line-height: 1.6; color: #e2e8f0; max-height: 60vh; overflow-y: auto; padding-right: 6px;">
+      <div
+        style="font-size: 13px; line-height: 1.6; color: #e2e8f0; max-height: 60vh; overflow-y: auto; padding-right: 6px;">
         <p><b>1. Ba vị trí tương đối giữa đường thẳng $d$ và mặt phẳng $(P)$:</b><br>
           • <b>Cắt nhau:</b> $d \cap (P) = \{M\}$ đúng 1 điểm chung ($\vec{u} \cdot \vec{n} \neq 0$).<br>
           • <b>Song song:</b> $d // (P)$, không có điểm chung nào ($\vec{u} \cdot \vec{n} = 0$ và $A \notin (P)$).<br>
           • <b>Nằm trong:</b> $d \subset (P)$, vô số điểm chung ($\vec{u} \cdot \vec{n} = 0$ và $A \in (P)$).
         </p>
-        <p style="background: rgba(250, 199, 117, 0.15); padding: 10px; border-radius: 8px; border-left: 3px solid #fac775;">
-          💡 <b>Bẫy sai lầm điển hình:</b> Khi tính được $\vec{u} \cdot \vec{n} = 0$, KHÔNG ĐƯỢC vội kết luận song song ngay! Phải thay thử 1 điểm trên đường thẳng vào phương trình mặt phẳng: nếu thuộc $\implies d \subset (P)$ (nằm trong); nếu không thuộc $\implies d // (P)$ (song song).
+        <p
+          style="background: rgba(250, 199, 117, 0.15); padding: 10px; border-radius: 8px; border-left: 3px solid #fac775;">
+          💡 <b>Bẫy sai lầm điển hình:</b> Khi tính được $\vec{u} \cdot \vec{n} = 0$, KHÔNG ĐƯỢC vội kết luận song song
+          ngay! Phải thay thử 1 điểm trên đường thẳng vào phương trình mặt phẳng: nếu thuộc $\implies d \subset (P)$
+          (nằm trong); nếu không thuộc $\implies d // (P)$ (song song).
         </p>
       </div>
     </div>
@@ -479,21 +488,39 @@
   <!-- CELEBRATION VICTORY MODAL -->
   <div class="modal-overlay" id="celebration-modal">
     <div class="modal-card" style="text-align: center;">
-      <div style="background: rgba(250, 199, 117, 0.2); color: #fac775; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-block; margin-bottom: 12px;">
+      <div
+        style="background: rgba(250, 199, 117, 0.2); color: #fac775; padding: 6px 16px; border-radius: 20px; font-size: 13px; font-weight: 700; display: inline-block; margin-bottom: 12px;">
         <i class="ti ti-award"></i> TỔNG KẾT BÀI HỌC
       </div>
       <h2 style="margin: 0 0 6px 0; font-size: 22px; color: #fac775;">🎉 Xuất sắc! Hoàn thành Module 4</h2>
       <div style="font-size: 14px; color: #94a3b8;">Vị trí tương đối giữa đường thẳng và mặt phẳng</div>
 
-      <div style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 14px; margin: 16px 0; text-align: left; font-size: 13px; line-height: 1.6;">
-        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Nhận diện 3 vị trí:</b> Cắt nhau ($\vec{u} \cdot \vec{n} \neq 0$), Song song ($\vec{u} \cdot \vec{n} = 0, A \notin P$), Nằm trong ($\vec{u} \cdot \vec{n} = 0, A \in P$).</div>
-        <div style="display: flex; gap: 8px; margin-bottom: 6px; color: #e2e8f0;"><i class="ti ti-circle-check-filled" style="color: #34d399;"></i> <b>Tìm giao điểm M:</b> Thế phương trình tham số của $d$ vào $(P)$ để giải tìm $t$.</div>
-        <div style="display: flex; gap: 8px; color: #e2e8f0;"><i class="ti ti-alert-triangle" style="color: #fac775;"></i> Phân biệt rõ Song song và Nằm trong khi $\vec{u} \cdot \vec{n} = 0$ bằng phép thử điểm.</div>
+      <div
+        style="background: rgba(255, 255, 255, 0.05); border: 1px solid rgba(255, 255, 255, 0.1); border-radius: 12px; padding: 16px; margin: 16px 0; text-align: left; font-size: 13px; line-height: 1.6;">
+        <div style="display: flex; gap: 10px; margin-bottom: 10px; color: #e2e8f0; align-items: flex-start;">
+          <i class="ti ti-circle-check-filled"
+            style="color: #34d399; font-size: 16px; margin-top: 2px; flex-shrink: 0;"></i>
+          <div style="flex: 1; line-height: 1.6;"><b>Nhận diện 3 vị trí:</b> Cắt nhau ($\vec{u} \cdot \vec{n} \neq 0$),
+            Song song ($\vec{u} \cdot \vec{n} = 0, A \notin P$), Nằm trong ($\vec{u} \cdot \vec{n} = 0, A \in P$).</div>
+        </div>
+        <div style="display: flex; gap: 10px; margin-bottom: 10px; color: #e2e8f0; align-items: flex-start;">
+          <i class="ti ti-circle-check-filled"
+            style="color: #34d399; font-size: 16px; margin-top: 2px; flex-shrink: 0;"></i>
+          <div style="flex: 1; line-height: 1.6;"><b>Tìm giao điểm M:</b> Thế phương trình tham số của $d$ vào $(P)$ để
+            giải tìm $t$.</div>
+        </div>
+        <div style="display: flex; gap: 10px; color: #e2e8f0; align-items: flex-start;">
+          <i class="ti ti-alert-triangle" style="color: #fac775; font-size: 16px; margin-top: 2px; flex-shrink: 0;"></i>
+          <div style="flex: 1; line-height: 1.6;"><b>Lưu ý:</b> Phân biệt rõ Song song và Nằm trong khi $\vec{u} \cdot
+            \vec{n} = 0$ bằng phép thử điểm $A$.</div>
+        </div>
       </div>
 
       <div style="display: flex; gap: 12px;">
-        <button class="btn btn-outline" id="btn-modal-restart" style="flex:1;"><i class="ti ti-refresh"></i> Khám phá lại</button>
-        <button class="btn btn-primary" id="btn-modal-close" style="flex:1;"><i class="ti ti-eye"></i> Xem lại hình 3D</button>
+        <button class="btn btn-outline" id="btn-modal-restart" style="flex:1;"><i class="ti ti-refresh"></i> Khám phá
+          lại</button>
+        <button class="btn btn-primary" id="btn-modal-close" style="flex:1;"><i class="ti ti-eye"></i> Xem lại hình
+          3D</button>
       </div>
     </div>
   </div>
@@ -504,15 +531,30 @@
       <canvas id="three-canvas"></canvas>
       <div id="label-layer"></div>
 
+      <!-- Camera Presets Bar -->
+      <div id="cam-preset-bar">
+        <button class="cam-btn active" id="cam-preset-3d"><i class="ti ti-3d-cube-sphere"></i> Góc 3D Chuẩn</button>
+        <button class="cam-btn" id="cam-preset-front"><i class="ti ti-eye"></i> Chính diện</button>
+        <button class="cam-btn" id="cam-preset-top"><i class="ti ti-arrow-bar-to-down"></i> Từ trên xuống</button>
+      </div>
+
+      <!-- Mode HUD badge -->
+      <div id="mode-hud">
+        <div class="hud-dot" id="hud-dot" style="background:#ef4444;"></div>
+        <span id="hud-text">CẮT NHAU — d ∩ (P) = {M}</span>
+      </div>
+
       <button id="btn-reset-cam"><i class="ti ti-refresh"></i> Đặt lại góc nhìn</button>
       <button id="btn-handbook"><i class="ti ti-book"></i> Sổ tay kiến thức</button>
+      <div id="canvas-hint">🖱 Kéo để xoay · Cuộn để zoom · Nhấn giữa để dịch chuyển</div>
     </div>
 
     <!-- SIDEBAR CONTROL -->
     <div id="sidebar">
       <div class="step-title"><i class="ti ti-topology-ring-3"></i> 1. Chọn Trạng thái Tay Cần Cẩu</div>
       <div class="info-box" style="font-size:12px; color:var(--ink-2);">
-        Mặt mái nhà $(P): x + y + 2z - 12 = 0$ ($\vec{n}=(1,1,2)$). Chọn các nút dưới đây để kiểm tra vị trí tương đối của tay cần cẩu / xà gồ với mái nhà:
+        Mặt mái nhà $(P): x + y + 2z - 12 = 0$ ($\vec{n}=(1,1,2)$). Chọn các nút dưới đây để kiểm tra vị trí tương đối
+        của tay cần cẩu / xà gồ với mái nhà:
       </div>
 
       <div class="mode-btn-group">
@@ -550,7 +592,8 @@
         <!-- QUIZ QUESTION 1 -->
         <div id="q1-card" style="margin-bottom: 14px;">
           <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;" id="q1-title">
-            Câu 1: Đường thẳng $d$ qua $B(1,1,1)$, VTCP $\vec{v}=(1,1,1)$. Mặt phẳng $(Q): x + 2y - 3z + 5 = 0$. Vị trí tương đối giữa $d$ và $(Q)$?
+            Câu 1: Đường thẳng $d$ qua $B(1,1,1)$, VTCP $\vec{v}=(1,1,1)$. Mặt phẳng $(Q): x + 2y - 3z + 5 = 0$. Vị trí
+            tương đối giữa $d$ và $(Q)$?
           </div>
           <div class="choice-group" id="q1-options">
             <!-- Dynamic options -->
@@ -560,7 +603,8 @@
         <!-- QUIZ QUESTION 2 -->
         <div id="q2-card" style="display: none; margin-bottom: 14px;">
           <div style="font-size: 12.5px; font-weight: 700; color: var(--navy); margin-bottom: 6px;" id="q2-title">
-            Câu 2: Đường thẳng $d$ qua $C(0,1,2)$, VTCP $\vec{w}=(2,0,1)$. Mặt phẳng $(R): x + y - 2z + 3 = 0$. Vị trí tương đối giữa $d$ và $(R)$?
+            Câu 2: Đường thẳng $d$ qua $C(0,1,2)$, VTCP $\vec{w}=(2,0,1)$. Mặt phẳng $(R): x + y - 2z + 3 = 0$. Vị trí
+            tương đối giữa $d$ và $(R)$?
           </div>
           <div class="choice-group" id="q2-options">
             <!-- Dynamic options -->
@@ -594,6 +638,7 @@
     scene.background = new THREE.Color(0x0a1628);
 
     const camera = new THREE.PerspectiveCamera(50, wrap.clientWidth / wrap.clientHeight, 0.1, 1000);
+    camera.up.set(0, 0, 1);
     const renderer = new THREE.WebGLRenderer({ canvas, antialias: true });
     renderer.setSize(wrap.clientWidth, wrap.clientHeight);
     renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
@@ -602,12 +647,14 @@
     orbitControls.enableDamping = true;
     orbitControls.dampingFactor = 0.08;
 
-    scene.add(new THREE.AmbientLight(0xffffff, 0.7));
-    const dirLight = new THREE.DirectionalLight(0xffffff, 0.65);
-    dirLight.position.set(6, 12, 8);
+    scene.add(new THREE.AmbientLight(0xffffff, 0.75));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 0.75);
+    dirLight.position.set(8, -10, 15);
     scene.add(dirLight);
 
-    const gridHelper = new THREE.GridHelper(12, 12, 0x30363d, 0x21262d);
+    const gridHelper = new THREE.GridHelper(18, 18, 0x30363d, 0x21262d);
+    gridHelper.rotation.x = Math.PI / 2;
+    gridHelper.position.set(2, 2, 0);
     scene.add(gridHelper);
 
     function setCameraStandardSGK() {
@@ -762,53 +809,176 @@
 
     function createRoofMesh() {
       // (P): x + y + 2z - 12 = 0 => z = (12 - x - y)/2
-      // Footprint x in [0, 4], y in [0, 4]
+      // Roof Corners (x in [0, 4], y in [0, 4])
       const P00 = new THREE.Vector3(0, 0, 6.0);
       const P40 = new THREE.Vector3(4, 0, 4.0);
       const P44 = new THREE.Vector3(4, 4, 2.0);
       const P04 = new THREE.Vector3(0, 4, 4.0);
 
-      const geo = new THREE.BufferGeometry();
+      // Roof Quad Mesh
+      const roofGeo = new THREE.BufferGeometry();
       const pos = [
         P00.x, P00.y, P00.z, P40.x, P40.y, P40.z, P44.x, P44.y, P44.z,
         P00.x, P00.y, P00.z, P44.x, P44.y, P44.z, P04.x, P04.y, P04.z
       ];
-      geo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
-      geo.computeVertexNormals();
+      roofGeo.setAttribute('position', new THREE.Float32BufferAttribute(pos, 3));
+      roofGeo.computeVertexNormals();
 
-      const mat = new THREE.MeshBasicMaterial({
+      const roofMat = new THREE.MeshStandardMaterial({
         color: COLOR_PLANE,
         transparent: true,
-        opacity: 0.25,
+        opacity: 0.28,
+        side: THREE.DoubleSide,
+        roughness: 0.3,
+        depthWrite: false
+      });
+      const roofMesh = new THREE.Mesh(roofGeo, roofMat);
+      scene.add(roofMesh);
+
+      // Roof Border Lines & Rafters
+      createLineSegment(P00, P40, COLOR_PLANE, 1);
+      createLineSegment(P40, P44, COLOR_PLANE, 1);
+      createLineSegment(P44, P04, COLOR_PLANE, 1);
+      createLineSegment(P04, P00, COLOR_PLANE, 1);
+      createLineSegment(P00, P44, COLOR_PLANE, 0.4, true);
+
+      // === HOUSE BUILDING STRUCTURE (NGÔI NHÀ HOÀN CHỈNH) ===
+      // Ground corners corresponding to footprint [0,4]x[0,4]
+      const G00 = new THREE.Vector3(0, 0, 0);
+      const G40 = new THREE.Vector3(4, 0, 0);
+      const G44 = new THREE.Vector3(4, 4, 0);
+      const G04 = new THREE.Vector3(0, 4, 0);
+
+      // 4 Main Vertical Building Columns (Cột trụ nhà)
+      const colColor = 0x475569;
+      createLineSegment(G00, P00, colColor, 0.8);
+      createLineSegment(G40, P40, colColor, 0.8);
+      createLineSegment(G44, P44, colColor, 0.8);
+      createLineSegment(G04, P04, colColor, 0.8);
+
+      // Ground Foundation Rim Lines
+      createLineSegment(G00, G40, colColor, 0.7);
+      createLineSegment(G40, G44, colColor, 0.7);
+      createLineSegment(G44, G04, colColor, 0.7);
+      createLineSegment(G04, G00, colColor, 0.7);
+
+      // Intermediate Floor Beams (Xà dầm tầng nhà)
+      const F00 = new THREE.Vector3(0, 0, 3.0);
+      const F40 = new THREE.Vector3(4, 0, 2.0);
+      const F44 = new THREE.Vector3(4, 4, 1.0);
+      const F04 = new THREE.Vector3(0, 4, 2.0);
+      createLineSegment(F00, F40, colColor, 0.4, true);
+      createLineSegment(F40, F44, colColor, 0.4, true);
+      createLineSegment(F44, F04, colColor, 0.4, true);
+      createLineSegment(F04, F00, colColor, 0.4, true);
+
+      // Translucent House Walls (Tường nhà)
+      const wallGeo = new THREE.BufferGeometry();
+      const wallPos = [
+        // Front wall (y=0)
+        G00.x, G00.y, G00.z, G40.x, G40.y, G40.z, P40.x, P40.y, P40.z,
+        G00.x, G00.y, G00.z, P40.x, P40.y, P40.z, P00.x, P00.y, P00.z,
+        // Right wall (x=4)
+        G40.x, G40.y, G40.z, G44.x, G44.y, G44.z, P44.x, P44.y, P44.z,
+        G40.x, G40.y, G40.z, P44.x, P44.y, P44.z, P40.x, P40.y, P40.z,
+        // Back wall (y=4)
+        G44.x, G44.y, G44.z, G04.x, G04.y, G04.z, P04.x, P04.y, P04.z,
+        G44.x, G44.y, G44.z, P04.x, P04.y, P04.z, P44.x, P44.y, P44.z,
+        // Left wall (x=0)
+        G04.x, G04.y, G04.z, G00.x, G00.y, G00.z, P00.x, P00.y, P00.z,
+        G04.x, G04.y, G04.z, P00.x, P00.y, P00.z, P04.x, P04.y, P04.z
+      ];
+      wallGeo.setAttribute('position', new THREE.Float32BufferAttribute(wallPos, 3));
+      wallGeo.computeVertexNormals();
+
+      const wallMat = new THREE.MeshStandardMaterial({
+        color: 0x1e293b,
+        transparent: true,
+        opacity: 0.12,
         side: THREE.DoubleSide,
         depthWrite: false
       });
-      const mesh = new THREE.Mesh(geo, mat);
-      scene.add(mesh);
+      const wallMesh = new THREE.Mesh(wallGeo, wallMat);
+      scene.add(wallMesh);
 
-      // Roof Frame Borders & Rafter Lines
-      createLineSegment(P00, P40, COLOR_PLANE);
-      createLineSegment(P40, P44, COLOR_PLANE);
-      createLineSegment(P44, P04, COLOR_PLANE);
-      createLineSegment(P04, P00, COLOR_PLANE);
-      createLineSegment(P00, P44, COLOR_PLANE, 0.4, true);
-
-      // Position Roof Label at bottom-left corner to avoid overlapping with VTPT n and M
+      // Roof Label
       createLabel3D("Mái nhà (P): x + y + 2z - 12 = 0", new THREE.Vector3(0.5, 0.5, 5.25), '#60a5fa');
     }
 
     function createCraneTower() {
-      // Tower vertical post from (0,0,0) to A(0,0,8)
+      // Ground origin O(0,0,0) and Apex A(0,0,8)
       const O = new THREE.Vector3(0, 0, 0);
       const A = new THREE.Vector3(0, 0, 8);
-      createLineSegment(O, A, COLOR_CRANE_TOWER);
-      makeSpherePoint(O, COLOR_CRANE_TOWER, 0.1);
-      makeSpherePoint(A, COLOR_ARM_LINE, 0.12);
-      createLabel3D("A (Đỉnh tháp 0,0,8)", A, '#FAC775');
 
-      // Counter weight arm extending back
-      const Aback = new THREE.Vector3(-1.5, -1.0, 8);
-      createLineSegment(A, Aback, COLOR_CRANE_TOWER);
+      // 1. Concrete Foundation Base at (0,0,0) (Bệ chân móng tháp cẩu)
+      const baseGeo = new THREE.BoxGeometry(1.2, 1.2, 0.4);
+      const baseMat = new THREE.MeshStandardMaterial({ color: 0x334155, roughness: 0.7 });
+      const baseMesh = new THREE.Mesh(baseGeo, baseMat);
+      baseMesh.position.set(0, 0, 0.2);
+      scene.add(baseMesh);
+
+      // 2. Lattice Tower Mast Structure (Thân tháp cẩu 4 chân + giằng chéo)
+      const w = 0.25; // half-width of mast section
+      const cColor = COLOR_CRANE_TOWER;
+      const p1 = [new THREE.Vector3(-w, -w, 0.0), new THREE.Vector3(-w, -w, 8.0)];
+      const p2 = [new THREE.Vector3(w, -w, 0.0), new THREE.Vector3(w, -w, 8.0)];
+      const p3 = [new THREE.Vector3(w, w, 0.0), new THREE.Vector3(w, w, 8.0)];
+      const p4 = [new THREE.Vector3(-w, w, 0.0), new THREE.Vector3(-w, w, 8.0)];
+
+      // 4 Main Chords (chân đứng tháp)
+      createLineSegment(p1[0], p1[1], cColor, 0.9);
+      createLineSegment(p2[0], p2[1], cColor, 0.9);
+      createLineSegment(p3[0], p3[1], cColor, 0.9);
+      createLineSegment(p4[0], p4[1], cColor, 0.9);
+
+      // Lattice Cross Bracing (Thanh giằng chéo)
+      const numSections = 5;
+      for (let i = 0; i <= numSections; i++) {
+        const z = (8.0 / numSections) * i;
+        const v1 = new THREE.Vector3(-w, -w, z);
+        const v2 = new THREE.Vector3(w, -w, z);
+        const v3 = new THREE.Vector3(w, w, z);
+        const v4 = new THREE.Vector3(-w, w, z);
+
+        createLineSegment(v1, v2, cColor, 0.6);
+        createLineSegment(v2, v3, cColor, 0.6);
+        createLineSegment(v3, v4, cColor, 0.6);
+        createLineSegment(v4, v1, cColor, 0.6);
+
+        if (i < numSections) {
+          const zNext = (8.0 / numSections) * (i + 1);
+          const nv1 = new THREE.Vector3(-w, -w, zNext);
+          const nv2 = new THREE.Vector3(w, -w, zNext);
+          const nv3 = new THREE.Vector3(w, w, zNext);
+          const nv4 = new THREE.Vector3(-w, w, zNext);
+
+          createLineSegment(v1, nv2, cColor, 0.4, true);
+          createLineSegment(v2, nv3, cColor, 0.4, true);
+          createLineSegment(v3, nv4, cColor, 0.4, true);
+          createLineSegment(v4, nv1, cColor, 0.4, true);
+        }
+      }
+
+      // 2. Cabin / Slewing Unit near top (Cabin điều khiển)
+      const cabinGeo = new THREE.BoxGeometry(0.7, 0.7, 0.7);
+      const cabinMat = new THREE.MeshStandardMaterial({ color: 0x0288d1, emissive: 0x0288d1, emissiveIntensity: 0.2, roughness: 0.4 });
+      const cabinMesh = new THREE.Mesh(cabinGeo, cabinMat);
+      cabinMesh.position.set(0.1, -0.3, 7.6);
+      scene.add(cabinMesh);
+
+      // 3. Counter Jib (Cần đối trọng phía sau)
+      const Aback = new THREE.Vector3(-1.8, -1.2, 8.0);
+      createLineSegment(A, Aback, cColor, 1);
+
+      // 4. Tower Apex & Cable Stay Tension Wires (Đỉnh tháp cẩu A-frame & dây cáp gia cố)
+      const apex = new THREE.Vector3(0, 0, 9.2);
+      createLineSegment(A, apex, cColor, 0.9);
+      createLineSegment(apex, Aback, 0x94a3b8, 0.6, true);
+
+      // Point Markers & Labels (Strictly preserving A at (0,0,8))
+      makeSpherePoint(O, cColor, 0.1);
+      makeSpherePoint(A, COLOR_ARM_LINE, 0.13);
+      createLabel3D("A (Đỉnh tháp 0,0,8)", A, '#FAC775');
     }
 
     /* =========================================================================
@@ -1054,10 +1224,10 @@
       clearDynamicScene();
       // Render Plane (Q): x + 2y - 3z + 5 = 0
       // Normal nQ = (1, 2, -3)
-      const Q0 = new THREE.Vector3(0, 0, 5/3);
-      const Q40 = new THREE.Vector3(3, 0, 8/3);
-      const Q44 = new THREE.Vector3(3, 3, 14/3);
-      const Q04 = new THREE.Vector3(0, 3, 11/3);
+      const Q0 = new THREE.Vector3(0, 0, 5 / 3);
+      const Q40 = new THREE.Vector3(3, 0, 8 / 3);
+      const Q44 = new THREE.Vector3(3, 3, 14 / 3);
+      const Q04 = new THREE.Vector3(0, 3, 11 / 3);
 
       const geo = new THREE.BufferGeometry();
       const pos = [
@@ -1245,6 +1415,29 @@
     handbookModal.onclick = (e) => { if (e.target === handbookModal) handbookModal.classList.remove('show'); };
 
     document.getElementById('btn-reset-cam').onclick = () => setCameraStandardSGK();
+
+    function setCamPreset(preset) {
+      document.querySelectorAll('.cam-btn').forEach(b => b.classList.remove('active'));
+      camera.up.set(0, 0, 1);
+      if (preset === '3d') {
+        document.getElementById('cam-preset-3d').classList.add('active');
+        camera.position.set(10, -11, 7.5);
+        orbitControls.target.set(1.5, 1.5, 3.5);
+      } else if (preset === 'front') {
+        document.getElementById('cam-preset-front').classList.add('active');
+        camera.position.set(2, -14, 4);
+        orbitControls.target.set(2, 2, 4);
+      } else if (preset === 'top') {
+        document.getElementById('cam-preset-top').classList.add('active');
+        camera.position.set(2, 2, 18);
+        orbitControls.target.set(2, 2, 4);
+      }
+      orbitControls.update();
+    }
+    document.getElementById('cam-preset-3d').onclick = () => setCamPreset('3d');
+    document.getElementById('cam-preset-front').onclick = () => setCamPreset('front');
+    document.getElementById('cam-preset-top').onclick = () => setCamPreset('top');
+
     document.getElementById('btn-modal-close').onclick = () => document.getElementById('celebration-modal').classList.remove('show');
     document.getElementById('btn-modal-restart').onclick = () => {
       document.getElementById('celebration-modal').classList.remove('show');
