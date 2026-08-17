@@ -855,16 +855,19 @@
         sliderX_3a: 2.0,
         b3aInput: '',
         b3aCompleted: false,
+        b3aAttempts: 0,
 
         // B3b: Robotics Revenue
         sliderX_3b: 3.0,
         b3bInput: '',
         b3bCompleted: false,
+        b3bAttempts: 0,
 
         // B3c: Oxygen Dissolved
         sliderT_3c: 4.0,
         b3cInput: '',
-        b3cCompleted: false
+        b3cCompleted: false,
+        b3cAttempts: 0
       }
     };
 
@@ -1876,9 +1879,9 @@
       } else {
         state.part3B.b3aAttempts++;
         if (state.part3B.b3aAttempts === 1) {
-          fb.innerHTML = `<div class="info-box error">Chưa đúng. Hãy chuyển vế $5,5 - 0,05x^2 \\ge 4,2$ để tìm điều kiện của $x^2$. Thử lại nhé!</div>`;
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng kiểm tra lại phép tính và thử lại nhé!</div>`;
         } else if (state.part3B.b3aAttempts === 2) {
-          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $5,5 - 0,05x^2 \\ge 4,2 \\iff 0,05x^2 \\le 1,3 \\iff x^2 \\le 26 \\iff |x| \\le \\sqrt{26} \\approx 5,1\\text{m}$. Thử lại nhé!</div>`;
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Điều kiện an toàn là ĐỘ CAO VÒM phải LỚN HƠN HOẶC BẰNG chiều cao xe — giải bất phương trình $5,5 - 0,05x^2 \\ge 4,2$ để tìm $x$. Thử lại nhé!</div>`;
         } else {
           fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>5.1</b> (hoặc <b>sqrt(26)</b>) rồi bấm <b>Xác nhận kết quả</b>.</div>`;
         }
@@ -1910,9 +1913,9 @@
       } else {
         state.part3B.b3bAttempts++;
         if (state.part3B.b3bAttempts === 1) {
-          fb.innerHTML = `<div class="info-box error">Chưa đúng. Hãy chia cả 2 vế cho $-200.000$ và lưu ý ĐỔI CHIỀU bất phương trình. Thử lại nhé!</div>`;
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng kiểm tra lại phép tính và thử lại nhé!</div>`;
         } else if (state.part3B.b3bAttempts === 2) {
-          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $-200.000x^2 + 1.400.000x + 6.000.000 \\ge 8.000.000 \\iff x^2 - 7x + 10 \\le 0 \\iff 2 \\le x \\le 5$. Thử lại nhé!</div>`;
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Doanh thu tối thiểu 8.000.000đ $\\iff (200.000 - 20.000x)(30 + 10x) \\ge 8.000.000$. Chia cả 2 vế cho $-200.000$ và lưu ý ĐỔI CHIỀU bất phương trình. Thử lại nhé!</div>`;
         } else {
           fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>2 và 5</b> (hoặc <b>2 đến 5</b>) rồi bấm <b>Xác nhận kết quả</b>.</div>`;
         }
@@ -1937,9 +1940,9 @@
       } else {
         state.part3B.b3cAttempts++;
         if (state.part3B.b3cAttempts === 1) {
-          fb.innerHTML = `<div class="info-box error">Chưa đúng. Hãy rút gọn $0,25t^2 - 2,5t + 9,25 < 4$ bằng cách nhân 2 vế với 4 rồi xét dấu. Thử lại nhé!</div>`;
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng kiểm tra lại phép tính và thử lại nhé!</div>`;
         } else if (state.part3B.b3cAttempts === 2) {
-          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $O(t) < 4 \\iff t^2 - 10t + 21 < 0 \\iff 3 < t < 7$. Thử lại nhé!</div>`;
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Nồng độ oxy nguy hiểm khi $O(t) < 4 \\iff 0,25t^2 - 2,5t + 9,25 < 4$. Rút gọn về tam thức bậc hai rồi tìm khoảng nghiệm. Thử lại nhé!</div>`;
         } else {
           fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>3 và 7</b> (hoặc <b>từ 3 đến 7</b>) rồi bấm <b>Xác nhận hoàn thành B3c</b>.</div>`;
         }
