@@ -6,10 +6,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bài 17: Module 1 — Định lí dấu tam thức bậc hai</title>
 
-  <!-- Google Fonts: Be Vietnam Pro -->
+  <!-- Google Fonts: Plus Jakarta Sans -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 
   <!-- Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
@@ -24,11 +24,18 @@
        1. CORE DESIGN SYSTEM & TOKENS (Jade & Cream Theme)
        ========================================================================= */
     :root {
-      --navy: #14432F;         /* Jade Dark */
-      --teal: #2D8B6F;         /* Primary Action / Active Tab */
-      --bg: #FAF7F0;           /* Cream background */
+      /* Jade & Cream System Tokens */
+      --jade-dark: #14432F;
+      --jade-deep: #2D8B6F;
+      --cream: #FAF7F0;
+      --paper-line: #cbd5e1;
+
+      /* Aliases for backwards compatibility */
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
       --surface: #ffffff;
-      --border: #e2e8f0;
+      --border: var(--paper-line);
       --text: #0f172a;
       --text-2: #334155;
       --sub: #64748b;
@@ -55,7 +62,7 @@
     }
 
     body {
-      font-family: 'Be Vietnam Pro', sans-serif;
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.5;
@@ -780,13 +787,13 @@
 
       // Labels
       ctx.fillStyle = '#1e293b';
-      ctx.font = 'bold 12px "Be Vietnam Pro", sans-serif';
+      ctx.font = 'bold 12px "Plus Jakarta Sans", sans-serif';
       ctx.fillText('x', w - 14, py0 + 16);
       ctx.fillText('y', px0 + 10, 14);
       ctx.fillText('O', px0 - 14, py0 + 16);
 
       // Ticks & Numbers on Ox
-      ctx.font = '11px "Be Vietnam Pro", sans-serif';
+      ctx.font = '11px "Plus Jakarta Sans", sans-serif';
       ctx.fillStyle = '#64748b';
       for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
         if (x === 0) continue;

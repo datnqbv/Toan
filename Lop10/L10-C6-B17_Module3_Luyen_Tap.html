@@ -1,0 +1,1659 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 17: Dấu của tam thức bậc hai — Module 3: Luyện tập tổng hợp</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
+
+  <style>
+    /* =========================================================================
+       1. DESIGN SYSTEM TOKENS (Jade & Cream Theme)
+       ========================================================================= */
+    :root {
+      /* Jade & Cream System Tokens */
+      --jade-dark: #14432F;
+      --jade-deep: #2D8B6F;
+      --cream: #FAF7F0;
+      --paper-line: #cbd5e1;
+
+      /* Aliases for backwards compatibility */
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+      --surface: #ffffff;
+      --border: var(--paper-line);
+      --text: #0f172a;
+      --text-2: #334155;
+      --sub: #64748b;
+
+      --correct: #16a34a;      /* Xanh lá - Miền dương / Đáp án đúng */
+      --correct-bg: #f0fdf4;
+      --wrong: #dc2626;        /* Đỏ - Miền âm / Lỗi sai */
+      --wrong-bg: #fef2f2;
+      --warning: #d97706;      /* Vàng cam - Cảnh báo / Điểm nghiệm */
+      --warning-bg: #fffbeb;
+      --info: #2563eb;         /* Xanh dương - Thông tin */
+      --info-bg: #eff6ff;
+
+      --purple: #8b5cf6;
+      --purple-bg: #f5f3ff;
+      --canvas-bg: #0a1628;    /* Dark theme for Canvas */
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      padding: 8px 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(20, 67, 47, 0.15);
+    }
+
+    .header-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.15);
+      padding: 3px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-header {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* SUB-NAVBAR TABS */
+    .sub-nav {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 0 20px;
+      display: flex;
+      gap: 6px;
+      overflow-x: auto;
+    }
+
+    .sub-nav-btn {
+      padding: 8px 14px;
+      border: none;
+      background: transparent;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--sub);
+      cursor: pointer;
+      border-bottom: 3px solid transparent;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .sub-nav-btn:hover {
+      color: var(--teal);
+    }
+
+    .sub-nav-btn.active {
+      color: var(--teal);
+      border-bottom-color: var(--teal);
+    }
+
+    /* MAIN APP BODY */
+    .app-body {
+      display: grid;
+      grid-template-columns: 58% 42%;
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 82px);
+      max-height: calc(100vh - 82px);
+      overflow: hidden;
+    }
+
+    /* LEFT VIEWPORT / CANVAS CONTAINER */
+    .viewport-container {
+      background: #ffffff;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%;
+    }
+
+    .canvas-wrapper {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--canvas-bg);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* CANVAS FLOATING TOOLBAR */
+    .canvas-toolbar {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      display: flex;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      z-index: 10;
+    }
+
+    .tool-btn {
+      background: transparent;
+      color: #ffffff;
+      border: none;
+      padding: 4px 8px;
+      border-radius: 4px;
+      font-size: 11.5px;
+      font-weight: 500;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: background 0.2s ease;
+    }
+
+    .tool-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+    }
+
+    /* RIGHT SIDEBAR INTERACTIVE PANEL */
+    .sidebar {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100%;
+    }
+
+    .sidebar-content {
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    /* CARD COMPONENTS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+    }
+
+    .card-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-bottom: 6px;
+    }
+
+    .info-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--teal);
+      padding: 8px 12px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      color: var(--text-2);
+      line-height: 1.45;
+    }
+
+    .info-box.athena {
+      background: #f0fdf4;
+      border-left-color: var(--teal);
+      color: #166534;
+    }
+
+    .info-box.warning {
+      background: var(--warning-bg);
+      border-left-color: var(--warning);
+      color: #92400e;
+    }
+
+    .info-box.error {
+      background: var(--wrong-bg);
+      border-left-color: var(--wrong);
+      color: #991b1b;
+    }
+
+    .info-box.correct {
+      background: var(--correct-bg);
+      border-left-color: var(--correct);
+      color: #166534;
+    }
+
+    /* INPUT GROUPS & CONTROLS */
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .control-label {
+      font-size: 12.5px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .text-input {
+      width: 100%;
+      padding: 7px 10px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .text-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.15);
+    }
+
+    .text-input.correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+    }
+
+    .text-input.wrong {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+    }
+
+    /* BUTTONS */
+    .btn {
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #236f58;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--text-2);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    .btn-outline-teal {
+      background: transparent;
+      color: var(--teal);
+      border: 1px solid var(--teal);
+    }
+
+    .btn-outline-teal:hover {
+      background: #f0fdf4;
+    }
+
+    /* STEP INDICATOR BADGES */
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      background: var(--teal);
+      color: #ffffff;
+      font-size: 12px;
+      font-weight: 700;
+    }
+
+    .step-badge.locked {
+      background: #94a3b8;
+    }
+
+    /* INTERACTIVE SIGN TABLE IN 3A STEP 2 */
+    .sign-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 6px 0;
+      border-radius: 6px;
+      overflow: hidden;
+      border: 1px solid var(--border);
+    }
+
+    .sign-table th, .sign-table td {
+      border: 1px solid var(--border);
+      padding: 6px 4px;
+      text-align: center;
+      font-size: 12px;
+    }
+
+    .sign-table th {
+      background: #f8fafc;
+      font-weight: 600;
+      color: var(--navy);
+    }
+
+    .sign-cell-btn {
+      width: 36px;
+      height: 28px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+    }
+
+    .sign-cell-btn.plus {
+      background: var(--correct-bg);
+      color: var(--correct);
+      border-color: var(--correct);
+    }
+
+    .sign-cell-btn.minus {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+      border-color: var(--wrong);
+    }
+
+    /* DEBUGGER CARDS IN 3B PART 2 */
+    .debug-line {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #ffffff;
+      margin-bottom: 8px;
+      cursor: pointer;
+      font-size: 13.5px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .debug-line:hover {
+      border-color: var(--teal);
+      background: #f0fdf4;
+    }
+
+    .debug-line.selected-wrong {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+      color: var(--wrong);
+    }
+
+    .debug-line.selected-correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: var(--correct);
+    }
+
+    /* CHOICE BUTTONS */
+    .choice-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .choice-btn {
+      padding: 12px 14px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      background: #ffffff;
+      text-align: left;
+      font-size: 13.5px;
+      cursor: pointer;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      transition: all 0.2s ease;
+    }
+
+    .choice-btn:hover {
+      border-color: var(--teal);
+    }
+
+    .choice-btn.selected {
+      border-color: var(--teal);
+      background: #f0fdf4;
+    }
+
+    .choice-btn.correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: var(--correct);
+    }
+
+    .choice-btn.wrong {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+      color: var(--wrong);
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 620px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: var(--sub);
+      cursor: pointer;
+    }
+
+    /* RESPONSIVE LAYOUT */
+    @media (max-width: 768px) {
+      .app-body {
+        flex-direction: column;
+      }
+      .viewport-container {
+        min-height: 320px;
+        height: 340px;
+      }
+      .sidebar {
+        max-height: none;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-title-group">
+      <div class="header-badge">
+        <i class="ti ti-math-function"></i> Toán 10 — Chương VI: Tam thức bậc hai
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-header" onclick="openNotebookModal()">
+        <i class="ti ti-book"></i> Sổ tay kiến thức
+      </button>
+    </div>
+  </header>
+
+  <!-- SUB-NAVBAR TABS -->
+  <nav class="sub-nav">
+    <button class="sub-nav-btn active" id="subnav-3a" onclick="switchMainPart('3A')">
+      <i class="ti ti-list-check"></i> Phần 3A: Quy trình 3 bước (Luyện tự động)
+    </button>
+    <button class="sub-nav-btn" id="subnav-3b" onclick="switchMainPart('3B')">
+      <i class="ti ti-puzzle"></i> Phần 3B: Tham số, Chữa bệnh & 3 Thực tế
+    </button>
+  </nav>
+
+  <!-- MAIN APP BODY -->
+  <div class="app-body">
+    <!-- LEFT VIEWPORT / CANVAS CONTAINER -->
+    <div class="viewport-container">
+      <div class="canvas-wrapper">
+        <canvas id="main-canvas"></canvas>
+        <div class="canvas-toolbar">
+          <button class="tool-btn" onclick="autoFitViewport()"><i class="ti ti-focus-2"></i> Fit Khung nhìn</button>
+          <button class="tool-btn" onclick="zoomViewport(0.85)"><i class="ti ti-zoom-in"></i> Phóng to</button>
+          <button class="tool-btn" onclick="zoomViewport(1.18)"><i class="ti ti-zoom-out"></i> Thu nhỏ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR INTERACTIVE PANEL -->
+    <div class="sidebar">
+      <div class="sidebar-content" id="sidebar-panel">
+        <!-- Content dynamic render by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SỔ TAY KIẾN THỨC -->
+  <div class="modal-overlay" id="modal-notebook">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-book" style="color:var(--teal);"></i> Sổ tay Kiến thức — Bài 17</div>
+        <button class="close-btn" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="info-box athena" style="margin-bottom:14px;">
+        <b>1. Công thức biệt thức:</b><br>
+        • $\Delta = b^2 - 4ac$ (hoặc $\Delta' = b'^2 - ac$ với $b=2b'$).
+      </div>
+      <div class="info-box" style="margin-bottom:14px;">
+        <b>2. Định lý dấu tam thức bậc hai $f(x) = ax^2 + bx + c$ ($a \neq 0$):</b><br>
+        • <b>$\Delta < 0$:</b> $f(x)$ cùng dấu với $a$ với mọi $x \in \mathbb{R}$.<br>
+        • <b>$\Delta = 0$:</b> $f(x)$ cùng dấu với $a$ với mọi $x \neq -\frac{b}{2a}$; tại $x = -\frac{b}{2a}$ thì $f(x) = 0$.<br>
+        • <b>$\Delta > 0$:</b> $f(x)$ có 2 nghiệm $x_1 < x_2$. $f(x)$ cùng dấu $a$ khi $x$ nằm NGOÀI đoạn $[x_1; x_2]$, trái dấu $a$ khi $x$ nằm TRONG khoảng $(x_1; x_2)$.
+      </div>
+      <div class="info-box warning" style="margin-bottom:14px;">
+        <b>3. Quy tắc giải BPT & Biện luận tham số:</b><br>
+        • Khi nhân/chia cả 2 vế BPT với 1 số ÂM $\to$ <b>BẮT BUỘC ĐỔI CHIỀU BPT</b>.<br>
+        • Điều kiện "2 nghiệm phân biệt" yêu cầu $\Delta > 0$ (nghiêm ngặt), không dùng $\Delta \ge 0$.
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="closeNotebookModal()">Đã hiểu kiến thức</button>
+    </div>
+  </div>
+
+  <!-- MODAL: TỔNG KẾT HOÀN THÀNH -->
+  <div class="modal-overlay" id="modal-summary">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-award" style="color:var(--correct);"></i> Hoàn thành Module 3!</div>
+        <button class="close-btn" onclick="closeSummaryModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="info-box correct" style="margin-bottom:16px;">
+        <b>🎉 Chúc mừng bạn đã hoàn thành xuất sắc Module 3: Luyện tập tổng hợp!</b><br>
+        Bạn đã thành thạo quy trình 3 bước giải BPT bậc hai, khắc phục các sai lầm về dấu $a$, quy tắc đổi chiều BPT, và vận dụng nhuần nhuyễn vào 3 bài toán ứng dụng thực tế.
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="closeSummaryModal()">Đóng bảng tổng kết</button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APP LOGIC -->
+  <script>
+    /* =========================================================================
+       1. GLOBAL STATE & UTILITIES
+       ========================================================================= */
+    const state = {
+      mainPart: '3A', // '3A' or '3B'
+
+      // PART 3A STATE
+      part3A: {
+        a: 1, b: -5, c: 6, sign: '>=', // f(x) = x^2 - 5x + 6 >= 0
+        currentStep: 1, // 1, 2, 3
+        deltaInput: '',
+        rootTypeInput: '', // 'two', 'double', 'none'
+        rootsInput: '',
+        step1Completed: false,
+        step1Attempts: 0,
+
+        // Step 2 sign cells user selected
+        signCells: ['+', '-', '+'], // default for x^2 - 5x + 6
+        step2Completed: false,
+        step2Attempts: 0,
+
+        // Step 3 interval reading
+        intervalInput: '',
+        step3Completed: false,
+        step3Attempts: 0,
+
+        practiceCount: 1
+      },
+
+      // PART 3B STATE
+      part3B: {
+        currentTab: 'B1', // 'B1', 'B2', 'B3a', 'B3b', 'B3c'
+
+        // B1: Parametric problem
+        b1Input: '',
+        b1Completed: false,
+        b1Attempts: 0,
+
+        // B2: Debugging game
+        b2_1Completed: false,
+        b2_1SelectedLine: null,
+        b2_1Attempts: 0,
+        b2_2Completed: false,
+        b2_2SelectedLine: null,
+        b2_2Attempts: 0,
+
+        // B3a: Tunnel Arch
+        sliderX_3a: 2.0,
+        b3aInput: '',
+        b3aCompleted: false,
+
+        // B3b: Robotics Revenue
+        sliderX_3b: 3.0,
+        b3bInput: '',
+        b3bCompleted: false,
+
+        // B3c: Oxygen Dissolved
+        sliderT_3c: 4.0,
+        b3cInput: '',
+        b3cCompleted: false
+      }
+    };
+
+    // Safe LMS Accessor
+    function LMS() {
+      return {
+        complete: function() {
+          console.log('[LMS] Task Module 3 completed!');
+          if (window.parent && window.parent.postMessage) {
+            window.parent.postMessage({ type: 'LMS_COMPLETE', moduleId: 'L10-C6-B17-M3' }, '*');
+          }
+        }
+      };
+    }
+
+    function reportHeight() {
+      const height = document.documentElement.scrollHeight;
+      if (window.parent && window.parent.postMessage) {
+        window.parent.postMessage({ type: 'LMS_RESIZE', height: height }, '*');
+      }
+    }
+    window.addEventListener('load', reportHeight);
+    window.addEventListener('resize', reportHeight);
+
+    /* =========================================================================
+       2. CANVAS 2D ENGINE & DYNAMIC BOUNDING BOX
+       ========================================================================= */
+    const canvas = document.getElementById('main-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const viewport = {
+      xMin: -3, xMax: 8,
+      yMin: -3, yMax: 8,
+      zoomFactor: 1.0
+    };
+
+    function resizeCanvas() {
+      const rect = canvas.parentElement.getBoundingClientRect();
+      canvas.width = rect.width * window.devicePixelRatio;
+      canvas.height = rect.height * window.devicePixelRatio;
+      autoFitViewport();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function toPxX(x) {
+      return (x - viewport.xMin) / (viewport.xMax - viewport.xMin) * canvas.width;
+    }
+    function toPxY(y) {
+      return canvas.height - (y - viewport.yMin) / (viewport.yMax - viewport.yMin) * canvas.height;
+    }
+
+    function autoFitViewport() {
+      const A = canvas.width / canvas.height;
+      let rawXMin = -2, rawXMax = 7, rawYMin = -4, rawYMax = 8;
+
+      if (state.mainPart === '3A') {
+        const { a, b, c } = state.part3A;
+        const delta = b * b - 4 * a * c;
+        const xVertex = -b / (2 * a);
+        const yVertex = -delta / (4 * a);
+
+        rawXMin = Math.min(-2, xVertex - 4);
+        rawXMax = Math.max(7, xVertex + 4);
+        rawYMin = Math.min(-4, yVertex - 3);
+        rawYMax = Math.max(8, yVertex + 5);
+
+        if (delta > 0) {
+          const x1 = (-b - Math.sqrt(delta)) / (2 * a);
+          const x2 = (-b + Math.sqrt(delta)) / (2 * a);
+          rawXMin = Math.min(rawXMin, x1 - 2);
+          rawXMax = Math.max(rawXMax, x2 + 2);
+        }
+      } else if (state.mainPart === '3B') {
+        const tab = state.part3B.currentTab;
+        if (tab === 'B3a') {
+          // Tunnel Arch: y = 5.5 - 0.05x^2, truck 4.2m
+          rawXMin = -8; rawXMax = 8;
+          rawYMin = -1; rawYMax = 7;
+        } else if (tab === 'B3b') {
+          // Revenue: R(x) = -0.2x^2 + 1.4x + 6 (in millions)
+          rawXMin = -1; rawXMax = 9;
+          rawYMin = -2; rawYMax = 10;
+        } else if (tab === 'B3c') {
+          // Oxygen: O(t) = 0.25t^2 - 2.5t + 9.25
+          rawXMin = -1; rawXMax = 11;
+          rawYMin = -1; rawYMax = 11;
+        }
+      }
+
+      // Safety Margin 20%
+      const cx = (rawXMin + rawXMax) / 2;
+      const cy = (rawYMin + rawYMax) / 2;
+      let w = (rawXMax - rawXMin) * 1.2 * viewport.zoomFactor;
+      let h = (rawYMax - rawYMin) * 1.2 * viewport.zoomFactor;
+
+      if (w / h < A) w = h * A;
+      else h = w / A;
+
+      viewport.xMin = cx - w / 2;
+      viewport.xMax = cx + w / 2;
+      viewport.yMin = cy - h / 2;
+      viewport.yMax = cy + h / 2;
+
+      drawGraph();
+    }
+
+    function zoomViewport(factor) {
+      viewport.zoomFactor *= factor;
+      autoFitViewport();
+    }
+
+    function drawGraph() {
+      if (!canvas.width || !canvas.height) return;
+
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // Background
+      ctx.fillStyle = '#0a1628';
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+      const px0 = toPxX(0);
+      const py0 = toPxY(0);
+
+      // Grid Lines
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      for (let x = Math.ceil(viewport.xMin); x <= Math.floor(viewport.xMax); x++) {
+        const px = toPxX(x);
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, canvas.height); ctx.stroke();
+      }
+      for (let y = Math.ceil(viewport.yMin); y <= Math.floor(viewport.yMax); y++) {
+        const py = toPxY(y);
+        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(canvas.width, py); ctx.stroke();
+      }
+
+      // Axis Ox & Oy
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(canvas.width, py0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px0, canvas.height); ctx.lineTo(px0, 0); ctx.stroke();
+
+      // Labels & Ticks
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '11px "Plus Jakarta Sans", sans-serif';
+      for (let x = Math.ceil(viewport.xMin); x <= Math.floor(viewport.xMax); x++) {
+        if (x === 0) continue;
+        const px = toPxX(x);
+        ctx.beginPath(); ctx.moveTo(px, py0 - 3); ctx.lineTo(px, py0 + 3); ctx.stroke();
+        ctx.fillText(x.toString(), px - 4, py0 + 16);
+      }
+      for (let y = Math.ceil(viewport.yMin); y <= Math.floor(viewport.yMax); y += 2) {
+        if (y === 0) continue;
+        const py = toPxY(y);
+        ctx.beginPath(); ctx.moveTo(px0 - 3, py); ctx.lineTo(px0 + 3, py); ctx.stroke();
+        ctx.fillText(y.toString(), px0 - 20, py + 4);
+      }
+      ctx.fillStyle = '#ffffff';
+      ctx.font = 'bold 12px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('x', canvas.width - 14, py0 + 16);
+      ctx.fillText('y', px0 + 10, 14);
+      ctx.fillText('O', px0 - 14, py0 + 16);
+
+      // RENDER SPECIFIC SCENARIO GRAPH
+      if (state.mainPart === '3A') {
+        drawPart3AGraph();
+      } else if (state.mainPart === '3B') {
+        const tab = state.part3B.currentTab;
+        if (tab === 'B3a') drawTunnelArchGraph();
+        else if (tab === 'B3b') drawRoboticsRevenueGraph();
+        else if (tab === 'B3c') drawOxygenGraph();
+        else drawPart3AGraph(); // fallback for B1/B2
+      }
+    }
+
+    function drawPart3AGraph() {
+      const { a, b, c } = state.part3A;
+      const f = (x) => a * x * x + b * x + c;
+
+      // Draw Parabola Curve
+      ctx.strokeStyle = '#2d8b6f';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      let first = true;
+      for (let px = 0; px <= canvas.width; px += 2) {
+        const x = viewport.xMin + (px / canvas.width) * (viewport.xMax - viewport.xMin);
+        const y = f(x);
+        const py = toPxY(y);
+        if (first) { ctx.moveTo(px, py); first = false; }
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Highlight Roots if any
+      const delta = b * b - 4 * a * c;
+      if (delta >= 0) {
+        const x1 = (-b - Math.sqrt(delta)) / (2 * a);
+        const x2 = (-b + Math.sqrt(delta)) / (2 * a);
+
+        drawPoint(toPxX(x1), toPxY(0), '#d97706', 6);
+        drawPoint(toPxX(x2), toPxY(0), '#d97706', 6);
+      }
+    }
+
+    function drawTunnelArchGraph() {
+      // Tunnel Arch: y = 5.5 - 0.05x^2
+      const f = (x) => 5.5 - 0.05 * x * x;
+
+      // Draw Arch
+      ctx.strokeStyle = '#38bdf8';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      let first = true;
+      for (let px = 0; px <= canvas.width; px += 2) {
+        const x = viewport.xMin + (px / canvas.width) * (viewport.xMax - viewport.xMin);
+        const y = f(x);
+        if (y >= 0) {
+          const py = toPxY(y);
+          if (first) { ctx.moveTo(px, py); first = false; }
+          else ctx.lineTo(px, py);
+        }
+      }
+      ctx.stroke();
+
+      // Safe threshold line y = 4.2m
+      const pyThreshold = toPxY(4.2);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 6]);
+      ctx.beginPath(); ctx.moveTo(0, pyThreshold); ctx.lineTo(canvas.width, pyThreshold); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#f59e0b';
+      ctx.font = 'bold 12px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('Ngưỡng cao xe 4.2m', toPxX(3.5), pyThreshold - 8);
+
+      // Draw Truck Box at position sliderX_3a
+      const tx = state.part3B.sliderX_3a;
+      const pxTruck = toPxX(tx);
+      const pyTruckTop = toPxY(4.2);
+      const pyRoad = toPxY(0);
+
+      ctx.fillStyle = 'rgba(239, 68, 68, 0.4)';
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2;
+      ctx.fillRect(pxTruck - 15, pyTruckTop, 30, pyRoad - pyTruckTop);
+      ctx.strokeRect(pxTruck - 15, pyTruckTop, 30, pyRoad - pyTruckTop);
+
+      drawPoint(pxTruck, pyTruckTop, '#ef4444', 5);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(`Xe (x=${tx.toFixed(1)}m)`, pxTruck - 25, pyTruckTop - 10);
+    }
+
+    function drawRoboticsRevenueGraph() {
+      // Revenue R(x) = -0.2x^2 + 1.4x + 6 (in millions)
+      const R = (x) => -0.2 * x * x + 1.4 * x + 6;
+
+      ctx.strokeStyle = '#10b981';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      let first = true;
+      for (let px = 0; px <= canvas.width; px += 2) {
+        const x = viewport.xMin + (px / canvas.width) * (viewport.xMax - viewport.xMin);
+        const y = R(x);
+        const py = toPxY(y);
+        if (first) { ctx.moveTo(px, py); first = false; }
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Target line R = 8M
+      const py8M = toPxY(8);
+      ctx.strokeStyle = '#f59e0b';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 6]);
+      ctx.beginPath(); ctx.moveTo(0, py8M); ctx.lineTo(canvas.width, py8M); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#f59e0b';
+      ctx.fillText('Mục tiêu 8.000.000đ', toPxX(4), py8M - 8);
+
+      // Current Slider Point
+      const sx = state.part3B.sliderX_3b;
+      const sy = R(sx);
+      drawPoint(toPxX(sx), toPxY(sy), '#38bdf8', 6);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(`x=${sx.toFixed(1)} (R=${sy.toFixed(2)} triệu)`, toPxX(sx) + 8, toPxY(sy) - 8);
+    }
+
+    function drawOxygenGraph() {
+      // Oxygen O(t) = 0.25t^2 - 2.5t + 9.25
+      const O = (t) => 0.25 * t * t - 2.5 * t + 9.25;
+
+      ctx.strokeStyle = '#3b82f6';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      let first = true;
+      for (let px = 0; px <= canvas.width; px += 2) {
+        const t = viewport.xMin + (px / canvas.width) * (viewport.xMax - viewport.xMin);
+        const y = O(t);
+        const py = toPxY(y);
+        if (first) { ctx.moveTo(px, py); first = false; }
+        else ctx.lineTo(px, py);
+      }
+      ctx.stroke();
+
+      // Safe threshold O = 4 mg/L
+      const py4 = toPxY(4);
+      ctx.strokeStyle = '#ef4444';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 6]);
+      ctx.beginPath(); ctx.moveTo(0, py4); ctx.lineTo(canvas.width, py4); ctx.stroke();
+      ctx.setLineDash([]);
+      ctx.fillStyle = '#ef4444';
+      ctx.fillText('Ngưỡng nguy hiểm cho cá (< 4 mg/L)', toPxX(4.5), py4 + 16);
+
+      // Current Time Slider Point
+      const st = state.part3B.sliderT_3c;
+      const sy = O(st);
+      const pointColor = sy < 4 ? '#ef4444' : '#10b981';
+      drawPoint(toPxX(st), toPxY(sy), pointColor, 6);
+      ctx.fillStyle = '#ffffff';
+      ctx.fillText(`t=${st.toFixed(1)}h (O2=${sy.toFixed(2)}mg/L)`, toPxX(st) + 8, toPxY(sy) - 8);
+    }
+
+    function drawPoint(px, py, color, r = 5) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    /* =========================================================================
+       3. INTERACTIVE PART 3A LOGIC & RENDERING
+       ========================================================================= */
+    function switchMainPart(part) {
+      state.mainPart = part;
+      document.getElementById('subnav-3a').className = `sub-nav-btn ${part==='3A'?'active':''}`;
+      document.getElementById('subnav-3b').className = `sub-nav-btn ${part==='3B'?'active':''}`;
+
+      renderSidebar();
+      autoFitViewport();
+    }
+
+    function renderSidebar() {
+      const panel = document.getElementById('sidebar-panel');
+      if (state.mainPart === '3A') {
+        renderPart3ASidebar(panel);
+      } else {
+        renderPart3BSidebar(panel);
+      }
+      renderKaTeXInElement(panel);
+    }
+
+    function renderPart3ASidebar(container) {
+      const { a, b, c, sign, currentStep } = state.part3A;
+      const eqStr = `${a}x^2 ${b>=0?'+ '+b:'- '+Math.abs(b)}x ${c>=0?'+ '+c:'- '+Math.abs(c)} ${sign==='>='?'\\ge':sign==='>'?'>':sign==='<='?'\\le':'<'} 0`;
+
+      container.innerHTML = `
+        <div class="card">
+          <div class="card-title"><i class="ti ti-adjustments-horizontal" style="color:var(--teal);"></i> Bài tập luyện tập giải BPT bậc hai</div>
+          <div class="info-box athena" style="margin-bottom:12px;">
+            Giải bất phương trình: $${eqStr}$
+          </div>
+          <div style="display:flex; gap:10px; align-items:center;">
+            <button class="btn btn-outline-teal" style="flex:1;" onclick="generateRandom3AQuestion()">
+              <i class="ti ti-refresh"></i> Làm bài khác (Sinh đề ngẫu nhiên 🔄)
+            </button>
+          </div>
+        </div>
+
+        <!-- BƯỚC 1 -->
+        <div class="card" style="opacity: ${currentStep >= 1 ? 1 : 0.6}">
+          <div class="card-title">
+            <span class="step-badge ${currentStep>=1?'':'locked'}">1</span> Bước 1: Tính $\\Delta$ và xác định nghiệm
+          </div>
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label">Tính giá trị $\\Delta = b^2 - 4ac$:</label>
+            <input type="text" class="text-input" id="inp-3a-delta" placeholder="Nhập số giá trị Delta..." value="${state.part3A.deltaInput}" ${state.part3A.step1Completed?'disabled':''}>
+          </div>
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label">Số nghiệm của tam thức:</label>
+            <select class="text-input" id="sel-3a-roottype" ${state.part3A.step1Completed?'disabled':''}>
+              <option value="">-- Chọn số nghiệm --</option>
+              <option value="two" ${state.part3A.rootTypeInput==='two'?'selected':''}>Có 2 nghiệm phân biệt</option>
+              <option value="double" ${state.part3A.rootTypeInput==='double'?'selected':''}>Có 1 nghiệm kép</option>
+              <option value="none" ${state.part3A.rootTypeInput==='none'?'selected':''}>Vô nghiệm</option>
+            </select>
+          </div>
+          <div class="control-group" style="margin-bottom:12px;">
+            <label class="control-label">Nhập giá trị nghiệm (nếu có, ví dụ: 2, 3):</label>
+            <input type="text" class="text-input" id="inp-3a-roots" placeholder="Ví dụ: 2, 3" value="${state.part3A.rootsInput}" ${state.part3A.step1Completed?'disabled':''}>
+          </div>
+
+          <div id="fb-3a-step1"></div>
+
+          ${!state.part3A.step1Completed ? `
+            <button class="btn btn-primary" style="width:100%;" onclick="submit3AStep1()">
+              <i class="ti ti-check"></i> Xác nhận Bước 1
+            </button>
+          ` : `<div style="color:var(--correct); font-weight:600; font-size:13px;">✓ Đã hoàn thành Bước 1</div>`}
+        </div>
+
+        <!-- BƯỚC 2 -->
+        <div class="card" style="opacity: ${currentStep >= 2 ? 1 : 0.5}; pointer-events: ${currentStep >= 2 ? 'auto' : 'none'}">
+          <div class="card-title">
+            <span class="step-badge ${currentStep>=2?'':'locked'}">2</span> Bước 2: Lập bảng xét dấu của $f(x)$
+          </div>
+          <div class="info-box" style="margin-bottom:10px;">
+            Click vào ô để chọn dấu ($+$ hoặc $-$) cho từng khoảng của $f(x)$:
+          </div>
+
+          <table class="sign-table">
+            <thead>
+              <tr>
+                <th>Khoảng $x$</th>
+                <th>$(-\\infty; x_1)$</th>
+                <th>$(x_1; x_2)$</th>
+                <th>$(x_2; +\\infty)$</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Dấu $f(x)$</b></td>
+                <td><button class="sign-cell-btn ${state.part3A.signCells[0]==='+'?'plus':'minus'}" onclick="toggleSignCell(0)">${state.part3A.signCells[0]}</button></td>
+                <td><button class="sign-cell-btn ${state.part3A.signCells[1]==='+'?'plus':'minus'}" onclick="toggleSignCell(1)">${state.part3A.signCells[1]}</button></td>
+                <td><button class="sign-cell-btn ${state.part3A.signCells[2]==='+'?'plus':'minus'}" onclick="toggleSignCell(2)">${state.part3A.signCells[2]}</button></td>
+              </tr>
+            </tbody>
+          </table>
+
+          <div id="fb-3a-step2"></div>
+
+          ${currentStep >= 2 && !state.part3A.step2Completed ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="submit3AStep2()">
+              <i class="ti ti-check"></i> Xác nhận Bước 2
+            </button>
+          ` : currentStep > 2 ? `<div style="color:var(--correct); font-weight:600; font-size:13px;">✓ Đã hoàn thành Bước 2</div>` : ''}
+        </div>
+
+        <!-- BƯỚC 3 -->
+        <div class="card" style="opacity: ${currentStep >= 3 ? 1 : 0.5}; pointer-events: ${currentStep >= 3 ? 'auto' : 'none'}">
+          <div class="card-title">
+            <span class="step-badge ${currentStep>=3?'':'locked'}">3</span> Bước 3: Đọc tập nghiệm của BPT
+          </div>
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label">Nhập khoảng nghiệm BPT (ví dụ: $(-\\infty; 2] \\cup [3; +\\infty)$):</label>
+            <input type="text" class="text-input" id="inp-3a-interval" placeholder="Nhập khoảng nghiệm..." value="${state.part3A.intervalInput}" ${state.part3A.step3Completed?'disabled':''}>
+          </div>
+
+          <div id="fb-3a-step3"></div>
+
+          ${currentStep >= 3 && !state.part3A.step3Completed ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="submit3AStep3()">
+              <i class="ti ti-check"></i> Xác nhận Hoàn thành BPT
+            </button>
+          ` : state.part3A.step3Completed ? `<div style="color:var(--correct); font-weight:600; font-size:13px;">🎉 Đã hoàn thành giải BPT thành công!</div>` : ''}
+        </div>
+      `;
+    }
+
+    function toggleSignCell(idx) {
+      if (state.part3A.currentStep < 2 || state.part3A.step2Completed) return;
+      state.part3A.signCells[idx] = state.part3A.signCells[idx] === '+' ? '-' : '+';
+      renderSidebar();
+    }
+
+    function submit3AStep1() {
+      const deltaVal = parseFloat(document.getElementById('inp-3a-delta').value);
+      const rootType = document.getElementById('sel-3a-roottype').value;
+      const rootsStr = document.getElementById('inp-3a-roots').value.trim();
+      const fb = document.getElementById('fb-3a-step1');
+
+      state.part3A.deltaInput = document.getElementById('inp-3a-delta').value;
+      state.part3A.rootTypeInput = rootType;
+      state.part3A.rootsInput = rootsStr;
+
+      const { a, b, c } = state.part3A;
+      const trueDelta = b * b - 4 * a * c;
+
+      let expectedType = 'two';
+      if (trueDelta === 0) expectedType = 'double';
+      else if (trueDelta < 0) expectedType = 'none';
+
+      const isDeltaOk = Math.abs(deltaVal - trueDelta) < 0.1;
+      const isTypeOk = rootType === expectedType;
+
+      if (isDeltaOk && isTypeOk) {
+        state.part3A.step1Completed = true;
+        state.part3A.currentStep = 2;
+        fb.innerHTML = `<div class="info-box correct">✓ ĐÚNG! $\\Delta = ${trueDelta}$, xác định đúng loại nghiệm. Chuyển sang Bước 2!</div>`;
+        setTimeout(renderSidebar, 800);
+      } else {
+        state.part3A.step1Attempts++;
+        if (state.part3A.step1Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa chính xác. Kiểm tra lại công thức $\\Delta = b^2 - 4ac$ nhé!</div>`;
+        } else if (state.part3A.step1Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $a=${a}, b=${b}, c=${c} \\to \\Delta = (${b})^2 - 4(${a})(${c})$.</div>`;
+        } else {
+          state.part3A.step1Completed = true;
+          state.part3A.currentStep = 2;
+          state.part3A.deltaInput = trueDelta.toString();
+          state.part3A.rootTypeInput = expectedType;
+          fb.innerHTML = `<div class="info-box athena">Đáp án chuẩn: $\\Delta = ${trueDelta}$. Chuyển sang Bước 2!</div>`;
+          setTimeout(renderSidebar, 1200);
+        }
+      }
+    }
+
+    function submit3AStep2() {
+      const { a, b, c } = state.part3A;
+      const delta = b * b - 4 * a * c;
+      const fb = document.getElementById('fb-3a-step2');
+
+      let expectedSigns = ['+', '-', '+'];
+      if (a < 0) expectedSigns = ['-', '+', '-'];
+      if (delta <= 0) {
+        expectedSigns = a > 0 ? ['+', '+', '+'] : ['-', '-', '-'];
+      }
+
+      const isSignsOk = state.part3A.signCells.every((val, idx) => val === expectedSigns[idx]);
+
+      if (isSignsOk) {
+        state.part3A.step2Completed = true;
+        state.part3A.currentStep = 3;
+        fb.innerHTML = `<div class="info-box correct">✓ ĐÚNG! Bạn đã lập đúng bảng xét dấu theo định lý dấu tam thức. Chuyển sang Bước 3!</div>`;
+        setTimeout(renderSidebar, 800);
+      } else {
+        state.part3A.step2Attempts++;
+        if (state.part3A.step2Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa chính xác. Nhớ quy tắc: Khoảng ngoài nghiệm cùng dấu $a$ ($a=${a}$), khoảng trong trái dấu $a$.</div>`;
+        } else {
+          state.part3A.signCells = expectedSigns;
+          state.part3A.step2Completed = true;
+          state.part3A.currentStep = 3;
+          fb.innerHTML = `<div class="info-box athena">Đáp án chuẩn bảng xét dấu đã được cập nhật. Chuyển sang Bước 3!</div>`;
+          setTimeout(renderSidebar, 1200);
+        }
+      }
+    }
+
+    function submit3AStep3() {
+      const val = document.getElementById('inp-3a-interval').value.trim();
+      const fb = document.getElementById('fb-3a-step3');
+      state.part3A.intervalInput = val;
+
+      if (val.length > 0) {
+        state.part3A.step3Completed = true;
+        fb.innerHTML = `
+          <div class="info-box correct">
+            <b>✓ Chính xác!</b> Bạn đã đọc đúng tập nghiệm từ bảng xét dấu khớp với BPT.
+          </div>
+          <button class="btn btn-outline-teal" style="width:100%; margin-top:10px;" onclick="generateRandom3AQuestion()">
+            <i class="ti ti-refresh"></i> Làm thêm bài mới 🔄
+          </button>
+        `;
+        LMS().complete();
+      } else {
+        fb.innerHTML = `<div class="info-box error">Vui lòng nhập khoảng tập nghiệm.</div>`;
+      }
+    }
+
+    function generateRandom3AQuestion() {
+      const presets = [
+        { a: 1, b: -5, c: 6, sign: '>=' },  // delta > 0
+        { a: -1, b: 4, c: -3, sign: '<' },  // delta > 0, a < 0
+        { a: 1, b: -6, c: 9, sign: '>=' },  // delta = 0
+        { a: 1, b: 2, c: 5, sign: '>' }    // delta < 0
+      ];
+
+      const p = presets[state.part3A.practiceCount % presets.length];
+      state.part3A.practiceCount++;
+
+      state.part3A.a = p.a;
+      state.part3A.b = p.b;
+      state.part3A.c = p.c;
+      state.part3A.sign = p.sign;
+      state.part3A.currentStep = 1;
+      state.part3A.deltaInput = '';
+      state.part3A.rootTypeInput = '';
+      state.part3A.rootsInput = '';
+      state.part3A.step1Completed = false;
+      state.part3A.step1Attempts = 0;
+      state.part3A.signCells = ['+', '-', '+'];
+      state.part3A.step2Completed = false;
+      state.part3A.step2Attempts = 0;
+      state.part3A.intervalInput = '';
+      state.part3A.step3Completed = false;
+
+      renderSidebar();
+      autoFitViewport();
+    }
+
+    /* =========================================================================
+       4. INTERACTIVE PART 3B LOGIC & RENDERING
+       ========================================================================= */
+    function switchTab3B(tab) {
+      state.part3B.currentTab = tab;
+      renderSidebar();
+      autoFitViewport();
+    }
+
+    function renderPart3BSidebar(container) {
+      const tab = state.part3B.currentTab;
+
+      let html = `
+        <div style="display:flex; gap:6px; overflow-x:auto; margin-bottom:10px;">
+          <button class="btn ${tab==='B1'?'btn-primary':'btn-secondary'}" style="font-size:12.5px; padding:6px 12px;" onclick="switchTab3B('B1')">B1. Tham số</button>
+          <button class="btn ${tab==='B2'?'btn-primary':'btn-secondary'}" style="font-size:12.5px; padding:6px 12px;" onclick="switchTab3B('B2')">B2. Chữa bệnh</button>
+          <button class="btn ${tab==='B3a'?'btn-primary':'btn-secondary'}" style="font-size:12.5px; padding:6px 12px;" onclick="switchTab3B('B3a')">B3a. Hầm chui</button>
+          <button class="btn ${tab==='B3b'?'btn-primary':'btn-secondary'}" style="font-size:12.5px; padding:6px 12px;" onclick="switchTab3B('B3b')">B3b. Vé Robotics</button>
+          <button class="btn ${tab==='B3c'?'btn-primary':'btn-secondary'}" style="font-size:12.5px; padding:6px 12px;" onclick="switchTab3B('B3c')">B3c. Oxy ao cá</button>
+        </div>
+      `;
+
+      if (tab === 'B1') {
+        html += `
+          <div class="card">
+            <div class="card-title"><i class="ti ti-variable" style="color:var(--teal);"></i> B1. Bài toán biện luận tham số $m$</div>
+            <div class="info-box athena" style="margin-bottom:12px;">
+              Tìm tất cả giá trị của $m$ để tam thức $f(x) = x^2 - 2mx + m + 6$ luôn DƯƠNG với mọi $x \\in \\mathbb{R}$.
+            </div>
+            <div class="control-group" style="margin-bottom:12px;">
+              <label class="control-label">Nhập khoảng giá trị của $m$ (dạng khoảng (a; b)):</label>
+              <input type="text" class="text-input" id="inp-b1-m" placeholder="Ví dụ: (-2; 3)" value="${state.part3B.b1Input}" ${state.part3B.b1Completed?'disabled':''}>
+            </div>
+
+            <div id="fb-3b-b1"></div>
+
+            ${!state.part3B.b1Completed ? `
+              <button class="btn btn-primary" style="width:100%;" onclick="submitB1()">
+                <i class="ti ti-check"></i> Xác nhận kết quả
+              </button>
+            ` : `<div style="color:var(--correct); font-weight:600;">✓ Hoàn thành B1!</div>`}
+          </div>
+        `;
+      } else if (tab === 'B2') {
+        html += `
+          <div class="card">
+            <div class="card-title"><i class="ti ti-bug" style="color:var(--teal);"></i> B2. Trò chơi "Chữa bệnh cho bài giải"</div>
+            <div class="info-box" style="margin-bottom:12px;">
+              Chạm vào dòng BỊ SAI trong từng bài giải bên dưới để tìm và chữa bệnh!
+            </div>
+
+            <b>Bài giải #1: Giải BPT $-2x^2 + 3x - 1 \\ge 0$</b>
+            <div style="margin-top:8px;">
+              <div class="debug-line ${state.part3B.b2_1SelectedLine===1?'selected-wrong':''}" onclick="selectDebugLine(1, 1)">
+                <span>1. Nhân 2 vế với -1: $2x^2 - 3x + 1 \\ge 0$</span>
+                <i class="ti ti-alert-triangle" style="color:var(--wrong);"></i>
+              </div>
+              <div class="debug-line ${state.part3B.b2_1SelectedLine===2?'selected-correct':''}" onclick="selectDebugLine(1, 2)">
+                <span>2. Tìm nghiệm $x = 1/2$ và $x = 1$</span>
+              </div>
+              <div class="debug-line ${state.part3B.b2_1SelectedLine===3?'selected-correct':''}" onclick="selectDebugLine(1, 3)">
+                <span>3. Kết luận $x \\le 1/2$ hoặc $x \\ge 1$</span>
+              </div>
+            </div>
+            <div id="fb-3b-b2-1"></div>
+
+            <hr style="margin:16px 0; border:none; border-top:1px solid var(--border);">
+
+            <b>Bài giải #2: Tìm $m$ để $x^2 - 4x + m = 0$ có 2 nghiệm phân biệt</b>
+            <div style="margin-top:8px;">
+              <div class="debug-line ${state.part3B.b2_2SelectedLine===1?'selected-wrong':''}" onclick="selectDebugLine(2, 1)">
+                <span>1. Cần điều kiện $\\Delta \\ge 0$</span>
+                <i class="ti ti-alert-triangle" style="color:var(--wrong);"></i>
+              </div>
+              <div class="debug-line ${state.part3B.b2_2SelectedLine===2?'selected-correct':''}" onclick="selectDebugLine(2, 2)">
+                <span>2. Tính $\\Delta = 16 - 4m \\ge 0$</span>
+              </div>
+              <div class="debug-line ${state.part3B.b2_2SelectedLine===3?'selected-correct':''}" onclick="selectDebugLine(2, 3)">
+                <span>3. Kết luận $m \\le 4$</span>
+              </div>
+            </div>
+            <div id="fb-3b-b2-2"></div>
+          </div>
+        `;
+      } else if (tab === 'B3a') {
+        html += `
+          <div class="card">
+            <div class="card-title"><i class="ti ti-truck" style="color:var(--teal);"></i> B3a. Xe siêu trường qua vòm hầm Kim Liên</div>
+            <div class="info-box athena" style="margin-bottom:12px;">
+              Mặt cắt vòm hầm $y = 5,5 - 0,05x^2$. Xe cao $4,2\\text{m}$. Giải BPT $5,5 - 0,05x^2 \\ge 4,2$ để tìm phạm vi $x$ an toàn.
+            </div>
+
+            <div class="control-group" style="margin-bottom:12px;">
+              <div class="control-label">
+                <span>Thử vị trí xe $x$:</span>
+                <span style="color:var(--teal); font-weight:700;">x = ${state.part3B.sliderX_3a.toFixed(1)}m</span>
+              </div>
+              <input type="range" min="-7" max="7" step="0.1" value="${state.part3B.sliderX_3a}" oninput="onSlider3A(this.value)">
+            </div>
+
+            <div class="control-group" style="margin-bottom:12px;">
+              <label class="control-label">Khoảng cách $x$ tối đa tính từ tim hầm:</label>
+              <input type="text" class="text-input" id="inp-b3a" placeholder="Ví dụ: 5.1" value="${state.part3B.b3aInput}" ${state.part3B.b3aCompleted?'disabled':''}>
+            </div>
+
+            <div id="fb-3b-b3a"></div>
+
+            ${!state.part3B.b3aCompleted ? `
+              <button class="btn btn-primary" style="width:100%;" onclick="submitB3a()">
+                <i class="ti ti-check"></i> Xác nhận kết quả
+              </button>
+            ` : `<div style="color:var(--correct); font-weight:600;">✓ Hoàn thành B3a!</div>`}
+          </div>
+        `;
+      } else if (tab === 'B3b') {
+        html += `
+          <div class="card">
+            <div class="card-title"><i class="ti ti-ticket" style="color:var(--teal);"></i> B3b. Doanh thu tối thiểu CLB Robotics</div>
+            <div class="info-box athena" style="margin-bottom:12px;">
+              Doanh thu $R(x) = -200.000x^2 + 1.400.000x + 6.000.000$. Giải BPT $R(x) \\ge 8.000.000$đ để tìm số lần giảm giá $x$.
+            </div>
+
+            <div class="control-group" style="margin-bottom:12px;">
+              <div class="control-label">
+                <span>Số lần giảm giá $x$:</span>
+                <span style="color:var(--teal); font-weight:700;">x = ${state.part3B.sliderX_3b.toFixed(1)} lần</span>
+              </div>
+              <input type="range" min="0" max="7" step="0.1" value="${state.part3B.sliderX_3b}" oninput="onSlider3B(this.value)">
+            </div>
+
+            <div class="control-group" style="margin-bottom:12px;">
+              <label class="control-label">Nhập khoảng số lần giảm giá $x$ (ví dụ: [2; 5]):</label>
+              <input type="text" class="text-input" id="inp-b3b" placeholder="Ví dụ: 2 đến 5" value="${state.part3B.b3bInput}" ${state.part3B.b3bCompleted?'disabled':''}>
+            </div>
+
+            <div id="fb-3b-b3b"></div>
+
+            ${!state.part3B.b3bCompleted ? `
+              <button class="btn btn-primary" style="width:100%;" onclick="submitB3b()">
+                <i class="ti ti-check"></i> Xác nhận kết quả
+              </button>
+            ` : `<div style="color:var(--correct); font-weight:600;">✓ Hoàn thành B3b!</div>`}
+          </div>
+        `;
+      } else if (tab === 'B3c') {
+        html += `
+          <div class="card">
+            <div class="card-title"><i class="ti ti-ripple" style="color:var(--teal);"></i> B3c. Nồng độ Oxy ao nuôi cá</div>
+            <div class="info-box athena" style="margin-bottom:12px;">
+              Nồng độ oxy $O(t) = 0,25t^2 - 2,5t + 9,25$. Giải BPT $O(t) < 4$ để tìm khoảng giờ $t$ nguy hiểm cần bật máy sục khí.
+            </div>
+
+            <div class="control-group" style="margin-bottom:12px;">
+              <div class="control-label">
+                <span>Thời gian $t$:</span>
+                <span style="color:var(--teal); font-weight:700;">t = ${state.part3B.sliderT_3c.toFixed(1)} giờ</span>
+              </div>
+              <input type="range" min="0" max="10" step="0.1" value="${state.part3B.sliderT_3c}" oninput="onSlider3C(this.value)">
+            </div>
+
+            <div class="control-group" style="margin-bottom:12px;">
+              <label class="control-label">Khoảng giờ $t$ cần bật máy sục khí (ví dụ: (3; 7)):</label>
+              <input type="text" class="text-input" id="inp-b3c" placeholder="Ví dụ: từ 3 đến 7" value="${state.part3B.b3cInput}" ${state.part3B.b3cCompleted?'disabled':''}>
+            </div>
+
+            <div id="fb-3b-b3c"></div>
+
+            ${!state.part3B.b3cCompleted ? `
+              <button class="btn btn-primary" style="width:100%;" onclick="submitB3c()">
+                <i class="ti ti-check"></i> Xác nhận hoàn thành B3c
+              </button>
+            ` : `<div style="color:var(--correct); font-weight:600;">🎉 Đã hoàn thành toàn bộ bài tập!</div>`}
+          </div>
+        `;
+      }
+
+      container.innerHTML = html;
+    }
+
+    function submitB1() {
+      const val = document.getElementById('inp-b1-m').value.trim();
+      const fb = document.getElementById('fb-3b-b1');
+      state.part3B.b1Input = val;
+
+      if (val.includes('-2') && val.includes('3')) {
+        state.part3B.b1Completed = true;
+        fb.innerHTML = `
+          <div class="info-box correct">
+            <b>✓ Chính xác!</b> $a=1>0$, $\\Delta' = m^2 - m - 6 < 0 \\iff -2 < m < 3$. Tam thức luôn dương khi $\\Delta' < 0$ nghiêm ngặt!
+          </div>
+        `;
+      } else {
+        fb.innerHTML = `<div class="info-box error">Chưa chính xác. $\\Delta' = m^2 - m - 6 < 0 \\implies -2 < m < 3$.</div>`;
+      }
+    }
+
+    function selectDebugLine(gameNum, lineNum) {
+      if (gameNum === 1) {
+        state.part3B.b2_1SelectedLine = lineNum;
+        const fb = document.getElementById('fb-3b-b2-1');
+        if (lineNum === 1) {
+          state.part3B.b2_1Completed = true;
+          fb.innerHTML = `<div class="info-box correct"><b>✓ Giỏi lắm!</b> Dòng 1 sai ở phép nhân với -1. Khi nhân số ÂM phải ĐỔI CHIỀU BPT $\\to 2x^2 - 3x + 1 \\le 0 \\iff 1/2 \\le x \\le 1$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box error">Dòng này không sai. Hãy tìm dòng nhân số âm nhưng quên đổi chiều BPT!</div>`;
+        }
+      } else if (gameNum === 2) {
+        state.part3B.b2_2SelectedLine = lineNum;
+        const fb = document.getElementById('fb-3b-b2-2');
+        if (lineNum === 1) {
+          state.part3B.b2_2Completed = true;
+          fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> "2 nghiệm phân biệt" yêu cầu $\\Delta > 0$ nghiêm ngặt, không được đặt $\\Delta \\ge 0$. Sửa lại: $16-4m>0 \\iff m < 4$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box error">Dòng này không sai. Hãy tìm dòng nhầm lẫn điều kiện $\\Delta > 0$ thành $\\Delta \\ge 0$!</div>`;
+        }
+      }
+      renderSidebar();
+    }
+
+    function onSlider3A(val) {
+      state.part3B.sliderX_3a = parseFloat(val);
+      drawGraph();
+    }
+    function submitB3a() {
+      const val = document.getElementById('inp-b3a').value.trim();
+      const fb = document.getElementById('fb-3b-b3a');
+      state.part3B.b3aInput = val;
+
+      if (val.includes('5.1') || val.includes('26')) {
+        state.part3B.b3aCompleted = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> $5,5 - 0,05x^2 \\ge 4,2 \\iff x^2 \\le 26 \\iff |x| \\le \\sqrt{26} \\approx 5,1\\text{m}$. Xe phải đi cách tim hầm không quá $5,1\\text{m}$ mỗi bên!</div>`;
+      } else {
+        fb.innerHTML = `<div class="info-box error">Chưa đúng. BPT $5,5 - 0,05x^2 \\ge 4,2 \\implies x^2 \\le 26 \\implies |x| \\le 5,1\\text{m}$.</div>`;
+      }
+    }
+
+    function onSlider3B(val) {
+      state.part3B.sliderX_3b = parseFloat(val);
+      drawGraph();
+    }
+    function submitB3b() {
+      const val = document.getElementById('inp-b3b').value.trim();
+      const fb = document.getElementById('fb-3b-b3b');
+      state.part3B.b3bInput = val;
+
+      if (val.includes('2') && val.includes('5')) {
+        state.part3B.b3bCompleted = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> $R(x) \\ge 8.000.000 \\iff x^2 - 7x + 10 \\le 0 \\iff 2 \\le x \\le 5$. Giá vé từ $100.000$đ đến $160.000$đ!</div>`;
+      } else {
+        fb.innerHTML = `<div class="info-box error">Chưa đúng. Chia cho -200.000 nhớ ĐỔI CHIỀU BPT $\\implies x^2 - 7x + 10 \\le 0 \\implies 2 \\le x \\le 5$.</div>`;
+      }
+    }
+
+    function onSlider3C(val) {
+      state.part3B.sliderT_3c = parseFloat(val);
+      drawGraph();
+    }
+    function submitB3c() {
+      const val = document.getElementById('inp-b3c').value.trim();
+      const fb = document.getElementById('fb-3b-b3c');
+      state.part3B.b3cInput = val;
+
+      if (val.includes('3') && val.includes('7')) {
+        state.part3B.b3cCompleted = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> $O(t) < 4 \\iff t^2 - 10t + 21 < 0 \\iff 3 < t < 7$. Cần bật máy sục khí từ giờ thứ 3 đến giờ thứ 7!</div>`;
+        openSummaryModal();
+        LMS().complete();
+      } else {
+        fb.innerHTML = `<div class="info-box error">Chưa đúng. BPT $0,25t^2 - 2,5t + 9,25 < 4 \\implies t^2 - 10t + 21 < 0 \\implies 3 < t < 7$.</div>`;
+      }
+    }
+
+    /* =========================================================================
+       5. MODALS & INIT
+       ========================================================================= */
+    function openNotebookModal() {
+      const modal = document.getElementById('modal-notebook');
+      modal.classList.add('active');
+      renderKaTeXInElement(modal);
+    }
+    function closeNotebookModal() {
+      document.getElementById('modal-notebook').classList.remove('active');
+    }
+
+    function openSummaryModal() {
+      const modal = document.getElementById('modal-summary');
+      modal.classList.add('active');
+      renderKaTeXInElement(modal);
+    }
+    function closeSummaryModal() {
+      document.getElementById('modal-summary').classList.remove('active');
+    }
+
+    function renderKaTeXInElement(el) {
+      if (window.renderMathInElement) {
+        window.renderMathInElement(el, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    }
+
+    // INIT ON LOAD
+    window.addEventListener('DOMContentLoaded', () => {
+      resizeCanvas();
+      renderSidebar();
+    });
+  </script>
+</body>
+</html>
