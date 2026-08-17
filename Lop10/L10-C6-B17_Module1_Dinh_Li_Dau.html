@@ -1,0 +1,1321 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 17: Module 1 — Định lí dấu tam thức bậc hai</title>
+
+  <!-- Google Fonts: Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;1,400;1,600&display=swap" rel="stylesheet">
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+  <!-- KaTeX for Math Formatting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    /* =========================================================================
+       1. CORE DESIGN SYSTEM & TOKENS (Jade & Cream Theme)
+       ========================================================================= */
+    :root {
+      --navy: #14432F;         /* Jade Dark */
+      --teal: #2D8B6F;         /* Primary Action / Active Tab */
+      --bg: #FAF7F0;           /* Cream background */
+      --surface: #ffffff;
+      --border: #e2e8f0;
+      --text: #0f172a;
+      --text-2: #334155;
+      --sub: #64748b;
+
+      --correct: #16a34a;
+      --correct-bg: #f0fdf4;
+      --wrong: #dc2626;
+      --wrong-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --info: #2563eb;
+      --info-bg: #eff6ff;
+
+      --purple: #8b5cf6;
+      --amber: #f59e0b;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      user-select: none;
+      -webkit-user-select: none;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER (Jade/Cream design) */
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 4px 12px rgba(20, 67, 47, 0.15);
+      z-index: 100;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.18);
+      backdrop-filter: blur(8px);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 13px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+    }
+
+    /* APP BODY LAYOUT */
+    .app-body {
+      display: grid;
+      grid-template-columns: 60% 40%;
+      flex: 1;
+      min-height: calc(100vh - 48px);
+    }
+
+    /* CANVAS COLUMN */
+    .canvas-column {
+      position: relative;
+      background-color: #ffffff;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      min-height: 480px;
+      border-right: 1px solid var(--border);
+    }
+
+    #canvas-wrap {
+      width: 100%;
+      height: 100%;
+      position: absolute;
+      top: 0;
+      left: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: #ffffff;
+    }
+
+    #graph-canvas {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      box-shadow: 0 4px 16px rgba(0, 0, 0, 0.04);
+      max-width: 100%;
+      max-height: 100%;
+    }
+
+    /* CANVAS FLOATING TOOLBAR (AUTO-FITTING & VIEWPORT CONTROL) */
+    .canvas-toolbar {
+      position: absolute;
+      bottom: 16px;
+      left: 16px;
+      display: flex;
+      gap: 8px;
+      z-index: 15;
+    }
+
+    .ctrl-btn {
+      background: rgba(255, 255, 255, 0.92);
+      color: var(--navy);
+      border: 1px solid var(--border);
+      padding: 7px 12px;
+      border-radius: 8px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      backdrop-filter: blur(8px);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      transition: all 0.2s ease;
+    }
+
+    .ctrl-btn:hover {
+      background: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
+      box-shadow: 0 4px 12px rgba(45, 139, 111, 0.25);
+    }
+
+    /* SIDEBAR COLUMN */
+    .sidebar-column {
+      background-color: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+    }
+
+    /* NAV TAGS CONTAINER */
+    .nav-tags-container {
+      display: grid;
+      grid-template-columns: 1fr 1fr 1fr;
+      gap: 8px;
+      padding: 16px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .tag-btn {
+      background: #f1f5f9;
+      color: var(--text-2);
+      border: 1px solid var(--border);
+      padding: 10px 10px;
+      border-radius: 10px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-align: center;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .tag-btn:hover {
+      background: #e2e8f0;
+      color: var(--navy);
+    }
+
+    .tag-btn.active {
+      background: var(--navy);
+      color: #ffffff;
+      border-color: var(--navy);
+      box-shadow: 0 4px 10px rgba(20, 67, 47, 0.2);
+    }
+
+    .tag-btn.visited::after {
+      content: "✓";
+      margin-left: 4px;
+      font-weight: 800;
+      color: #10b981;
+    }
+
+    .tag-btn.active.visited::after {
+      color: #34d399;
+    }
+
+    /* SIDEBAR CONTENT CONTAINER */
+    .sidebar-content {
+      padding: 20px;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .step-title {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 4px;
+    }
+
+    .info-box {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-left: 4px solid var(--teal);
+      padding: 14px 16px;
+      border-radius: 10px;
+      font-size: 13.5px;
+      line-height: 1.6;
+      color: var(--text-2);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.03);
+    }
+
+    .athena-box {
+      border-left-color: var(--navy);
+      background: #f8fafc;
+    }
+
+    /* CONTROL GROUP */
+    .control-group {
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 16px;
+    }
+
+    .control-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 6px;
+    }
+
+    input[type=range] {
+      width: 100%;
+      accent-color: var(--teal);
+      cursor: pointer;
+    }
+
+    /* INPUT FIELDS & BUTTONS */
+    .input-group {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .input-label {
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text);
+    }
+
+    .text-input {
+      width: 100%;
+      padding: 10px 14px;
+      font-size: 13.5px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: #ffffff;
+      color: var(--text);
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .text-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.15);
+    }
+
+    .text-input.wrong {
+      border-color: var(--wrong);
+      background-color: var(--wrong-bg);
+      animation: shake 0.4s ease;
+    }
+
+    .text-input.correct {
+      border-color: var(--correct);
+      background-color: var(--correct-bg);
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+
+    .choice-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .choice-btn {
+      padding: 12px 14px;
+      background: #ffffff;
+      border: 1.5px solid var(--border);
+      border-radius: 10px;
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text-2);
+      cursor: pointer;
+      text-align: left;
+      transition: all 0.2s ease;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .choice-btn:hover {
+      border-color: var(--teal);
+      background: #f8fafc;
+    }
+
+    .choice-btn.selected {
+      border-color: var(--teal);
+      background: #f0fdf4;
+      color: var(--navy);
+    }
+
+    .choice-btn.correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: var(--correct);
+      font-weight: 700;
+    }
+
+    .choice-btn.wrong {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+      color: var(--wrong);
+    }
+
+    .btn {
+      padding: 12px 20px;
+      border-radius: 10px;
+      font-size: 14px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: #ffffff;
+      box-shadow: 0 4px 12px rgba(45, 139, 111, 0.25);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--navy);
+    }
+
+    .btn-primary:disabled {
+      background: #cbd5e1;
+      box-shadow: none;
+      cursor: not-allowed;
+    }
+
+    /* MODAL POPUP FOR SUMMARY */
+    .modal-backdrop {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      background: rgba(15, 23, 42, 0.65);
+      backdrop-filter: blur(4px);
+      z-index: 1000;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-backdrop.show {
+      display: flex;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 640px;
+      width: 100%;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.2);
+      border: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 14px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      border-bottom: 1.5px solid var(--border);
+      padding-bottom: 10px;
+    }
+
+    .summary-card {
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px 14px;
+      margin-bottom: 10px;
+      font-size: 13px;
+    }
+
+    .summary-card-title {
+      font-weight: 700;
+      color: var(--navy);
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* RESPONSIVE MOBILE LAYOUT */
+    @media (max-width: 768px) {
+      .app-body {
+        display: flex;
+        flex-direction: column;
+        min-height: auto;
+      }
+      .canvas-column {
+        position: sticky;
+        top: 0;
+        z-index: 50;
+        width: 100%;
+        height: calc((100vh - 48px) * 0.45);
+        height: calc((100dvh - 48px) * 0.45);
+        min-height: 280px;
+        border-right: none;
+        border-bottom: 1px solid var(--border);
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      }
+      .sidebar-column {
+        width: 100%;
+      }
+      .nav-tags-container {
+        padding: 10px;
+        gap: 6px;
+      }
+      .tag-btn {
+        padding: 8px 6px;
+        font-size: 11px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-badge">
+      <i class="ti ti-chart-dots"></i> Bài 17: Dấu của tam thức bậc hai
+    </div>
+  </header>
+
+  <!-- APP BODY LAYOUT -->
+  <div class="app-body">
+
+    <!-- LEFT 2D GRAPH CANVAS COLUMN -->
+    <div class="canvas-column">
+      <div id="canvas-wrap">
+        <canvas id="graph-canvas" width="560" height="400"></canvas>
+      </div>
+
+      <!-- CANVAS FLOATING TOOLBAR FOR VIEWPORT FRAMING & AUTO-FITTING -->
+      <div class="canvas-toolbar">
+        <button class="ctrl-btn" onclick="autoFitViewport()" title="Auto-Fit Viewport">
+          <i class="ti ti-focus-2"></i> Fit Đồ thị
+        </button>
+        <button class="ctrl-btn" onclick="zoomViewport(0.85)" title="Phóng to">
+          <i class="ti ti-zoom-in"></i>
+        </button>
+        <button class="ctrl-btn" onclick="zoomViewport(1.18)" title="Thu nhỏ">
+          <i class="ti ti-zoom-out"></i>
+        </button>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR COLUMN -->
+    <div class="sidebar-column">
+
+      <!-- NAV TAGS SELECTOR (3 STEPS) -->
+      <div class="nav-tags-container">
+        <button class="tag-btn active" id="tag-1" onclick="switchTask(1)">
+          <i class="ti ti-target"></i> NV 1: Nghiệm & Dấu
+        </button>
+        <button class="tag-btn" id="tag-2" onclick="switchTask(2)">
+          <i class="ti ti-math-symbols"></i> NV 2: Khi Δ = 0
+        </button>
+        <button class="tag-btn" id="tag-3" onclick="switchTask(3)">
+          <i class="ti ti-arrows-sort"></i> NV 3: Chiều a < 0
+        </button>
+      </div>
+
+      <!-- DYNAMIC SIDEBAR CONTENT PANEL -->
+      <div class="sidebar-content" id="panel-container">
+        <!-- Content inserted dynamically by JS -->
+      </div>
+
+      <!-- FOOTER ACTION BUTTON -->
+      <div style="padding:16px 20px; border-top:1px solid var(--border); background:#ffffff;">
+        <button class="btn btn-primary" id="btn-show-summary" style="width:100%;" disabled onclick="openSummaryModal()">
+          <i class="ti ti-award"></i> 📜 Xem bảng tổng kết hoàn thành
+        </button>
+      </div>
+
+    </div>
+  </div>
+
+  <!-- SUMMARY MODAL POPUP -->
+  <div class="modal-backdrop" id="summary-modal">
+    <div class="modal-card">
+      <div class="modal-title">
+        <i class="ti ti-book" style="color:var(--teal); font-size:22px;"></i> Định lí dấu tam thức bậc hai (Tổng kết)
+      </div>
+
+      <div style="font-size:13.5px; color:var(--text-2); line-height:1.6; margin-bottom:12px;">
+        Cho tam thức bậc hai $f(x) = ax^2 + bx + c \quad (a \neq 0)$, có $\Delta = b^2 - 4ac$:
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-card-title"><i class="ti ti-check" style="color:var(--teal);"></i> 1. Nếu $\Delta < 0$</div>
+        $f(x)$ <b>CÙNG DẤU với $a$</b> với mọi $x \in \mathbb{R}$ (không bao giờ đổi dấu).
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-card-title"><i class="ti ti-check" style="color:var(--teal);"></i> 2. Nếu $\Delta = 0$</div>
+        $f(x)$ <b>CÙNG DẤU với $a$</b> với mọi $x \neq -\frac{b}{2a}$; riêng tại nghiệm kép $x = -\frac{b}{2a}$ thì $f(x) = 0$.
+      </div>
+
+      <div class="summary-card">
+        <div class="summary-card-title"><i class="ti ti-check" style="color:var(--teal);"></i> 3. Nếu $\Delta > 0$</div>
+        $f(x)$ có 2 nghiệm phân biệt $x_1 < x_2$:<br>
+        • $f(x)$ <b>CÙNG DẤU với $a$</b> khi $x$ nằm <b>NGOÀI</b> đoạn $[x_1; x_2]$ ($x < x_1$ hoặc $x > x_2$).<br>
+        • $f(x)$ <b>TRÁI DẤU với $a$</b> khi $x$ nằm <b>TRONG</b> khoảng $(x_1; x_2)$.<br>
+        <i>(Khẩu quyết nhớ nhanh: "Trong trái, ngoài cùng")</i>
+      </div>
+
+      <div style="background: var(--warning-bg); border: 1px solid var(--warning); border-radius: 10px; padding: 10px 14px; font-size: 12.5px; color: #92400e; margin-top: 10px;">
+        💡 <b>Ghi nhớ sư phạm:</b><br>
+        • <b>"Nghiệm"</b> là các ĐIỂM cụ thể mà $f(x) = 0$.<br>
+        • <b>"Dấu"</b> là tính chất dương/âm của $f(x)$ trên CẢ MỘT KHOẢNG.<br>
+        • Luôn kiểm tra dấu của hệ số $a$ trước khi kết luận dấu tam thức.
+      </div>
+
+      <div style="text-align:right; margin-top:16px;">
+        <button class="btn btn-primary" onclick="closeSummaryModal()">
+          <i class="ti ti-check"></i> Hoàn thành Module 1
+        </button>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT SIMULATION LOGIC -->
+  <script>
+    /* =========================================================================
+       1. STATE & INFRASTRUCTURE
+       ========================================================================= */
+    const state = {
+      currentTask: 1,
+      sliderX: 2.5,
+      task1: { rootInput: '', signInput: '', attempts: 0, completed: false },
+      task2: { selectedOpt: null, attempts: 0, completed: false },
+      task3: { selectedOpt: null, attempts: 0, completed: false }
+    };
+
+    const visitedTasks = new Set([1]);
+    const canvas = document.getElementById('graph-canvas');
+    const wrap = document.getElementById('canvas-wrap');
+    const ctx = canvas.getContext('2d');
+
+    /* DYNAMIC BOUNDING BOX AUTO-FITTING & VIEWPORT FRAMING STATE */
+    const viewport = {
+      xMin: -1.5, xMax: 6.5, yMin: -6.0, yMax: 6.0,
+      zoomFactor: 1.0
+    };
+
+    /* KaTeX Helper */
+    function renderKaTeXInElement(element) {
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(element || document.body, {
+            delimiters: [
+              { left: "$$", right: "$$", display: true },
+              { left: "$", right: "$", display: false },
+              { left: "\\(", right: "\\)", display: false },
+              { left: "\\[", right: "\\]", display: true }
+            ],
+            throwOnError: false
+          });
+        } catch (err) {
+          console.warn("KaTeX render error:", err);
+        }
+      }
+    }
+
+    /* LMS Integration */
+    function reportHeight() {
+      if (window.parent && window.parent !== window) {
+        window.parent.postMessage({ type: 'resize', height: document.documentElement.scrollHeight }, '*');
+      }
+    }
+    function LMS() {
+      return {
+        complete: () => {
+          console.log("LMS: Module 1 completed!");
+          if (window.parent && window.parent !== window) {
+            window.parent.postMessage({ type: 'complete' }, '*');
+          }
+        }
+      };
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(reportHeight).observe(document.body);
+      new ResizeObserver(() => {
+        resizeCanvas();
+        autoFitViewport();
+      }).observe(wrap);
+    }
+
+    function resizeCanvas() {
+      const cw = wrap.clientWidth - 32;
+      const ch = wrap.clientHeight - 32;
+      canvas.width = Math.max(300, cw);
+      canvas.height = Math.max(260, ch);
+    }
+
+    /* =========================================================================
+       2. DYNAMIC BOUNDING BOX AUTO-FITTING & VIEWPORT FRAMING ENGINE
+       ========================================================================= */
+    function autoFitViewport(taskNum = state.currentTask) {
+      let xPoints = [], yPoints = [];
+
+      if (taskNum === 1) {
+        const f = (x) => x * x - 5 * x + 4;
+        xPoints = [0, 1, 4, 2.5, state.sliderX];
+        yPoints = [0, f(1), f(4), f(2.5), f(state.sliderX), 4, -3];
+      } else if (taskNum === 2) {
+        const f = (x) => x * x - 6 * x + 9;
+        xPoints = [0, 3, state.sliderX, 6];
+        yPoints = [0, f(3), f(state.sliderX), 6, -1];
+      } else if (taskNum === 3) {
+        const f = (x) => x * x - 5 * x + 4;
+        const g = (x) => -x * x + 5 * x - 4;
+        xPoints = [0, 1, 4, 2.5, 5];
+        yPoints = [0, f(2.5), g(2.5), 5, -5];
+      }
+
+      let minX = Math.min(...xPoints);
+      let maxX = Math.max(...xPoints);
+      let minY = Math.min(...yPoints);
+      let maxY = Math.max(...yPoints);
+
+      const padX = Math.max((maxX - minX) * 0.22, 1.5);
+      const padY = Math.max((maxY - minY) * 0.22, 1.5);
+      minX -= padX; maxX += padX;
+      minY -= padY; maxY += padY;
+
+      const canvasAspect = canvas.width / canvas.height;
+      let spanX = maxX - minX;
+      let spanY = maxY - minY;
+
+      if (spanX / spanY < canvasAspect) {
+        spanX = spanY * canvasAspect;
+      } else {
+        spanY = spanX / canvasAspect;
+      }
+
+      const centerX = (minX + maxX) / 2;
+      const centerY = (minY + maxY) / 2;
+
+      viewport.xMin = (centerX - (spanX / 2) * viewport.zoomFactor);
+      viewport.xMax = (centerX + (spanX / 2) * viewport.zoomFactor);
+      viewport.yMin = (centerY - (spanY / 2) * viewport.zoomFactor);
+      viewport.yMax = (centerY + (spanY / 2) * viewport.zoomFactor);
+
+      drawGraph();
+    }
+
+    function zoomViewport(factor) {
+      viewport.zoomFactor *= factor;
+      viewport.zoomFactor = Math.max(0.5, Math.min(2.5, viewport.zoomFactor));
+      autoFitViewport();
+    }
+
+    /* =========================================================================
+       3. CANVAS GRAPHICS RENDER ENGINE
+       ========================================================================= */
+    function drawGraph() {
+      const w = canvas.width;
+      const h = canvas.height;
+
+      ctx.clearRect(0, 0, w, h);
+
+      const xMin = viewport.xMin, xMax = viewport.xMax;
+      const yMin = viewport.yMin, yMax = viewport.yMax;
+
+      function toPxX(x) { return ((x - xMin) / (xMax - xMin)) * w; }
+      function toPxY(y) { return h - ((y - yMin) / (yMax - yMin)) * h; }
+
+      // 1. Grid Lines
+      ctx.strokeStyle = '#f1f5f9';
+      ctx.lineWidth = 1;
+      for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
+        const px = toPxX(x);
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, h); ctx.stroke();
+      }
+      for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y++) {
+        const py = toPxY(y);
+        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(w, py); ctx.stroke();
+      }
+
+      // 2. Axes Ox, Oy
+      const px0 = toPxX(0);
+      const py0 = toPxY(0);
+
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1.8;
+
+      // Ox
+      ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(w, py0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(w - 8, py0 - 4); ctx.lineTo(w, py0); ctx.lineTo(w - 8, py0 + 4); ctx.stroke();
+
+      // Oy
+      ctx.beginPath(); ctx.moveTo(px0, h); ctx.lineTo(px0, 0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px0 - 4, 8); ctx.lineTo(px0, 0); ctx.lineTo(px0 + 4, 8); ctx.stroke();
+
+      // Labels
+      ctx.fillStyle = '#1e293b';
+      ctx.font = 'bold 12px "Be Vietnam Pro", sans-serif';
+      ctx.fillText('x', w - 14, py0 + 16);
+      ctx.fillText('y', px0 + 10, 14);
+      ctx.fillText('O', px0 - 14, py0 + 16);
+
+      // Ticks & Numbers on Ox
+      ctx.font = '11px "Be Vietnam Pro", sans-serif';
+      ctx.fillStyle = '#64748b';
+      for (let x = Math.ceil(xMin); x <= Math.floor(xMax); x++) {
+        if (x === 0) continue;
+        const px = toPxX(x);
+        ctx.beginPath(); ctx.moveTo(px, py0 - 3); ctx.lineTo(px, py0 + 3); ctx.stroke();
+        ctx.fillText(x.toString(), px - 4, py0 + 16);
+      }
+
+      // Ticks & Numbers on Oy
+      for (let y = Math.ceil(yMin); y <= Math.floor(yMax); y += 2) {
+        if (y === 0) continue;
+        const py = toPxY(y);
+        ctx.beginPath(); ctx.moveTo(px0 - 3, py); ctx.lineTo(px0 + 3, py); ctx.stroke();
+        ctx.fillText(y.toString(), px0 - 20, py + 4);
+      }
+
+      // 3. Render Curves according to Task
+      if (state.currentTask === 1) {
+        const f = (x) => x * x - 5 * x + 4;
+
+        // Shade f(x) < 0 (Red)
+        ctx.fillStyle = 'rgba(220, 38, 38, 0.12)';
+        ctx.beginPath();
+        ctx.moveTo(toPxX(1), py0);
+        for (let x = 1.0; x <= 4.0; x += 0.02) {
+          ctx.lineTo(toPxX(x), toPxY(f(x)));
+        }
+        ctx.lineTo(toPxX(4), py0);
+        ctx.closePath();
+        ctx.fill();
+
+        // Shade f(x) > 0 (Green)
+        ctx.fillStyle = 'rgba(22, 163, 74, 0.10)';
+        ctx.beginPath();
+        ctx.moveTo(toPxX(xMin), py0);
+        for (let x = xMin; x <= 1.0; x += 0.02) {
+          ctx.lineTo(toPxX(x), Math.max(0, toPxY(f(x))));
+        }
+        ctx.lineTo(toPxX(1), py0);
+        ctx.closePath();
+        ctx.fill();
+
+        ctx.beginPath();
+        ctx.moveTo(toPxX(4), py0);
+        for (let x = 4.0; x <= xMax; x += 0.02) {
+          ctx.lineTo(toPxX(x), Math.max(0, toPxY(f(x))));
+        }
+        ctx.lineTo(toPxX(xMax), py0);
+        ctx.closePath();
+        ctx.fill();
+
+        // Curve
+        ctx.strokeStyle = '#2D8B6F';
+        ctx.lineWidth = 2.8;
+        ctx.beginPath();
+        for (let x = xMin; x <= xMax; x += 0.02) {
+          const px = toPxX(x);
+          const py = toPxY(f(x));
+          if (x === xMin) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Root Dots
+        drawPoint(toPxX(1), py0, '#d97706', 6);
+        drawPoint(toPxX(4), py0, '#d97706', 6);
+        ctx.fillStyle = '#d97706';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText('x₁=1', toPxX(1) - 12, py0 - 10);
+        ctx.fillText('x₂=4', toPxX(4) - 12, py0 - 10);
+
+        // Cursor
+        const sx = state.sliderX;
+        const sy = f(sx);
+        const spx = toPxX(sx);
+        const spy = toPxY(sy);
+
+        ctx.strokeStyle = '#94a3b8';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(spx, py0); ctx.lineTo(spx, spy); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(px0, spy); ctx.lineTo(spx, spy); ctx.stroke();
+        ctx.setLineDash([]);
+
+        drawPoint(spx, spy, sy < 0 ? '#dc2626' : (sy === 0 ? '#d97706' : '#16a34a'), 6);
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(`(${sx.toFixed(1)}; ${sy.toFixed(1)})`, spx + 8, spy - 6);
+
+      } else if (state.currentTask === 2) {
+        const f = (x) => x * x - 6 * x + 9;
+
+        // Shade f(x) >= 0 Everywhere Green
+        ctx.fillStyle = 'rgba(22, 163, 74, 0.10)';
+        ctx.beginPath();
+        ctx.moveTo(toPxX(xMin), py0);
+        for (let x = xMin; x <= xMax; x += 0.02) {
+          ctx.lineTo(toPxX(x), toPxY(f(x)));
+        }
+        ctx.lineTo(toPxX(xMax), py0);
+        ctx.closePath();
+        ctx.fill();
+
+        // Curve
+        ctx.strokeStyle = '#2D8B6F';
+        ctx.lineWidth = 2.8;
+        ctx.beginPath();
+        for (let x = xMin; x <= xMax; x += 0.02) {
+          const px = toPxX(x);
+          const py = toPxY(f(x));
+          if (x === xMin) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Double root x=3
+        drawPoint(toPxX(3), py0, '#d97706', 6);
+        ctx.fillStyle = '#d97706';
+        ctx.font = 'bold 12px sans-serif';
+        ctx.fillText('Nghiệm kép x=3', toPxX(3) - 36, py0 + 20);
+
+        // Cursor
+        const sx = state.sliderX;
+        const sy = f(sx);
+        const spx = toPxX(sx);
+        const spy = toPxY(sy);
+
+        ctx.strokeStyle = '#94a3b8';
+        ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(spx, py0); ctx.lineTo(spx, spy); ctx.stroke();
+        ctx.setLineDash([]);
+
+        drawPoint(spx, spy, sy === 0 ? '#d97706' : '#16a34a', 6);
+        ctx.fillStyle = '#0f172a';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText(`(${sx.toFixed(1)}; ${sy.toFixed(1)})`, spx + 8, spy - 6);
+
+      } else if (state.currentTask === 3) {
+        const f = (x) => x * x - 5 * x + 4;
+        const g = (x) => -x * x + 5 * x - 4;
+
+        // Draw f(x) (Blue)
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let x = xMin; x <= xMax; x += 0.02) {
+          const px = toPxX(x);
+          const py = toPxY(f(x));
+          if (x === xMin) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Draw g(x) (Purple)
+        ctx.strokeStyle = '#8b5cf6';
+        ctx.lineWidth = 2.5;
+        ctx.beginPath();
+        for (let x = xMin; x <= xMax; x += 0.02) {
+          const px = toPxX(x);
+          const py = toPxY(g(x));
+          if (x === xMin) ctx.moveTo(px, py);
+          else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Roots at 1 and 4
+        drawPoint(toPxX(1), py0, '#d97706', 5);
+        drawPoint(toPxX(4), py0, '#d97706', 5);
+
+        // Labels
+        ctx.fillStyle = '#2563eb';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('f(x) = x² − 5x + 4 (a=1>0)', toPxX(4.2), toPxY(f(4.2)) - 8);
+
+        ctx.fillStyle = '#8b5cf6';
+        ctx.font = 'bold 11px sans-serif';
+        ctx.fillText('g(x) = −x² + 5x − 4 (a=−1<0)', toPxX(4.2), toPxY(g(4.2)) + 14);
+      }
+    }
+
+    function drawPoint(px, py, color, r = 5) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    /* =========================================================================
+       4. INTERACTIVE TASK UI & TASK LOCKING LOGIC
+       ========================================================================= */
+    function isTaskUnlocked(taskNum) {
+      if (taskNum === 1) return true;
+      if (taskNum === 2) return state.task1.completed;
+      if (taskNum === 3) return state.task1.completed && state.task2.completed;
+      return false;
+    }
+
+    function updateNavButtonsUI() {
+      for (let i = 1; i <= 3; i++) {
+        const btn = document.getElementById(`tag-${i}`);
+        const unlocked = isTaskUnlocked(i);
+
+        if (unlocked) {
+          btn.classList.remove('disabled');
+        } else {
+          btn.classList.add('disabled');
+        }
+
+        if (i === state.currentTask) {
+          btn.classList.add('active');
+        } else {
+          btn.classList.remove('active');
+        }
+
+        if (visitedTasks.has(i)) btn.classList.add('visited');
+      }
+    }
+
+    function switchTask(taskNum) {
+      if (!isTaskUnlocked(taskNum)) {
+        const btn = document.getElementById(`tag-${taskNum}`);
+        if (btn) {
+          btn.classList.add('wrong');
+          setTimeout(() => btn.classList.remove('wrong'), 400);
+        }
+        return;
+      }
+
+      state.currentTask = taskNum;
+      visitedTasks.add(taskNum);
+
+      updateNavButtonsUI();
+
+      if (taskNum === 1) state.sliderX = 2.5;
+      else if (taskNum === 2) state.sliderX = 3.0;
+
+      renderSidebarPanel(taskNum);
+      viewport.zoomFactor = 1.0;
+      autoFitViewport(taskNum);
+    }
+
+    function renderSidebarPanel(taskNum) {
+      const container = document.getElementById('panel-container');
+
+      if (taskNum === 1) {
+        container.innerHTML = `
+          <div class="step-title">
+            <i class="ti ti-target" style="color:var(--teal);"></i> Nhiệm vụ 1: Phân biệt "Nghiệm" & "Dấu"
+          </div>
+
+          <div class="info-box athena-box">
+            Kéo slider quan sát đồ thị tam thức $f(x) = x^2 - 5x + 4$ ($a=1>0, \Delta=9>0$) và trả lời 2 câu hỏi bên dưới.
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Giá trị x khảo sát:</span>
+              <span id="slider-x-val" style="color:var(--teal); font-weight:700;">x = ${state.sliderX.toFixed(1)}</span>
+            </div>
+            <input type="range" min="-1" max="6" step="0.1" value="${state.sliderX}" id="slider-x" oninput="onSliderChange(this.value)">
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">1. $f(x) = 0$ tại những giá trị $x$ nào?</label>
+            <input type="text" class="text-input" id="inp-nv1-roots" placeholder="Ví dụ: 1, 4" value="${state.task1.rootInput || ''}">
+          </div>
+
+          <div class="input-group">
+            <label class="input-label">2. $f(x) < 0$ với những $x$ nào (nhập dạng khoảng)?</label>
+            <input type="text" class="text-input" id="inp-nv1-sign" placeholder="Ví dụ: (1; 4)" value="${state.task1.signInput || ''}">
+          </div>
+
+          <div id="nv1-feedback"></div>
+
+          <button class="btn btn-primary" id="btn-submit-nv1" onclick="submitTask1()">
+            <i class="ti ti-check"></i> Xác nhận câu trả lời
+          </button>
+        `;
+      } else if (taskNum === 2) {
+        container.innerHTML = `
+          <div class="step-title">
+            <i class="ti ti-math-symbols" style="color:var(--teal);"></i> Nhiệm vụ 2: Trường hợp $\Delta = 0$ (Nghiệm kép)
+          </div>
+
+          <div class="info-box athena-box">
+            Xét tam thức $f(x) = x^2 - 6x + 9$ ($\Delta = 36-36 = 0$). Quan sát đồ thị chạm trục $Ox$ tại $x=3$ và cho biết $f(x)$ có bao giờ nhận giá trị ÂM không.
+          </div>
+
+          <div class="control-group">
+            <div class="control-label">
+              <span>Giá trị x khảo sát:</span>
+              <span id="slider-x-val" style="color:var(--teal); font-weight:700;">x = ${state.sliderX.toFixed(1)}</span>
+            </div>
+            <input type="range" min="0" max="6" step="0.1" value="${state.sliderX}" id="slider-x" oninput="onSliderChange(this.value)">
+          </div>
+
+          <div class="choice-btn-group">
+            <button class="choice-btn ${state.task2.selectedOpt==='A'?'selected':''}" id="opt-nv2-A" onclick="selectTask2Opt('A')">
+              <span>A. Có, $f(x) < 0$ khi $x$ nằm xung quanh 3</span>
+              <i class="ti ti-circle"></i>
+            </button>
+            <button class="choice-btn ${state.task2.selectedOpt==='B'?'selected':''}" id="opt-nv2-B" onclick="selectTask2Opt('B')">
+              <span>B. Không, $f(x) \ge 0$ với mọi $x$, chỉ bằng 0 tại $x = 3$</span>
+              <i class="ti ti-circle"></i>
+            </button>
+          </div>
+
+          <div id="nv2-feedback"></div>
+
+          <button class="btn btn-primary" id="btn-submit-nv2" onclick="submitTask2()">
+            <i class="ti ti-check"></i> Xác nhận câu trả lời
+          </button>
+        `;
+      } else if (taskNum === 3) {
+        container.innerHTML = `
+          <div class="step-title">
+            <i class="ti ti-arrows-sort" style="color:var(--teal);"></i> Nhiệm vụ 3: Chiều xét dấu khi $a < 0$
+          </div>
+
+          <div class="info-box athena-box">
+            So sánh $f(x) = x^2 - 5x + 4$ ($a=1>0$) và $g(x) = -x^2 + 5x - 4$ ($a=-1<0$). Cả 2 đều cắt $Ox$ tại $x=1$ và $x=4$. Chọn kết luận ĐÚNG về dấu của $g(x)$.
+          </div>
+
+          <div class="choice-btn-group">
+            <button class="choice-btn ${state.task3.selectedOpt==='A'?'selected':''}" id="opt-nv3-A" onclick="selectTask3Opt('A')">
+              <span>A. $g(x) > 0$ TRONG khoảng $(1;4)$, $g(x) < 0$ NGOÀI đoạn $[1;4]$</span>
+              <i class="ti ti-circle"></i>
+            </button>
+            <button class="choice-btn ${state.task3.selectedOpt==='B'?'selected':''}" id="opt-nv3-B" onclick="selectTask3Opt('B')">
+              <span>B. $g(x) < 0$ TRONG khoảng $(1;4)$, $g(x) > 0$ NGOÀI đoạn $[1;4]$</span>
+              <i class="ti ti-circle"></i>
+            </button>
+          </div>
+
+          <div id="nv3-feedback"></div>
+
+          <button class="btn btn-primary" id="btn-submit-nv3" onclick="submitTask3()">
+            <i class="ti ti-check"></i> Xác nhận câu trả lời
+          </button>
+        `;
+      }
+
+      renderKaTeXInElement(container);
+    }
+
+    function onSliderChange(val) {
+      state.sliderX = parseFloat(val);
+      const valEl = document.getElementById('slider-x-val');
+      if (valEl) valEl.textContent = `x = ${state.sliderX.toFixed(1)}`;
+      autoFitViewport();
+    }
+
+    /* SUBMISSION HANDLERS */
+    function submitTask1() {
+      const inpRoots = document.getElementById('inp-nv1-roots');
+      const inpSign = document.getElementById('inp-nv1-sign');
+      const fb = document.getElementById('nv1-feedback');
+
+      const valRoots = inpRoots.value.trim();
+      const valSign = inpSign.value.trim();
+
+      state.task1.rootInput = valRoots;
+      state.task1.signInput = valSign;
+
+      const isRootsOk = (valRoots.includes('1') && valRoots.includes('4'));
+      const isSignOk = (valSign.includes('1') && valSign.includes('4') && (valSign.includes('(') || valSign.includes('<')));
+
+      if (isRootsOk && isSignOk) {
+        state.task1.completed = true;
+        inpRoots.className = 'text-input correct';
+        inpSign.className = 'text-input correct';
+        fb.innerHTML = `
+          <div class="info-box" style="border-left-color:var(--correct); background:var(--correct-bg); color:var(--correct);">
+            <b>✓ Chính xác!</b><br>
+            • <b>Nghiệm:</b> $x=1$ và $x=4$ là 2 <b>ĐIỂM</b> mà tại đó $f(x)=0$.<br>
+            • <b>Dấu:</b> $f(x)<0$ đúng trên CẢ MỘT <b>KHOẢNG</b> $(1;4)$ (vô số điểm nằm giữa 1 và 4).
+          </div>
+          <button class="btn btn-primary" onclick="switchTask(2)" style="margin-top:12px; width:100%;">
+            <i class="ti ti-arrow-right"></i> Chuyển sang Nhiệm vụ 2 <i class="ti ti-lock-open"></i>
+          </button>
+        `;
+        checkAllTasksDone();
+      } else {
+        state.task1.attempts++;
+        inpRoots.className = 'text-input wrong';
+        inpSign.className = 'text-input wrong';
+
+        if (state.task1.attempts === 1) {
+          fb.innerHTML = `<div class="info-box" style="border-left-color:var(--wrong); background:var(--wrong-bg); color:var(--wrong);">Chưa chính xác. Thử lại nhé! Chú ý: Câu 1 điền các số nghiệm, Câu 2 điền khoảng dạng (a;b).</div>`;
+        } else if (state.task1.attempts === 2) {
+          fb.innerHTML = `<div class="info-box" style="border-left-color:var(--warning); background:var(--warning-bg); color:var(--warning);">💡 <b>Gợi ý:</b> Câu 1 hỏi về ĐIỂM NGHIỆM ($x=1, x=4$). Câu 2 hỏi về KHOẢNG DẤU ÂM (tập hợp các điểm nằm giữa 1 và 4 $\to$ viết là (1; 4)).</div>`;
+        } else {
+          state.task1.completed = true;
+          inpRoots.value = "1, 4";
+          inpSign.value = "(1; 4)";
+          inpRoots.className = 'text-input correct';
+          inpSign.className = 'text-input correct';
+          fb.innerHTML = `
+            <div class="info-box athena-box">
+              <b>Đáp án chuẩn:</b> Câu 1 là <b>1, 4</b>; Câu 2 là <b>(1; 4)</b>.<br>
+              Nghiệm là các ĐIỂM cụ thể, còn DẤU là tính chất trên cả một KHOẢNG.
+            </div>
+            <button class="btn btn-primary" onclick="switchTask(2)" style="margin-top:12px; width:100%;">
+              <i class="ti ti-arrow-right"></i> Chuyển sang Nhiệm vụ 2 <i class="ti ti-lock-open"></i>
+            </button>
+          `;
+          checkAllTasksDone();
+        }
+      }
+      renderKaTeXInElement(fb);
+    }
+
+    function selectTask2Opt(opt) {
+      state.task2.selectedOpt = opt;
+      document.getElementById('opt-nv2-A').className = `choice-btn ${opt==='A'?'selected':''}`;
+      document.getElementById('opt-nv2-B').className = `choice-btn ${opt==='B'?'selected':''}`;
+    }
+
+    function submitTask2() {
+      if (!state.task2.selectedOpt) return;
+      const fb = document.getElementById('nv2-feedback');
+      const btnB = document.getElementById('opt-nv2-B');
+
+      if (state.task2.selectedOpt === 'B') {
+        state.task2.completed = true;
+        btnB.className = 'choice-btn correct';
+        fb.innerHTML = `
+          <div class="info-box" style="border-left-color:var(--correct); background:var(--correct-bg); color:var(--correct);">
+            <b>✓ Chính xác!</b> $\Delta = 36-36 = 0$, tam thức có nghiệm kép $x=3$. Đồ thị chỉ CHẠM trục $Ox$ tại $x=3$ rồi đi lên lại. Do đó $f(x) \ge 0$ với mọi $x$, không có khoảng nào $f(x) < 0$.
+          </div>
+          <button class="btn btn-primary" onclick="switchTask(3)" style="margin-top:12px; width:100%;">
+            <i class="ti ti-arrow-right"></i> Chuyển sang Nhiệm vụ 3 <i class="ti ti-lock-open"></i>
+          </button>
+        `;
+        checkAllTasksDone();
+      } else {
+        state.task2.attempts++;
+        if (state.task2.attempts === 1) {
+          fb.innerHTML = `<div class="info-box" style="border-left-color:var(--wrong); background:var(--wrong-bg); color:var(--wrong);">Chưa chính xác. Quan sát kỹ xem đồ thị có bao giờ đi xuống dưới trục Ox không nhé!</div>`;
+        } else {
+          state.task2.completed = true;
+          btnB.className = 'choice-btn correct';
+          fb.innerHTML = `
+            <div class="info-box athena-box">
+              <b>Đáp án đúng là B:</b> $\Delta=0$ là trường hợp riêng biệt, đồ thị tiếp xúc $Ox$ tại nghiệm kép $x=3$, $f(x) \ge 0$ với mọi $x$.
+            </div>
+            <button class="btn btn-primary" onclick="switchTask(3)" style="margin-top:12px; width:100%;">
+              <i class="ti ti-arrow-right"></i> Chuyển sang Nhiệm vụ 3 <i class="ti ti-lock-open"></i>
+            </button>
+          `;
+          checkAllTasksDone();
+        }
+      }
+      renderKaTeXInElement(fb);
+    }
+
+    function selectTask3Opt(opt) {
+      state.task3.selectedOpt = opt;
+      document.getElementById('opt-nv3-A').className = `choice-btn ${opt==='A'?'selected':''}`;
+      document.getElementById('opt-nv3-B').className = `choice-btn ${opt==='B'?'selected':''}`;
+    }
+
+    function submitTask3() {
+      if (!state.task3.selectedOpt) return;
+      const fb = document.getElementById('nv3-feedback');
+      const btnA = document.getElementById('opt-nv3-A');
+
+      if (state.task3.selectedOpt === 'A') {
+        state.task3.completed = true;
+        btnA.className = 'choice-btn correct';
+        fb.innerHTML = `
+          <div class="info-box" style="border-left-color:var(--correct); background:var(--correct-bg); color:var(--correct);">
+            <b>✓ Chính xác!</b> Với $g(x)$ ($a=-1<0$), đồ thị 'mở xuống' nên $g(x) > 0$ TRONG khoảng $(1;4)$ và $g(x) < 0$ NGOÀI đoạn $[1;4]$. Dấu của $a$ làm đảo ngược hoàn toàn chiều xét dấu!
+          </div>
+          <button class="btn btn-primary" onclick="openSummaryModal()" style="margin-top:12px; width:100%;">
+            <i class="ti ti-award"></i> Xem Tổng kết kiến thức
+          </button>
+        `;
+        checkAllTasksDone();
+      } else {
+        state.task3.attempts++;
+        if (state.task3.attempts === 1) {
+          fb.innerHTML = `<div class="info-box" style="border-left-color:var(--wrong); background:var(--wrong-bg); color:var(--wrong);">Chưa chính xác. Đồ thị $g(x)$ mở xuống dưới (hình như cái mũ), phần nằm phía trên $Ox$ là phần dương hay âm?</div>`;
+        } else {
+          state.task3.completed = true;
+          btnA.className = 'choice-btn correct';
+          fb.innerHTML = `
+            <div class="info-box athena-box">
+              <b>Đáp án đúng là A:</b> Vì $a=-1<0$, $g(x) > 0$ TRONG khoảng $(1;4)$ và $<0$ NGOÀI khoảng $(1;4)$.
+            </div>
+            <button class="btn btn-primary" onclick="openSummaryModal()" style="margin-top:12px; width:100%;">
+              <i class="ti ti-award"></i> Xem Tổng kết kiến thức
+            </button>
+          `;
+          checkAllTasksDone();
+        }
+      }
+      renderKaTeXInElement(fb);
+    }
+
+    function checkAllTasksDone() {
+      updateNavButtonsUI();
+      if (state.task1.completed && state.task2.completed && state.task3.completed) {
+        document.getElementById('btn-show-summary').disabled = false;
+        LMS().complete();
+      }
+    }
+
+    /* MODAL POPUP CONTROL */
+    function openSummaryModal() {
+      const modal = document.getElementById('summary-modal');
+      renderKaTeXInElement(modal);
+      modal.classList.add('show');
+    }
+
+    function closeSummaryModal() {
+      document.getElementById('summary-modal').classList.remove('show');
+    }
+
+    /* INITIALIZATION */
+    function init() {
+      resizeCanvas();
+      switchTask(1);
+    }
+
+    window.addEventListener('DOMContentLoaded', init);
+  </script>
+</body>
+
+</html>
