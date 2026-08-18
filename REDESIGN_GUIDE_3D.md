@@ -156,21 +156,11 @@ background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
 
 ---
 
-## 4. RESPONSIVE / MOBILE — Các điểm cần thống nhất thêm
+## 4. RESPONSIVE / MOBILE — Quy chuẩn Mobile Responsive toàn hệ thống
 
-- **Breakpoint lệch:** spec ghi `680px` (§2.9), 2 file thực tế đang dùng
-  `768px`. Chưa quyết định giữ số nào — đề xuất giữ `768px` thực tế đang dùng
-  (khớp chuẩn Toán 2D `@media max-width:767/768px`) và **sửa lại số trong spec**
-  thành `768px` cho đồng bộ, thay vì sửa ngược 2 file.
-- **Toggle switch 36×20px, vùng click chỉ nằm trên chính nút** (không mở rộng
-  ra cả `.toggle-row`) — đúng theo spec §2.8 hiện tại, nhưng dưới chuẩn 44×44px
-  khuyến nghị chạm mobile của `02_design_toan_final.md`. Đây là **quyết định
-  thiết kế cần bàn riêng**, không tự sửa — nếu muốn nới vùng chạm, cần sửa cả
-  HTML pattern (đưa `onclick` lên `.toggle-row` thay vì chỉ trên `<button>`)
-  chứ không chỉ CSS.
-- **File `GiaoTuyen` thiếu `min-height: 320px`** cho `.canvas-container` ở
-  media query mobile (file `KhaiNiemMoDau` có). Cần thêm cho đồng bộ khi patch
-  cả 2 file thật.
+- **Breakpoint chính thức:** Thống nhất dùng `@media (max-width: 992px)` cho toàn bộ ứng dụng Toán (cả 2D và 3D).
+- **Cấu trúc Canvas Sticky (`viewport-container`):** Trên Mobile, `.viewport-container` được ghim ở đỉnh màn hình (`position: sticky; top: 0; z-index: 50`) với chiều cao `calc((100vh - 48px) * 0.45)` (45vh) kèm bóng đổ `box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12)`. Giúp học sinh luôn quan sát được hình 3D/2D trực quan khi cuộn bên dưới.
+- **Sidebar & Card co giãn tự nhiên:** `.sidebar` để chiều cao tự nhiên (`height: auto; overflow: visible`), cuộn theo trang. Các phần tử `.card`, `.info-box`, `.text-input` áp dụng `box-sizing: border-box; width: 100%` để đảm bảo không bao giờ bị vỡ khung hay tràn ô nhập trên màn hình nhỏ.
 
 ---
 

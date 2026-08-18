@@ -1060,20 +1060,115 @@ header h1 {
 .btn-reset:hover { background: #1a4a7a; }
 ```
 
-### 2.9 Responsive
+### 2.9 Responsive (Tối ưu hóa Mobile & Tablet chuẩn toàn hệ thống)
 
 ```css
-@media (max-width: 680px) {
-  .main { flex-direction: column; }
-  .sidebar { width: 100%; border-left: none; border-top: 1px solid var(--border); }
-  .canvas-wrap { min-height: 320px; }
+@media (max-width: 992px) {
+  body {
+    min-height: 100vh;
+    overflow-y: auto;
+  }
+
+  header {
+    padding: 6px 10px;
+    flex-wrap: wrap;
+    gap: 6px;
+  }
+
+  .header-title-group {
+    gap: 4px;
+  }
+
+  .header-badge {
+    font-size: 10px;
+    padding: 2px 6px;
+    white-space: nowrap;
+  }
+
+  .btn-header {
+    padding: 4px 8px;
+    font-size: 11px;
+    white-space: nowrap;
+  }
+
+  .sub-nav {
+    padding: 0 8px;
+    overflow-x: auto;
+    flex-wrap: nowrap;
+  }
+
+  .sub-nav-btn {
+    padding: 6px 10px;
+    font-size: 11.5px;
+    white-space: nowrap;
+  }
+
+  .app-body {
+    display: flex !important;
+    flex-direction: column !important;
+    grid-template-columns: 1fr !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .viewport-container {
+    width: 100% !important;
+    position: sticky !important;
+    top: 0 !important;
+    z-index: 50 !important;
+    height: calc((100vh - 48px) * 0.45) !important;
+    height: calc((100dvh - 48px) * 0.45) !important;
+    min-height: 280px !important;
+    border-right: none !important;
+    border-bottom: 1px solid var(--border) !important;
+    box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  .sidebar {
+    width: 100% !important;
+    height: auto !important;
+    max-height: none !important;
+    overflow: visible !important;
+  }
+
+  .sidebar-content {
+    padding: 8px;
+    gap: 8px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  .card {
+    padding: 10px;
+    width: 100%;
+    box-sizing: border-box;
+    overflow-x: hidden;
+  }
+
+  .info-box {
+    padding: 6px 10px;
+    font-size: 12px;
+    overflow-x: auto;
+  }
+
+  .text-input {
+    padding: 6px 8px;
+    font-size: 12.5px;
+    box-sizing: border-box;
+  }
+
+  .btn {
+    padding: 7px 10px;
+    font-size: 12.5px;
+    min-height: 36px;
+  }
 }
 ```
 
-> ⚠️ Không tự thêm `height: 50%` cho `.sidebar` ở breakpoint này — sidebar để
-> chiều cao tự nhiên, cuộn theo trang. Ép `height: 50%` (đã gặp ở file build
-> trước 08/2026) làm sidebar bị chật trên mobile khi nội dung bước dài hơn
-> nửa màn hình, không đúng tinh thần spec ở trên.
+> 📌 **Quy tắc ghim Canvas & Co giãn Sidebar trên Mobile:**
+> 1. **Khung nhìn Canvas ghim Sticky (`position: sticky; top: 0`):** Giữ chiều cao ghim 45vh ở góc trên màn hình mobile kèm bóng đổ nhẹ (`box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12)`). Giúp học sinh luôn quan sát được hình vẽ 3D/2D trực quan vế trên khi cuộn làm các bước bên dưới.
+> 2. **Sidebar & Card co giãn tự nhiên:** Không ép `height: 50%` cho `.sidebar` — để chiều cao tự nhiên cuộn theo trang. Các thành phần `.card`, `.info-box`, `.text-input` phải luôn có `box-sizing: border-box; width: 100%` để không bị tràn ô nhập hay vỡ khung trên màn hình nhỏ.
 
 ---
 
