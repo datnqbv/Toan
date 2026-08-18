@@ -594,16 +594,26 @@
     }
 
     function revealHintChips() {
-      const hintWraps = document.querySelectorAll('.quick-chips-wrap.hint-chips');
+      let hasQuickChips = false;
+      let hasStaticHint = false;
+
+      const hintWraps = document.querySelectorAll('.quick-chips-wrap.hint-chips, .static-hint-box.hint-chips');
       hintWraps.forEach(wrap => {
-        if (wrap.style.display !== 'flex') {
-          wrap.style.display = 'flex';
+        if (wrap.style.display !== 'flex' && wrap.style.display !== 'block') {
+          wrap.style.display = wrap.classList.contains('static-hint-box') ? 'block' : 'flex';
           wrap.style.animation = 'fadeIn 0.4s ease';
         }
+        if (wrap.classList.contains('quick-chips-wrap')) hasQuickChips = true;
+        if (wrap.classList.contains('static-hint-box')) hasStaticHint = true;
       });
+
       const captionBody = document.getElementById('captionBody');
-      if (captionBody && !captionBody.innerHTML.includes('Gợi ý đã được mở')) {
-        captionBody.innerHTML += `<div style="margin-top: 4px; font-weight: 700; color: var(--primary);"><i class="ti ti-bulb"></i> Bạn đã thử 2 lần chưa đúng. Khung Gợi ý đã được mở ở phía trên để hỗ trợ!</div>`;
+      if (captionBody && !captionBody.innerHTML.includes('đã được mở')) {
+        let helpText = "Nút Điền nhanh / Gợi ý";
+        if (hasQuickChips && !hasStaticHint) helpText = "Nút Điền nhanh số liệu";
+        else if (!hasQuickChips && hasStaticHint) helpText = "Khung Gợi ý";
+
+        captionBody.innerHTML += `<div style="margin-top: 6px; font-weight: 700; color: var(--primary); font-size: 0.85rem;"><i class="ti ti-hand-click"></i> Bạn đã thử 2 lần chưa đúng. ${helpText} đã được mở ở phía trên để hỗ trợ!</div>`;
       }
     }
 
@@ -614,6 +624,58 @@
     document.addEventListener("focusin", (e) => {
       if (e.target && e.target.classList && e.target.classList.contains('math-input')) {
         lastFocusedInput = e.target;
+      }
+    });
+
+    // Enter & Arrow keys navigation: Chuyển ô nhập tiếp theo/lùi lại hoặc tự động bấm nút Kiểm tra/Tiếp theo
+    document.addEventListener("keydown", (e) => {
+      const active = document.activeElement;
+      if (!active) return;
+
+      const isInput = active.tagName === 'INPUT' || active.tagName === 'SELECT' || active.classList.contains('math-input') || active.classList.contains('math-select');
+
+      if (isInput) {
+        const inputs = Array.from(document.querySelectorAll('.sim-interactive-panel .math-input, .sim-interactive-panel .math-select, .sim-interactive-panel input:not([type="hidden"]), .sim-interactive-panel select'))
+          .filter(el => el.offsetParent !== null && !el.disabled);
+
+        const idx = inputs.indexOf(active);
+
+        if (e.key === "Enter") {
+          e.preventDefault();
+          if (idx !== -1 && idx < inputs.length - 1) {
+            const nextEl = inputs[idx + 1];
+            nextEl.focus();
+            if (typeof nextEl.select === 'function') nextEl.select();
+          } else {
+            const btnNext = document.getElementById('btnNext');
+            if (btnNext && !btnNext.disabled) {
+              btnNext.click();
+            } else {
+              nextStep();
+            }
+          }
+        } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+          const isTextEnd = active.tagName === 'SELECT' || (active.selectionEnd === active.value.length) || (e.key === "ArrowDown");
+          if (isTextEnd && idx !== -1 && idx < inputs.length - 1) {
+            e.preventDefault();
+            const nextEl = inputs[idx + 1];
+            nextEl.focus();
+            if (typeof nextEl.select === 'function') nextEl.select();
+          }
+        } else if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+          const isTextStart = active.tagName === 'SELECT' || (active.selectionStart === 0) || (e.key === "ArrowUp");
+          if (isTextStart && idx > 0) {
+            e.preventDefault();
+            const prevEl = inputs[idx - 1];
+            prevEl.focus();
+            if (typeof prevEl.select === 'function') prevEl.select();
+          }
+        }
+      } else if (active.classList.contains('option-btn')) {
+        if (e.key === "Enter") {
+          e.preventDefault();
+          active.click();
+        }
       }
     });
 
@@ -1581,7 +1643,7 @@
             <button type="button" class="chip-btn" onclick="insertQuickChip('${correctAngleC}')">${correctAngleC}°</button>
             <button type="button" class="chip-btn" onclick="insertQuickChip('${m2Data.alpha}')">${m2Data.alpha}°</button>
           </div>
-          <div style="margin-top:10px; background:#EAF6FC; border-radius:6px; padding:8px 12px; font-size:0.82rem; color:#1565C0;">
+          <div class="static-hint-box hint-chips" style="margin-top:10px; background:#EAF6FC; border-radius:6px; padding:8px 12px; font-size:0.82rem; color:#1565C0; display: ${getWrongCount() >= 2 ? 'block' : 'none'};">
             💡 <b>Gợi ý:</b> Ô AB = <b>${m2Data.ab}</b> &nbsp;|
             Góc C = 180°−${m2Data.alpha}°−${correctAngleB}° = <b>${correctAngleC}°</b> &nbsp;|
             Góc A = α = <b>${m2Data.alpha}°</b>
@@ -2249,7 +2311,7 @@
             <button type="button" class="chip-btn" onclick="insertQuickChip('60')">60°</button>
             <button type="button" class="chip-btn" onclick="insertQuickChip('30')">30°</button>
           </div>
-          <p style="margin-top: 8px; font-size: 0.8rem; color: var(--text-3);">Gợi ý: Hướng N60°E lệch 60° so với Bắc về Đông. Hướng S30°W lệch 30° so với Nam về Tây.</p>
+          <p class="static-hint-box hint-chips" style="margin-top: 8px; font-size: 0.8rem; color: var(--text-3); display: ${getWrongCount() >= 2 ? 'block' : 'none'};">Gợi ý: Hướng N60°E lệch 60° so với Bắc về Đông. Hướng S30°W lệch 30° so với Nam về Tây.</p>
         `;
       }
 
