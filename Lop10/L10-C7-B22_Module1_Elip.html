@@ -1,0 +1,1424 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 22: Ba đường conic — Module 1: Elip "Phòng thì thầm"</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderKaTeXInElement(document.body)"></script>
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
+
+  <style>
+    /* =========================================================================
+       1. DESIGN SYSTEM TOKENS (Jade & Cream Theme)
+       ========================================================================= */
+    :root {
+      --jade-dark: #14432F;
+      --jade-deep: #2D8B6F;
+      --cream: #FAF7F0;
+      --paper-line: #cbd5e1;
+
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+      --surface: #ffffff;
+      --border: var(--paper-line);
+      --text: #0f172a;
+      --text-2: #334155;
+      --sub: #64748b;
+
+      --correct: #16a34a;
+      --correct-bg: #f0fdf4;
+      --wrong: #dc2626;
+      --wrong-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --info: #2563eb;
+      --info-bg: #eff6ff;
+
+      --canvas-bg: #fafcfb;
+    }
+
+    html, body {
+      height: 100%;
+      max-height: 100vh;
+      overflow: hidden;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      height: 48px;
+      max-height: 48px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(20, 67, 47, 0.15);
+    }
+
+    .header-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .btn-header {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* SUB NAV / STEP PROGRESS BAR */
+    .sub-nav {
+      height: 40px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 6px;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .step-pill {
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--sub);
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .step-pill.active {
+      color: var(--teal);
+      background: rgba(45, 139, 111, 0.1);
+      border-color: var(--teal);
+    }
+
+    .step-pill.completed {
+      color: var(--correct);
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    /* MAIN APP BODY */
+    .app-body {
+      display: grid;
+      grid-template-columns: 46% 54%;
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 88px);
+      max-height: calc(100vh - 88px);
+      overflow: hidden;
+    }
+
+    /* LEFT VIEWPORT / CANVAS CONTAINER */
+    .viewport-container {
+      background: #ffffff;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%;
+    }
+
+    .canvas-wrapper {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--canvas-bg);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-toolbar {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      z-index: 10;
+    }
+
+    .tool-btn {
+      background: #ffffff;
+      color: var(--navy);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .tool-btn:hover {
+      background: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
+    }
+
+    /* RIGHT SIDEBAR INTERACTIVE PANEL */
+    .sidebar {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100%;
+    }
+
+    .sidebar-content {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* CARD COMPONENTS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      transition: all 0.25s ease;
+      width: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    .card.shake {
+      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .info-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--teal);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.5;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .info-box.athena {
+      background: #f0fdf4;
+      border-left-color: var(--teal);
+      color: #166534;
+    }
+
+    .info-box.warning {
+      background: var(--warning-bg);
+      border-left-color: var(--warning);
+      color: #92400e;
+    }
+
+    .info-box.error {
+      background: var(--wrong-bg);
+      border-left-color: var(--wrong);
+      color: #991b1b;
+    }
+
+    .info-box.correct {
+      background: var(--correct-bg);
+      border-left-color: var(--correct);
+      color: #166534;
+    }
+
+    /* FORM CONTROLS & RADIO OPTIONS */
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      background: #ffffff;
+      transition: all 0.2s ease;
+    }
+
+    .option-item:hover {
+      border-color: var(--teal);
+      background: rgba(45, 139, 111, 0.04);
+    }
+
+    .option-item.selected {
+      border-color: var(--teal);
+      background: rgba(45, 139, 111, 0.08);
+      font-weight: 600;
+    }
+
+    .option-item input {
+      margin-top: 3px;
+      accent-color: var(--teal);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .control-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .text-input {
+      width: 100%;
+      box-sizing: border-box;
+      display: block;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13.5px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .text-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.15);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #236f58;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--text-2);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 640px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: var(--sub);
+      cursor: pointer;
+    }
+
+    /* RESPONSIVE MOBILE & TABLET LAYOUT (max-width: 992px) */
+    @media (max-width: 992px) {
+      body {
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+
+      header {
+        padding: 6px 10px;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .header-title-group {
+        gap: 4px;
+      }
+
+      .header-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        white-space: nowrap;
+      }
+
+      .btn-header {
+        padding: 4px 8px;
+        font-size: 11px;
+        white-space: nowrap;
+      }
+
+      .sub-nav {
+        padding: 0 8px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .step-pill {
+        padding: 4px 8px;
+        font-size: 11px;
+      }
+
+      .app-body {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .viewport-container {
+        width: 100% !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 50 !important;
+        height: calc((100vh - 48px) * 0.45) !important;
+        height: calc((100dvh - 48px) * 0.45) !important;
+        min-height: 280px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      }
+
+      .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .sidebar-content {
+        padding: 8px;
+        gap: 8px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .card {
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+      }
+
+      .info-box {
+        padding: 6px 10px;
+        font-size: 12px;
+        overflow-x: auto;
+      }
+
+      .text-input {
+        padding: 6px 8px;
+        font-size: 12.5px;
+        box-sizing: border-box;
+      }
+
+      .btn {
+        padding: 7px 10px;
+        font-size: 12.5px;
+        min-height: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-title-group">
+      <div class="header-badge">
+        <i class="ti ti-oval-vertical"></i> Toán 10 — Bài 22: Ba đường conic
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-header" onclick="openNotebookModal()">
+        <i class="ti ti-book"></i> Sổ tay kiến thức
+      </button>
+    </div>
+  </header>
+
+  <!-- SUB NAV STEP PROGRESS BAR -->
+  <div class="sub-nav">
+    <button class="step-pill active" id="pill-step-1" onclick="switchStep(1)">B1: Đặt hệ trục</button>
+    <button class="step-pill" id="pill-step-2" onclick="switchStep(2)">B2: Tính a, b</button>
+    <button class="step-pill" id="pill-step-3" onclick="switchStep(3)">B3: PT chính tắc</button>
+    <button class="step-pill" id="pill-step-4" onclick="switchStep(4)">B4: Tiêu cự F1F2</button>
+    <button class="step-pill" id="pill-step-5" onclick="switchStep(5)">B5: Khám phá quang học</button>
+    <button class="step-pill" id="pill-step-6" onclick="switchStep(6)">B6: Tổng kết thực tế</button>
+  </div>
+
+  <!-- MAIN APP BODY -->
+  <div class="app-body">
+    <!-- LEFT VIEWPORT / CANVAS CONTAINER -->
+    <div class="viewport-container">
+      <div class="canvas-wrapper">
+        <canvas id="main-canvas"></canvas>
+        <div class="canvas-toolbar">
+          <button class="tool-btn" onclick="resetViewport()"><i class="ti ti-focus-2"></i> Fit Khung nhìn</button>
+          <button class="tool-btn" onclick="zoomViewport(0.85)"><i class="ti ti-zoom-in"></i> Phóng to</button>
+          <button class="tool-btn" onclick="zoomViewport(1.18)"><i class="ti ti-zoom-out"></i> Thu nhỏ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR INTERACTIVE PANEL -->
+    <div class="sidebar">
+      <div class="sidebar-content" id="sidebar-panel">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SỔ TAY KIẾN THỨC -->
+  <div class="modal-overlay" id="modal-notebook">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-book" style="color:var(--teal);"></i> Sổ tay Kiến thức Elip</div>
+        <button class="close-btn" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="info-box athena" style="margin-bottom:12px;">
+        <b>📌 Phương trình chính tắc của Elip:</b><br>
+        $$\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1 \quad (a > b > 0)$$
+      </div>
+      <div class="info-box warning" style="margin-bottom:12px;">
+        • <b>$a$ (Bán trục lớn):</b> Nửa chiều dài ứng với trục lớn (luôn có $a > b$).<br>
+        • <b>$b$ (Bán trục nhỏ):</b> Nửa chiều rộng ứng với trục nhỏ.<br>
+        • <b>Mối quan hệ 3 đại lượng:</b> $c^2 = a^2 - b^2$ (Elip dùng dấu <b>TRỪ</b>).<br>
+        • <b>Tiêu điểm & Tiêu cự:</b> $F_1(-c; 0), F_2(c; 0)$, khoảng cách giữa 2 tiêu điểm là $2c$.
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="closeNotebookModal()">Đã hiểu kiến thức</button>
+    </div>
+  </div>
+
+  <!-- MODAL: TỔNG KẾT MODULE 1 -->
+  <div class="modal-overlay" id="modal-summary">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-award" style="color:var(--correct);"></i> Chúc mừng hoàn thành Module 1!</div>
+        <button class="close-btn" onclick="closeSummaryModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="info-box correct" style="margin-bottom:16px;">
+        <b>🎉 Bạn đã mô hình hóa thành công bài toán thực tế "Phòng thì thầm"!</b><br>
+        Từ kích thước phòng $20m \times 12m$, bạn đã tự đặt hệ trục tọa độ tại tâm đối xứng, suy ra phương trình chính tắc $\frac{x^2}{100} + \frac{y^2}{36} = 1$, tính được khoảng cách tiêu cự $2c = 16m$ và khám phá tính chất quang học hội tụ tuyệt vời của đường Elip.
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="closeSummaryModal()">Đóng bảng tổng kết</button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC -->
+  <script>
+    /* =========================================================================
+       1. GLOBAL STATE & KATEX HELPER
+       ========================================================================= */
+    const state = {
+      currentStep: 1, // 1 to 6
+      stepCompleted: [false, false, false, false, false, false, false],
+
+      // Step 1: Origin selection (A=0, B=1, C=2)
+      step1Selected: null,
+      step1Attempts: 0,
+
+      // Step 2: Input a and b
+      step2AInput: '',
+      step2BInput: '',
+      step2Attempts: 0,
+
+      // Step 3: Canonical Equation input
+      step3EqInput: '',
+      step3Attempts: 0,
+
+      // Step 4: Focal distance 2c
+      step4DistInput: '',
+      step4Attempts: 0,
+
+      // Step 5: Optics Exploration
+      step5TrialCount: 0,
+      step5AllFired: false,
+      step5SelectedOpt: null,
+      step5Attempts: 0,
+
+      // Active rays array for step 5 animation
+      activeRays: []
+    };
+
+    function renderKaTeXInElement(el) {
+      if (!el) return;
+      if (typeof renderMathInElement === 'function') {
+        try {
+          renderMathInElement(el, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false },
+              { left: '\\(', right: '\\)', display: false },
+              { left: '\\[', right: '\\]', display: true }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {
+          console.warn('KaTeX render warning:', e);
+        }
+      }
+    }
+
+    function LMS() {
+      return {
+        progress: function(data) { console.log('[LMS] Progress:', data); },
+        event: function(name, data) { console.log('[LMS] Event:', name, data); },
+        state: function(data) { console.log('[LMS] State:', data); },
+        complete: function() {
+          console.log('[LMS] Module 1 completed!');
+          if (window.parent && window.parent.postMessage) {
+            window.parent.postMessage({
+              type: 'LMS_COMPLETE',
+              moduleId: 'L10-C7-B22-M1',
+              items: [
+                { id: 'b22m1-b1', name: 'Bước 1 — Đặt hệ trục (phòng thì thầm)', completed: state.stepCompleted[1] },
+                { id: 'b22m1-b2', name: 'Bước 2 — Xác định a, b', completed: state.stepCompleted[2] },
+                { id: 'b22m1-b3', name: 'Bước 3 — Viết PT chính tắc', completed: state.stepCompleted[3] },
+                { id: 'b22m1-b4', name: 'Bước 4 — Tính khoảng cách 2 tiêu điểm', completed: state.stepCompleted[4] },
+                { id: 'b22m1-b5', name: 'Bước 5 — Khám phá quang học (kết luận)', completed: state.stepCompleted[5] }
+              ]
+            }, '*');
+          }
+        }
+      };
+    }
+
+    /* =========================================================================
+       2. CANVAS GRAPH ENGINE
+       ========================================================================= */
+    const canvas = document.getElementById('main-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const viewport = {
+      xMin: -15, xMax: 15,
+      yMin: -10, yMax: 10,
+      zoomFactor: 1.0
+    };
+
+    let viewWidth = 600;
+    let viewHeight = 500;
+
+    function resizeCanvas() {
+      if (!canvas || !canvas.parentElement) return;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        viewWidth = rect.width;
+        viewHeight = rect.height;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.resetTransform();
+        ctx.scale(dpr, dpr);
+        autoFitViewport();
+      }
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function resetViewport() {
+      viewport.zoomFactor = 1.0;
+      autoFitViewport();
+    }
+
+    function toPxX(x) { return (x - viewport.xMin) / (viewport.xMax - viewport.xMin) * viewWidth; }
+    function toPxY(y) { return viewHeight - (y - viewport.yMin) / (viewport.yMax - viewport.yMin) * viewHeight; }
+
+    function autoFitViewport() {
+      const A = viewWidth / viewHeight;
+      let rawXMin = -14, rawXMax = 14, rawYMin = -9, rawYMax = 9;
+      const cx = (rawXMin + rawXMax) / 2;
+      const cy = (rawYMin + rawYMax) / 2;
+      let w = (rawXMax - rawXMin) * viewport.zoomFactor;
+      let h = (rawYMax - rawYMin) * viewport.zoomFactor;
+
+      if (w / h < A) w = h * A; else h = w / A;
+
+      viewport.xMin = cx - w / 2; viewport.xMax = cx + w / 2;
+      viewport.yMin = cy - h / 2; viewport.yMax = cy + h / 2;
+
+      drawRoomCanvas();
+    }
+
+    function zoomViewport(factor) {
+      viewport.zoomFactor *= factor;
+      autoFitViewport();
+    }
+
+    function drawBadge(x, y, text, color, bgColor = 'rgba(255, 255, 255, 0.95)', borderColor = '#cbd5e1', alignX = 'center', alignY = 'bottom') {
+      ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+      const textWidth = ctx.measureText(text).width;
+      const px = toPxX(x);
+      const py = toPxY(y);
+
+      const paddingX = 8, paddingY = 4;
+      const boxW = textWidth + paddingX * 2, boxH = 20;
+
+      let drawX = px - boxW / 2;
+      if (alignX === 'left') drawX = px + 8;
+      else if (alignX === 'right') drawX = px - boxW - 8;
+
+      let drawY = py - boxH - 6;
+      if (alignY === 'top') drawY = py + 6;
+      else if (alignY === 'middle') drawY = py - boxH / 2;
+
+      // Keep within canvas bounds
+      if (drawX < 6) drawX = 6;
+      if (drawX + boxW > viewWidth - 6) drawX = viewWidth - boxW - 6;
+      if (drawY < 6) drawY = 6;
+      if (drawY + boxH > viewHeight - 6) drawY = viewHeight - boxH - 6;
+
+      ctx.fillStyle = bgColor; ctx.strokeStyle = borderColor; ctx.lineWidth = 1.2;
+      ctx.beginPath(); ctx.roundRect(drawX, drawY, boxW, boxH, 6); ctx.fill(); ctx.stroke();
+      ctx.fillStyle = color; ctx.fillText(text, drawX + paddingX, drawY + 14);
+    }
+
+    function drawRoomCanvas() {
+      if (!viewWidth || !viewHeight) return;
+      ctx.clearRect(0, 0, viewWidth, viewHeight);
+      ctx.fillStyle = '#fafcfb'; ctx.fillRect(0, 0, viewWidth, viewHeight);
+
+      const px0 = toPxX(0), py0 = toPxY(0);
+
+      // Grid
+      ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 1;
+      for (let x = Math.ceil(viewport.xMin); x <= Math.floor(viewport.xMax); x += 2) {
+        const px = toPxX(x); ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, viewHeight); ctx.stroke();
+      }
+      for (let y = Math.ceil(viewport.yMin); y <= Math.floor(viewport.yMax); y += 2) {
+        const py = toPxY(y); ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(viewWidth, py); ctx.stroke();
+      }
+
+      // Draw Elliptical Room Wall (a=10, b=6)
+      const a = 10, b = 6;
+      ctx.fillStyle = '#FAF7F0';
+      ctx.strokeStyle = '#2D8B6F';
+      ctx.lineWidth = 3.5;
+      ctx.beginPath();
+      ctx.ellipse(toPxX(0), toPxY(0), (a / (viewport.xMax - viewport.xMin)) * viewWidth, (b / (viewport.yMax - viewport.yMin)) * viewHeight, 0, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.stroke();
+
+      // Outer Bounding Box (20m x 12m)
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([4, 4]);
+      ctx.strokeRect(toPxX(-10), toPxY(6), (20 / (viewport.xMax - viewport.xMin)) * viewWidth, (12 / (viewport.yMax - viewport.yMin)) * viewHeight);
+      ctx.setLineDash([]);
+
+      // STEP 1: Candidate Origin Points A(0,0), B(-10,0), C(-10,-6)
+      if (state.currentStep === 1) {
+        // Point A (Tâm phòng)
+        drawPoint(toPxX(0), toPxY(0), state.step1Selected === 0 ? '#16a34a' : '#2563eb', 7);
+        drawBadge(0, 0, 'A (Tâm phòng)', state.step1Selected === 0 ? '#16a34a' : '#2563eb', '#ffffff', '#cbd5e1', 'center', 'top');
+
+        // Point B (Đầu phòng)
+        drawPoint(toPxX(-10), toPxY(0), state.step1Selected === 1 ? '#dc2626' : '#64748b', 6);
+        drawBadge(-10, 0, 'B (Đầu phòng)', state.step1Selected === 1 ? '#dc2626' : '#64748b', '#ffffff', '#cbd5e1', 'right', 'bottom');
+
+        // Point C (Góc chữ nhật)
+        drawPoint(toPxX(-10), toPxY(-6), state.step1Selected === 2 ? '#dc2626' : '#64748b', 6);
+        drawBadge(-10, -6, 'C (Góc chữ nhật)', state.step1Selected === 2 ? '#dc2626' : '#64748b', '#ffffff', '#cbd5e1', 'center', 'top');
+      }
+
+      // Draw Oxy Axes if Step 1 is completed or Step >= 2
+      if (state.stepCompleted[1] || state.currentStep >= 2) {
+        ctx.strokeStyle = '#334155'; ctx.lineWidth = 2;
+        ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(viewWidth, py0); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(px0, viewHeight); ctx.lineTo(px0, 0); ctx.stroke();
+
+        ctx.fillStyle = '#0f172a'; ctx.font = 'bold 12px "Plus Jakarta Sans", sans-serif';
+        ctx.fillText('x', viewWidth - 14, py0 + 16); ctx.fillText('y', px0 + 10, 14); ctx.fillText('O', px0 - 14, py0 + 16);
+      }
+
+      // STEP 2: Highlight semi-major a=10 and semi-minor b=6
+      if (state.currentStep >= 2) {
+        // Semi-major axis line OA (0 to 10)
+        ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(px0, py0); ctx.lineTo(toPxX(10), py0); ctx.stroke();
+        drawBadge(4.5, -0.6, 'a = 10m (nửa chiều dài)', '#2563eb', '#eff6ff', '#bfdbfe', 'center', 'top');
+
+        // Semi-minor axis line OB (0 to 6)
+        ctx.strokeStyle = '#d97706'; ctx.lineWidth = 3;
+        ctx.beginPath(); ctx.moveTo(px0, py0); ctx.lineTo(px0, toPxY(6)); ctx.stroke();
+        drawBadge(1.2, 3.2, 'b = 6m (nửa chiều rộng)', '#d97706', '#fffbeb', '#fde68a', 'left', 'middle');
+      }
+
+      // STEP 4+: Highlight Foci F1(-8, 0) and F2(8, 0)
+      if (state.currentStep >= 4) {
+        const c = 8;
+        const pxF1 = toPxX(-c);
+        const pxF2 = toPxX(c);
+
+        drawPoint(pxF1, py0, '#dc2626', 7);
+        drawPoint(pxF2, py0, '#16a34a', 7);
+
+        drawBadge(-c, 0, '🔊 F1 (-8; 0) [Phát âm]', '#dc2626', '#fef2f2', '#fca5a5', 'center', 'bottom');
+        drawBadge(c, 0, '👂 F2 (8; 0) [Hội tụ]', '#16a34a', '#f0fdf4', '#86efac', 'center', 'bottom');
+
+        // Segment F1F2 line
+        ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(pxF1, py0); ctx.lineTo(pxF2, py0); ctx.stroke();
+        ctx.setLineDash([]);
+
+        drawBadge(0, -3.8, 'Tiêu cự 2c = 16m', '#dc2626', '#ffffff', '#dc2626', 'center', 'top');
+      }
+
+      // STEP 5: Acoustic Rays Animation Rendering
+      if (state.currentStep === 5 && state.activeRays.length > 0) {
+        const c = 8;
+        const pxF1 = toPxX(-c), pyF1 = toPxY(0);
+        const pxF2 = toPxX(c), pyF2 = toPxY(0);
+
+        state.activeRays.forEach(ray => {
+          const pxTarget = toPxX(ray.targetX);
+          const pyTarget = toPxY(ray.targetY);
+
+          // Ray F1 -> Wall
+          ctx.strokeStyle = '#d97706'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(pxF1, pyF1); ctx.lineTo(pxTarget, pyTarget); ctx.stroke();
+
+          // Ray Wall -> F2
+          ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(pxTarget, pyTarget); ctx.lineTo(pxF2, pyF2); ctx.stroke();
+
+          // Impact point on wall
+          drawPoint(pxTarget, pyTarget, '#d97706', 4);
+        });
+
+        if (state.step5AllFired) {
+          // Highlight Listener in Middle of Room (0,0) vs F2
+          drawPoint(px0, py0, '#64748b', 6);
+          drawBadge(0, 1.8, '👤 Người ở giữa (chỉ nghe 1-2 tia)', '#64748b', '#ffffff', '#cbd5e1', 'center', 'bottom');
+        }
+      }
+    }
+
+    function drawPoint(px, py, color, r = 5) {
+      ctx.fillStyle = color; ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
+      ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
+    }
+
+    /* =========================================================================
+       3. SIDEBAR STEP RENDERERS & HANDLERS
+       ========================================================================= */
+    function switchStep(stepNum) {
+      if (stepNum > 1 && !state.stepCompleted[stepNum - 1] && !state.stepCompleted[stepNum]) {
+        return; // Locked
+      }
+      state.currentStep = stepNum;
+      document.querySelectorAll('.step-pill').forEach((pill, idx) => {
+        pill.classList.remove('active');
+        if (idx + 1 === stepNum) pill.classList.add('active');
+        if (state.stepCompleted[idx + 1]) pill.classList.add('completed');
+      });
+      renderSidebar();
+      autoFitViewport();
+    }
+
+    function renderSidebar() {
+      const container = document.getElementById('sidebar-panel');
+      const step = state.currentStep;
+
+      let html = '';
+      if (step === 1) renderStep1(container);
+      else if (step === 2) renderStep2(container);
+      else if (step === 3) renderStep3(container);
+      else if (step === 4) renderStep4(container);
+      else if (step === 5) renderStep5(container);
+      else if (step === 6) renderStep6(container);
+
+      renderKaTeXInElement(container);
+    }
+
+    /* STEP 1: CHỌN GỐC TỌA ĐỘ */
+    function renderStep1(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-1">
+          <div class="card-title"><i class="ti ti-pin" style="color:var(--teal);"></i> Bước 1: Chọn vị trí đặt hệ trục tọa độ $Oxy$</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Quan sát mặt bằng phòng elip kích thước $20m \times 12m$. Chọn vị trí gốc $O$ sao cho phương trình mô tả phòng là <b>ĐƠN GIẢN NHẤT</b>:
+          </div>
+
+          <div class="option-list">
+            <label class="option-item ${state.step1Selected === 0 ? 'selected' : ''}">
+              <input type="radio" name="opt_step1" value="0" ${state.step1Selected === 0 ? 'checked' : ''} onchange="state.step1Selected=0; autoFitViewport();">
+              <div>
+                <b>(A) Tâm phòng:</b> Trục $Ox$ nằm dọc theo chiều dài, $Oy$ dọc theo chiều rộng phòng.
+              </div>
+            </label>
+            <label class="option-item ${state.step1Selected === 1 ? 'selected' : ''}">
+              <input type="radio" name="opt_step1" value="1" ${state.step1Selected === 1 ? 'checked' : ''} onchange="state.step1Selected=1; autoFitViewport();">
+              <div>
+                <b>(B) Một đầu phòng:</b> Gốc $O$ nằm ở điểm đầu mút bên trái của phòng.
+              </div>
+            </label>
+            <label class="option-item ${state.step1Selected === 2 ? 'selected' : ''}">
+              <input type="radio" name="opt_step1" value="2" ${state.step1Selected === 2 ? 'checked' : ''} onchange="state.step1Selected=2; autoFitViewport();">
+              <div>
+                <b>(C) Góc hình chữ nhật:</b> Gốc $O$ nằm ở góc của hình chữ nhật bao ngoài phòng.
+              </div>
+            </label>
+          </div>
+
+          <div id="fb-step-1"></div>
+
+          ${!state.stepCompleted[1] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep1()">
+              <i class="ti ti-check"></i> Xác nhận Vị trí Đặt Hệ trục
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(2)">
+              Chuyển sang Bước 2: Tìm a, b <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    function submitStep1() {
+      const fb = document.getElementById('fb-step-1');
+      if (state.step1Selected === null) {
+        fb.innerHTML = `<div class="info-box warning">Vui lòng chọn 1 phương án vị trí trước khi xác nhận nhé!</div>`;
+        return;
+      }
+
+      if (state.step1Selected === 0) {
+        state.stepCompleted[1] = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> Đặt gốc tại tâm đối xứng của elip cho phương trình dạng chính tắc $\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1$ đối xứng và đơn giản nhất.</div>`;
+        renderKaTeXInElement(fb);
+        LMS().event('answered', { step: 1, correct: true });
+        switchStep(2);
+      } else {
+        state.step1Attempts++;
+        triggerShake('card-step-1');
+        if (state.step1Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vị trí này vẫn mô tả được phòng nhưng phương trình sẽ phức tạp hơn rất nhiều. Thử lại nhé!</div>`;
+        } else if (state.step1Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Hãy tìm vị trí là <b>TÂM ĐỐI XỨNG</b> của phòng elip.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Chọn phương án <b>(A) Tâm phòng</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 2: TÍNH a, b */
+    function renderStep2(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-2">
+          <div class="card-title"><i class="ti ti-ruler-2" style="color:var(--teal);"></i> Bước 2: Đọc dữ kiện thực tế $\rightarrow$ Tìm $a, b$</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Phòng elip có kích thước dài $20m$ và rộng $12m$. Với hệ trục đặt tại tâm phòng:
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+            <div class="control-group">
+              <label class="control-label"><span>Bán trục lớn $a$ ($m$):</span></label>
+              <input type="text" class="text-input" id="inp-step2-a" placeholder="Nhập số..." value="${state.step2AInput}" ${state.stepCompleted[2] ? 'disabled' : ''}>
+            </div>
+            <div class="control-group">
+              <label class="control-label"><span>Bán trục nhỏ $b$ ($m$):</span></label>
+              <input type="text" class="text-input" id="inp-step2-b" placeholder="Nhập số..." value="${state.step2BInput}" ${state.stepCompleted[2] ? 'disabled' : ''}>
+            </div>
+          </div>
+
+          <div id="fb-step-2"></div>
+
+          ${!state.stepCompleted[2] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep2()">
+              <i class="ti ti-check"></i> Xác nhận Giá trị a, b
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(3)">
+              Chuyển sang Bước 3: Viết PT chính tắc <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    function submitStep2() {
+      const valA = document.getElementById('inp-step2-a').value.trim();
+      const valB = document.getElementById('inp-step2-b').value.trim();
+      const fb = document.getElementById('fb-step-2');
+
+      state.step2AInput = valA;
+      state.step2BInput = valB;
+
+      if (valA === '10' && valB === '6') {
+        state.stepCompleted[2] = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> Chiều dài $20m \\implies a = 10m$ (nửa trục lớn); chiều rộng $12m \\implies b = 6m$ (nửa trục nhỏ). Nguyên tắc luôn có $a > b$.</div>`;
+        renderKaTeXInElement(fb);
+        LMS().event('answered', { step: 2, correct: true });
+        switchStep(3);
+      } else {
+        state.step2Attempts++;
+        triggerShake('card-step-2');
+        if (state.step2Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng nhớ $a, b$ là NỬA chiều dài và NỬA chiều rộng. Thử lại nhé!</div>`;
+        } else if (state.step2Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Chiều DÀI $20m \\implies a = 20/2$; chiều RỘNG $12m \\implies b = 12/2$. Nguyên tắc $a$ luôn lớn hơn $b$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>a = 10</b> và <b>b = 6</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 3: VIẾT PT CHÍNH TẮC */
+    function renderStep3(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-3">
+          <div class="card-title"><i class="ti ti-math" style="color:var(--teal);"></i> Bước 3: Viết Phương trình chính tắc</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Với $a = 10$ và $b = 6$, phương trình chính tắc của elip mô tả phòng có dạng $\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1$:
+          </div>
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Phương trình chính tắc:</span></label>
+            <input type="text" class="text-input" id="inp-step3-eq" placeholder="Nhập phương trình dạng x^2/... + y^2/... = 1" value="${state.step3EqInput}" ${state.stepCompleted[3] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-step-3"></div>
+
+          ${!state.stepCompleted[3] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep3()">
+              <i class="ti ti-check"></i> Xác nhận Phương trình
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(4)">
+              Chuyển sang Bước 4: Tính Tiêu cự F1F2 <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    function submitStep3() {
+      const rawVal = document.getElementById('inp-step3-eq').value.trim().toLowerCase().replace(/\s+/g, '');
+      const fb = document.getElementById('fb-step-3');
+      state.step3EqInput = document.getElementById('inp-step3-eq').value;
+
+      const isOk = rawVal.includes('x^2/100+y^2/36=1') || rawVal.includes('x²/100+y²/36=1') || rawVal.includes('x^2/100+y^2/36');
+
+      if (isOk) {
+        state.stepCompleted[3] = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> Thay $a^2 = 10^2 = 100$ và $b^2 = 6^2 = 36$ ta được $\\frac{x^2}{100} + \\frac{y^2}{36} = 1$.</div>`;
+        renderKaTeXInElement(fb);
+        LMS().event('answered', { step: 3, correct: true });
+        switchStep(4);
+      } else {
+        state.step3Attempts++;
+        triggerShake('card-step-3');
+        if (state.step3Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng tính $a^2 = 10^2$ và $b^2 = 6^2$ rồi thay vào phương trình nhé!</div>`;
+        } else if (state.step3Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Mẫu số thứ nhất là $a^2 = 100$, mẫu số thứ hai là $b^2 = 36$. Thử lại nhé!</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>x^2/100 + y^2/36 = 1</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 4: KHOẢNG CÁCH TIÊU CỰ F1F2 */
+    function renderStep4(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-4">
+          <div class="card-title"><i class="ti ti-target-arrow" style="color:var(--teal);"></i> Bước 4: Tính khoảng cách 2 "Điểm thì thầm" (Tiêu cự)</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Hai "điểm thì thầm" được đặt tại 2 tiêu điểm $F_1, F_2$ của phòng elip. Tính khoảng cách $2c$ giữa 2 điểm này:
+          </div>
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Khoảng cách giữa 2 tiêu điểm $2c$ ($m$):</span></label>
+            <input type="text" class="text-input" id="inp-step4-dist" placeholder="Nhập số..." value="${state.step4DistInput}" ${state.stepCompleted[4] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-step-4"></div>
+
+          ${!state.stepCompleted[4] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep4()">
+              <i class="ti ti-check"></i> Xác nhận Khoảng cách 2c
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(5)">
+              Chuyển sang Bước 5: Khám phá Quang học <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    function submitStep4() {
+      const val = document.getElementById('inp-step4-dist').value.trim();
+      const fb = document.getElementById('fb-step-4');
+      state.step4DistInput = val;
+
+      if (val === '16' || val === '16m') {
+        state.stepCompleted[4] = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> $c^2 = a^2 - b^2 = 100 - 36 = 64 \\implies c = 8m \\implies$ Khoảng cách $2c = 16m$. (Lưu ý: Elip dùng dấu TRỪ, khác với dấu CỘNG của hypebol).</div>`;
+        renderKaTeXInElement(fb);
+        LMS().event('answered', { step: 4, correct: true });
+        switchStep(5);
+      } else {
+        state.step4Attempts++;
+        triggerShake('card-step-4');
+        if (state.step4Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng kiểm tra lại công thức tính $c^2 = a^2 - b^2$ và nhân 2 để tìm $2c$ nhé!</div>`;
+        } else if (state.step4Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $c^2 = 100 - 36 = 64 \\implies c = 8$. Khoảng cách $2c = 2 \\times 8 = 16m$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>16</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 5: KHÁM PHÁ QUANG HỌC (TƯƠNG TÁC) */
+    function renderStep5(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-5">
+          <div class="card-title"><i class="ti ti-vector-triangle" style="color:var(--teal);"></i> Bước 5: Khám phá Tính chất Quang học Elip</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Bấm phát âm thanh theo các hướng khác nhau từ tiêu điểm $F_1$ và quan sát đường đi của các tia phản xạ trên tường phòng elip:
+          </div>
+
+          <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="fireRayTrial(1)"><i class="ti ti-volume"></i> Thử tia 1</button>
+            <button class="btn btn-secondary" onclick="fireRayTrial(2)"><i class="ti ti-volume"></i> Thử tia 2</button>
+            <button class="btn btn-secondary" onclick="fireRayTrial(3)"><i class="ti ti-volume"></i> Thử tia 3</button>
+            <button class="btn btn-primary" onclick="fireAllRays()"><i class="ti ti-sun"></i> Xem toàn cảnh (Hội tụ 15 tia)</button>
+          </div>
+
+          <div class="control-group" style="margin:10px 0;">
+            <label class="control-label"><span>Tia phản xạ từ tường elip LUÔN đi qua điểm nào?</span></label>
+            <div class="option-list">
+              <label class="option-item ${state.step5SelectedOpt === 0 ? 'selected' : ''}">
+                <input type="radio" name="opt_step5" value="0" ${state.step5SelectedOpt === 0 ? 'checked' : ''} onchange="state.step5SelectedOpt=0;">
+                <span>(A) Tiêu điểm $F_2$ (tiêu điểm còn lại)</span>
+              </label>
+              <label class="option-item ${state.step5SelectedOpt === 1 ? 'selected' : ''}">
+                <input type="radio" name="opt_step5" value="1" ${state.step5SelectedOpt === 1 ? 'checked' : ''} onchange="state.step5SelectedOpt=1;">
+                <span>(B) Gốc tọa độ $O$ (tâm phòng)</span>
+              </label>
+              <label class="option-item ${state.step5SelectedOpt === 2 ? 'selected' : ''}">
+                <input type="radio" name="opt_step5" value="2" ${state.step5SelectedOpt === 2 ? 'checked' : ''} onchange="state.step5SelectedOpt=2;">
+                <span>(C) Trội tự do ra khắp phòng không quy luật</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="fb-step-5"></div>
+
+          ${!state.stepCompleted[5] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep5()">
+              <i class="ti ti-check"></i> Xác nhận Kết luận Quang học
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(6)">
+              Chuyển sang Bước 6: Nhận xét Thực tế <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    function fireRayTrial(trialNum) {
+      state.step5TrialCount++;
+      LMS().event('explored', { id: 'b22m1-b5', trial: trialNum });
+
+      const angles = [Math.PI / 4, Math.PI / 2, (3 * Math.PI) / 4];
+      const theta = angles[(trialNum - 1) % 3];
+
+      // Point on ellipse wall
+      const targetX = 10 * Math.cos(theta);
+      const targetY = 6 * Math.sin(theta);
+
+      state.activeRays = [{ targetX, targetY }];
+      autoFitViewport();
+    }
+
+    function fireAllRays() {
+      state.step5AllFired = true;
+      LMS().event('explored', { id: 'b22m1-b5', trial: 'all' });
+
+      const rays = [];
+      for (let i = 0; i < 15; i++) {
+        const theta = (i / 15) * Math.PI * 2;
+        const targetX = 10 * Math.cos(theta);
+        const targetY = 6 * Math.sin(theta);
+        rays.push({ targetX, targetY });
+      }
+      state.activeRays = rays;
+      autoFitViewport();
+    }
+
+    function submitStep5() {
+      const fb = document.getElementById('fb-step-5');
+      if (state.step5SelectedOpt === null) {
+        fb.innerHTML = `<div class="info-box warning">Vui lòng chọn 1 câu trả lời kết luận trước khi xác nhận nhé!</div>`;
+        return;
+      }
+
+      if (state.step5SelectedOpt === 0) {
+        state.stepCompleted[5] = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Xuất sắc!</b> Tính chất quang học đặc trưng của elip: Mọi tia âm thanh/ánh sáng phát ra từ một tiêu điểm $F_1$, sau khi phản xạ trên bức tường elip, ĐỀU HỘI TỤ TRỌN VẸN về tiêu điểm còn lại $F_2$.</div>`;
+        renderKaTeXInElement(fb);
+        LMS().event('answered', { step: 5, correct: true });
+        switchStep(6);
+      } else {
+        state.step5Attempts++;
+        triggerShake('card-step-5');
+        if (state.step5Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng bấm thử các tia phản xạ và quan sát điểm hội tụ chung trên hình nhé!</div>`;
+        } else if (state.step5Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Cả 3 tia phản xạ đều dồn chính xác về tiêu điểm $F_2$. Thử lại nhé!</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Chọn phương án <b>(A) Tiêu điểm F2</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 6: NHẬN XÉT THỰC TẾ & TỔNG KẾT */
+    function renderStep6(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-6">
+          <div class="card-title"><i class="ti ti-bulb" style="color:var(--teal);"></i> Bước 6: Nhận xét Liên hệ Thực tế "Phòng thì thầm"</div>
+          <div class="info-box athena" style="margin-bottom:12px;">
+            <b>🏛️ Giải thích hiện tượng kiến trúc "Phòng thì thầm" (Whispering Gallery):</b><br><br>
+            Bạn vừa thử một số hướng tiêu biểu, nhưng trong thực tế âm thanh thì thầm phát ra theo <b>VÔ SỐ hướng cùng lúc</b>.<br><br>
+            Theo đúng tính chất hình học vừa khám phá, <b>TẤT CẢ các hướng âm thanh đó đều dội tường và hội tụ về đúng 1 điểm $F_2$</b>.<br><br>
+            Vì vậy, dù người đứng tại $F_1$ chỉ nói thì thầm rất khẽ, toàn bộ năng lượng âm thanh đều dồn về $F_2$ khiến người đứng ở đó nghe rõ như đang nói sát tai. Ngược lại, người đứng ở giữa phòng lại KHÔNG nghe thấy gì vì âm thanh không hội tụ vào chỗ họ đứng!
+          </div>
+
+          <button class="btn btn-primary" style="width:100%;" onclick="finishModule1()">
+            <i class="ti ti-award"></i> Hoàn thành Module 1
+          </button>
+        </div>
+      `;
+    }
+
+    function finishModule1() {
+      state.stepCompleted[6] = true;
+      openSummaryModal();
+      LMS().complete();
+    }
+
+    /* =========================================================================
+       4. MODALS & INITIALIZATION
+       ========================================================================= */
+    function openNotebookModal() {
+      const modal = document.getElementById('modal-notebook');
+      modal.classList.add('active');
+      renderKaTeXInElement(modal);
+    }
+    function closeNotebookModal() {
+      document.getElementById('modal-notebook').classList.remove('active');
+    }
+    function openSummaryModal() {
+      const modal = document.getElementById('modal-summary');
+      modal.classList.add('active');
+      renderKaTeXInElement(modal);
+    }
+    function closeSummaryModal() {
+      document.getElementById('modal-summary').classList.remove('active');
+    }
+
+    function triggerShake(elementId) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        el.classList.remove('shake');
+        void el.offsetWidth;
+        el.classList.add('shake');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSidebar();
+      resizeCanvas();
+      resetViewport();
+      renderKaTeXInElement(document.body);
+    });
+
+    window.addEventListener('load', () => {
+      renderKaTeXInElement(document.body);
+    });
+  </script>
+</body>
+</html>
