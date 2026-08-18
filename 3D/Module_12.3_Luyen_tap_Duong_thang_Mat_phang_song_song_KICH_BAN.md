@@ -48,7 +48,7 @@ const COLOR_EDGE_HIDDEN= 0x444d56;  // Cạnh khối bị khuất (nét đứt, 
 // Opacity mặt phẳng chính: 0.18–0.25, không vượt 0.35 trên nền tối
 ```
 
-**Font:** Plus Jakarta Sans (Google Fonts) — không dùng Be Vietnam Pro.
+**Font:** Be Vietnam Pro (Google Fonts).
 
 **Bố cục Desktop (≥1024px):** Header 1 dòng cố định "🧊 Hình học không gian"
 (không hiện tên module cụ thể trong header) + Canvas trái `flex:1`, tối thiểu

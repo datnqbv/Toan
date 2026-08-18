@@ -116,8 +116,7 @@ Có hình ảnh, app hay slide nào bạn thích phong cách không? Upload lên
 **Tiếp theo: typography. Đề xuất mặc định — bạn chỉnh nếu cần:**
 
 **Font chữ:**
-- Mặc định: **Plus Jakarta Sans** (Google Fonts, tiếng Việt tốt, đồng nhất với hệ thống Toán 2D / Lý / Hoá)
-- ⚠️ KHÔNG dùng Be Vietnam Pro dù file mẫu `song_song_khong_gian` đang dùng — cần đồng nhất xuyên môn
+- Mặc định: **Be Vietnam Pro** (Google Fonts, tiếng Việt tốt, đồng nhất với hệ thống Toán/Lý/Hóa)
 
 **Thang cỡ chữ:**
 
@@ -247,7 +246,7 @@ Layout chuẩn cho hình học không gian là **Header + Canvas trái + Sidebar
 🎨 Màu canvas:      [hex nền canvas tối]
 🎨 Màu UI:          navy #0d2b4e + teal #0e7a6e (hoặc custom)
 🎨 Màu đối tượng:   [xem PHẦN 1.2 — bộ màu hình học]
-🔤 Font:            Plus Jakarta Sans
+🔤 Font:            Be Vietnam Pro
 📐 Layout:          Header + Canvas + Sidebar 310px
 🖱️ Tương tác:      [N1, D1, S1, I1, V1, A1, R1...]
 📊 Số bước tab:     [N bước + Kết luận]
@@ -587,11 +586,11 @@ Không đổi hue — chỉ tăng lightness một chút. Ví dụ:
 ### 1.4 Typography — đồng nhất với hệ thống
 
 ```css
-/* Dùng đúng font này — không dùng Be Vietnam Pro dù file mẫu đang dùng */
-@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
+/* Dùng đúng font Be Vietnam Pro */
+@import url('https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap');
 
 body {
-  font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+  font-family: 'Be Vietnam Pro', system-ui, sans-serif;
   font-size: 14px;
   line-height: 1.6;
   color: var(--text);

@@ -1,0 +1,1683 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 22: Ba đường conic — Module 3: Parabol "Gương đèn pha ô tô"</title>
+
+  <!-- Google Fonts: Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- KaTeX CSS & JS with Auto-Render -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderKaTeXInElement(document.body)"></script>
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
+
+  <style>
+    /* =========================================================================
+       1. DESIGN SYSTEM TOKENS (Jade & Cream Theme)
+       ========================================================================= */
+    :root {
+      --jade-dark: #14432F;
+      --jade-deep: #2D8B6F;
+      --cream: #FAF7F0;
+      --paper-line: #cbd5e1;
+
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+      --surface: #ffffff;
+      --border: var(--paper-line);
+      --text: #0f172a;
+      --text-2: #334155;
+      --sub: #64748b;
+
+      --correct: #16a34a;
+      --correct-bg: #f0fdf4;
+      --wrong: #dc2626;
+      --wrong-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --info: #2563eb;
+      --info-bg: #eff6ff;
+
+      --canvas-bg: #0f172a;
+      --font: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+    }
+
+    html,
+    body {
+      height: 100%;
+      max-height: 100vh;
+      overflow: hidden;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      height: 48px;
+      max-height: 48px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(20, 67, 47, 0.15);
+    }
+
+    .header-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .btn-header {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* SUB NAV / STEP PROGRESS BAR */
+    .sub-nav {
+      height: 40px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 6px;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .step-pill {
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--sub);
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .step-pill.active {
+      color: var(--teal);
+      background: rgba(45, 139, 111, 0.1);
+      border-color: var(--teal);
+    }
+
+    .step-pill.completed {
+      color: var(--correct);
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    /* MAIN APP BODY */
+    .app-body {
+      display: grid;
+      grid-template-columns: 48% 52%;
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 88px);
+      max-height: calc(100vh - 88px);
+      overflow: hidden;
+    }
+
+    /* LEFT VIEWPORT / CANVAS CONTAINER */
+    .viewport-container {
+      background: #ffffff;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%;
+    }
+
+    .canvas-wrapper {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--canvas-bg);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-toolbar {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      display: flex;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(8px);
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 10;
+    }
+
+    .tool-btn {
+      background: transparent;
+      color: #ffffff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+      font-family: var(--font);
+    }
+
+    .tool-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #86efac;
+    }
+
+    /* RIGHT SIDEBAR INTERACTIVE PANEL */
+    .sidebar {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100%;
+    }
+
+    .sidebar-content {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* CARD COMPONENTS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      transition: all 0.25s ease;
+      width: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    .card.shake {
+      animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+    }
+
+    @keyframes shake {
+
+      10%,
+      90% {
+        transform: translate3d(-1px, 0, 0);
+      }
+
+      20%,
+      80% {
+        transform: translate3d(2px, 0, 0);
+      }
+
+      30%,
+      50%,
+      70% {
+        transform: translate3d(-4px, 0, 0);
+      }
+
+      40%,
+      60% {
+        transform: translate3d(4px, 0, 0);
+      }
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .info-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--teal);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.5;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .info-box.athena {
+      background: #f0fdf4;
+      border-left-color: var(--teal);
+      color: #166534;
+    }
+
+    .info-box.warning {
+      background: var(--warning-bg);
+      border-left-color: var(--warning);
+      color: #92400e;
+    }
+
+    .info-box.error {
+      background: var(--wrong-bg);
+      border-left-color: var(--wrong);
+      color: #991b1b;
+    }
+
+    .info-box.correct {
+      background: var(--correct-bg);
+      border-left-color: var(--correct);
+      color: #166534;
+    }
+
+    /* FORM CONTROLS & RADIO OPTIONS */
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      background: #ffffff;
+      transition: all 0.2s ease;
+    }
+
+    .option-item:hover {
+      border-color: var(--teal);
+      background: rgba(45, 139, 111, 0.04);
+    }
+
+    .option-item.selected {
+      border-color: var(--teal);
+      background: rgba(45, 139, 111, 0.08);
+      font-weight: 600;
+    }
+
+    .option-item input {
+      margin-top: 3px;
+      accent-color: var(--teal);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .control-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .text-input {
+      width: 100%;
+      box-sizing: border-box;
+      display: block;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13.5px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .text-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.15);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      font-family: var(--font);
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #236f58;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--text-2);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 580px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: var(--sub);
+      cursor: pointer;
+    }
+
+    /* RESPONSIVE MOBILE LAYOUT */
+    @media (max-width: 992px) {
+      body {
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+
+      header {
+        padding: 6px 10px;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .sub-nav {
+        padding: 0 8px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .step-pill {
+        padding: 4px 8px;
+        font-size: 11px;
+      }
+
+      .app-body {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .viewport-container {
+        width: 100% !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 50 !important;
+        height: calc((100vh - 48px) * 0.45) !important;
+        height: calc((100dvh - 48px) * 0.45) !important;
+        min-height: 280px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      }
+
+      .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .sidebar-content {
+        padding: 8px;
+        gap: 8px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-title-group">
+      <div class="header-badge">
+        <i class="ti ti-bulb"></i> Toán 10 — Bài 22: Ba đường conic (Module 3: Parabol)
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-header" onclick="openNotebookModal()">
+        <i class="ti ti-book"></i> Sổ tay kiến thức
+      </button>
+    </div>
+  </header>
+
+  <!-- SUB NAV STEP PROGRESS BAR -->
+  <div class="sub-nav">
+    <button class="step-pill active" id="pill-step-0" onclick="switchStep(0)">B0: Bối cảnh</button>
+    <button class="step-pill" id="pill-step-1" onclick="switchStep(1)">B1: Đặt hệ trục</button>
+    <button class="step-pill" id="pill-step-2" onclick="switchStep(2)">B2: Điểm viền (4;12)</button>
+    <button class="step-pill" id="pill-step-3" onclick="switchStep(3)">B3: Tìm p, Viết PT</button>
+    <button class="step-pill" id="pill-step-4" onclick="switchStep(4)">B4: Đặt bóng đèn F</button>
+    <button class="step-pill" id="pill-step-5" onclick="switchStep(5)">B5: Mở rộng (x=2cm)</button>
+    <button class="step-pill" id="pill-step-6" onclick="switchStep(6)">B6: Khám phá Quang học</button>
+    <button class="step-pill" id="pill-step-7" onclick="switchStep(7)">B7: Tổng kết</button>
+  </div>
+
+  <!-- MAIN APP BODY -->
+  <div class="app-body">
+    <!-- LEFT VIEWPORT / CANVAS CONTAINER -->
+    <div class="viewport-container">
+      <div class="canvas-wrapper" id="canvas-wrap">
+        <canvas id="main-canvas"></canvas>
+        <div class="canvas-toolbar">
+          <button class="tool-btn" onclick="autoFitViewport()"><i class="ti ti-focus-2"></i> Fit Khung nhìn</button>
+          <button class="tool-btn" onclick="zoomViewport(0.833)"><i class="ti ti-zoom-in"></i> Phóng to</button>
+          <button class="tool-btn" onclick="zoomViewport(1.2)"><i class="ti ti-zoom-out"></i> Thu nhỏ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR INTERACTIVE PANEL -->
+    <div class="sidebar">
+      <div class="sidebar-content" id="sidebar-panel">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SỔ TAY KIẾN THỨC -->
+  <div class="modal-overlay" id="modal-notebook">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-book" style="color:var(--teal);"></i> Sổ tay Kiến thức — Parabol</div>
+        <button class="close-btn" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="info-box athena" style="margin-bottom:12px;">
+        <b>📌 Phương trình chính tắc của Parabol:</b><br>
+        $$y^2 = 2px \quad (\text{với } p > 0)$$
+      </div>
+      <div class="info-box warning" style="margin-bottom:12px;">
+        • <b>Trục đối xứng:</b> Trục $Ox$. Đỉnh tại gốc $O(0;0)$, mở rộng về phía bên phải.<br>
+        • <b>Tham số tiêu:</b> $p > 0$.<br>
+        • <b>Tiêu điểm:</b> $F\left(\frac{p}{2}; 0\right)$. <i>Lưu ý: Hoành độ tiêu điểm là $\frac{p}{2}$, KHÔNG phải $p$.</i><br>
+        • <b>Đường chuẩn:</b> $\Delta: x = -\frac{p}{2}$.
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="closeNotebookModal()">Đã hiểu kiến thức</button>
+    </div>
+  </div>
+
+  <!-- MODAL: TỔNG KẾT MODULE 3 -->
+  <div class="modal-overlay" id="modal-summary">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-award" style="color:var(--correct);"></i> Chúc mừng hoàn thành Module 3!</div>
+        <button class="close-btn" onclick="closeSummaryModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="info-box correct" style="margin-bottom:16px;">
+        <b>🎉 Bạn đã xuất sắc mô hình hóa mặt cắt Gương Đèn Pha Ô Tô thành đường Parabol!</b><br><br>
+        Từ kích thước khẩu độ $24cm$ và độ sâu $4cm$, bạn đã viết được phương trình chính tắc $y^2 = 36x$, xác định tiêu điểm đặt bóng đèn cách đỉnh $9cm$ và giải thích vì sao đèn pha chiếu xa được mạnh mẽ!
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="closeSummaryModal()">Đóng bảng tổng kết</button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC & KATEX HELPER -->
+  <script>
+    /* =========================================================================
+       1. GLOBAL STATE & KATEX AUTO-RENDER HELPER
+       ========================================================================= */
+    const state = {
+      currentStep: 0, // 0 to 7
+      stepCompleted: [true, false, false, false, false, false, false, false],
+
+      step1Selected: null,
+      step1Attempts: 0,
+
+      step2Input: '',
+      step2Attempts: 0,
+
+      step3PInput: '',
+      step3EqInput: '',
+      step3Attempts: 0,
+
+      step4DistInput: '',
+      step4Attempts: 0,
+
+      step5RadInput: '',
+      step5Attempts: 0,
+
+      step6TrialCount: 0,
+      step6ActiveRays: [],
+      step6SelectedOpt: null,
+      step6Attempts: 0
+    };
+
+    function renderKaTeXInElement(el) {
+      if (!el) return;
+      if (typeof renderMathInElement === 'function') {
+        try {
+          renderMathInElement(el, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false },
+              { left: '\\(', right: '\\)', display: false },
+              { left: '\\[', right: '\\]', display: true }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {
+          console.warn('KaTeX render warning:', e);
+        }
+      }
+    }
+
+    function LMS() {
+      return {
+        progress: function (data) { console.log('[LMS] Progress:', data); },
+        event: function (name, data) { console.log('[LMS] Event:', name, data); },
+        state: function (data) { console.log('[LMS] State:', data); },
+        complete: function () {
+          console.log('[LMS] Module 3 Parabol completed!');
+          if (window.parent && window.parent.postMessage) {
+            window.parent.postMessage({
+              type: 'LMS_COMPLETE',
+              moduleId: 'L10-C7-B22-M3',
+              items: [
+                { id: 'b22m3-b1', name: 'Bước 1 — Đặt hệ trục (gương đèn pha)', completed: state.stepCompleted[1] },
+                { id: 'b22m3-b2', name: 'Bước 2 — Điểm viền (4;12)', completed: state.stepCompleted[2] },
+                { id: 'b22m3-b3', name: 'Bước 3 — Tìm p, viết PT chính tắc', completed: state.stepCompleted[3] },
+                { id: 'b22m3-b4', name: 'Bước 4 — Đặt bóng đèn tại F(9;0)', completed: state.stepCompleted[4] },
+                { id: 'b22m3-b6', name: 'Bước 6 — Khám phá quang học (kết luận)', completed: state.stepCompleted[6] }
+              ]
+            }, '*');
+          }
+        }
+      };
+    }
+
+    /* =========================================================================
+       2. CANVAS GRAPH ENGINE & DRAW-ON ANIMATION SYSTEM
+       ========================================================================= */
+    const canvas = document.getElementById('main-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const viewport = {
+      xMin: -6, xMax: 16,
+      yMin: -16, yMax: 16,
+      zoom: 1
+    };
+
+    function resizeCanvas() {
+      const wrap = document.getElementById('canvas-wrap') || document.querySelector('.canvas-wrapper') || document.querySelector('.viewport-container');
+      if (wrap) {
+        canvas.width = wrap.clientWidth || wrap.offsetWidth || 600;
+        canvas.height = wrap.clientHeight || wrap.offsetHeight || 400;
+      }
+      drawCanvas();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function toPxX(x) {
+      const spanX = (viewport.xMax - viewport.xMin) / viewport.zoom;
+      const midX = (viewport.xMin + viewport.xMax) / 2;
+      const minX = midX - spanX / 2;
+      return ((x - minX) / spanX) * canvas.width;
+    }
+
+    function toPxY(y) {
+      const spanY = (viewport.yMax - viewport.yMin) / viewport.zoom;
+      const midY = (viewport.yMin + viewport.yMax) / 2;
+      const minY = midY - spanY / 2;
+      return canvas.height - ((y - minY) / spanY) * canvas.height;
+    }
+
+    function autoFitViewport() {
+      viewport.xMin = -6; viewport.xMax = 16;
+      viewport.yMin = -16; viewport.yMax = 16;
+      viewport.zoom = 1;
+      triggerCanvasAnimation();
+    }
+
+    function zoomViewport(factor) {
+      viewport.zoom *= factor;
+      drawCanvas();
+    }
+
+    /* HELPER: CROSS-BROWSER ROUNDED RECTANGLE */
+    function drawRoundRectHelper(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    /* DRAW-ON CANVAS STROKE WITH GLOWING TRACER HEAD */
+    function drawLineDrawOn(x1, y1, x2, y2, strokeStyle, lineWidth, isDashed, progress) {
+      if (progress <= 0) return;
+      const curX = x1 + (x2 - x1) * progress;
+      const curY = y1 + (y2 - y1) * progress;
+
+      const p1x = toPxX(x1), p1y = toPxY(y1);
+      const curPxX = toPxX(curX), curPxY = toPxY(curY);
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.moveTo(p1x, p1y);
+      ctx.lineTo(curPxX, curPxY);
+      ctx.strokeStyle = strokeStyle;
+      ctx.lineWidth = lineWidth;
+      if (isDashed) ctx.setLineDash([5, 4]);
+      ctx.stroke();
+      ctx.restore();
+
+      // Glowing Pen-Tip Tracer Head
+      if (progress > 0 && progress < 1) {
+        ctx.save();
+        ctx.beginPath();
+        ctx.arc(curPxX, curPxY, lineWidth * 2.2, 0, Math.PI * 2);
+        ctx.fillStyle = strokeStyle;
+        ctx.shadowColor = strokeStyle;
+        ctx.shadowBlur = 10;
+        ctx.fill();
+        ctx.restore();
+      }
+    }
+
+    function drawBadgeDrawOn(x, y, label, color, bg, border, align = 'center', baseline = 'bottom', progress = 1) {
+      if (progress < 0.8) return;
+      const px = toPxX(x);
+      const py = toPxY(y);
+
+      ctx.save();
+      ctx.font = '600 11.5px "Be Vietnam Pro", sans-serif';
+      const textWidth = ctx.measureText(label).width;
+      const pxPad = 7, pyPad = 4;
+      const boxW = textWidth + pxPad * 2;
+      const boxH = 20;
+
+      let boxX = px - boxW / 2;
+      if (align === 'left') boxX = px;
+      if (align === 'right') boxX = px - boxW;
+
+      let boxY = py - boxH - 6;
+      if (baseline === 'top') boxY = py + 6;
+      if (baseline === 'middle') boxY = py - boxH / 2;
+
+      ctx.fillStyle = bg || '#ffffff';
+      ctx.strokeStyle = border || color;
+      ctx.lineWidth = 1.2;
+
+      drawRoundRectHelper(ctx, boxX, boxY, boxW, boxH, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = color;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, boxX + boxW / 2, boxY + boxH / 2);
+      ctx.restore();
+    }
+
+    function drawPoint(px, py, color, radius = 5) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(px, py, radius, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 6;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    /* MAIN CANVAS RENDERER */
+    function drawCanvas() {
+      ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+      // STEP 0: ILLUSTRATIVE SCENE ("Cảnh Đêm Đèn Pha Ô Tô")
+      if (state.currentStep === 0) {
+        drawNightAtmosphereScene();
+        return;
+      }
+
+      // STEP 1-7: MATHEMATICAL OXY GRAPH CANVAS
+      drawOxyGrid();
+
+      const pVal = 18; // y^2 = 36x => p = 18 => 2p = 36
+      const px0 = toPxX(0), py0 = toPxY(0);
+
+      // Render Parabol Curve y^2 = 36x (Draw-on)
+      ctx.save();
+      ctx.beginPath();
+      let first = true;
+      const maxH = 15;
+      const stepH = 0.2;
+      const curveProg = (state.currentStep === 1 || state.currentStep === 3) ? animProgress : 1;
+
+      for (let h = -maxH * curveProg; h <= maxH * curveProg; h += stepH) {
+        const r = (h * h) / 36; // x = y^2 / 36
+        const px = toPxX(r);
+        const py = toPxY(h);
+        if (first) { ctx.moveTo(px, py); first = false; }
+        else ctx.lineTo(px, py);
+      }
+      ctx.strokeStyle = '#2D8B6F';
+      ctx.lineWidth = 3;
+      ctx.shadowColor = 'rgba(45, 139, 111, 0.4)';
+      ctx.shadowBlur = 8;
+      ctx.stroke();
+      ctx.restore();
+
+      // Mirror Rim Line at x = 4 (Khẩu độ 24cm, độ sâu 4cm)
+      if (state.currentStep >= 2) {
+        const p2 = state.currentStep === 2 ? animProgress : 1;
+        drawLineDrawOn(4, -12, 4, 12, '#94a3b8', 1.5, true, p2);
+
+        if (p2 > 0.8) {
+          drawPoint(toPxX(4), toPxY(12), '#2563eb', 7);
+          drawPoint(toPxX(4), toPxY(-12), '#2563eb', 5);
+        }
+        drawBadgeDrawOn(4, 12, 'Điểm viền gương (4; 12)', '#2563eb', '#eff6ff', '#bfdbfe', 'left', 'bottom', p2);
+        drawBadgeDrawOn(4, 0, 'Độ sâu x = 4cm', '#64748b', '#f8fafc', '#cbd5e1', 'center', 'top', p2);
+      }
+
+      // Focus F(9;0) Light bulb (Step 4+)
+      if (state.currentStep >= 4) {
+        const p4 = state.currentStep === 4 ? animProgress : 1;
+        const fx = toPxX(9), fy = toPxY(0);
+
+        if (p4 > 0.3) {
+          ctx.save();
+          ctx.beginPath();
+          ctx.arc(fx, fy, 10, 0, Math.PI * 2);
+          ctx.fillStyle = '#f59e0b';
+          ctx.shadowColor = '#fbbf24';
+          ctx.shadowBlur = 15;
+          ctx.fill();
+
+          ctx.fillStyle = '#ffffff';
+          ctx.font = '900 12px "Tabler Icons"';
+          ctx.textAlign = 'center';
+          ctx.textBaseline = 'middle';
+          ctx.fillText('💡', fx, fy);
+          ctx.restore();
+        }
+        drawBadgeDrawOn(9, 0, 'Tiêu điểm F (9; 0) — Đặt bóng đèn', '#d97706', '#fffbeb', '#fde68a', 'center', 'bottom', p4);
+      }
+
+      // Extension Point at x = 2 (Step 5+)
+      if (state.currentStep >= 5) {
+        const p5 = state.currentStep === 5 ? animProgress : 1;
+        const rVal = Math.sqrt(72); // ~8.485m
+        drawLineDrawOn(2, 0, 2, rVal, '#16a34a', 2, true, p5);
+
+        if (p5 > 0.8) drawPoint(toPxX(2), toPxY(rVal), '#16a34a', 7);
+        drawBadgeDrawOn(2, rVal, 'r ≈ 8.49cm (Độ sâu x = 2cm)', '#16a34a', '#f0fdf4', '#86efac', 'left', 'bottom', p5);
+      }
+
+      // Optical Rays Discovery (Step 6)
+      if (state.currentStep === 6) {
+        const p6 = animProgress;
+
+        state.step6ActiveRays.forEach(ray => {
+          const targetX = ray.targetX;
+          const targetY = ray.targetY;
+
+          // Ray 1: From Focus F(9,0) to Parabol wall (targetX, targetY)
+          drawLineDrawOn(9, 0, targetX, targetY, '#eab308', 2, false, Math.min(1, p6 * 1.3));
+
+          // Ray 2: Reflected ray parallel to Ox axis from (targetX, targetY) to right (x=16)
+          if (p6 > 0.4) {
+            const pRef = (p6 - 0.4) / 0.6;
+            drawLineDrawOn(targetX, targetY, 16, targetY, '#ef4444', 2, false, pRef);
+          }
+        });
+      }
+    }
+
+    /* STEP 0: NIGHT ATMOSPHERE ILLUSTRATIVE SCENE */
+    function drawNightAtmosphereScene() {
+      const w = canvas.width || 600;
+      const h = canvas.height || 400;
+
+      // Dark Sky Background
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+      bgGrad.addColorStop(0, '#090d16');
+      bgGrad.addColorStop(0.7, '#0f172a');
+      bgGrad.addColorStop(1, '#1e293b');
+      ctx.fillStyle = bgGrad;
+      ctx.fillRect(0, 0, w, h);
+
+      // Ground Road Surface
+      const roadY = h * 0.75;
+      ctx.fillStyle = '#0f172a';
+      ctx.fillRect(0, roadY, w, h - roadY);
+
+      // Road Dashed Line
+      ctx.save();
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 3;
+      ctx.setLineDash([20, 15]);
+      ctx.beginPath();
+      ctx.moveTo(0, roadY + 25);
+      ctx.lineTo(w, roadY + 25);
+      ctx.stroke();
+      ctx.restore();
+
+      // Car Silhouette Body
+      const carX = w * 0.12;
+      const carY = roadY - 45;
+      ctx.fillStyle = '#334155';
+      drawRoundRectHelper(ctx, carX, carY, 140, 45, 8);
+      ctx.fill();
+
+      // Car Wheels
+      ctx.fillStyle = '#0f172a';
+      ctx.beginPath();
+      ctx.arc(carX + 30, roadY, 14, 0, Math.PI * 2);
+      ctx.arc(carX + 110, roadY, 14, 0, Math.PI * 2);
+      ctx.fill();
+
+      // Headlight Assembly (Parabol Mirror)
+      const headX = carX + 140;
+      const headY = carY + 20;
+
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(headX - 15, headY, 22, -Math.PI / 2, Math.PI / 2, true);
+      ctx.strokeStyle = '#cbd5e1';
+      ctx.lineWidth = 4;
+      ctx.shadowColor = '#e2e8f0';
+      ctx.shadowBlur = 12;
+      ctx.stroke();
+
+      // Light Bulb at Focus F
+      const focusX = headX - 25;
+      ctx.beginPath();
+      ctx.arc(focusX, headY, 7, 0, Math.PI * 2);
+      ctx.fillStyle = '#fbbf24';
+      ctx.shadowColor = '#f59e0b';
+      ctx.shadowBlur = 20;
+      ctx.fill();
+      ctx.restore();
+
+      // Parallel Light Beams Emission
+      const beamGrad = ctx.createLinearGradient(focusX, headY, w, headY);
+      beamGrad.addColorStop(0, 'rgba(251, 191, 36, 0.45)');
+      beamGrad.addColorStop(0.5, 'rgba(251, 191, 36, 0.18)');
+      beamGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
+
+      ctx.save();
+      ctx.fillStyle = beamGrad;
+      ctx.beginPath();
+      ctx.moveTo(headX, headY - 22);
+      ctx.lineTo(w, headY - 22);
+      ctx.lineTo(w, headY + 22);
+      ctx.lineTo(headX, headY + 22);
+      ctx.closePath();
+      ctx.fill();
+
+      // Parallel Ray Lines
+      for (let i = -18; i <= 18; i += 6) {
+        ctx.beginPath();
+        ctx.moveTo(focusX, headY);
+        ctx.lineTo(headX - 5, headY + i);
+        ctx.lineTo(w, headY + i);
+        ctx.strokeStyle = 'rgba(254, 240, 138, 0.65)';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+      }
+      ctx.restore();
+
+      // Atmospheric Labels & Titles
+      ctx.save();
+      ctx.fillStyle = '#f8fafc';
+      ctx.font = '700 15px "Be Vietnam Pro", sans-serif';
+      ctx.fillText('🚗 MÔ HÌNH THỰC TẾ: GƯƠNG ĐÈN PHA Ô TÔ BAN ĐÊM', 24, 36);
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '500 12px "Be Vietnam Pro", sans-serif';
+      ctx.fillText('Bóng đèn đặt tại Tiêu điểm F — Chùm tia phản xạ SONG SONG chiếu xa', 24, 56);
+      ctx.restore();
+    }
+
+    function drawOxyGrid() {
+      // Background Grid Lines
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+      const stepGrid = 2;
+
+      for (let x = -10; x <= 30; x += stepGrid) {
+        const px = toPxX(x);
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, canvas.height); ctx.stroke();
+      }
+      for (let y = -20; y <= 20; y += stepGrid) {
+        const py = toPxY(y);
+        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(canvas.width, py); ctx.stroke();
+      }
+
+      // Main Axis Ox and Oy
+      const px0 = toPxX(0);
+      const py0 = toPxY(0);
+
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 2;
+
+      // Ox Axis
+      ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(canvas.width, py0); ctx.stroke();
+      // Oy Axis
+      ctx.beginPath(); ctx.moveTo(px0, 0); ctx.lineTo(px0, canvas.height); ctx.stroke();
+
+      // Axis Labels
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '600 12px "Be Vietnam Pro", sans-serif';
+      ctx.fillText('O', px0 - 14, py0 + 16);
+      ctx.fillText('x (độ sâu)', canvas.width - 70, py0 + 18);
+      ctx.fillText('h (bán kính)', px0 + 8, 18);
+    }
+
+    /* =========================================================================
+       3. SIDEBAR STEP RENDERERS & HANDLERS
+       ========================================================================= */
+    let animProgress = 1;
+    let animReqId = null;
+
+    function triggerCanvasAnimation() {
+      animProgress = 0;
+      const startTime = performance.now();
+      const duration = 850; // 850ms Draw-On animation
+
+      function animate(now) {
+        const elapsed = now - startTime;
+        let t = Math.min(1, elapsed / duration);
+        animProgress = 1 - Math.pow(1 - t, 3);
+        drawCanvas();
+
+        if (t < 1) {
+          animReqId = requestAnimationFrame(animate);
+        }
+      }
+
+      if (animReqId) cancelAnimationFrame(animReqId);
+      animReqId = requestAnimationFrame(animate);
+    }
+
+    function switchStep(stepNum) {
+      if (stepNum > 0 && !state.stepCompleted[stepNum - 1] && !state.stepCompleted[stepNum]) {
+        return; // Locked
+      }
+      state.currentStep = stepNum;
+      document.querySelectorAll('.step-pill').forEach((pill, idx) => {
+        pill.classList.remove('active');
+        if (idx === stepNum) pill.classList.add('active');
+        if (state.stepCompleted[idx]) pill.classList.add('completed');
+      });
+      renderSidebar();
+      triggerCanvasAnimation();
+    }
+
+    function renderSidebar() {
+      const container = document.getElementById('sidebar-panel');
+      const step = state.currentStep;
+
+      if (step === 0) renderStep0(container);
+      else if (step === 1) renderStep1(container);
+      else if (step === 2) renderStep2(container);
+      else if (step === 3) renderStep3(container);
+      else if (step === 4) renderStep4(container);
+      else if (step === 5) renderStep5(container);
+      else if (step === 6) renderStep6(container);
+      else if (step === 7) renderStep7(container);
+
+      renderKaTeXInElement(container);
+    }
+
+    /* STEP 0: BỐI CẢNH MỞ ĐẦU (ILLUSTRATION) */
+    function renderStep0(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-0">
+          <div class="card-title"><i class="ti ti-bulb" style="color:var(--teal);"></i> Bối cảnh: Đèn Pha Ô Tô Ban Đêm</div>
+          <div style="font-size:12.5px; color:var(--text-2); line-height:1.6; margin-bottom:12px;">
+            Quan sát cụm đèn pha ô tô ban đêm. Ánh sáng từ bóng đèn nhỏ tỏa ra theo vô số hướng, nhưng sau khi chạm vào mặt gương Parabol phía sau, <b>TẤT CẢ các tia phản xạ đều biến thành các tia SONG SONG</b> hướng thẳng về phía trước, giúp xe chiếu sáng rõ đường ở khoảng cách xa!
+          </div>
+
+          <div class="info-box athena" style="margin-bottom:14px;">
+            <b>🎯 Mục tiêu bài học:</b><br>
+            Bạn sẽ tự mô hình hóa mặt cắt gương đèn pha từ số đo kỹ thuật thực tế (khẩu độ $24cm$, độ sâu $4cm$) để lập Phương trình chính tắc Parabol và xác định vị trí tiêu điểm $F$ chính xác!
+          </div>
+
+          <button class="btn btn-primary" style="width:100%;" onclick="switchStep(1)">
+            Bắt đầu tính toán <i class="ti ti-arrow-right"></i>
+          </button>
+        </div>
+      `;
+    }
+
+    /* STEP 1: CHỌN VỊ TRÍ ĐẶT HỆ TRỤC TỌA ĐỘ */
+    function renderStep1(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-1">
+          <div class="card-title"><i class="ti ti-pin" style="color:var(--teal);"></i> Bước 1: Chọn vị trí đặt hệ trục tọa độ $Oxh$</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Chọn cách đặt hệ trục tọa độ sao cho phương trình Parabol mô tả mặt cắt gương là <b>ĐƠN GIẢN NHẤT</b>:
+          </div>
+
+          <div class="option-list">
+            <label class="option-item ${state.step1Selected === 0 ? 'selected' : ''}">
+              <input type="radio" name="opt_step1" value="0" ${state.step1Selected === 0 ? 'checked' : ''} onchange="state.step1Selected=0;" ${state.stepCompleted[1] ? 'disabled' : ''}>
+              <div>
+                <b>(A) Đỉnh gương tại $O$:</b> Trục đối xứng NGANG $Ox$ nằm dọc theo hướng chiếu sáng đi ra.
+              </div>
+            </label>
+            <label class="option-item ${state.step1Selected === 1 ? 'selected' : ''}">
+              <input type="radio" name="opt_step1" value="1" ${state.step1Selected === 1 ? 'checked' : ''} onchange="state.step1Selected=1;" ${state.stepCompleted[1] ? 'disabled' : ''}>
+              <div>
+                <b>(B) Đỉnh gương tại $O$:</b> Trục đối xứng DỌC $Oh$ nằm thẳng đứng.
+              </div>
+            </label>
+            <label class="option-item ${state.step1Selected === 2 ? 'selected' : ''}">
+              <input type="radio" name="opt_step1" value="2" ${state.step1Selected === 2 ? 'checked' : ''} onchange="state.step1Selected=2;" ${state.stepCompleted[1] ? 'disabled' : ''}>
+              <div>
+                <b>(C) Gốc $O$ tại miệng gương:</b> Đặt gốc tại điểm chính giữa vòng tròn miệng gương.
+              </div>
+            </label>
+          </div>
+
+          <div id="fb-step-1">
+            ${state.stepCompleted[1] ? `<div class="info-box correct"><b>✓ Chính xác!</b> Đặt đỉnh gương tại gốc $O$, trục đối xứng $Ox$ theo hướng chiếu sáng giúp phương trình đạt dạng chính tắc $h^2 = 2px$ (với $x$ là độ sâu, $h$ là bán kính gương).</div>` : ''}
+          </div>
+
+          ${!state.stepCompleted[1] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep1()">
+              <i class="ti ti-check"></i> Xác nhận Vị trí Đặt Hệ trục
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(2)">
+              Chuyển sang Bước 2: Tìm Tọa độ điểm viền <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    function submitStep1() {
+      const fb = document.getElementById('fb-step-1');
+      if (state.step1Selected === null) {
+        fb.innerHTML = `<div class="info-box warning">Vui lòng chọn 1 phương án vị trí trước khi xác nhận nhé!</div>`;
+        return;
+      }
+
+      if (state.step1Selected === 0) {
+        state.stepCompleted[1] = true;
+        LMS().event('answered', { step: 1, correct: true });
+        renderSidebar();
+        setTimeout(() => { if (state.currentStep === 1) switchStep(2); }, 1500);
+      } else {
+        state.step1Attempts++;
+        triggerShake('card-step-1');
+        if (state.step1Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vị trí này vẫn mô tả được nhưng phương trình sẽ không ở dạng chính tắc đơn giản $h^2 = 2px$. Thử lại nhé!</div>`;
+        } else if (state.step1Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Hãy đặt trục NGANG $Ox$ trùng với hướng ánh sáng đi ra và đỉnh gương tại gốc $O$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Chọn phương án <b>(A) Đỉnh gương tại O, trục ngang Ox</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 2: ĐIỂM TRÊN VIỀN GƯƠNG */
+    function renderStep2(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-2">
+          <div class="card-title"><i class="ti ti-point" style="color:var(--teal);"></i> Bước 2: Tọa độ điểm viền gương từ số đo kỹ thuật</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Gương đèn pha có <b>khẩu độ (đường kính miệng) $24cm$</b> và <b>độ sâu $4cm$</b>. Nhập tọa độ 1 điểm nằm trên viền miệng gương:
+          </div>
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Tọa độ $(x; h)$ của điểm viền gương:</span></label>
+            <input type="text" class="text-input" id="inp-step2" placeholder="Nhập dạng (4; 12)..." value="${state.step2Input}" ${state.stepCompleted[2] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-step-2">
+            ${state.stepCompleted[2] ? `<div class="info-box correct"><b>✓ Chính xác!</b> Khẩu độ là ĐƯỜNG KÍNH $24cm \implies$ Bán kính $h = 12cm$. Tại độ sâu $x = 4cm$, điểm thuộc viền gương có tọa độ $(4; 12)$.</div>` : ''}
+          </div>
+
+          ${!state.stepCompleted[2] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep2()">
+              <i class="ti ti-check"></i> Xác nhận Tọa độ Điểm
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(3)">
+              Chuyển sang Bước 3: Tìm p & Viết PT <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    function submitStep2() {
+      const rawVal = document.getElementById('inp-step2').value.trim().replace(/\s+/g, '');
+      const fb = document.getElementById('fb-step-2');
+      state.step2Input = document.getElementById('inp-step2').value;
+
+      const isOk = rawVal.includes('(4;12)') || rawVal.includes('(4,12)') || rawVal.includes('4;12') || rawVal.includes('4,12');
+
+      if (isOk) {
+        state.stepCompleted[2] = true;
+        LMS().event('answered', { step: 2, correct: true });
+        renderSidebar();
+        setTimeout(() => { if (state.currentStep === 2) switchStep(3); }, 1500);
+      } else {
+        state.step2Attempts++;
+        triggerShake('card-step-2');
+        if (state.step2Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng lưu ý: khẩu độ $24cm$ là ĐƯỜNG KÍNH, bán kính (tọa độ $h$) phải chia đôi nhé!</div>`;
+        } else if (state.step2Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Độ sâu $x = 4cm$, Bán kính $h = 24 / 2 = 12cm \implies$ Điểm có tọa độ $(4; 12)$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>(4; 12)</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 3: TÌM p VÀ VIẾT PT CHÍNH TẮC */
+    function renderStep3(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-3">
+          <div class="card-title"><i class="ti ti-calculator" style="color:var(--teal);"></i> Bước 3: Giải tìm tham số $p$ & Viết PT chính tắc</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Thay điểm $(x=4; h=12)$ vào Phương trình chính tắc $h^2 = 2px$ để giải tìm tham số tiêu $p$ và viết Phương trình:
+          </div>
+
+          <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-bottom:10px;">
+            <div class="control-group">
+              <label class="control-label"><span>Tham số $p$ ($cm$):</span></label>
+              <input type="text" class="text-input" id="inp-step3-p" placeholder="Nhập p..." value="${state.step3PInput}" ${state.stepCompleted[3] ? 'disabled' : ''}>
+            </div>
+            <div class="control-group">
+              <label class="control-label"><span>Phương trình chính tắc:</span></label>
+              <input type="text" class="text-input" id="inp-step3-eq" placeholder="h^2 = 36x" value="${state.step3EqInput}" ${state.stepCompleted[3] ? 'disabled' : ''}>
+            </div>
+          </div>
+
+          <div id="fb-step-3">
+            ${state.stepCompleted[3] ? `<div class="info-box correct"><b>✓ Xuất sắc!</b> $12^2 = 2p \cdot 4 \iff 144 = 8p \implies p = 18 \implies 2p = 36 \implies$ Phương trình chính tắc là $h^2 = 36x$ (hoặc $y^2 = 36x$).</div>` : ''}
+          </div>
+
+          ${!state.stepCompleted[3] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep3()">
+              <i class="ti ti-check"></i> Xác nhận Phương trình
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(4)">
+              Chuyển sang Bước 4: Đặt bóng đèn F <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    function submitStep3() {
+      const valP = document.getElementById('inp-step3-p').value.trim();
+      const rawEq = document.getElementById('inp-step3-eq').value.trim().toLowerCase().replace(/\s+/g, '');
+      const fb = document.getElementById('fb-step-3');
+
+      state.step3PInput = valP;
+      state.step3EqInput = document.getElementById('inp-step3-eq').value;
+
+      const isOkP = (valP === '18');
+      const isOkEq = rawEq.includes('h^2=36x') || rawEq.includes('y^2=36x') || rawEq.includes('h²=36x') || rawEq.includes('y²=36x');
+
+      if (isOkP && isOkEq) {
+        state.stepCompleted[3] = true;
+        LMS().event('answered', { step: 3, correct: true });
+        renderSidebar();
+        setTimeout(() => { if (state.currentStep === 3) switchStep(4); }, 1500);
+      } else {
+        state.step3Attempts++;
+        triggerShake('card-step-3');
+        if (state.step3Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng giải $12^2 = 2p \cdot 4 \implies 144 = 8p$ để tìm $p$ và thay $2p = 36$ vào PT nhé!</div>`;
+        } else if (state.step3Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $p = 144 / 8 = 18 \implies 2p = 36 \implies$ Phương trình: $h^2 = 36x$ (hoặc $y^2 = 36x$).</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>p = 18</b> và phương trình <b>h^2 = 36x</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 4: QUAY LẠI THỰC TẾ (ĐẶT BÓNG ĐÈN F) */
+    function renderStep4(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-4">
+          <div class="card-title"><i class="ti ti-target-arrow" style="color:var(--teal);"></i> Bước 4: Vị trí đặt bóng đèn (Tiêu điểm)</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Nên đặt dây tóc bóng đèn cách đỉnh gương bao xa để ánh sáng sau phản xạ biến thành chùm tia SONG SONG?
+          </div>
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Khoảng cách từ bóng đèn đến đỉnh gương ($cm$):</span></label>
+            <input type="text" class="text-input" id="inp-step4-dist" placeholder="Nhập khoảng cách..." value="${state.step4DistInput}" ${state.stepCompleted[4] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-step-4">
+            ${state.stepCompleted[4] ? `<div class="info-box correct"><b>✓ Chính xác!</b> Tiêu điểm của $h^2 = 2px$ là $F\left(\frac{p}{2}; 0\right) = (9; 0) \implies$ Phải đặt bóng đèn cách đỉnh gương đúng $9cm$. (Lưu ý: Tiêu điểm ở $p/2 = 9cm$, KHÔNG phải $p = 18cm$).</div>` : ''}
+          </div>
+
+          ${!state.stepCompleted[4] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep4()">
+              <i class="ti ti-check"></i> Xác nhận Khoảng cách
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(5)">
+              Chuyển sang Bước 5: Tính bán kính tại x=2cm <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    function submitStep4() {
+      const val = document.getElementById('inp-step4-dist').value.trim();
+      const fb = document.getElementById('fb-step-4');
+      state.step4DistInput = val;
+
+      if (val === '9' || val === '9cm') {
+        state.stepCompleted[4] = true;
+        LMS().event('answered', { step: 4, correct: true });
+        renderSidebar();
+        setTimeout(() => { if (state.currentStep === 4) switchStep(5); }, 1500);
+      } else {
+        state.step4Attempts++;
+        triggerShake('card-step-4');
+        if (state.step4Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Tiêu điểm của Parabol có tọa độ là $F(p/2; 0)$, KHÔNG phải $F(p; 0)$. Vui lòng chia đôi $p=18$ nhé!</div>`;
+        } else if (state.step4Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Bóng đèn phải đặt tại tiêu điểm $F(p/2; 0) = (18/2; 0) = (9; 0) \implies$ Khoảng cách là $9cm$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>9</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 5: MỞ RỘNG (BÁN KÍNH TẠI x = 2cm) */
+    function renderStep5(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-5">
+          <div class="card-title"><i class="ti ti-ruler-2" style="color:var(--teal);"></i> Bước 5: Mở rộng — Tính bán kính tại độ sâu $x = 2cm$</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Tại vị trí độ sâu $x = 2cm$ (gần đỉnh gương hơn), tính bán kính mặt cắt gương $h$:
+          </div>
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Bán kính gương $h$ ($cm$):</span></label>
+            <input type="text" class="text-input" id="inp-step5-rad" placeholder="Nhập kết quả làm tròn (ví dụ 8.49)..." value="${state.step5RadInput}" ${state.stepCompleted[5] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-step-5">
+            ${state.stepCompleted[5] ? `<div class="info-box correct"><b>✓ Chính xác!</b> Thay $x = 2$ vào phương trình $h^2 = 36x \implies h^2 = 72 \implies h = 6\sqrt{2} \approx 8,49cm$.</div>` : ''}
+          </div>
+
+          ${!state.stepCompleted[5] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep5()">
+              <i class="ti ti-check"></i> Xác nhận Bán kính h
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(6)">
+              Chuyển sang Bước 6: Khám phá Quang học <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    function submitStep5() {
+      const valStr = document.getElementById('inp-step5-rad').value.trim().replace(',', '.');
+      const val = parseFloat(valStr);
+      const fb = document.getElementById('fb-step-5');
+      state.step5RadInput = document.getElementById('inp-step5-rad').value;
+
+      if (!isNaN(val) && Math.abs(val - 8.49) <= 0.2) {
+        state.stepCompleted[5] = true;
+        LMS().event('answered', { step: 5, correct: true, required: false });
+        renderSidebar();
+        setTimeout(() => { if (state.currentStep === 5) switchStep(6); }, 1500);
+      } else {
+        state.step5Attempts++;
+        triggerShake('card-step-5');
+        if (state.step5Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng thay $x = 2$ vào phương trình $h^2 = 36x$ rồi khai căn $\sqrt{72}$ nhé!</div>`;
+        } else if (state.step5Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $h^2 = 36 \times 2 = 72 \implies h = \sqrt{72} = 6\sqrt{2} \approx 8,49cm$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>8.49</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 6: KHÁM PHÁ QUANG HỌC (TƯƠNG TÁC BẤM PHÁT TIA) */
+    function renderStep6(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-6">
+          <div class="card-title"><i class="ti ti-sun" style="color:var(--teal);"></i> Bước 6: Khám phá Tính chất Quang học Parabol</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Bấm phát ánh sáng từ tiêu điểm $F(9;0)$ tới các điểm khác nhau trên tường gương Parabol và quan sát hướng các tia phản xạ:
+          </div>
+
+          <div style="display:flex; gap:6px; margin-bottom:10px; flex-wrap:wrap;">
+            <button class="btn btn-secondary" onclick="fireParabolRay(1)"><i class="ti ti-crosshair"></i> Thử điểm 1</button>
+            <button class="btn btn-secondary" onclick="fireParabolRay(2)"><i class="ti ti-crosshair"></i> Thử điểm 2</button>
+            <button class="btn btn-secondary" onclick="fireParabolRay(3)"><i class="ti ti-crosshair"></i> Thử điểm 3</button>
+            <button class="btn btn-primary" onclick="fireAllParabolRays()"><i class="ti ti-sun"></i> Toàn cảnh (15 tia song song)</button>
+          </div>
+
+          <div class="control-group" style="margin:10px 0;">
+            <label class="control-label"><span>Các tia phản xạ có đặc điểm chung nổi bật gì?</span></label>
+            <div class="option-list">
+              <label class="option-item ${state.step6SelectedOpt === 0 ? 'selected' : ''}">
+                <input type="radio" name="opt_step6" value="0" ${state.step6SelectedOpt === 0 ? 'checked' : ''} onchange="state.step6SelectedOpt=0;" ${state.stepCompleted[6] ? 'disabled' : ''}>
+                <span>(A) Đều SONG SONG với trục đối xứng $Ox$</span>
+              </label>
+              <label class="option-item ${state.step6SelectedOpt === 1 ? 'selected' : ''}">
+                <input type="radio" name="opt_step6" value="1" ${state.step6SelectedOpt === 1 ? 'checked' : ''} onchange="state.step6SelectedOpt=1;" ${state.stepCompleted[6] ? 'disabled' : ''}>
+                <span>(B) Hội tụ về gốc tọa độ $O$</span>
+              </label>
+              <label class="option-item ${state.step6SelectedOpt === 2 ? 'selected' : ''}">
+                <input type="radio" name="opt_step6" value="2" ${state.step6SelectedOpt === 2 ? 'checked' : ''} onchange="state.step6SelectedOpt=2;" ${state.stepCompleted[6] ? 'disabled' : ''}>
+                <span>(C) Tỏa rộng tự do ra mọi hướng không có quy luật</span>
+              </label>
+            </div>
+          </div>
+
+          <div id="fb-step-6">
+            ${state.stepCompleted[6] ? `<div class="info-box correct"><b>✓ Chính xác!</b> Tính chất quang học đặc trưng của Parabol: Mọi tia sáng/âm thanh phát ra từ tiêu điểm $F$, sau khi phản xạ trên Parabol, ĐỀU TRỞ THÀNH CÁC TIA SONG SONG VỚI TRỤC ĐỐI XỨNG.</div>` : ''}
+          </div>
+
+          ${!state.stepCompleted[6] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep6()">
+              <i class="ti ti-check"></i> Xác nhận Kết luận Quang học
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(7)">
+              Chuyển sang Bước 7: Nhận xét thực tế & Tổng kết <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+    }
+
+    function fireParabolRay(trialNum) {
+      state.step6TrialCount++;
+      LMS().event('explored', { id: 'b22m3-b6', trial: trialNum });
+
+      const heights = [6, 12, -10];
+      const targetY = heights[(trialNum - 1) % 3];
+      const targetX = (targetY * targetY) / 36;
+
+      state.step6ActiveRays = [{ targetX, targetY }];
+      autoFitViewport();
+    }
+
+    function fireAllParabolRays() {
+      LMS().event('explored', { id: 'b22m3-b6', trial: 'all' });
+
+      const rays = [];
+      for (let h = -14; h <= 14; h += 2) {
+        if (Math.abs(h) < 1) continue;
+        const targetX = (h * h) / 36;
+        rays.push({ targetX, targetY: h });
+      }
+      state.step6ActiveRays = rays;
+      autoFitViewport();
+    }
+
+    function submitStep6() {
+      const fb = document.getElementById('fb-step-6');
+      if (state.step6SelectedOpt === null) {
+        fb.innerHTML = `<div class="info-box warning">Vui lòng chọn 1 phương án kết luận trước khi xác nhận nhé!</div>`;
+        return;
+      }
+
+      if (state.step6SelectedOpt === 0) {
+        state.stepCompleted[6] = true;
+        LMS().event('answered', { step: 6, correct: true });
+        renderSidebar();
+        setTimeout(() => { if (state.currentStep === 6) switchStep(7); }, 1500);
+      } else {
+        state.step6Attempts++;
+        triggerShake('card-step-6');
+        if (state.step6Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng bấm thử các tia phản xạ và quan sát hướng đi của chùm tia ra phía ngoài nhé!</div>`;
+        } else if (state.step6Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Tất cả các tia sau phản xạ đều đi theo hướng song song với trục $Ox$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Chọn phương án <b>(A) Đều song song với trục đối xứng Ox</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 7: NHẬN XÉT THỰC TẾ & TỔNG KẾT */
+    function renderStep7(container) {
+      container.innerHTML = `
+        <div class="card" id="card-step-7">
+          <div class="card-title"><i class="ti ti-bulb" style="color:var(--teal);"></i> Bước 7: Nhận xét Thực tế "Gương đèn pha ô tô"</div>
+          <div class="info-box athena" style="margin-bottom:12px;">
+            <b>🚗 Giải thích ứng dụng thực tế của gương Parabol:</b><br><br>
+            Đây là lý do gương đèn pha ô tô luôn có dạng Parabol chứ không dùng gương phẳng hay gương cầu:<br><br>
+            Khi đặt bóng đèn đúng tại <b>Tiêu điểm $F$</b>, ánh sáng phát ra tỏa theo vô số hướng cùng lúc đều được gương Parabol biến thành <b>chùm các tia SONG SONG</b> hướng thẳng về phía trước.<br><br>
+            Nếu dùng gương cầu (hình tròn), các tia phản xạ sẽ tỏa rộng dần làm năng lượng ánh sáng suy giảm rất nhanh theo khoảng cách. Nhờ chùm tia song song của gương Parabol, đèn pha ô tô giữ được cường độ sáng cực mạnh ngay cả ở cự ly xa!
+          </div>
+
+          <button class="btn btn-primary" style="width:100%;" onclick="finishModule3()">
+            <i class="ti ti-award"></i> Hoàn thành Module 3
+          </button>
+        </div>
+      `;
+    }
+
+    function finishModule3() {
+      state.stepCompleted[7] = true;
+      openSummaryModal();
+      LMS().complete();
+    }
+
+    /* =========================================================================
+       4. MODALS & INITIALIZATION
+       ========================================================================= */
+    function openNotebookModal() {
+      const modal = document.getElementById('modal-notebook');
+      modal.classList.add('active');
+      renderKaTeXInElement(modal);
+    }
+    function closeNotebookModal() {
+      document.getElementById('modal-notebook').classList.remove('active');
+    }
+    function openSummaryModal() {
+      const modal = document.getElementById('modal-summary');
+      modal.classList.add('active');
+      renderKaTeXInElement(modal);
+    }
+    function closeSummaryModal() {
+      document.getElementById('modal-summary').classList.remove('active');
+    }
+
+    function triggerShake(elementId) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        el.classList.remove('shake');
+        void el.offsetWidth;
+        el.classList.add('shake');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSidebar();
+      resizeCanvas();
+      autoFitViewport();
+      renderKaTeXInElement(document.body);
+    });
+
+    window.addEventListener('load', () => {
+      resizeCanvas();
+      renderKaTeXInElement(document.body);
+    });
+  </script>
+</body>
+
+</html>

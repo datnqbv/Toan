@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bài 22: Ba đường conic — Module 2: Hypebol "Tháp giải nhiệt nhà máy điện"</title>
 
-  <!-- Google Fonts: Plus Jakarta Sans -->
+  <!-- Google Fonts: Be Vietnam Pro -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
     rel="stylesheet">
 
   <!-- KaTeX CSS & JS -->
@@ -67,7 +67,7 @@
     }
 
     body {
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.5;
@@ -851,7 +851,7 @@
       }
 
       function drawBadge(x, y, text, color, bgColor = 'rgba(255, 255, 255, 0.95)', borderColor = '#cbd5e1', alignX = 'center', alignY = 'bottom') {
-        ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+        ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif';
         const textWidth = ctx.measureText(text).width;
         const px = toPxX(x);
         const py = toPxY(y);
@@ -1017,7 +1017,7 @@
           ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(viewWidth, py0); ctx.stroke(); // Axis r (horizontal)
           ctx.beginPath(); ctx.moveTo(px0, viewHeight); ctx.lineTo(px0, 0); ctx.stroke(); // Axis h (vertical)
 
-          ctx.fillStyle = '#0f172a'; ctx.font = 'bold 12px "Plus Jakarta Sans", sans-serif';
+          ctx.fillStyle = '#0f172a'; ctx.font = 'bold 12px "Be Vietnam Pro", sans-serif';
           ctx.fillText('r (bán kính)', viewWidth - 75, py0 + 16); ctx.fillText('h (độ cao)', px0 + 10, 14); ctx.fillText('O', px0 - 14, py0 + 16);
         }
 
