@@ -1534,6 +1534,29 @@
     }
 
     /* LIVE MATH PREVIEW FORMATTER */
+    function formatInputToLaTeX(raw) {
+      if (!raw || !raw.trim()) return '';
+      let s = raw.trim().replace(/x²/gi, 'x^2').replace(/y²/gi, 'y^2');
+      const parts = s.split('=');
+      const lhs = parts[0];
+      const rhs = parts.slice(1).join('=');
+
+      const terms = lhs.split(/([+\-])/);
+      const formattedLhs = terms.map(term => {
+        const t = term.trim();
+        if (t === '+' || t === '-') return ' ' + t + ' ';
+        if (t.includes('/')) {
+          const fracParts = t.split('/');
+          const num = fracParts[0].trim();
+          const den = fracParts.slice(1).join('/').trim();
+          return '\\frac{' + num + '}{' + den + '}';
+        }
+        return t;
+      }).join('');
+
+      return (rhs !== undefined && rhs !== '') ? (formattedLhs + ' = ' + rhs.trim()) : formattedLhs;
+    }
+
     function updateMathPreview(taskNum, val) {
       const box = document.getElementById(`preview-nv${taskNum}`);
       if (!box) return;
@@ -1548,12 +1571,10 @@
         return;
       }
 
-      let s = v.trim();
       if (taskNum === 3) {
-        box.innerHTML = `$${s.replace(',', '.')}\\text{ m}$`;
+        box.innerHTML = `$${v.trim().replace(',', '.')}\\text{ m}$`;
       } else {
-        let latex = s.replace(/([xXyY0-9\^\²\+\-\*\s]+)\/([a-zA-Z0-9\+\-\*\s]+)/g, '\\frac{$1}{$2}');
-        latex = latex.replace(/x\^2|x²/g, 'x^2').replace(/y\^2|y²/g, 'y^2');
+        const latex = formatInputToLaTeX(v);
         box.innerHTML = `$${latex}$`;
       }
       renderKaTeXInElement(box);
