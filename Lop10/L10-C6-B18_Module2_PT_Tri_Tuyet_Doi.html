@@ -1,0 +1,1274 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 18: Phương trình quy về phương trình bậc hai — Module 2</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderKaTeXInElement(document.body)"></script>
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
+
+  <style>
+    /* =========================================================================
+       1. DESIGN SYSTEM TOKENS (Jade & Cream Theme)
+       ========================================================================= */
+    :root {
+      --jade-dark: #14432F;
+      --jade-deep: #2D8B6F;
+      --cream: #FAF7F0;
+      --paper-line: #cbd5e1;
+
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+      --surface: #ffffff;
+      --border: var(--paper-line);
+      --text: #0f172a;
+      --text-2: #334155;
+      --sub: #64748b;
+
+      --correct: #16a34a;
+      --correct-bg: #f0fdf4;
+      --wrong: #dc2626;
+      --wrong-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --info: #2563eb;
+      --info-bg: #eff6ff;
+
+      --purple: #8b5cf6;
+      --purple-bg: #f5f3ff;
+      --canvas-bg: #fafcfb;
+    }
+
+    html, body {
+      height: 100%;
+      max-height: 100vh;
+      overflow: hidden;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      height: 48px;
+      max-height: 48px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      padding: 0 20px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(20, 67, 47, 0.15);
+    }
+
+    .header-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 8px;
+    }
+
+    .btn-header {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 6px 14px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* MAIN APP BODY */
+    .app-body {
+      display: grid;
+      grid-template-columns: 46% 54%;
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 48px);
+      max-height: calc(100vh - 48px);
+      overflow: hidden;
+    }
+
+    /* LEFT VIEWPORT / CANVAS CONTAINER */
+    .viewport-container {
+      background: #ffffff;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%;
+    }
+
+    .canvas-wrapper {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--canvas-bg);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* CANVAS FLOATING TOOLBAR */
+    .canvas-toolbar {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      z-index: 10;
+    }
+
+    .tool-btn {
+      background: #ffffff;
+      color: var(--navy);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .tool-btn:hover {
+      background: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
+    }
+
+    /* RIGHT SIDEBAR INTERACTIVE PANEL */
+    .sidebar {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100%;
+    }
+
+    .sidebar-content {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* CARD COMPONENTS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      transition: all 0.25s ease;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    .card.locked {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+
+    .card.shake {
+      animation: shake 0.4s cubic-bezier(.36,.07,.19,.97) both;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .info-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--teal);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.5;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .info-box code {
+      word-break: break-all;
+      white-space: normal;
+    }
+
+    .info-box.athena {
+      background: #f0fdf4;
+      border-left-color: var(--teal);
+      color: #166534;
+    }
+
+    .info-box.warning {
+      background: var(--warning-bg);
+      border-left-color: var(--warning);
+      color: #92400e;
+    }
+
+    .info-box.error {
+      background: var(--wrong-bg);
+      border-left-color: var(--wrong);
+      color: #991b1b;
+    }
+
+    .info-box.correct {
+      background: var(--correct-bg);
+      border-left-color: var(--correct);
+      color: #166534;
+    }
+
+    /* INPUT GROUPS & CONTROLS */
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+    }
+
+    .control-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .text-input {
+      width: 100%;
+      max-width: 100%;
+      box-sizing: border-box;
+      display: block;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13.5px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .text-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.15);
+    }
+
+    .text-input.correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+    }
+
+    .text-input.wrong {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+    }
+
+    /* BUTTONS */
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #236f58;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--text-2);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+      border-color: #cbd5e1;
+    }
+
+    /* 2-COLUMN PARALLEL METHOD GRID ON DESKTOP */
+    .methods-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
+    }
+
+    .method-column {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .badge-method {
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      padding: 3px 8px;
+      border-radius: 12px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+    }
+
+    .badge-method-1 {
+      background: #eff6ff;
+      color: #1d4ed8;
+      border: 1px solid #bfdbfe;
+    }
+
+    .badge-method-2 {
+      background: #f5f3ff;
+      color: #6d28d9;
+      border: 1px solid #ddd6fe;
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 640px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: var(--sub);
+      cursor: pointer;
+    }
+
+    /* RESPONSIVE MOBILE & TABLET LAYOUT (max-width: 992px) */
+    @media (max-width: 992px) {
+      body {
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+
+      header {
+        padding: 6px 10px;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .header-title-group {
+        gap: 4px;
+      }
+
+      .header-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        white-space: nowrap;
+      }
+
+      .btn-header {
+        padding: 4px 8px;
+        font-size: 11px;
+        white-space: nowrap;
+      }
+
+      .app-body {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .viewport-container {
+        width: 100% !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 50 !important;
+        height: calc((100vh - 48px) * 0.45) !important;
+        height: calc((100dvh - 48px) * 0.45) !important;
+        min-height: 280px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      }
+
+      .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .sidebar-content {
+        padding: 8px;
+        gap: 8px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .methods-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .card {
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+      }
+
+      .info-box {
+        padding: 6px 10px;
+        font-size: 12px;
+        overflow-x: auto;
+      }
+
+      .text-input {
+        padding: 6px 8px;
+        font-size: 12.5px;
+        box-sizing: border-box;
+      }
+
+      .btn {
+        padding: 7px 10px;
+        font-size: 12.5px;
+        min-height: 36px;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-title-group">
+      <div class="header-badge">
+        <i class="ti ti-math-function"></i> Toán 10 — Chương VI: PT Quy về PT bậc hai
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-header" onclick="openNotebookModal()">
+        <i class="ti ti-book"></i> Tóm tắt phương pháp
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN APP BODY -->
+  <div class="app-body">
+    <!-- LEFT VIEWPORT / CANVAS CONTAINER -->
+    <div class="viewport-container">
+      <div class="canvas-wrapper">
+        <canvas id="main-canvas"></canvas>
+        <div class="canvas-toolbar">
+          <button class="tool-btn" onclick="resetViewport()"><i class="ti ti-focus-2"></i> Fit Khung nhìn</button>
+          <button class="tool-btn" onclick="zoomViewport(0.85)"><i class="ti ti-zoom-in"></i> Phóng to</button>
+          <button class="tool-btn" onclick="zoomViewport(1.18)"><i class="ti ti-zoom-out"></i> Thu nhỏ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR INTERACTIVE PANEL -->
+    <div class="sidebar">
+      <div class="sidebar-content" id="sidebar-panel">
+        <!-- Main Content Step Flow Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SỔ TAY TÓM TẮT PHƯƠNG PHÁP -->
+  <div class="modal-overlay" id="modal-notebook">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-book" style="color:var(--teal);"></i> 2 Phương pháp giải $|ax+b| = cx+d$</div>
+        <button class="close-btn" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="info-box athena" style="margin-bottom:14px;">
+        <b>📌 Cách 1: Bình phương 2 vế (Quy về PT bậc hai)</b><br>
+        • Biến đổi $(ax+b)^2 = (cx+d)^2 \iff A x^2 + B x + C = 0$.<br>
+        • BẮT BUỘC phải <b>thử lại bằng số</b> vào phương trình gốc để loại bỏ nghiệm ngoại lai.
+      </div>
+      <div class="info-box warning" style="margin-bottom:14px;">
+        <b>📌 Cách 2: Xét 2 trường hợp dấu (Biến đổi tương đương)</b><br>
+        • <b>TH1 ($ax+b \ge 0$):</b> $ax+b = cx+d \implies$ kiểm tra điều kiện $ax+b \ge 0$.<br>
+        • <b>TH2 ($ax+b < 0$):</b> $-(ax+b) = cx+d \implies$ kiểm tra điều kiện $ax+b < 0$.<br>
+        • Cách này loại nghiệm giả <b>NGAY tại điều kiện</b>, không cần thử lại bằng số.
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="closeNotebookModal()">Đã hiểu kiến thức</button>
+    </div>
+  </div>
+
+  <!-- MODAL: TỔNG KẾT HOÀN THÀNH -->
+  <div class="modal-overlay" id="modal-summary">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-award" style="color:var(--correct);"></i> Hoàn thành Module 2!</div>
+        <button class="close-btn" onclick="closeSummaryModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="info-box correct" style="margin-bottom:16px;">
+        <b>🎉 Chúc mừng bạn đã hoàn thành xuất sắc Module 2!</b><br>
+        Bạn đã giải thành công phương trình $|x+1| = 2x-5$ bằng cả 2 cách, thấy rõ ưu điểm của phương pháp xét trường hợp và thành thạo cách loại nghiệm ngoại lai.
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="closeSummaryModal()">Đóng bảng tổng kết</button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT APP LOGIC -->
+  <script>
+    /* =========================================================================
+       1. GLOBAL STATE & KATEX HELPER
+       ========================================================================= */
+    const state = {
+      // Method 1: Squaring both sides
+      m1Step1Input: '',
+      m1Step1Attempts: 0,
+      m1Step1Completed: false,
+
+      m1Step2Root1Input: '',
+      m1Step2Root2Input: '',
+      m1Step2Attempts: 0,
+      m1Step2Completed: false,
+
+      // Method 2: 2 Cases
+      m2Case1Input: '',
+      m2Case1Attempts: 0,
+      m2Case1Completed: false,
+
+      m2Case2Input: '',
+      m2Case2Attempts: 0,
+      m2Case2Completed: false,
+
+      // Comparison section unlocked
+      comparisonCompleted: false
+    };
+
+    function renderKaTeXInElement(el) {
+      if (!el) return;
+      if (typeof renderMathInElement === 'function') {
+        try {
+          renderMathInElement(el, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false },
+              { left: '\\(', right: '\\)', display: false },
+              { left: '\\[', right: '\\]', display: true }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {
+          console.warn('KaTeX render warning:', e);
+        }
+      }
+    }
+
+    function LMS() {
+      return {
+        complete: function() {
+          console.log('[LMS] Module 2 completed!');
+          if (window.parent && window.parent.postMessage) {
+            window.parent.postMessage({
+              type: 'LMS_COMPLETE',
+              moduleId: 'L10-C6-B18-M2',
+              items: [
+                { id: 'm1', name: 'Cách 1: Bình phương 2 vế & Thử số', completed: state.m1Step2Completed },
+                { id: 'm2_th1', name: 'Cách 2: Trường hợp 1 (x >= -1)', completed: state.m2Case1Completed },
+                { id: 'm2_th2', name: 'Cách 2: Trường hợp 2 (x < -1)', completed: state.m2Case2Completed },
+                { id: 'comparison', name: 'Đối chất So sánh 2 Phương pháp', completed: state.comparisonCompleted }
+              ]
+            }, '*');
+          }
+        }
+      };
+    }
+
+    /* =========================================================================
+       2. HIGH-DPI CANVAS GRAPH ENGINE
+       ========================================================================= */
+    const canvas = document.getElementById('main-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const viewport = {
+      xMin: -4, xMax: 9,
+      yMin: -4, yMax: 10,
+      zoomFactor: 1.0
+    };
+
+    let viewWidth = 600;
+    let viewHeight = 500;
+
+    function resizeCanvas() {
+      if (!canvas || !canvas.parentElement) return;
+      const rect = canvas.parentElement.getBoundingClientRect();
+      if (rect.width > 0 && rect.height > 0) {
+        viewWidth = rect.width;
+        viewHeight = rect.height;
+        const dpr = window.devicePixelRatio || 1;
+        canvas.width = rect.width * dpr;
+        canvas.height = rect.height * dpr;
+        ctx.resetTransform();
+        ctx.scale(dpr, dpr);
+        autoFitViewport();
+      }
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    function resetViewport() {
+      viewport.zoomFactor = 1.0;
+      autoFitViewport();
+    }
+
+    function toPxX(x) {
+      return (x - viewport.xMin) / (viewport.xMax - viewport.xMin) * viewWidth;
+    }
+    function toPxY(y) {
+      return viewHeight - (y - viewport.yMin) / (viewport.yMax - viewport.yMin) * viewHeight;
+    }
+
+    function autoFitViewport() {
+      const A = viewWidth / viewHeight;
+      let rawXMin = -4, rawXMax = 9, rawYMin = -4, rawYMax = 10;
+
+      const cx = (rawXMin + rawXMax) / 2;
+      const cy = (rawYMin + rawYMax) / 2;
+      let w = (rawXMax - rawXMin) * viewport.zoomFactor;
+      let h = (rawYMax - rawYMin) * viewport.zoomFactor;
+
+      if (w / h < A) w = h * A;
+      else h = w / A;
+
+      viewport.xMin = cx - w / 2;
+      viewport.xMax = cx + w / 2;
+      viewport.yMin = cy - h / 2;
+      viewport.yMax = cy + h / 2;
+
+      drawGraph();
+    }
+
+    function zoomViewport(factor) {
+      viewport.zoomFactor *= factor;
+      autoFitViewport();
+    }
+
+    function drawBadge(x, y, text, color, bgColor = 'rgba(255, 255, 255, 0.92)', borderColor = '#cbd5e1') {
+      ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+      const textWidth = ctx.measureText(text).width;
+      const px = toPxX(x);
+      const py = toPxY(y);
+
+      const paddingX = 8;
+      const paddingY = 4;
+      const boxW = textWidth + paddingX * 2;
+      const boxH = 20;
+
+      let drawX = px + 10;
+      let drawY = py - 10 - boxH;
+      if (drawX + boxW > viewWidth - 10) drawX = px - 10 - boxW;
+      if (drawY < 10) drawY = py + 10;
+
+      ctx.fillStyle = bgColor;
+      ctx.strokeStyle = borderColor;
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.roundRect(drawX, drawY, boxW, boxH, 5);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = color;
+      ctx.fillText(text, drawX + paddingX, drawY + 14);
+    }
+
+    function drawGraph() {
+      if (!viewWidth || !viewHeight) return;
+
+      ctx.clearRect(0, 0, viewWidth, viewHeight);
+
+      ctx.fillStyle = '#fafcfb';
+      ctx.fillRect(0, 0, viewWidth, viewHeight);
+
+      const px0 = toPxX(0);
+      const py0 = toPxY(0);
+
+      // GRID LINES
+      ctx.strokeStyle = '#edf2f7';
+      ctx.lineWidth = 1;
+      for (let x = Math.ceil(viewport.xMin); x <= Math.floor(viewport.xMax); x++) {
+        const px = toPxX(x);
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, viewHeight); ctx.stroke();
+      }
+      for (let y = Math.ceil(viewport.yMin); y <= Math.floor(viewport.yMax); y++) {
+        const py = toPxY(y);
+        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(viewWidth, py); ctx.stroke();
+      }
+
+      // AXIS Ox & Oy
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(viewWidth, py0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px0, viewHeight); ctx.lineTo(px0, 0); ctx.stroke();
+
+      // Axis Ticks & Numbers (Step 2)
+      ctx.fillStyle = '#64748b';
+      ctx.font = '500 11px "Plus Jakarta Sans", sans-serif';
+      const stepX = (viewport.xMax - viewport.xMin) > 14 ? 2 : 1;
+      const stepY = (viewport.yMax - viewport.yMin) > 14 ? 2 : 1;
+
+      for (let x = Math.ceil(viewport.xMin); x <= Math.floor(viewport.xMax); x += stepX) {
+        if (x === 0) continue;
+        const px = toPxX(x);
+        ctx.beginPath(); ctx.moveTo(px, py0 - 3); ctx.lineTo(px, py0 + 3); ctx.stroke();
+        ctx.fillText(x.toString(), px - 4, py0 + 16);
+      }
+      for (let y = Math.ceil(viewport.yMin); y <= Math.floor(viewport.yMax); y += stepY) {
+        if (y === 0) continue;
+        const py = toPxY(y);
+        ctx.beginPath(); ctx.moveTo(px0 - 3, py); ctx.lineTo(px0 + 3, py); ctx.stroke();
+        ctx.fillText(y.toString(), px0 - 18, py + 4);
+      }
+
+      ctx.fillStyle = '#0f172a';
+      ctx.font = 'bold 12px "Plus Jakarta Sans", sans-serif';
+      ctx.fillText('x', viewWidth - 14, py0 + 16);
+      ctx.fillText('y', px0 + 10, 14);
+      ctx.fillText('O', px0 - 14, py0 + 16);
+
+      // FUNCTIONS FOR MODULE 2:
+      // y1 = |x+1|
+      // y2 = 2x - 5
+      const y1 = (x) => Math.abs(x + 1);
+      const y2 = (x) => 2 * x - 5;
+
+      // Plot y1 = |x+1| (Jade V-Shape Curve)
+      ctx.strokeStyle = '#2d8b6f';
+      ctx.lineWidth = 3;
+      ctx.beginPath();
+      ctx.moveTo(toPxX(viewport.xMin), toPxY(y1(viewport.xMin)));
+      ctx.lineTo(toPxX(-1), toPxY(0));
+      ctx.lineTo(toPxX(viewport.xMax), toPxY(y1(viewport.xMax)));
+      ctx.stroke();
+
+      // Plot y2 = 2x - 5 (Purple Line)
+      ctx.strokeStyle = '#8b5cf6';
+      ctx.lineWidth = 2.5;
+      ctx.beginPath();
+      ctx.moveTo(toPxX(viewport.xMin), toPxY(y2(viewport.xMin)));
+      ctx.lineTo(toPxX(viewport.xMax), toPxY(y2(viewport.xMax)));
+      ctx.stroke();
+
+      // Badges
+      drawBadge(1.5, y1(1.5), 'y = |x+1|', '#2d8b6f', '#f0fdf4', '#2d8b6f');
+      drawBadge(7.5, y2(7.5), 'y = 2x - 5', '#8b5cf6', '#f5f3ff', '#8b5cf6');
+
+      // POINT x = 6 (Intersection - True Root (6, 7))
+      const px6 = toPxX(6);
+      const py6 = toPxY(7);
+      drawPoint(px6, py6, '#16a34a', 6);
+
+      // Projection lines to axes for x=6, y=7
+      ctx.strokeStyle = '#16a34a';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([4, 4]);
+      ctx.beginPath(); ctx.moveTo(px6, py0); ctx.lineTo(px6, py6); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px0, py6); ctx.lineTo(px6, py6); ctx.stroke();
+      ctx.setLineDash([]);
+
+      drawBadge(6, 7, '✓ Giao điểm A(6; 7) — Nghiệm đúng', '#16a34a', '#f0fdf4', '#16a34a');
+
+      // POINT x = 4/3 ≈ 1.33 (Extraneous Root Inspection)
+      const xExt = 4 / 3;
+      const pxExt = toPxX(xExt);
+      const py1Ext = toPxY(7 / 3);  // |4/3+1| = 7/3 ≈ 2.33
+      const py2Ext = toPxY(-7 / 3); // 2(4/3)-5 = -7/3 ≈ -2.33
+
+      drawPoint(pxExt, py1Ext, '#d97706', 5);
+      drawPoint(pxExt, py2Ext, '#dc2626', 5);
+
+      ctx.strokeStyle = '#dc2626';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([3, 3]);
+      ctx.beginPath(); ctx.moveTo(pxExt, py1Ext); ctx.lineTo(pxExt, py2Ext); ctx.stroke();
+      ctx.setLineDash([]);
+
+      drawBadge(xExt, py2Ext, '❌ x = 4/3: VT=7/3 ≠ VP=-7/3 (Nghiệm ngoại lai)', '#dc2626', '#fef2f2', '#dc2626');
+    }
+
+    function drawPoint(px, py, color, r = 5) {
+      ctx.fillStyle = color;
+      ctx.beginPath();
+      ctx.arc(px, py, r, 0, Math.PI * 2);
+      ctx.fill();
+      ctx.strokeStyle = '#ffffff';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+    }
+
+    /* =========================================================================
+       3. SIDEBAR STEP FLOW RENDERING & LOGIC
+       ========================================================================= */
+    function renderSidebar() {
+      const container = document.getElementById('sidebar-panel');
+
+      let html = `
+        <!-- HEADING CARD -->
+        <div class="card">
+          <div class="card-title"><i class="ti ti-target" style="color:var(--teal);"></i> Ví dụ hướng dẫn: Giải $|x+1| = 2x - 5$</div>
+          <div class="info-box athena">
+            Học sinh học song song 2 phương pháp trên cùng 1 ví dụ để so sánh sự khác biệt và cơ chế loại nghiệm giả.
+          </div>
+        </div>
+
+        <!-- 2 PARALLEL METHOD COLUMNS -->
+        <div class="methods-grid">
+          <!-- CÁCH 1: BÌNH PHƯƠNG 2 VẾ -->
+          <div class="method-column">
+            <div class="card" id="card-m1-step1">
+              <div class="card-title">
+                <span class="badge-method badge-method-1">Cách 1</span> Bình phương 2 vế
+              </div>
+              <div style="font-size:12px; color:var(--text-2); margin-bottom:8px; line-height:1.45;">
+                Bình phương 2 vế $|x+1|^2 = (2x-5)^2 \iff (x+1)^2 = (2x-5)^2$. Thu gọn về $ax^2+bx+c=0$.
+              </div>
+              <div class="control-group" style="margin-bottom:8px;">
+                <label class="control-label"><span>Phương trình thu gọn:</span></label>
+                <input type="text" class="text-input" id="inp-m1-s1" placeholder="Nhập phương trình bậc hai..." value="${state.m1Step1Input}" ${state.m1Step1Completed ? 'disabled' : ''}>
+              </div>
+
+              <div id="fb-m1-s1"></div>
+
+              ${!state.m1Step1Completed ? `
+                <button class="btn btn-primary" style="width:100%; margin-top:4px;" onclick="submitM1Step1()">
+                  <i class="ti ti-check"></i> Xác nhận Thu gọn
+                </button>
+              ` : `
+                <div style="color:var(--correct); font-weight:600; font-size:12.5px; margin-top:4px;">
+                  ✓ $3x^2 - 22x + 24 = 0$
+                </div>
+              `}
+            </div>
+
+            <!-- CÁCH 1 STEP 2: NGIỆM & THỬ LẠI -->
+            <div class="card ${!state.m1Step1Completed ? 'locked' : ''}" id="card-m1-step2">
+              <div class="card-title">
+                <span class="badge-method badge-method-1">Cách 1</span> Giải & Thử lại bằng số
+              </div>
+              <div style="font-size:12px; color:var(--text-2); margin-bottom:8px;">
+                Giải $3x^2-22x+24=0$ rồi thử lại từng nghiệm vào $|x+1|=2x-5$:
+              </div>
+              <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; margin-bottom:8px;">
+                <div class="control-group">
+                  <label class="control-label"><span>Nghiệm $x_1$:</span></label>
+                  <input type="text" class="text-input" id="inp-m1-r1" placeholder="Số nguyên..." value="${state.m1Step2Root1Input}" ${state.m1Step2Completed ? 'disabled' : ''}>
+                </div>
+                <div class="control-group">
+                  <label class="control-label"><span>Nghiệm $x_2$:</span></label>
+                  <input type="text" class="text-input" id="inp-m1-r2" placeholder="Phân số..." value="${state.m1Step2Root2Input}" ${state.m1Step2Completed ? 'disabled' : ''}>
+                </div>
+              </div>
+
+              <div id="fb-m1-s2"></div>
+
+              ${state.m1Step1Completed && !state.m1Step2Completed ? `
+                <button class="btn btn-primary" style="width:100%; margin-top:4px;" onclick="submitM1Step2()">
+                  <i class="ti ti-check"></i> Xác nhận Kết quả Cách 1
+                </button>
+              ` : state.m1Step2Completed ? `
+                <div style="color:var(--correct); font-weight:600; font-size:12.5px; margin-top:4px;">
+                  ✓ $x=6$ (Thỏa mãn), $x=4/3$ (Loại $7/3 \neq -7/3$)
+                </div>
+              ` : ''}
+            </div>
+          </div>
+
+          <!-- CÁCH 2: XÉT 2 TRƯỜNG HỢP DẤU -->
+          <div class="method-column">
+            <!-- TH1: x+1 >= 0 -->
+            <div class="card" id="card-m2-case1">
+              <div class="card-title">
+                <span class="badge-method badge-method-2">Cách 2</span> TH1: $x+1 \\ge 0 \\iff x \\ge -1$
+              </div>
+              <div style="font-size:12px; color:var(--text-2); margin-bottom:8px;">
+                Bỏ trị tuyệt đối giữ nguyên: $x+1 = 2x-5$. Tìm $x$ và thử điều kiện $x \\ge -1$.
+              </div>
+              <div class="control-group" style="margin-bottom:8px;">
+                <label class="control-label"><span>Nghiệm $x$ tìm được:</span></label>
+                <input type="text" class="text-input" id="inp-m2-c1" placeholder="Nhập nghiệm x..." value="${state.m2Case1Input}" ${state.m2Case1Completed ? 'disabled' : ''}>
+              </div>
+
+              <div id="fb-m2-c1"></div>
+
+              ${!state.m2Case1Completed ? `
+                <button class="btn btn-primary" style="width:100%; margin-top:4px;" onclick="submitM2Case1()">
+                  <i class="ti ti-check"></i> Xác nhận TH1
+                </button>
+              ` : `
+                <div style="color:var(--correct); font-weight:600; font-size:12.5px; margin-top:4px;">
+                  ✓ $x=6 \\ge -1 \\implies$ Nhận $x=6$
+                </div>
+              `}
+            </div>
+
+            <!-- TH2: x+1 < 0 -->
+            <div class="card" id="card-m2-case2">
+              <div class="card-title">
+                <span class="badge-method badge-method-2">Cách 2</span> TH2: $x+1 < 0 \\iff x < -1$
+              </div>
+              <div style="font-size:12px; color:var(--text-2); margin-bottom:8px;">
+                Bỏ trị tuyệt đối đổi dấu: $-(x+1) = 2x-5$. Tìm $x$ và thử điều kiện $x < -1$.
+              </div>
+              <div class="control-group" style="margin-bottom:8px;">
+                <label class="control-label"><span>Nghiệm $x$ tìm được:</span></label>
+                <input type="text" class="text-input" id="inp-m2-c2" placeholder="Nhập nghiệm x..." value="${state.m2Case2Input}" ${state.m2Case2Completed ? 'disabled' : ''}>
+              </div>
+
+              <div id="fb-m2-c2"></div>
+
+              ${!state.m2Case2Completed ? `
+                <button class="btn btn-primary" style="width:100%; margin-top:4px;" onclick="submitM2Case2()">
+                  <i class="ti ti-check"></i> Xác nhận TH2
+                </button>
+              ` : `
+                <div style="color:var(--correct); font-weight:600; font-size:12.5px; margin-top:4px;">
+                  ✓ $x=4/3$ không nhỏ hơn $-1 \\implies$ Loại ngay
+                </div>
+              `}
+            </div>
+          </div>
+        </div>
+
+        <!-- SO SÁNH & ĐỐI CHẤT 2 PHƯƠNG PHÁP -->
+        <div class="card ${(!state.m1Step2Completed || !state.m2Case1Completed || !state.m2Case2Completed) ? 'locked' : ''}" id="card-comparison">
+          <div class="card-title"><i class="ti ti-scale" style="color:var(--teal);"></i> Đối chất & So sánh 2 Phương pháp</div>
+          
+          ${(!state.m1Step2Completed || !state.m2Case1Completed || !state.m2Case2Completed) ? `
+            <div class="info-box warning">
+              🔒 <b>Khóa phần So sánh:</b> Bạn cần hoàn thành đầy đủ cả Cách 1 (Bình phương) và CẢ 2 TRƯỜNG HỢP của Cách 2 trước khi đối chất nhé!
+            </div>
+          ` : `
+            <div class="info-box athena" style="margin-bottom:10px;">
+              <b>💡 Bài học quan trọng từ Athena (athenaGuidance):</b><br>
+              • <b>Giống nhau:</b> Cả 2 cách giải đều tìm ra duy nhất 1 nghiệm đúng $x = 6$.<br>
+              • <b>Khác biệt cốt lõi:</b><br>
+              &nbsp;&nbsp;- <b>Cách 1 (Bình phương):</b> Tính ra 2 nghiệm và BẮT BUỘC phải <i>thử lại bằng số</i> vào PT gốc để loại $x = 4/3$.<br>
+              &nbsp;&nbsp;- <b>Cách 2 (Xét trường hợp):</b> Loại $x = 4/3$ NGAY tại bước kiểm tra điều kiện $x < -1$, không cần thử thay số vào PT gốc!
+            </div>
+            
+            ${!state.comparisonCompleted ? `
+              <button class="btn btn-primary" style="width:100%;" onclick="finishComparison()">
+                <i class="ti ti-check"></i> Hoàn thành Bài học Module 2
+              </button>
+            ` : `
+              <div style="color:var(--correct); font-weight:600; text-align:center;">
+                🎉 Đã hoàn thành xuất sắc Module 2!
+              </div>
+            `}
+          `}
+        </div>
+      `;
+
+      container.innerHTML = html;
+      renderKaTeXInElement(container);
+    }
+
+    /* =========================================================================
+       4. STEP SUBMISSION HANDLERS WITH 3-TIER ATTEMPTS FRAMEWORK
+       ========================================================================= */
+    function triggerShake(elementId) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        el.classList.remove('shake');
+        void el.offsetWidth;
+        el.classList.add('shake');
+      }
+    }
+
+    // CÁCH 1 STEP 1: SQUARING
+    function submitM1Step1() {
+      const rawVal = document.getElementById('inp-m1-s1').value.trim().toLowerCase().replace(/\s+/g, '');
+      const fb = document.getElementById('fb-m1-s1');
+      state.m1Step1Input = document.getElementById('inp-m1-s1').value;
+
+      const isCorrect = rawVal.includes('3x^2-22x+24=0') || rawVal.includes('3x²-22x+24=0') || rawVal.includes('3x^2-22x+24');
+
+      if (isCorrect) {
+        state.m1Step1Completed = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> $(x+1)^2 = (2x-5)^2 \\iff 3x^2-22x+24=0$.</div>`;
+        renderKaTeXInElement(fb);
+        renderSidebar();
+        autoFitViewport();
+      } else {
+        state.m1Step1Attempts++;
+        triggerShake('card-m1-step1');
+        if (state.m1Step1Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng kiểm tra lại phép tính và thử lại nhé!</div>`;
+        } else if (state.m1Step1Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Khai triển $(x+1)^2 = x^2+2x+1$ và $(2x-5)^2 = 4x^2-20x+25$ rồi chuyển vế.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>3x^2 - 22x + 24 = 0</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    // CÁCH 1 STEP 2: ROOTS & TEST
+    function submitM1Step2() {
+      const rawR1 = document.getElementById('inp-m1-r1').value.trim();
+      const rawR2 = document.getElementById('inp-m1-r2').value.trim();
+      const fb = document.getElementById('fb-m1-s2');
+
+      state.m1Step2Root1Input = rawR1;
+      state.m1Step2Root2Input = rawR2;
+
+      const isR1Valid = rawR1 === '6' || rawR1 === '4/3' || rawR1.includes('1.33');
+      const isR2Valid = rawR2 === '6' || rawR2 === '4/3' || rawR2.includes('1.33');
+
+      if (isR1Valid && isR2Valid && rawR1 !== rawR2) {
+        state.m1Step2Completed = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> Nghiệm $x=6$ (thỏa mãn), nghiệm $x=4/3$ (loại vì $7/3 \\neq -7/3$).</div>`;
+        renderKaTeXInElement(fb);
+        renderSidebar();
+        autoFitViewport();
+      } else {
+        state.m1Step2Attempts++;
+        triggerShake('card-m1-step2');
+        if (state.m1Step2Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng kiểm tra lại phép tính và thử lại nhé!</div>`;
+        } else if (state.m1Step2Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Giải phương trình $3x^2-22x+24=0$ bằng công thức nghiệm hoặc biệt thức $\\Delta'$.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Điền 2 số <b>6</b> và <b>4/3</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    // CÁCH 2 TH1: x+1 >= 0
+    function submitM2Case1() {
+      const rawVal = document.getElementById('inp-m2-c1').value.trim();
+      const fb = document.getElementById('fb-m2-c1');
+      state.m2Case1Input = rawVal;
+
+      if (rawVal === '6' || rawVal === 'x=6') {
+        state.m2Case1Completed = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> $x+1=2x-5 \\iff x=6$. Kiểm tra $6 \\ge -1$ (ĐÚNG) $\\implies$ Nhận $x=6$.</div>`;
+        renderKaTeXInElement(fb);
+        renderSidebar();
+        autoFitViewport();
+      } else {
+        state.m2Case1Attempts++;
+        triggerShake('card-m2-case1');
+        if (state.m2Case1Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng kiểm tra lại phép tính và thử lại nhé!</div>`;
+        } else if (state.m2Case1Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Chuyển $x$ sang vế phải: $1+5 = 2x-x \\iff x=6$. Thử lại nhé!</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>6</b> rồi bấm <b>Xác nhận TH1</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    // CÁCH 2 TH2: x+1 < 0
+    function submitM2Case2() {
+      const rawVal = document.getElementById('inp-m2-c2').value.trim();
+      const fb = document.getElementById('fb-m2-c2');
+      state.m2Case2Input = rawVal;
+
+      if (rawVal === '4/3' || rawVal.includes('1.33') || rawVal === 'x=4/3') {
+        state.m2Case2Completed = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> $-(x+1)=2x-5 \\iff 3x=4 \\iff x=4/3$. Kiểm tra $4/3 < -1$ (SAI) $\\implies$ Loại ngay!</div>`;
+        renderKaTeXInElement(fb);
+        renderSidebar();
+        autoFitViewport();
+      } else {
+        state.m2Case2Attempts++;
+        triggerShake('card-m2-case2');
+        if (state.m2Case2Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng kiểm tra lại phép tính và thử lại nhé!</div>`;
+        } else if (state.m2Case2Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Bỏ dấu trị tuyệt đối đổi dấu $-(x+1) = 2x-5 \\iff -x-1 = 2x-5$. Thử lại nhé!</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>4/3</b> rồi bấm <b>Xác nhận TH2</b>.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    function finishComparison() {
+      state.comparisonCompleted = true;
+      renderSidebar();
+      openSummaryModal();
+      LMS().complete();
+    }
+
+    /* =========================================================================
+       5. MODALS & INITIALIZATION
+       ========================================================================= */
+    function openNotebookModal() {
+      const modal = document.getElementById('modal-notebook');
+      modal.classList.add('active');
+      renderKaTeXInElement(modal);
+    }
+    function closeNotebookModal() {
+      document.getElementById('modal-notebook').classList.remove('active');
+    }
+    function openSummaryModal() {
+      const modal = document.getElementById('modal-summary');
+      modal.classList.add('active');
+      renderKaTeXInElement(modal);
+    }
+    function closeSummaryModal() {
+      document.getElementById('modal-summary').classList.remove('active');
+    }
+
+    // Initialize App
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSidebar();
+      resizeCanvas();
+      resetViewport();
+      renderKaTeXInElement(document.body);
+    });
+
+    window.addEventListener('load', () => {
+      renderKaTeXInElement(document.body);
+    });
+  </script>
+</body>
+</html>
