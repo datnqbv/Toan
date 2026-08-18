@@ -416,6 +416,35 @@
       box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.15);
     }
 
+    /* LIVE MATH PREVIEW COMPONENT */
+    .math-preview-container {
+      margin-top: 6px;
+      background: #f8fafc;
+      border: 1px dashed var(--paper-line);
+      border-radius: 8px;
+      padding: 8px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 3px;
+    }
+
+    .preview-label {
+      font-size: 11px;
+      font-weight: 600;
+      color: var(--sub);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .math-preview-box {
+      font-size: 14.5px;
+      color: var(--navy);
+      min-height: 28px;
+      display: flex;
+      align-items: center;
+    }
+
     .btn {
       padding: 9px 16px;
       border-radius: 6px;
@@ -1504,6 +1533,32 @@
       }
     }
 
+    /* LIVE MATH PREVIEW FORMATTER */
+    function updateMathPreview(taskNum, val) {
+      const box = document.getElementById(`preview-nv${taskNum}`);
+      if (!box) return;
+
+      const v = (val !== undefined && val !== null) ? val : (state[`nv${taskNum}Input`] || '');
+
+      if (!v || !v.trim()) {
+        if (taskNum === 1) box.innerHTML = `$\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1$`;
+        else if (taskNum === 2) box.innerHTML = `$\\frac{x^2}{a^2} - \\frac{y^2}{b^2} = 1$`;
+        else if (taskNum === 3) box.innerHTML = `$d = \\dots\\text{ m}$`;
+        renderKaTeXInElement(box);
+        return;
+      }
+
+      let s = v.trim();
+      if (taskNum === 3) {
+        box.innerHTML = `$${s.replace(',', '.')}\\text{ m}$`;
+      } else {
+        let latex = s.replace(/([xXyY0-9\^\²\+\-\*\s]+)\/([a-zA-Z0-9\+\-\*\s]+)/g, '\\frac{$1}{$2}');
+        latex = latex.replace(/x\^2|x²/g, 'x^2').replace(/y\^2|y²/g, 'y^2');
+        box.innerHTML = `$${latex}$`;
+      }
+      renderKaTeXInElement(box);
+    }
+
     /* STEP 1: NHÀ THIÊN VĂN (ELIP) */
     function renderStep1(container) {
       container.innerHTML = `
@@ -1524,8 +1579,12 @@
           ` : ''}
 
           <div class="control-group" style="margin-bottom:10px;">
-            <label class="control-label"><span>Phương trình chính tắc của Elip:</span></label>
-            <input type="text" class="text-input" id="inp-nv1" placeholder="Ví dụ: x^2/25 + y^2/16 = 1" value="${state.nv1Input}" ${state.stepCompleted[1] ? 'disabled' : ''}>
+            <label class="control-label"><span>Nhập phương trình chính tắc của Elip:</span></label>
+            <input type="text" class="text-input" id="inp-nv1" placeholder="Ví dụ gõ dạng phím: x^2/a^2 + y^2/b^2 = 1..." value="${state.nv1Input}" oninput="state.nv1Input=this.value; updateMathPreview(1, this.value);" ${state.stepCompleted[1] ? 'disabled' : ''}>
+            <div class="math-preview-container">
+              <div class="preview-label"><i class="ti ti-writing"></i> Xem dạng công thức viết tay (Real-time):</div>
+              <div class="math-preview-box" id="preview-nv1"></div>
+            </div>
           </div>
 
           <div id="fb-nv1">
@@ -1533,7 +1592,7 @@
           </div>
 
           <div style="display:flex; gap:6px; margin-top:8px;">
-            ${!state.nv1ShowHint2 ? `<button class="btn btn-secondary" onclick="state.nv1ShowHint2=true; renderSidebar();"><i class="ti ti-help"></i> Xin thêm gợi ý</button>` : ''}
+            ${!state.nv1ShowHint2 ? `<button class="btn btn-secondary" onclick="state.nv1ShowHint2=true; LMS().event('hint_requested', { id: 'nv1', level: 2 }); renderSidebar();"><i class="ti ti-help"></i> Xin thêm gợi ý</button>` : ''}
             ${!state.stepCompleted[1] ? `
               <button class="btn btn-primary" style="flex:1;" onclick="submitNV1()">
                 <i class="ti ti-check"></i> Nộp đáp án NV1
@@ -1546,6 +1605,7 @@
           </div>
         </div>
       `;
+      updateMathPreview(1, state.nv1Input);
     }
 
     function submitNV1() {
@@ -1595,8 +1655,12 @@
           ` : ''}
 
           <div class="control-group" style="margin-bottom:10px;">
-            <label class="control-label"><span>Phương trình chính tắc của Hypebol:</span></label>
-            <input type="text" class="text-input" id="inp-nv2" placeholder="Ví dụ: x^2/3600 - y^2/6400 = 1" value="${state.nv2Input}" ${state.stepCompleted[2] ? 'disabled' : ''}>
+            <label class="control-label"><span>Nhập phương trình chính tắc của Hypebol:</span></label>
+            <input type="text" class="text-input" id="inp-nv2" placeholder="Ví dụ gõ dạng phím: x^2/a^2 - y^2/b^2 = 1..." value="${state.nv2Input}" oninput="state.nv2Input=this.value; updateMathPreview(2, this.value);" ${state.stepCompleted[2] ? 'disabled' : ''}>
+            <div class="math-preview-container">
+              <div class="preview-label"><i class="ti ti-writing"></i> Xem dạng công thức viết tay (Real-time):</div>
+              <div class="math-preview-box" id="preview-nv2"></div>
+            </div>
           </div>
 
           <div id="fb-nv2">
@@ -1604,7 +1668,7 @@
           </div>
 
           <div style="display:flex; gap:6px; margin-top:8px;">
-            ${!state.nv2ShowHint ? `<button class="btn btn-secondary" onclick="state.nv2ShowHint=true; renderSidebar();"><i class="ti ti-help"></i> Xin gợi ý</button>` : ''}
+            ${!state.nv2ShowHint ? `<button class="btn btn-secondary" onclick="state.nv2ShowHint=true; LMS().event('hint_requested', { id: 'nv2', level: 1 }); renderSidebar();"><i class="ti ti-help"></i> Xin gợi ý</button>` : ''}
             ${!state.stepCompleted[2] ? `
               <button class="btn btn-primary" style="flex:1;" onclick="submitNV2()">
                 <i class="ti ti-check"></i> Nộp đáp án NV2
@@ -1617,6 +1681,7 @@
           </div>
         </div>
       `;
+      updateMathPreview(2, state.nv2Input);
     }
 
     function submitNV2() {
@@ -1667,7 +1732,11 @@
 
           <div class="control-group" style="margin-bottom:10px;">
             <label class="control-label"><span>Khoảng cách từ đỉnh đến đầu thu ($m$):</span></label>
-            <input type="text" class="text-input" id="inp-nv3" placeholder="Nhập kết quả số (ví dụ 1.125)..." value="${state.nv3Input}" ${state.stepCompleted[3] ? 'disabled' : ''}>
+            <input type="text" class="text-input" id="inp-nv3" placeholder="Gõ giá trị số (ví dụ: 1.25)..." value="${state.nv3Input}" oninput="state.nv3Input=this.value; updateMathPreview(3, this.value);" ${state.stepCompleted[3] ? 'disabled' : ''}>
+            <div class="math-preview-container">
+              <div class="preview-label"><i class="ti ti-writing"></i> Xem dạng công thức viết tay (Real-time):</div>
+              <div class="math-preview-box" id="preview-nv3"></div>
+            </div>
           </div>
 
           <div id="fb-nv3">
@@ -1675,7 +1744,7 @@
           </div>
 
           <div style="display:flex; gap:6px; margin-top:8px;">
-            ${!state.nv3ShowHint ? `<button class="btn btn-secondary" onclick="state.nv3ShowHint=true; renderSidebar();"><i class="ti ti-help"></i> Xin gợi ý</button>` : ''}
+            ${!state.nv3ShowHint ? `<button class="btn btn-secondary" onclick="state.nv3ShowHint=true; LMS().event('hint_requested', { id: 'nv3', level: 1 }); renderSidebar();"><i class="ti ti-help"></i> Xin gợi ý</button>` : ''}
             ${!state.stepCompleted[3] ? `
               <button class="btn btn-primary" style="flex:1;" onclick="submitNV3()">
                 <i class="ti ti-check"></i> Nộp đáp án NV3
@@ -1688,6 +1757,7 @@
           </div>
         </div>
       `;
+      updateMathPreview(3, state.nv3Input);
     }
 
     function submitNV3() {
@@ -1711,9 +1781,9 @@
           fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng xác định tọa độ điểm viền chảo và giải phương trình $h^2 = 2px$ nhé!</div>`;
         } else if (attempts === 2) {
           state.nv3ShowHint = true;
-          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Điểm viền có $(x=0,5; h=1,5) \\implies 1,5^2 = 2p(0,5) \\implies p = 2,25 \\implies F = \\frac{p}{2} = 1,125\\text{ m}$.</div>`;
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Điểm thuộc viền chảo có $(x=0,5; h=1,5) \\implies 1,5^2 = 2p(0,5) \\implies p = 2,25$. Khoảng cách từ đỉnh chảo đến đầu thu bằng $\\frac{p}{2}$.</div>`;
         } else {
-          // 3+ attempts: Reveal correct answer & explanation!
+          // 3+ attempts (sai từ 2 lần trở lên): Reveal correct answer & explanation!
           fb.innerHTML = `<div class="info-box athena">💡 <b>Đáp án chuẩn:</b> Khoảng cách là <b>1,125 m</b> ($p=2,25 \\implies F = \\frac{p}{2} = 1,125\\text{ m}$).</div>`;
         }
         renderKaTeXInElement(fb);
