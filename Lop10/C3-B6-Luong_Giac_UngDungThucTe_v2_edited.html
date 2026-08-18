@@ -206,6 +206,35 @@
     .math-select:focus { border-color: var(--primary); }
     .math-select.error { border-color: var(--red); background: var(--red-light); color: var(--red); }
 
+    /* QUICK CHIPS - Nút điền nhanh số liệu */
+    .quick-chips-wrap {
+      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
+      margin-top: 8px; padding: 6px 10px; background: var(--jade-pale);
+      border: 1px solid var(--sage); border-radius: var(--radius-sm);
+    }
+    .quick-chips-wrap.hint-chips {
+      border-color: #6EE7B7;
+    }
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+    .quick-chips-label {
+      font-size: 0.76rem; font-weight: 700; color: var(--jade-dark);
+      display: flex; align-items: center; gap: 4px; white-space: nowrap;
+    }
+    .chip-btn {
+      padding: 3px 9px; border-radius: 12px; font-size: 0.8rem; font-weight: 700;
+      font-family: 'Courier New', monospace; background: #FFFFFF; color: var(--jade-dark);
+      border: 1.5px solid var(--jade-soft); cursor: pointer; transition: all 0.15s ease;
+      outline: none; display: inline-flex; align-items: center; justify-content: center;
+    }
+    .chip-btn:hover {
+      background: var(--jade-deep); color: #FFFFFF; border-color: var(--jade-deep);
+      transform: translateY(-1px); box-shadow: 0 2px 4px rgba(45, 139, 111, 0.2);
+    }
+    .chip-btn:active { transform: translateY(0); }
+
     /* CONTROLS ROW */
     .ctrl-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 0.85rem; }
     
@@ -224,11 +253,25 @@
       box-shadow: var(--shadow-sm);
     }
     .sim-caption-box.alert { background: #FFF8E1; border-color: #FFE082; border-left-color: var(--amber); }
+    .sim-caption-box.success {
+      background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+      border: 1.5px solid #10B981; border-left: 6px solid #059669;
+      box-shadow: 0 6px 18px rgba(16, 185, 129, 0.25);
+      animation: popSuccess 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
     .sim-caption-title {
       display: flex; align-items: center; gap: 6px; font-size: 0.88rem; font-weight: 700;
       color: var(--primary); margin-bottom: 2px;
     }
     .sim-caption-box.alert .sim-caption-title { color: var(--amber-dark); }
+    .sim-caption-box.success .sim-caption-title { color: #047857; font-size: 0.98rem; font-weight: 800; letter-spacing: 0.3px; }
+    .sim-caption-box.success #captionBody { color: #065F46; font-size: 0.92rem; font-weight: 600; line-height: 1.5; }
+    
+    @keyframes popSuccess {
+      0% { transform: scale(0.96); opacity: 0.8; }
+      50% { transform: scale(1.02); }
+      100% { transform: scale(1); opacity: 1; }
+    }
     .sim-caption-body { font-size: 0.82rem; color: var(--text-2); }
 
     /* BUTTONS */
@@ -530,6 +573,82 @@
       inputs: { oa: '', ob: '', angleAOB: '', abResult: '' }
     };
 
+    // ─── 1.1 AUTO-SANITIZER & QUICK CHIPS HELPER ────
+    let lastFocusedInput = null;
+    let wrongAttempts = {};
+
+    function getStepKey() {
+      return `${activeModule}-${currentStep}`;
+    }
+
+    function getWrongCount() {
+      return wrongAttempts[getStepKey()] || 0;
+    }
+
+    function incWrongCount() {
+      const k = getStepKey();
+      wrongAttempts[k] = (wrongAttempts[k] || 0) + 1;
+      if (wrongAttempts[k] >= 2) {
+        revealHintChips();
+      }
+    }
+
+    function revealHintChips() {
+      const hintWraps = document.querySelectorAll('.quick-chips-wrap.hint-chips');
+      hintWraps.forEach(wrap => {
+        if (wrap.style.display !== 'flex') {
+          wrap.style.display = 'flex';
+          wrap.style.animation = 'fadeIn 0.4s ease';
+        }
+      });
+      const captionBody = document.getElementById('captionBody');
+      if (captionBody && !captionBody.innerHTML.includes('Gợi ý đã được mở')) {
+        captionBody.innerHTML += `<div style="margin-top: 4px; font-weight: 700; color: var(--primary);"><i class="ti ti-bulb"></i> Bạn đã thử 2 lần chưa đúng. Khung Gợi ý đã được mở ở phía trên để hỗ trợ!</div>`;
+      }
+    }
+
+    function resetAllWrongCounts() {
+      wrongAttempts = {};
+    }
+
+    document.addEventListener("focusin", (e) => {
+      if (e.target && e.target.classList && e.target.classList.contains('math-input')) {
+        lastFocusedInput = e.target;
+      }
+    });
+
+    // Auto-Sanitizer: Tự động chuyển dấu phẩy thành dấu chấm & loại bỏ ký tự chữ/ký hiệu thừa
+    function sanitizeInput(val) {
+      if (typeof val !== 'string') return val;
+      let s = val.replace(',', '.');
+      // Lọc bỏ ký tự độ °, deg, km, m, α, β,... giữ lại số, dấu -, ., / và dấu +
+      s = s.replace(/[^\d.\-\/+]/g, '');
+      return s;
+    }
+
+    // Điền nhanh giá trị chip vào ô input đang focus hoặc ô input trống đầu tiên
+    function insertQuickChip(chipVal) {
+      const cleanVal = sanitizeInput(chipVal.toString());
+      let target = lastFocusedInput;
+
+      if (!target || !document.body.contains(target) || target.offsetParent === null) {
+        const inputs = document.querySelectorAll('.sim-interactive-panel .math-input');
+        for (let input of inputs) {
+          if (!input.value) { target = input; break; }
+        }
+        if (!target && inputs.length > 0) target = inputs[0];
+      }
+
+      if (target) {
+        target.value = cleanVal;
+        target.focus();
+        target.classList.remove('error');
+        target.dispatchEvent(new Event('input', { bubbles: true }));
+        target.dispatchEvent(new Event('change', { bubbles: true }));
+        lastFocusedInput = target;
+      }
+    }
+
     // ─── 2. DOM INITIALIZATION ──────────────────────
     document.addEventListener("DOMContentLoaded", () => {
       switchModule(1);
@@ -539,6 +658,7 @@
     function switchModule(modIndex) {
       activeModule = modIndex;
       currentStep = 1;
+      resetAllWrongCounts();
       
       // Update UI menu
       for(let i = 1; i <= 4; i++) {
@@ -656,6 +776,7 @@
       else if(activeModule === 3) resetM3Data();
       else if(activeModule === 4) resetM4Data();
       
+      resetAllWrongCounts();
       currentStep = 1;
       loadStep();
     }
@@ -685,6 +806,7 @@
         m4Data.time = [2, 3][Math.floor(Math.random() * 2)];
         resetM4Data();
       }
+      resetAllWrongCounts();
       currentStep = 1;
       loadStep();
     }
@@ -759,14 +881,50 @@
       const title = document.getElementById('captionTitle');
       const body = document.getElementById('captionBody');
 
+      caption.classList.remove('alert', 'success');
+
       if(type === "alert") {
         caption.classList.add('alert');
         title.innerHTML = `<i class="ti ti-alert-triangle"></i> Cảnh báo lỗi`;
+      } else if(type === "success") {
+        caption.classList.add('success');
+        title.innerHTML = `<i class="ti ti-trophy"></i> HOÀN THÀNH XUẤT SẮC!`;
       } else {
-        caption.classList.remove('alert');
         title.innerHTML = `<i class="ti ti-info-circle"></i> Chỉ dẫn`;
       }
       if(text) body.innerHTML = text;
+    }
+
+    // Hiển thị Banner hoàn thành stage nổi bật trong bảng tương tác
+    function showStageCompleteBanner(detailText) {
+      const existing = document.getElementById('stageCompleteBanner');
+      if (existing) existing.remove();
+      
+      const stepContent = document.getElementById('stepContent');
+      if (!stepContent) return;
+      
+      const banner = document.createElement('div');
+      banner.id = 'stageCompleteBanner';
+      banner.className = 'stage-complete-banner';
+      banner.style.cssText = `
+        background: linear-gradient(135deg, #10B981 0%, #047857 100%);
+        color: #ffffff;
+        padding: 14px 18px;
+        border-radius: 12px;
+        margin-top: 14px;
+        box-shadow: 0 8px 20px rgba(16, 185, 129, 0.3);
+        animation: popSuccess 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+      `;
+      banner.innerHTML = `
+        <div style="font-size: 1.15rem; font-weight: 800; display: flex; align-items: center; gap: 8px;">
+          <span>🎉</span> <span>HOÀN THÀNH XUẤT SẮC!</span>
+        </div>
+        <div style="font-size: 0.88rem; margin-top: 6px; opacity: 0.95; line-height: 1.4;">
+          ${detailText ? `<b>${detailText}</b>.<br>` : ''}
+          Bạn đã hoàn thành xuất sắc nhiệm vụ của bài toán này!
+        </div>
+      `;
+      stepContent.appendChild(banner);
     }
 
     // Helper SVG creation
@@ -1075,28 +1233,36 @@
             <div>BC² = AB² + AC² − 2·AB·AC·cos(A)</div>
             <div class="math-input-row">
               <span>BC² = </span>
-              <input type="text" class="math-input" id="in-ab" value="${m1Data.inputs.ab}" placeholder="ab" oninput="updateM1Input('ab', this.value); this.classList.remove('error')">
+              <input type="text" class="math-input" id="in-ab" value="${m1Data.inputs.ab}" placeholder="ab" oninput="updateM1Input('ab', this.value, this); this.classList.remove('error')">
               <span>² + </span>
-              <input type="text" class="math-input" id="in-ac" value="${m1Data.inputs.ac}" placeholder="ac" oninput="updateM1Input('ac', this.value); this.classList.remove('error')">
+              <input type="text" class="math-input" id="in-ac" value="${m1Data.inputs.ac}" placeholder="ac" oninput="updateM1Input('ac', this.value, this); this.classList.remove('error')">
               <span>² </span>
-              <select class="math-select" id="in-sign" onchange="updateM1Input('sign', this.value)">
+              <select class="math-select" id="in-sign" onchange="updateM1Input('sign', this.value, this)">
                 <option value="" disabled ${signVal === '' ? 'selected' : ''}>dấu</option>
                 <option value="-" ${signVal === '-' ? 'selected' : ''}>−</option>
                 <option value="+" ${signVal === '+' ? 'selected' : ''}>+</option>
               </select>
               <span> 2 · </span>
-              <input type="text" class="math-input" style="width: 60px;" id="in-double" value="${m1Data.inputs.doubleAbAc}" placeholder="ab.ac" oninput="updateM1Input('doubleAbAc', this.value); this.classList.remove('error')">
+              <input type="text" class="math-input" style="width: 60px;" id="in-double" value="${m1Data.inputs.doubleAbAc}" placeholder="ab.ac" oninput="updateM1Input('doubleAbAc', this.value, this); this.classList.remove('error')">
               <span> · cos(</span>
-              <input type="text" class="math-input" id="in-ang" value="${m1Data.inputs.angle}" placeholder="góc" oninput="updateM1Input('angle', this.value); this.classList.remove('error')">
+              <input type="text" class="math-input" id="in-ang" value="${m1Data.inputs.angle}" placeholder="góc" oninput="updateM1Input('angle', this.value, this); this.classList.remove('error')">
               <span>°)</span>
             </div>
           </div>
-          <p style="margin-top: 10px; font-size: 0.8rem; color: var(--text-3);">Mẹo: Điền độ dài các cạnh vào các ô trống.</p>
+          <div class="quick-chips-wrap hint-chips" style="margin-top: 8px; display: ${getWrongCount() >= 2 ? 'flex' : 'none'};">
+            <span class="quick-chips-label"><i class="ti ti-hand-click"></i> Điền nhanh:</span>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${m1Data.ab}')">${m1Data.ab}</button>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${m1Data.ac}')">${m1Data.ac}</button>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${m1Data.ab * m1Data.ac}')">${m1Data.ab * m1Data.ac}</button>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${m1Data.angle}')">${m1Data.angle}°</button>
+          </div>
+          <p style="margin-top: 8px; font-size: 0.8rem; color: var(--text-3);">Mẹo: Điền độ dài các cạnh vào các ô trống.</p>
         `;
       }
 
       // STEP 5 CONTENT
       else if(currentStep === 5) {
+        const exactBC = Math.round(Math.sqrt(m1Data.ab**2 + m1Data.ac**2 - 2*m1Data.ab*m1Data.ac*Math.cos(m1Data.angle * Math.PI / 180)));
         stepTitle.textContent = "Tính khoảng cách BC";
         stepContent.innerHTML = `
           <p>Sử dụng máy tính cá nhân để giải phương trình vừa điền:</p>
@@ -1106,10 +1272,14 @@
             BC² = ${m1Data.ab**2 + m1Data.ac**2} − (${2*m1Data.ab*m1Data.ac * Math.cos(m1Data.angle * Math.PI / 180)}) = ${Math.round(m1Data.ab**2 + m1Data.ac**2 - 2*m1Data.ab*m1Data.ac*Math.cos(m1Data.angle * Math.PI / 180))}
           </div>
           <p style="margin-top: 10px;">Nhập khoảng cách cuối cùng giữa 2 đảo:</p>
-          <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
+          <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
             <span>BC ≈ </span>
-            <input type="text" class="math-input" style="width: 100px;" id="in-result" value="${m1Data.inputs.result}" placeholder="kết quả" onchange="updateM1Input('result', this.value)">
+            <input type="text" class="math-input" style="width: 100px;" id="in-result" value="${m1Data.inputs.result}" placeholder="kết quả" oninput="updateM1Input('result', this.value, this)" onchange="updateM1Input('result', this.value, this)">
             <span> km</span>
+          </div>
+          <div class="quick-chips-wrap hint-chips" style="margin-top: 8px; display: ${getWrongCount() >= 2 ? 'flex' : 'none'};">
+            <span class="quick-chips-label"><i class="ti ti-hand-click"></i> Gợi ý:</span>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${exactBC}')">${exactBC} km</button>
           </div>
         `;
       }
@@ -1125,14 +1295,17 @@
       }
     }
 
-    function updateM1Input(key, val) {
-      m1Data.inputs[key] = val;
+    function updateM1Input(key, val, el) {
+      const cleanVal = sanitizeInput(val);
+      if (el && el.value !== cleanVal && el.tagName === 'INPUT') el.value = cleanVal;
+      m1Data.inputs[key] = cleanVal;
     }
 
     function validateM1Step() {
       if(currentStep === 3) {
         if(m1Data.inputs.formula !== 'cos') {
           setCaptionBox("alert", "Hãy chọn Định lý Cosin để giải quyết bài toán này.");
+          incWrongCount();
           return false;
         }
       }
@@ -1166,7 +1339,10 @@
           document.getElementById('in-sign').classList.remove('error');
         }
 
-        if(hasError) return false;
+        if(hasError) {
+          incWrongCount();
+          return false;
+        }
       }
       
       return true;
@@ -1180,6 +1356,7 @@
 
       if(isNaN(userAns)) {
         alert("Vui lòng điền kết quả tính toán.");
+        incWrongCount();
         return;
       }
 
@@ -1187,9 +1364,10 @@
       const wrongBC2 = m1Data.ab**2 + m1Data.ac**2 + 2 * m1Data.ab * m1Data.ac * Math.cos(rad);
       const wrongAns = Math.sqrt(wrongBC2);
 
-      if(Math.abs(userAns - correctAns) < 0.2) {
+      if(Math.abs(userAns - correctAns) < 0.5 || Math.abs(userAns - Math.round(correctAns)) <= 0.5) {
         // Success
-        setCaptionBox("info", `<span style="color: var(--green); font-weight: bold;"><i class="ti ti-trophy"></i> Xuất sắc! Khoảng cách giữa 2 hòn đảo BC ≈ ${correctAns.toFixed(2)} km. Nhiệm vụ trắc địa hoàn thành hoàn hảo! 🗺️</span>`);
+        setCaptionBox("success", `Xuất sắc! Khoảng cách giữa 2 hòn đảo BC ≈ <b>${correctAns.toFixed(2)} km</b> (làm tròn ≈ <b>${Math.round(correctAns)} km</b>). Nhiệm vụ trắc địa hoàn thành hoàn hảo! 🗺️`);
+        showStageCompleteBanner(`Khoảng cách giữa 2 đảo BC ≈ ${correctAns.toFixed(2)} km`);
         
         // Draw the final path as a solid green path
         const svg = document.getElementById('svgLayer');
@@ -1201,13 +1379,15 @@
             l.removeAttribute('stroke-dasharray');
           }
         });
-      } else if(Math.abs(userAns - wrongAns) < 0.2) {
+      } else if(Math.abs(userAns - wrongAns) < 0.5) {
         // Did the wrong sign trap
         setCaptionBox("alert", `Bạn đã tính sai khoảng cách do nhầm dấu kép của góc tù cos${m1Data.angle}°! Do cos(${m1Data.angle}°) = ${Math.cos(rad).toFixed(1)} (mang số âm), ta phải có: −2·${m1Data.ab}·${m1Data.ac}·(${Math.cos(rad).toFixed(1)}) = +${(-2*m1Data.ab*m1Data.ac*Math.cos(rad)).toFixed(0)}. Có phải bạn đã tính trừ thay vì cộng không? Hãy thử lại nhé!`);
         document.getElementById('in-result').classList.add('error');
+        incWrongCount();
       } else {
         setCaptionBox("alert", `Kết quả chưa chính xác! Hãy kiểm tra lại phép tính của bạn bằng máy tính cầm tay: BC² = ${exactBC2.toFixed(1)} → BC ≈ ${correctAns.toFixed(2)} km.`);
         document.getElementById('in-result').classList.add('error');
+        incWrongCount();
       }
     }
 
@@ -1369,36 +1549,42 @@
       else if(currentStep === 4) {
         const correctAngleB = 180 - m2Data.beta;
         const correctAngleC = 180 - m2Data.alpha - correctAngleB;
-        stepTitle.textContent = "Di\u1ec1n \u0111\u1ecbnh l\u00fd Sin";
+        stepTitle.textContent = "Điền định lý Sin";
         stepContent.innerHTML = `
-          <p>Trong tam gi\u00e1c ABC ta \u0111\u00e3 bi\u1ebft:</p>
+          <p>Trong tam giác ABC ta đã biết:</p>
           <ul style="font-size:0.85rem; margin: 6px 0 10px;">
-            <li>\u2220BAC = \u03b1 = <b>${m2Data.alpha}\u00b0</b> (g\u00f3c ng\u1eafm t\u1ea1i A)</li>
-            <li>\u2220ABC = <b>${correctAngleB}\u00b0</b> (b\u00f9 v\u1edbi \u03b2: 180\u00b0 \u2212 ${m2Data.beta}\u00b0)</li>
-            <li>\u2220ACB = 180\u00b0 \u2212 ${m2Data.alpha}\u00b0 \u2212 ${correctAngleB}\u00b0 = <b>${correctAngleC}\u00b0</b></li>
+            <li>∠BAC = α = <b>${m2Data.alpha}°</b> (góc ngắm tại A)</li>
+            <li>∠ABC = <b>${correctAngleB}°</b> (bù với β: 180° − ${m2Data.beta}°)</li>
+            <li>∠ACB = 180° − ${m2Data.alpha}° − ${correctAngleB}° = <b>${correctAngleC}°</b></li>
           </ul>
-          <p>D\u00f9ng \u0111\u1ecbnh l\u00fd Sin \u0111i\u1ec1n \u0111\u00fang c\u00e1c gi\u00e1 tr\u1ecb:</p>
+          <p>Dùng định lý Sin điền đúng các giá trị:</p>
           <div class="math-formula-box" style="font-size: 0.85rem;">
-            <div>AB / sin(\u2220ACB) = BC / sin(\u2220BAC)</div>
+            <div>AB / sin(∠ACB) = BC / sin(∠BAC)</div>
             <div class="math-input-row" style="margin-top:8px;">
               <input type="text" class="math-input" style="width: 55px;" id="in-ab-side"
                 value="${m2Data.inputs.abSide}" placeholder="AB=?"
-                oninput="updateM2Input('abSide', this.value); this.classList.remove('error')">
+                oninput="updateM2Input('abSide', this.value, this); this.classList.remove('error')">
               <span> / sin(</span>
               <input type="text" class="math-input" style="width: 40px;" id="in-sinc"
-                value="${m2Data.inputs.sinC}" placeholder="\u2220C"
-                oninput="updateM2Input('sinC', this.value); this.classList.remove('error')">
-              <span>\u00b0) = BC / sin(</span>
+                value="${m2Data.inputs.sinC}" placeholder="∠C"
+                oninput="updateM2Input('sinC', this.value, this); this.classList.remove('error')">
+              <span>°) = BC / sin(</span>
               <input type="text" class="math-input" style="width: 40px;" id="in-sina"
-                value="${m2Data.inputs.sinA}" placeholder="\u2220A"
-                oninput="updateM2Input('sinA', this.value); this.classList.remove('error')">
-              <span>\u00b0)</span>
+                value="${m2Data.inputs.sinA}" placeholder="∠A"
+                oninput="updateM2Input('sinA', this.value, this); this.classList.remove('error')">
+              <span>°)</span>
             </div>
           </div>
+          <div class="quick-chips-wrap hint-chips" style="margin-top: 8px; display: ${getWrongCount() >= 2 ? 'flex' : 'none'};">
+            <span class="quick-chips-label"><i class="ti ti-hand-click"></i> Điền nhanh:</span>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${m2Data.ab}')">${m2Data.ab}</button>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${correctAngleC}')">${correctAngleC}°</button>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${m2Data.alpha}')">${m2Data.alpha}°</button>
+          </div>
           <div style="margin-top:10px; background:#EAF6FC; border-radius:6px; padding:8px 12px; font-size:0.82rem; color:#1565C0;">
-            \ud83d\udca1 <b>G\u1ee3i \u00fd:</b> \u00d4 AB = <b>${m2Data.ab}</b> &nbsp;|
-            G\u00f3c C = 180\u00b0\u2212${m2Data.alpha}\u00b0\u2212${correctAngleB}\u00b0 = <b>${correctAngleC}\u00b0</b> &nbsp;|
-            G\u00f3c A = \u03b1 = <b>${m2Data.alpha}\u00b0</b>
+            💡 <b>Gợi ý:</b> Ô AB = <b>${m2Data.ab}</b> &nbsp;|
+            Góc C = 180°−${m2Data.alpha}°−${correctAngleB}° = <b>${correctAngleC}°</b> &nbsp;|
+            Góc A = α = <b>${m2Data.alpha}°</b>
           </div>
         `;
       }
@@ -1407,18 +1593,23 @@
       else if(currentStep === 5) {
         const cVal = 180 - m2Data.alpha - (180 - m2Data.beta);
         const exactBC = m2Data.ab * Math.sin(m2Data.alpha * Math.PI / 180) / Math.sin(cVal * Math.PI / 180);
+        const exactH = Math.round(exactBC * Math.sin(m2Data.beta * Math.PI / 180));
 
-        stepTitle.textContent = "T\u00ednh chi\u1ec1u cao h";
+        stepTitle.textContent = "Tính chiều cao h";
         stepContent.innerHTML = `
-          <p>C\u1ea1nh BC t\u00ednh \u0111\u01b0\u1ee3c: <b>BC \u2248 ${exactBC.toFixed(1)} m</b>.</p>
-          <p>Trong tam gi\u00e1c vu\u00f4ng CBH, chi\u1ec1u cao ng\u1ecdn n\u00fai \u0111\u1ee9ng l\u00e0:</p>
+          <p>Cạnh BC tính được: <b>BC ≈ ${exactBC.toFixed(1)} m</b>.</p>
+          <p>Trong tam giác vuông CBH, chiều cao ngọn núi đứng là:</p>
           <div style="background: #faf8f6; padding: 10px; border-radius: 6px; font-family: Courier New; font-weight: 700; margin-bottom: 12px;">
-            h = BC \u00b7 sin(\u03b2) = ${exactBC.toFixed(1)} \u00b7 sin(${m2Data.beta}\u00b0)
+            h = BC · sin(β) = ${exactBC.toFixed(1)} · sin(${m2Data.beta}°)
           </div>
           <div style="display: flex; align-items: center; gap: 8px;">
-            <span>Chi\u1ec1u cao h \u2248 </span>
-            <input type="text" class="math-input" style="width: 90px;" id="in-result-h" value="${m2Data.inputs.resultH}" placeholder="m" oninput="updateM2Input('resultH', this.value)">
-            <span> m\u00e9t</span>
+            <span>Chiều cao h ≈ </span>
+            <input type="text" class="math-input" style="width: 90px;" id="in-result-h" value="${m2Data.inputs.resultH}" placeholder="m" oninput="updateM2Input('resultH', this.value, this)" onchange="updateM2Input('resultH', this.value, this)">
+            <span> mét</span>
+          </div>
+          <div class="quick-chips-wrap hint-chips" style="margin-top: 8px; display: ${getWrongCount() >= 2 ? 'flex' : 'none'};">
+            <span class="quick-chips-label"><i class="ti ti-hand-click"></i> Gợi ý:</span>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${exactH}')">${exactH} m</button>
           </div>
         `;
       }
@@ -1435,8 +1626,10 @@
       }
     }
 
-    function updateM2Input(key, val) {
-      m2Data.inputs[key] = val;
+    function updateM2Input(key, val, el) {
+      const cleanVal = sanitizeInput(val);
+      if (el && el.value !== cleanVal && el.tagName === 'INPUT') el.value = cleanVal;
+      m2Data.inputs[key] = cleanVal;
     }
 
     function validateM2Step() {
@@ -1504,8 +1697,9 @@
         return;
       }
 
-      if(Math.abs(userH - correctH) < 5) {
-        setCaptionBox("info", `<span style="color: var(--green); font-weight: bold;"><i class="ti ti-trophy"></i> Tuyệt vời! Ngọn núi cao ≈ ${correctH.toFixed(0)} m. Trạm cáp treo đã được nghiệm thu thiết kế thành công! ⛰️</span>`);
+      if(Math.abs(userH - correctH) < 5 || Math.abs(userH - Math.round(correctH)) <= 5) {
+        setCaptionBox("success", `Tuyệt vời! Ngọn núi cao ≈ <b>${correctH.toFixed(0)} m</b>. Trạm cáp treo đã được nghiệm thu thiết kế thành công! ⛰️`);
+        showStageCompleteBanner(`Chiều cao ngọn núi h ≈ ${correctH.toFixed(0)} m`);
       } else {
         setCaptionBox("alert", `Chiều cao chưa chính xác. Thực hiện phép tính: h = ${exactBC.toFixed(1)} · sin(${m2Data.beta}°) = ${correctH.toFixed(0)} m.`);
         document.getElementById('in-result-h').classList.add('error');
@@ -1626,44 +1820,62 @@
 
       // STEP 3
       else if(currentStep === 3) {
+        const p1 = (m3Data.ab + m3Data.bc + m3Data.ac) / 2;
+        const s1 = Math.sqrt(p1 * (p1 - m3Data.ab) * (p1 - m3Data.bc) * (p1 - m3Data.ac)).toFixed(1);
+
         stepTitle.textContent = "Tính diện tích ΔABC";
         stepContent.innerHTML = `
           <p>Tính nửa chu vi <b>p₁</b> của tam giác ABC (các cạnh ${m3Data.ab}, ${m3Data.bc}, ${m3Data.ac}):</p>
           <div class="math-formula-box">
             <div class="math-input-row">
               <span>p₁ = (</span>
-              <input type="text" class="math-input" style="width: 80px;" id="in-p1-num" value="${m3Data.inputs.p1Numerator}" placeholder="tổng 3 cạnh" oninput="updateM3Input('p1Numerator', this.value); this.classList.remove('error')">
+              <input type="text" class="math-input" style="width: 80px;" id="in-p1-num" value="${m3Data.inputs.p1Numerator}" placeholder="tổng 3 cạnh" oninput="updateM3Input('p1Numerator', this.value, this); this.classList.remove('error')">
               <span>) / </span>
-              <input type="text" class="math-input" id="in-p1-den" value="${m3Data.inputs.p1Denominator}" placeholder="?" oninput="updateM3Input('p1Denominator', this.value); this.classList.remove('error')">
+              <input type="text" class="math-input" id="in-p1-den" value="${m3Data.inputs.p1Denominator}" placeholder="?" oninput="updateM3Input('p1Denominator', this.value, this); this.classList.remove('error')">
             </div>
           </div>
           <p style="margin-top: 10px;">Áp dụng Heron tính diện tích <b>S₁</b>:</p>
           <div style="display: flex; align-items: center; gap: 8px;">
             <span>S₁ ≈ </span>
-            <input type="text" class="math-input" style="width: 80px;" id="in-s1" value="${m3Data.inputs.s1Result}" placeholder="S1" oninput="updateM3Input('s1Result', this.value); this.classList.remove('error')">
+            <input type="text" class="math-input" style="width: 80px;" id="in-s1" value="${m3Data.inputs.s1Result}" placeholder="S1" oninput="updateM3Input('s1Result', this.value, this); this.classList.remove('error')">
             <span> m²</span>
+          </div>
+          <div class="quick-chips-wrap hint-chips" style="margin-top: 8px; display: ${getWrongCount() >= 2 ? 'flex' : 'none'};">
+            <span class="quick-chips-label"><i class="ti ti-hand-click"></i> Điền nhanh:</span>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${m3Data.ab}+${m3Data.bc}+${m3Data.ac}')">${m3Data.ab}+${m3Data.bc}+${m3Data.ac}</button>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('2')">2</button>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${s1}')">${s1} m²</button>
           </div>
         `;
       }
 
       // STEP 4
       else if(currentStep === 4) {
+        const p2 = (m3Data.ac + m3Data.cd + m3Data.da) / 2;
+        const s2 = Math.sqrt(p2 * (p2 - m3Data.ac) * (p2 - m3Data.cd) * (p2 - m3Data.da)).toFixed(1);
+
         stepTitle.textContent = "Tính diện tích ΔACD";
         stepContent.innerHTML = `
           <p>Tính nửa chu vi <b>p₂</b> của tam giác ACD (các cạnh ${m3Data.ac}, ${m3Data.cd}, ${m3Data.da}):</p>
           <div class="math-formula-box">
             <div class="math-input-row">
               <span>p₂ = (</span>
-              <input type="text" class="math-input" style="width: 80px;" id="in-p2-num" value="${m3Data.inputs.p2Numerator}" placeholder="tổng 3 cạnh" oninput="updateM3Input('p2Numerator', this.value); this.classList.remove('error')">
+              <input type="text" class="math-input" style="width: 80px;" id="in-p2-num" value="${m3Data.inputs.p2Numerator}" placeholder="tổng 3 cạnh" oninput="updateM3Input('p2Numerator', this.value, this); this.classList.remove('error')">
               <span>) / </span>
-              <input type="text" class="math-input" id="in-p2-den" value="${m3Data.inputs.p2Denominator}" placeholder="?" oninput="updateM3Input('p2Denominator', this.value); this.classList.remove('error')">
+              <input type="text" class="math-input" id="in-p2-den" value="${m3Data.inputs.p2Denominator}" placeholder="?" oninput="updateM3Input('p2Denominator', this.value, this); this.classList.remove('error')">
             </div>
           </div>
           <p style="margin-top: 10px;">Áp dụng Heron tính diện tích <b>S₂</b>:</p>
           <div style="display: flex; align-items: center; gap: 8px;">
             <span>S₂ ≈ </span>
-            <input type="text" class="math-input" style="width: 80px;" id="in-s2" value="${m3Data.inputs.s2Result}" placeholder="S2" oninput="updateM3Input('s2Result', this.value); this.classList.remove('error')">
+            <input type="text" class="math-input" style="width: 80px;" id="in-s2" value="${m3Data.inputs.s2Result}" placeholder="S2" oninput="updateM3Input('s2Result', this.value, this); this.classList.remove('error')">
             <span> m²</span>
+          </div>
+          <div class="quick-chips-wrap hint-chips" style="margin-top: 8px; display: ${getWrongCount() >= 2 ? 'flex' : 'none'};">
+            <span class="quick-chips-label"><i class="ti ti-hand-click"></i> Điền nhanh:</span>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${m3Data.ac}+${m3Data.cd}+${m3Data.da}')">${m3Data.ac}+${m3Data.cd}+${m3Data.da}</button>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('2')">2</button>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${s2}')">${s2} m²</button>
           </div>
         `;
       }
@@ -1675,7 +1887,7 @@
         const s1 = Math.sqrt(p1 * (p1 - m3Data.ab) * (p1 - m3Data.bc) * (p1 - m3Data.ac));
         const p2 = (m3Data.ac + m3Data.cd + m3Data.da) / 2;
         const s2 = Math.sqrt(p2 * (p2 - m3Data.ac) * (p2 - m3Data.cd) * (p2 - m3Data.da));
-        const sTotal = s1 + s2;
+        const sTotal = (s1 + s2).toFixed(1);
 
         stepTitle.textContent = "Tính tổng diện tích S";
         stepContent.innerHTML = `
@@ -1687,15 +1899,21 @@
           <p style="margin-top: 10px;">Tổng diện tích mảnh đất ABCD:</p>
           <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
             <span>S = S₁ + S₂ = </span>
-            <input type="text" class="math-input" style="width: 100px;" id="in-s-total" value="${m3Data.inputs.sTotal}" placeholder="tổng diện tích" oninput="updateM3Input('sTotal', this.value); this.classList.remove('error')">
+            <input type="text" class="math-input" style="width: 100px;" id="in-s-total" value="${m3Data.inputs.sTotal}" placeholder="tổng diện tích" oninput="updateM3Input('sTotal', this.value, this); this.classList.remove('error')">
             <span> m²</span>
+          </div>
+          <div class="quick-chips-wrap hint-chips" style="margin-top: 8px; display: ${getWrongCount() >= 2 ? 'flex' : 'none'};">
+            <span class="quick-chips-label"><i class="ti ti-hand-click"></i> Gợi ý:</span>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${sTotal}')">${sTotal} m²</button>
           </div>
         `;
       }
     }
 
-    function updateM3Input(key, val) {
-      m3Data.inputs[key] = val;
+    function updateM3Input(key, val, el) {
+      const cleanVal = sanitizeInput(val);
+      if (el && el.value !== cleanVal && el.tagName === 'INPUT') el.value = cleanVal;
+      m3Data.inputs[key] = cleanVal;
     }
 
     function validateM3Step() {
@@ -1725,14 +1943,17 @@
         // Check S1
         const p1 = correctSum / 2;
         const exactS1 = Math.sqrt(p1 * (p1 - m3Data.ab) * (p1 - m3Data.bc) * (p1 - m3Data.ac));
-        if(isNaN(s1) || Math.abs(s1 - exactS1) > 0.2) {
+        if(isNaN(s1) || Math.abs(s1 - exactS1) > 0.5) {
           document.getElementById('in-s1').classList.add('error');
           hasError = true;
         } else {
           document.getElementById('in-s1').classList.remove('error');
         }
 
-        if(hasError) return false;
+        if(hasError) {
+          incWrongCount();
+          return false;
+        }
       }
 
       if(currentStep === 4) {
@@ -1758,14 +1979,17 @@
 
         const p2 = correctSum / 2;
         const exactS2 = Math.sqrt(p2 * (p2 - m3Data.ac) * (p2 - m3Data.cd) * (p2 - m3Data.da));
-        if(isNaN(s2) || Math.abs(s2 - exactS2) > 0.2) {
+        if(isNaN(s2) || Math.abs(s2 - exactS2) > 0.5) {
           document.getElementById('in-s2').classList.add('error');
           hasError = true;
         } else {
           document.getElementById('in-s2').classList.remove('error');
         }
 
-        if(hasError) return false;
+        if(hasError) {
+          incWrongCount();
+          return false;
+        }
       }
       return true;
     }
@@ -1780,14 +2004,17 @@
 
       if(isNaN(userTotal)) {
         alert("Vui lòng điền tổng diện tích.");
+        incWrongCount();
         return;
       }
 
-      if(Math.abs(userTotal - correctTotal) < 0.5) {
-        setCaptionBox("info", `<span style="color: var(--green); font-weight: bold;"><i class="ti ti-trophy"></i> Tuyệt vời! Tổng diện tích thửa ruộng ABCD ≈ ${correctTotal.toFixed(2)} m². Báo cáo pháp lý hoàn thành! 📐</span>`);
+      if(Math.abs(userTotal - correctTotal) < 0.8 || Math.abs(userTotal - Math.round(correctTotal)) <= 1) {
+        setCaptionBox("success", `Tuyệt vời! Tổng diện tích thửa ruộng ABCD ≈ <b>${correctTotal.toFixed(2)} m²</b>. Báo cáo pháp lý hoàn thành! 📐`);
+        showStageCompleteBanner(`Tổng diện tích thửa ruộng S ≈ ${correctTotal.toFixed(2)} m²`);
       } else {
         setCaptionBox("alert", `Tổng diện tích chưa chính xác. Thực hiện phép tính: S = ${s1.toFixed(2)} + ${s2.toFixed(2)} = ${correctTotal.toFixed(2)} m².`);
         document.getElementById('in-s-total').classList.add('error');
+        incWrongCount();
       }
     }
 
@@ -1987,16 +2214,21 @@
               <span>OA = </span>
               <input type="text" class="math-input" id="in-v1" value="${m4Data.v1}" readonly style="width: 40px; background:#f0f0f0;">
               <span> × ${m4Data.time} = </span>
-              <input type="text" class="math-input" id="in-oa" value="${m4Data.inputs.oa}" placeholder="OA" style="width: 50px;" oninput="updateM4Input('oa', this.value); this.classList.remove('error')">
+              <input type="text" class="math-input" id="in-oa" value="${m4Data.inputs.oa}" placeholder="OA" style="width: 50px;" oninput="updateM4Input('oa', this.value, this); this.classList.remove('error')">
               <span> km</span>
             </div>
             <div class="math-input-row" style="margin-top: 6px;">
               <span>OB = </span>
               <input type="text" class="math-input" id="in-v2" value="${m4Data.v2}" readonly style="width: 40px; background:#f0f0f0;">
               <span> × ${m4Data.time} = </span>
-              <input type="text" class="math-input" id="in-ob" value="${m4Data.inputs.ob}" placeholder="OB" style="width: 50px;" oninput="updateM4Input('ob', this.value); this.classList.remove('error')">
+              <input type="text" class="math-input" id="in-ob" value="${m4Data.inputs.ob}" placeholder="OB" style="width: 50px;" oninput="updateM4Input('ob', this.value, this); this.classList.remove('error')">
               <span> km</span>
             </div>
+          </div>
+          <div class="quick-chips-wrap hint-chips" style="margin-top: 8px; display: ${getWrongCount() >= 2 ? 'flex' : 'none'};">
+            <span class="quick-chips-label"><i class="ti ti-hand-click"></i> Điền nhanh:</span>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${m4Data.v1 * m4Data.time}')">${m4Data.v1 * m4Data.time} (OA)</button>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${m4Data.v2 * m4Data.time}')">${m4Data.v2 * m4Data.time} (OB)</button>
           </div>
         `;
       }
@@ -2008,10 +2240,16 @@
           <p>Nhìn vào bản đồ la bàn và xác định góc tạo bởi hai hướng đi <b>N60°E</b> và <b>S30°W</b>:</p>
           <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
             <span>Góc ∠AOB = </span>
-            <input type="text" class="math-input" style="width: 80px;" id="in-angleaob" value="${m4Data.inputs.angleAOB}" placeholder="độ" oninput="updateM4Input('angleAOB', this.value); this.classList.remove('error')">
+            <input type="text" class="math-input" style="width: 80px;" id="in-angleaob" value="${m4Data.inputs.angleAOB}" placeholder="độ" oninput="updateM4Input('angleAOB', this.value, this); this.classList.remove('error')">
             <span>°</span>
           </div>
-          <p style="margin-top: 10px; font-size: 0.8rem; color: var(--text-3);">Gợi ý: Hướng N60°E lệch 60° so với Bắc về Đông. Hướng S30°W lệch 30° so với Nam về Tây.</p>
+          <div class="quick-chips-wrap hint-chips" style="margin-top: 8px; display: ${getWrongCount() >= 2 ? 'flex' : 'none'};">
+            <span class="quick-chips-label"><i class="ti ti-hand-click"></i> Điền nhanh:</span>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('150')">150°</button>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('60')">60°</button>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('30')">30°</button>
+          </div>
+          <p style="margin-top: 8px; font-size: 0.8rem; color: var(--text-3);">Gợi ý: Hướng N60°E lệch 60° so với Bắc về Đông. Hướng S30°W lệch 30° so với Nam về Tây.</p>
         `;
       }
 
@@ -2033,15 +2271,19 @@
         const oa = m4Data.v1 * m4Data.time;
         const ob = m4Data.v2 * m4Data.time;
         const exactAB2 = oa**2 + ob**2 - 2 * oa * ob * Math.cos(150 * Math.PI / 180);
-        const exactAB = Math.sqrt(exactAB2);
+        const exactAB = Math.round(Math.sqrt(exactAB2));
 
         stepTitle.textContent = "Khoảng cách giữa hai tàu";
         stepContent.innerHTML = `
           <p>Tính khoảng cách thẳng giữa hai tàu A và B sau 2 giờ di chuyển:</p>
           <div style="display: flex; align-items: center; gap: 8px; margin-top: 10px;">
             <span>Khoảng cách AB ≈ </span>
-            <input type="text" class="math-input" style="width: 100px;" id="in-result-ab" value="${m4Data.inputs.abResult}" placeholder="km" oninput="updateM4Input('abResult', this.value); this.classList.remove('error')">
+            <input type="text" class="math-input" style="width: 100px;" id="in-result-ab" value="${m4Data.inputs.abResult}" placeholder="km" oninput="updateM4Input('abResult', this.value, this); this.classList.remove('error')">
             <span> km</span>
+          </div>
+          <div class="quick-chips-wrap hint-chips" style="margin-top: 8px; display: ${getWrongCount() >= 2 ? 'flex' : 'none'};">
+            <span class="quick-chips-label"><i class="ti ti-hand-click"></i> Gợi ý:</span>
+            <button type="button" class="chip-btn" onclick="insertQuickChip('${exactAB}')">${exactAB} km</button>
           </div>
         `;
       }
@@ -2053,8 +2295,10 @@
       loadStep();
     }
 
-    function updateM4Input(key, val) {
-      m4Data.inputs[key] = val;
+    function updateM4Input(key, val, el) {
+      const cleanVal = sanitizeInput(val);
+      if (el && el.value !== cleanVal && el.tagName === 'INPUT') el.value = cleanVal;
+      m4Data.inputs[key] = cleanVal;
     }
 
     function validateM4Step() {
@@ -2074,7 +2318,10 @@
         if(ob !== m4Data.v2 * m4Data.time) { document.getElementById('in-ob').classList.add('error'); hasError = true; }
         else { document.getElementById('in-ob').classList.remove('error'); }
 
-        if(hasError) return false;
+        if(hasError) {
+          incWrongCount();
+          return false;
+        }
       }
 
       if(currentStep === 3) {
@@ -2086,6 +2333,7 @@
           } else {
             setCaptionBox("alert", "Góc chưa chính xác. Đo góc trên la bàn: góc giữa hai vector di chuyển là 150 độ.");
           }
+          incWrongCount();
           return false;
         } else {
           document.getElementById('in-angleaob').classList.remove('error');
@@ -2109,19 +2357,23 @@
 
       if(isNaN(userAB)) {
         alert("Vui lòng nhập khoảng cách.");
+        incWrongCount();
         return;
       }
 
-      if(Math.abs(userAB - exactAB) < 0.5) {
+      if(Math.abs(userAB - exactAB) < 0.8 || Math.abs(userAB - Math.round(exactAB)) <= 1) {
         m4Data.isRescueStarted = true;
         renderM4(); // Draw rescue path
-        setCaptionBox("info", `<span style="color: var(--green); font-weight: bold;"><i class="ti ti-trophy"></i> Tuyệt vời! Khoảng cách giữa 2 tàu AB ≈ ${exactAB.toFixed(2)} km. Tàu cứu hộ đã xuất phát thẳng tới trung điểm cứu nạn thành công! 🚢</span>`);
+        setCaptionBox("success", `Tuyệt vời! Khoảng cách giữa 2 tàu AB ≈ <b>${exactAB.toFixed(2)} km</b>. Tàu cứu hộ đã xuất phát thẳng tới trung điểm cứu nạn thành công! 🚢`);
+        showStageCompleteBanner(`Khoảng cách giữa 2 tàu AB ≈ ${exactAB.toFixed(2)} km`);
       } else if(Math.abs(userAB - wrongAB) < 0.5) {
         setCaptionBox("alert", `Có phải bạn đã nhầm dấu cosin? Do cos(150°) = −0.866, công thức trừ biến thành phép cộng: AB² = ${oa}² + ${ob}² − 2·${oa}·${ob}·(−0.866) = ${exactAB2.toFixed(0)}. Khoảng cách thật sự phải dài hơn các cạnh đơn lẻ.`);
         document.getElementById('in-result-ab').classList.add('error');
+        incWrongCount();
       } else {
         setCaptionBox("alert", `Kết quả chưa chính xác. Vui lòng kiểm tra lại phép tính: AB² = ${exactAB2.toFixed(1)} → AB ≈ ${exactAB.toFixed(2)} km.`);
         document.getElementById('in-result-ab').classList.add('error');
+        incWrongCount();
       }
     }
 
