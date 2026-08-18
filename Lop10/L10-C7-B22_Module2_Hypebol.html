@@ -867,7 +867,6 @@
         if (alignY === 'top') drawY = py + 6;
         else if (alignY === 'middle') drawY = py - boxH / 2;
 
-        // Keep within canvas bounds
         if (drawX < 6) drawX = 6;
         if (drawX + boxW > viewWidth - 6) drawX = viewWidth - boxW - 6;
         if (drawY < 6) drawY = 6;
@@ -878,6 +877,49 @@
         ctx.fillStyle = color; ctx.fillText(text, drawX + paddingX, drawY + 14);
       }
 
+      function drawBadgeDrawOn(x, y, text, color, bgColor, borderColor, alignX, alignY, progress) {
+        if (progress < 0.65) return;
+        const alpha = (progress - 0.65) / 0.35;
+        ctx.save();
+        ctx.globalAlpha = Math.min(1, Math.max(0, alpha));
+        drawBadge(x, y, text, color, bgColor, borderColor, alignX, alignY);
+        ctx.restore();
+      }
+
+      function drawPoint(px, py, color, r = 5) {
+        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
+      }
+
+      function drawPointDrawOn(x, y, color, targetRadius, progress) {
+        if (progress <= 0) return;
+        const r = targetRadius * Math.min(1, Math.max(0, progress));
+        drawPoint(toPxX(x), toPxY(y), color, r);
+      }
+
+      function drawLineDrawOn(x1, y1, x2, y2, strokeStyle, lineWidth, isDashed, progress) {
+        const p = Math.min(1, Math.max(0, progress));
+        if (p <= 0) return;
+        const curX = x1 + (x2 - x1) * p;
+        const curY = y1 + (y2 - y1) * p;
+
+        ctx.strokeStyle = strokeStyle; ctx.lineWidth = lineWidth;
+        if (isDashed) ctx.setLineDash([4, 4]); else ctx.setLineDash([]);
+        ctx.beginPath();
+        ctx.moveTo(toPxX(x1), toPxY(y1));
+        ctx.lineTo(toPxX(curX), toPxY(curY));
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        // Draw glowing pen-tip tracer head when animating
+        if (p > 0 && p < 1) {
+          ctx.fillStyle = strokeStyle;
+          ctx.beginPath();
+          ctx.arc(toPxX(curX), toPxY(curY), lineWidth * 1.4, 0, Math.PI * 2);
+          ctx.fill();
+        }
+      }
+
       function drawTowerCanvas() {
         if (!viewWidth || !viewHeight) return;
         ctx.clearRect(0, 0, viewWidth, viewHeight);
@@ -885,7 +927,7 @@
 
         const px0 = toPxX(0), py0 = toPxY(0);
 
-        // Grid
+        // Background Grid
         ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 1;
         for (let x = Math.ceil(viewport.xMin); x <= Math.floor(viewport.xMax); x += 10) {
           const px = toPxX(x); ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, viewHeight); ctx.stroke();
@@ -894,54 +936,62 @@
           const py = toPxY(y); ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(viewWidth, py); ctx.stroke();
         }
 
-        // Draw Hyperbolic Cooling Tower Wall Curves (a=20, b=40)
-        // Equation: r^2 / 400 - h^2 / 1600 = 1 => r = 20 * sqrt(1 + h^2 / 1600)
         const hMin = -50, hMax = 35;
 
         // Fill Tower Interior
         ctx.fillStyle = 'rgba(45, 139, 111, 0.06)';
         ctx.beginPath();
         let first = true;
-        // Right branch from hMin to hMax
         for (let h = hMin; h <= hMax; h += 0.5) {
           const r = 20 * Math.sqrt(1 + (h * h) / 1600);
           const px = toPxX(r), py = toPxY(h);
           if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
         }
-        // Top boundary
         const rTop = 20 * Math.sqrt(1 + (hMax * hMax) / 1600);
         ctx.lineTo(toPxX(-rTop), toPxY(hMax));
-        // Left branch from hMax to hMin
         for (let h = hMax; h >= hMin; h -= 0.5) {
           const r = 20 * Math.sqrt(1 + (h * h) / 1600);
           const px = toPxX(-r), py = toPxY(h);
           ctx.lineTo(px, py);
         }
-        // Bottom boundary
         const rBot = 20 * Math.sqrt(1 + (hMin * hMin) / 1600);
         ctx.lineTo(toPxX(rBot), toPxY(hMin));
         ctx.closePath();
         ctx.fill();
 
-        // Right Branch Outline
-        ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 3.5; ctx.beginPath();
-        first = true;
-        for (let h = hMin; h <= hMax; h += 0.5) {
+        // Draw-On Hyperbolic Cooling Tower Wall Curves
+        const curveProg = (state.currentStep === 1 || state.currentStep === 4) ? animProgress : 1;
+        const currentHMax = hMin + (hMax - hMin) * curveProg;
+
+        ctx.strokeStyle = (state.currentStep === 4) ? '#14432F' : '#2D8B6F';
+        ctx.lineWidth = (state.currentStep === 4) ? 4.5 : 3.5;
+
+        // Right Branch Outline Draw-On
+        ctx.beginPath(); first = true;
+        let lastPxR = 0, lastPyR = 0;
+        for (let h = hMin; h <= currentHMax; h += 0.5) {
           const r = 20 * Math.sqrt(1 + (h * h) / 1600);
-          const px = toPxX(r), py = toPxY(h);
-          if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
+          lastPxR = toPxX(r); lastPyR = toPxY(h);
+          if (first) { ctx.moveTo(lastPxR, lastPyR); first = false; } else { ctx.lineTo(lastPxR, lastPyR); }
         }
         ctx.stroke();
 
-        // Left Branch Outline
-        ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 3.5; ctx.beginPath();
-        first = true;
-        for (let h = hMin; h <= hMax; h += 0.5) {
+        // Left Branch Outline Draw-On
+        ctx.beginPath(); first = true;
+        let lastPxL = 0, lastPyL = 0;
+        for (let h = hMin; h <= currentHMax; h += 0.5) {
           const r = 20 * Math.sqrt(1 + (h * h) / 1600);
-          const px = toPxX(-r), py = toPxY(h);
-          if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
+          lastPxL = toPxX(-r); lastPyL = toPxY(h);
+          if (first) { ctx.moveTo(lastPxL, lastPyL); first = false; } else { ctx.lineTo(lastPxL, lastPyL); }
         }
         ctx.stroke();
+
+        // Draw glowing pen-tip tracers on hyperbola curves during draw-on
+        if (curveProg > 0 && curveProg < 1) {
+          ctx.fillStyle = '#2D8B6F';
+          ctx.beginPath(); ctx.arc(lastPxR, lastPyR, 5, 0, Math.PI * 2); ctx.fill();
+          ctx.beginPath(); ctx.arc(lastPxL, lastPyL, 5, 0, Math.PI * 2); ctx.fill();
+        }
 
         // Top Ring and Bottom Ring Dashed lines
         ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
@@ -949,19 +999,16 @@
         ctx.beginPath(); ctx.moveTo(toPxX(-rBot), toPxY(hMin)); ctx.lineTo(toPxX(rBot), toPxY(hMin)); ctx.stroke();
         ctx.setLineDash([]);
 
-        // STEP 1: Candidate Origin Points A(0,0 cổ tháp), B(0,-50 đáy tháp), C(0,35 đỉnh tháp)
+        // STEP 1: Candidate Origin Points
         if (state.currentStep === 1) {
-          // Point A (Cổ tháp - điểm hẹp nhất)
-          drawPoint(toPxX(0), toPxY(0), state.step1Selected === 0 ? '#16a34a' : '#2563eb', 7);
-          drawBadge(0, 0, 'A (Cổ tháp - Hẹp nhất)', state.step1Selected === 0 ? '#16a34a' : '#2563eb', '#ffffff', '#cbd5e1', 'center', 'top');
+          drawPointDrawOn(0, 0, state.step1Selected === 0 ? '#16a34a' : '#2563eb', 7, animProgress);
+          drawBadgeDrawOn(0, 0, 'A (Cổ tháp - Hẹp nhất)', state.step1Selected === 0 ? '#16a34a' : '#2563eb', '#ffffff', '#cbd5e1', 'center', 'top', animProgress);
 
-          // Point B (Đáy tháp)
-          drawPoint(toPxX(0), toPxY(-50), state.step1Selected === 1 ? '#dc2626' : '#64748b', 6);
-          drawBadge(0, -50, 'B (Đáy tháp)', state.step1Selected === 1 ? '#dc2626' : '#64748b', '#ffffff', '#cbd5e1', 'center', 'top');
+          drawPointDrawOn(0, -50, state.step1Selected === 1 ? '#dc2626' : '#64748b', 6, animProgress);
+          drawBadgeDrawOn(0, -50, 'B (Đáy tháp)', state.step1Selected === 1 ? '#dc2626' : '#64748b', '#ffffff', '#cbd5e1', 'center', 'top', animProgress);
 
-          // Point C (Đỉnh tháp)
-          drawPoint(toPxX(0), toPxY(35), state.step1Selected === 2 ? '#dc2626' : '#64748b', 6);
-          drawBadge(0, 35, 'C (Đỉnh tháp)', state.step1Selected === 2 ? '#dc2626' : '#64748b', '#ffffff', '#cbd5e1', 'center', 'bottom');
+          drawPointDrawOn(0, 35, state.step1Selected === 2 ? '#dc2626' : '#64748b', 6, animProgress);
+          drawBadgeDrawOn(0, 35, 'C (Đỉnh tháp)', state.step1Selected === 2 ? '#dc2626' : '#64748b', '#ffffff', '#cbd5e1', 'center', 'bottom', animProgress);
         }
 
         // Draw Axes O-rh if Step 1 completed or Step >= 2
@@ -974,65 +1021,86 @@
           ctx.fillText('r (bán kính)', viewWidth - 75, py0 + 16); ctx.fillText('h (độ cao)', px0 + 10, 14); ctx.fillText('O', px0 - 14, py0 + 16);
         }
 
-        // STEP 2+: Highlight semi-real axis a=20 (radius at neck h=0)
+        // STEP 2+: Highlight semi-real axis a=20 (Draw-on from O -> 20)
         if (state.currentStep >= 2) {
-          ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 3;
-          ctx.beginPath(); ctx.moveTo(px0, py0); ctx.lineTo(toPxX(20), py0); ctx.stroke();
-          drawPoint(toPxX(20), py0, '#2563eb', 6);
-          drawBadge(10, 0, 'a = 20m (Bán kính cổ tháp)', '#2563eb', '#eff6ff', '#bfdbfe', 'center', 'bottom');
+          const p = state.currentStep === 2 ? animProgress : 1;
+          drawLineDrawOn(0, 0, 20, 0, '#2563eb', 3.5, false, p);
+
+          if (p > 0.7) drawPoint(toPxX(20), py0, '#2563eb', 6);
+          drawBadgeDrawOn(10, 0, 'a = 20m (Bán kính cổ tháp)', '#2563eb', '#eff6ff', '#bfdbfe', 'center', 'bottom', p);
         }
 
-        // STEP 3+: Highlight Measurement Point (r=25, h=30)
+        // STEP 3+: Highlight Measurement Point (r=25, h=30) (Draw-on)
         if (state.currentStep >= 3) {
-          const px25 = toPxX(25), py30 = toPxY(30);
-          ctx.strokeStyle = '#d97706'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
-          ctx.beginPath(); ctx.moveTo(px0, py30); ctx.lineTo(px25, py30); ctx.stroke();
-          ctx.beginPath(); ctx.moveTo(px25, py0); ctx.lineTo(px25, py30); ctx.stroke();
-          ctx.setLineDash([]);
+          const p = state.currentStep === 3 ? animProgress : 1;
 
-          drawPoint(px25, py30, '#d97706', 7);
-          drawBadge(25, 30, '📍 Điểm đo (r=25; h=30)', '#d97706', '#fffbeb', '#fde68a', 'left', 'middle');
+          // First 50% draw horizontal: (0, 30) -> (25, 30)
+          const pHoriz = Math.min(1, p * 2);
+          drawLineDrawOn(0, 30, 25, 30, '#d97706', 1.5, true, pHoriz);
+
+          // Second 50% draw vertical: (25, 0) -> (25, 30)
+          const pVert = Math.max(0, (p - 0.5) * 2);
+          if (pVert > 0) {
+            drawLineDrawOn(25, 0, 25, 30, '#d97706', 1.5, true, pVert);
+          }
+
+          if (p > 0.8) drawPoint(toPxX(25), toPxY(30), '#d97706', 7);
+          drawBadgeDrawOn(25, 30, '📍 Điểm đo (r=25; h=30)', '#d97706', '#fffbeb', '#fde68a', 'left', 'middle', p);
         }
 
-        // STEP 5+: Foundation Radius at h = -50
+        // STEP 5+: Foundation Radius at h = -50 (Draw-on)
         if (state.currentStep >= 5) {
+          const p = state.currentStep === 5 ? animProgress : 1;
           const rBotExact = 20 * Math.sqrt(1 + 2500 / 1600); // ~32.015m
-          const pxBot = toPxX(rBotExact), pyBot = toPxY(-50);
 
-          ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 2.5;
-          ctx.beginPath(); ctx.moveTo(px0, pyBot); ctx.lineTo(pxBot, pyBot); ctx.stroke();
+          drawLineDrawOn(0, -50, rBotExact, -50, '#16a34a', 2.5, false, p);
 
-          drawPoint(pxBot, pyBot, '#16a34a', 7);
-          drawBadge(rBotExact / 2, -50, 'r ≈ 32.02m (Móng tháp h = -50)', '#16a34a', '#f0fdf4', '#86efac', 'center', 'top');
+          if (p > 0.8) drawPoint(toPxX(rBotExact), toPxY(-50), '#16a34a', 7);
+          drawBadgeDrawOn(rBotExact / 2, -50, 'r ≈ 32.02m (Móng tháp h = -50)', '#16a34a', '#f0fdf4', '#86efac', 'center', 'top', p);
         }
 
-        // STEP 6: Foci F1(-44.72, 0) and F2(44.72, 0)
+        // STEP 6: Foci F1(-44.72, 0) and F2(44.72, 0) (Draw-on)
         if (state.currentStep === 6) {
+          const p = animProgress;
           const cVal = Math.sqrt(2000); // ~44.72m
-          const pxF1 = toPxX(-cVal), pxF2 = toPxX(cVal);
 
-          drawPoint(pxF1, py0, '#dc2626', 7);
-          drawPoint(pxF2, py0, '#dc2626', 7);
+          drawLineDrawOn(-cVal, 0, cVal, 0, '#dc2626', 1.5, true, p);
 
-          drawBadge(-cVal, 0, 'F1 (-44.72; 0)', '#dc2626', '#fef2f2', '#fca5a5', 'center', 'bottom');
-          drawBadge(cVal, 0, 'F2 (44.72; 0)', '#dc2626', '#fef2f2', '#fca5a5', 'center', 'bottom');
+          if (p > 0.3) drawPoint(toPxX(-cVal), py0, '#dc2626', 7);
+          if (p > 0.8) drawPoint(toPxX(cVal), py0, '#dc2626', 7);
 
-          ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
-          ctx.beginPath(); ctx.moveTo(pxF1, py0); ctx.lineTo(pxF2, py0); ctx.stroke();
-          ctx.setLineDash([]);
-
-          drawBadge(0, -15, 'Tiêu cự 2c ≈ 89.44m', '#dc2626', '#ffffff', '#dc2626', 'center', 'top');
+          drawBadgeDrawOn(-cVal, 0, 'F1 (-44.72; 0)', '#dc2626', '#fef2f2', '#fca5a5', 'center', 'bottom', p);
+          drawBadgeDrawOn(cVal, 0, 'F2 (44.72; 0)', '#dc2626', '#fef2f2', '#fca5a5', 'center', 'bottom', p);
+          drawBadgeDrawOn(0, -15, 'Tiêu cự 2c ≈ 89.44m', '#dc2626', '#ffffff', '#dc2626', 'center', 'top', p);
         }
-      }
-
-      function drawPoint(px, py, color, r = 5) {
-        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
-        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
       }
 
       /* =========================================================================
          3. SIDEBAR STEP RENDERERS & HANDLERS
          ========================================================================= */
+      let animProgress = 1;
+      let animReqId = null;
+
+      function triggerCanvasAnimation() {
+        animProgress = 0;
+        const startTime = performance.now();
+        const duration = 850; // 850ms Draw-On animation
+
+        function animate(now) {
+          const elapsed = now - startTime;
+          let t = Math.min(1, elapsed / duration);
+          animProgress = 1 - Math.pow(1 - t, 3);
+          drawTowerCanvas();
+
+          if (t < 1) {
+            animReqId = requestAnimationFrame(animate);
+          }
+        }
+
+        if (animReqId) cancelAnimationFrame(animReqId);
+        animReqId = requestAnimationFrame(animate);
+      }
+
       function switchStep(stepNum) {
         if (stepNum > 1 && !state.stepCompleted[stepNum - 1] && !state.stepCompleted[stepNum]) {
           return; // Locked
@@ -1044,7 +1112,7 @@
           if (state.stepCompleted[idx + 1]) pill.classList.add('completed');
         });
         renderSidebar();
-        autoFitViewport();
+        triggerCanvasAnimation();
       }
 
       function renderSidebar() {
@@ -1365,10 +1433,12 @@
 
           <div class="control-group" style="margin-bottom:10px;">
             <label class="control-label"><span>Khoảng cách giữa 2 tiêu điểm $2c$ ($m$):</span></label>
-            <input type="text" class="text-input" id="inp-step6-dist" placeholder="Nhập kết quả làm tròn (ví dụ 68.34)..." value="${state.step6DistInput}" ${state.stepCompleted[6] ? 'disabled' : ''}>
+            <input type="text" class="text-input" id="inp-step6-dist" placeholder="Nhập kết quả làm tròn (ví dụ 89.44)..." value="${state.step6DistInput}" ${state.stepCompleted[6] ? 'disabled' : ''}>
           </div>
 
-          <div id="fb-step-6"></div>
+          <div id="fb-step-6">
+            ${state.stepCompleted[6] ? `<div class="info-box correct"><b>✓ Xuất sắc!</b> Hypebol dùng công thức CỘNG $c^2 = a^2 + b^2 = 400 + 1600 = 2000 \\implies c = 20\\sqrt{5} \\approx 44,72m \\implies 2c \\approx 89,44m$. (Khác hẳn dấu TRỪ của elip!).</div>` : ''}
+          </div>
 
           ${!state.stepCompleted[6] ? `
             <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep6()">
@@ -1386,16 +1456,15 @@
       function submitStep6() {
         const valStr = document.getElementById('inp-step6-dist').value.trim().replace(',', '.');
         const val = parseFloat(valStr);
-        const fb = document.getElementById('fb-step-6');
         state.step6DistInput = document.getElementById('inp-step6-dist').value;
 
         if (!isNaN(val) && Math.abs(val - 89.44) <= 0.5) {
           state.stepCompleted[6] = true;
-          fb.innerHTML = `<div class="info-box correct"><b>✓ Xuất sắc!</b> Hypebol dùng công thức CỘNG $c^2 = a^2 + b^2 = 400 + 1600 = 2000 \\implies c = 20\\sqrt{5} \\approx 44,72m \\implies 2c \\approx 89,44m$. (Khác hẳn dấu TRỪ của elip!).</div>`;
-          renderKaTeXInElement(fb);
           LMS().event('answered', { step: 6, correct: true, required: false });
-          autoFitViewport();
+          renderSidebar();
+          finishModule2();
         } else {
+          const fb = document.getElementById('fb-step-6');
           state.step6Attempts++;
           triggerShake('card-step-6');
           if (state.step6Attempts === 1) {
