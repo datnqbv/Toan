@@ -6,11 +6,11 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bài 18: Phương trình quy về phương trình bậc hai — Module 3: Luyện tập tổng hợp</title>
 
-  <!-- Google Fonts: Plus Jakarta Sans -->
+  <!-- Google Fonts: Be Vietnam Pro -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link
-    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
     rel="stylesheet">
 
   <!-- KaTeX CSS & JS -->
@@ -67,7 +67,7 @@
     }
 
     body {
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.5;
@@ -897,7 +897,7 @@
       }
 
       function drawBadge(x, y, text, color, bgColor = 'rgba(255, 255, 255, 0.92)', borderColor = '#cbd5e1') {
-        ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+        ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif';
         const textWidth = ctx.measureText(text).width;
         const px = toPxX(x);
         const py = toPxY(y);
@@ -935,7 +935,7 @@
         ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(viewWidth, py0); ctx.stroke();
         ctx.beginPath(); ctx.moveTo(px0, viewHeight); ctx.lineTo(px0, 0); ctx.stroke();
 
-        ctx.fillStyle = '#64748b'; ctx.font = '500 11px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = '#64748b'; ctx.font = '500 11px "Be Vietnam Pro", sans-serif';
         for (let x = Math.ceil(viewport.xMin); x <= Math.floor(viewport.xMax); x += 2) {
           if (x === 0) continue;
           const px = toPxX(x); ctx.beginPath(); ctx.moveTo(px, py0 - 3); ctx.lineTo(px, py0 + 3); ctx.stroke();
@@ -946,7 +946,7 @@
           const py = toPxY(y); ctx.beginPath(); ctx.moveTo(px0 - 3, py); ctx.lineTo(px0 + 3, py); ctx.stroke();
           ctx.fillText(y.toString(), px0 - 18, py + 4);
         }
-        ctx.fillStyle = '#0f172a'; ctx.font = 'bold 12px "Plus Jakarta Sans", sans-serif';
+        ctx.fillStyle = '#0f172a'; ctx.font = 'bold 12px "Be Vietnam Pro", sans-serif';
         ctx.fillText('x', viewWidth - 14, py0 + 16); ctx.fillText('y', px0 + 10, 14); ctx.fillText('O', px0 - 14, py0 + 16);
 
         // Render Active Tab Curves

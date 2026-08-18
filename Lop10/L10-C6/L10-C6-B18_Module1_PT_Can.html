@@ -5,10 +5,10 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Bài 18: Phương trình quy về phương trình bậc hai — Module 1</title>
 
-  <!-- Google Fonts: Plus Jakarta Sans -->
+  <!-- Google Fonts: Be Vietnam Pro -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
 
   <!-- KaTeX CSS & JS -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
@@ -58,7 +58,7 @@
     }
 
     body {
-      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
       background-color: var(--bg);
       color: var(--text);
       line-height: 1.5;
@@ -864,7 +864,7 @@
 
       // Axis Ticks & Numbers (Every 2 units to prevent text overlap)
       ctx.fillStyle = '#64748b';
-      ctx.font = '500 11px "Plus Jakarta Sans", sans-serif';
+      ctx.font = '500 11px "Be Vietnam Pro", sans-serif';
       const stepX = (viewport.xMax - viewport.xMin) > 14 ? 2 : 1;
       const stepY = (viewport.yMax - viewport.yMin) > 14 ? 2 : 1;
 
@@ -883,7 +883,7 @@
 
       // Axis labels
       ctx.fillStyle = '#0f172a';
-      ctx.font = 'bold 12px "Plus Jakarta Sans", sans-serif';
+      ctx.font = 'bold 12px "Be Vietnam Pro", sans-serif';
       ctx.fillText('x', viewWidth - 14, py0 + 16);
       ctx.fillText('y', px0 + 10, 14);
       ctx.fillText('O', px0 - 14, py0 + 16);
@@ -897,7 +897,7 @@
     }
 
     function drawBadge(x, y, text, color, bgColor = 'rgba(255, 255, 255, 0.92)', borderColor = '#cbd5e1') {
-      ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+      ctx.font = 'bold 11px "Be Vietnam Pro", sans-serif';
       const textWidth = ctx.measureText(text).width;
       const px = toPxX(x);
       const py = toPxY(y);
