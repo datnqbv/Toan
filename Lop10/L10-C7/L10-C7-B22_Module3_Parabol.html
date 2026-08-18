@@ -9,12 +9,15 @@
   <!-- Google Fonts: Be Vietnam Pro -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    rel="stylesheet">
 
   <!-- KaTeX CSS & JS with Auto-Render -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
-  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderKaTeXInElement(document.body)"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+    onload="renderKaTeXInElement(document.body)"></script>
 
   <!-- Tabler Icons -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
@@ -51,19 +54,13 @@
       --font: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
     }
 
-    html,
-    body {
-      height: 100%;
-      max-height: 100vh;
-      overflow: hidden;
-    }
-
     * {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
     }
 
+    /* BODY: UNLOCKED HEIGHT FOR NATURAL LMS RESIZE & PAGE SCROLLING */
     body {
       font-family: var(--font);
       background-color: var(--bg);
@@ -71,6 +68,7 @@
       line-height: 1.5;
       display: flex;
       flex-direction: column;
+      min-height: 100vh;
     }
 
     /* HEADER */
@@ -85,12 +83,14 @@
       justify-content: space-between;
       align-items: center;
       box-shadow: 0 2px 8px rgba(20, 67, 47, 0.15);
+      z-index: 20;
     }
 
     .header-title-group {
       display: flex;
       align-items: center;
       gap: 10px;
+      overflow: hidden;
     }
 
     .header-badge {
@@ -105,6 +105,8 @@
       letter-spacing: 0.3px;
       text-transform: uppercase;
       white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .btn-header {
@@ -121,6 +123,7 @@
       gap: 5px;
       transition: all 0.2s ease;
       white-space: nowrap;
+      flex-shrink: 0;
     }
 
     .btn-header:hover {
@@ -138,6 +141,12 @@
       gap: 6px;
       flex-shrink: 0;
       overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .sub-nav::-webkit-scrollbar {
+      display: none;
     }
 
     .step-pill {
@@ -154,12 +163,14 @@
       gap: 5px;
       white-space: nowrap;
       transition: all 0.2s ease;
+      flex-shrink: 0;
     }
 
     .step-pill.active {
       color: var(--teal);
       background: rgba(45, 139, 111, 0.1);
       border-color: var(--teal);
+      font-weight: 700;
     }
 
     .step-pill.completed {
@@ -168,10 +179,10 @@
       background: #f0fdf4;
     }
 
-    /* MAIN APP BODY */
+    /* MAIN APP BODY: 46% / 54% DESKTOP SPLIT AS SPECIFIED IN 04_DESIGN_TOAN_3D.MD §2.9 */
     .app-body {
       display: grid;
-      grid-template-columns: 48% 52%;
+      grid-template-columns: 46% 54%;
       flex: 1;
       width: 100%;
       height: calc(100vh - 88px);
@@ -181,7 +192,7 @@
 
     /* LEFT VIEWPORT / CANVAS CONTAINER */
     .viewport-container {
-      background: #ffffff;
+      background: var(--canvas-bg);
       border-right: 1px solid var(--border);
       display: flex;
       flex-direction: column;
@@ -202,6 +213,12 @@
       display: block;
       width: 100%;
       height: 100%;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    canvas:active {
+      cursor: grabbing;
     }
 
     .canvas-toolbar {
@@ -210,12 +227,13 @@
       left: 12px;
       display: flex;
       gap: 6px;
-      background: rgba(15, 23, 42, 0.75);
+      background: rgba(15, 23, 42, 0.85);
       backdrop-filter: blur(8px);
-      padding: 4px 8px;
+      padding: 5px 10px;
       border-radius: 8px;
       border: 1px solid rgba(255, 255, 255, 0.2);
       z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
     }
 
     .tool-btn {
@@ -229,9 +247,10 @@
       cursor: pointer;
       display: inline-flex;
       align-items: center;
-      gap: 4px;
+      gap: 5px;
       transition: all 0.2s ease;
       font-family: var(--font);
+      white-space: nowrap;
     }
 
     .tool-btn:hover {
@@ -249,10 +268,10 @@
     }
 
     .sidebar-content {
-      padding: 14px;
+      padding: 16px;
       display: flex;
       flex-direction: column;
-      gap: 12px;
+      gap: 14px;
     }
 
     /* CARD COMPONENTS */
@@ -260,7 +279,7 @@
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: 10px;
-      padding: 14px 16px;
+      padding: 16px;
       box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
       transition: all 0.25s ease;
       width: 100%;
@@ -418,7 +437,7 @@
     }
 
     .btn {
-      padding: 8px 16px;
+      padding: 9px 16px;
       border-radius: 6px;
       font-size: 13px;
       font-weight: 600;
@@ -515,7 +534,7 @@
       cursor: pointer;
     }
 
-    /* RESPONSIVE MOBILE LAYOUT */
+    /* STRICT COMPLIANCE WITH 04_DESIGN_TOAN_3D.MD §2.9 & REDESIGN_GUIDE_3D.MD §4 */
     @media (max-width: 992px) {
       body {
         min-height: 100vh;
@@ -526,6 +545,30 @@
         padding: 6px 10px;
         flex-wrap: wrap;
         gap: 6px;
+        height: auto;
+        min-height: 48px;
+      }
+
+      .header-title-group {
+        gap: 4px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .header-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+
+      .btn-header {
+        padding: 4px 8px;
+        font-size: 11px;
+        white-space: nowrap;
+        flex-shrink: 0;
       }
 
       .sub-nav {
@@ -561,6 +604,18 @@
         box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
       }
 
+      .canvas-toolbar {
+        bottom: 8px;
+        left: 8px;
+        padding: 3px 6px;
+        gap: 4px;
+      }
+
+      .tool-btn {
+        padding: 4px 7px;
+        font-size: 11px;
+      }
+
       .sidebar {
         width: 100% !important;
         height: auto !important;
@@ -573,6 +628,31 @@
         gap: 8px;
         width: 100%;
         box-sizing: border-box;
+      }
+
+      .card {
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+      }
+
+      .info-box {
+        padding: 6px 10px;
+        font-size: 12px;
+        overflow-x: auto;
+      }
+
+      .text-input {
+        padding: 6px 8px;
+        font-size: 12.5px;
+        box-sizing: border-box;
+      }
+
+      .btn {
+        padding: 7px 10px;
+        font-size: 12.5px;
+        min-height: 36px;
       }
     }
   </style>
@@ -614,8 +694,8 @@
         <canvas id="main-canvas"></canvas>
         <div class="canvas-toolbar">
           <button class="tool-btn" onclick="autoFitViewport()"><i class="ti ti-focus-2"></i> Fit Khung nhìn</button>
-          <button class="tool-btn" onclick="zoomViewport(0.833)"><i class="ti ti-zoom-in"></i> Phóng to</button>
-          <button class="tool-btn" onclick="zoomViewport(1.2)"><i class="ti ti-zoom-out"></i> Thu nhỏ</button>
+          <button class="tool-btn" onclick="zoomViewport(0.8)"><i class="ti ti-zoom-in"></i> Phóng to</button>
+          <button class="tool-btn" onclick="zoomViewport(1.25)"><i class="ti ti-zoom-out"></i> Thu nhỏ</button>
         </div>
       </div>
     </div>
@@ -642,7 +722,8 @@
       <div class="info-box warning" style="margin-bottom:12px;">
         • <b>Trục đối xứng:</b> Trục $Ox$. Đỉnh tại gốc $O(0;0)$, mở rộng về phía bên phải.<br>
         • <b>Tham số tiêu:</b> $p > 0$.<br>
-        • <b>Tiêu điểm:</b> $F\left(\frac{p}{2}; 0\right)$. <i>Lưu ý: Hoành độ tiêu điểm là $\frac{p}{2}$, KHÔNG phải $p$.</i><br>
+        • <b>Tiêu điểm:</b> $F\left(\frac{p}{2}; 0\right)$. <i>Lưu ý: Hoành độ tiêu điểm là $\frac{p}{2}$, KHÔNG phải
+          $p$.</i><br>
         • <b>Đường chuẩn:</b> $\Delta: x = -\frac{p}{2}$.
       </div>
       <button class="btn btn-primary" style="width:100%;" onclick="closeNotebookModal()">Đã hiểu kiến thức</button>
@@ -653,21 +734,23 @@
   <div class="modal-overlay" id="modal-summary">
     <div class="modal-card">
       <div class="modal-header">
-        <div class="modal-title"><i class="ti ti-award" style="color:var(--correct);"></i> Chúc mừng hoàn thành Module 3!</div>
+        <div class="modal-title"><i class="ti ti-award" style="color:var(--correct);"></i> Chúc mừng hoàn thành Module
+          3!</div>
         <button class="close-btn" onclick="closeSummaryModal()"><i class="ti ti-x"></i></button>
       </div>
       <div class="info-box correct" style="margin-bottom:16px;">
         <b>🎉 Bạn đã xuất sắc mô hình hóa mặt cắt Gương Đèn Pha Ô Tô thành đường Parabol!</b><br><br>
-        Từ kích thước khẩu độ $24cm$ và độ sâu $4cm$, bạn đã viết được phương trình chính tắc $y^2 = 36x$, xác định tiêu điểm đặt bóng đèn cách đỉnh $9cm$ và giải thích vì sao đèn pha chiếu xa được mạnh mẽ!
+        Từ kích thước khẩu độ $24cm$ và độ sâu $4cm$, bạn đã viết được phương trình chính tắc $y^2 = 36x$, xác định tiêu
+        điểm đặt bóng đèn cách đỉnh $9cm$ và giải thích vì sao đèn pha chiếu xa được mạnh mẽ!
       </div>
       <button class="btn btn-primary" style="width:100%;" onclick="closeSummaryModal()">Đóng bảng tổng kết</button>
     </div>
   </div>
 
-  <!-- JAVASCRIPT LOGIC & KATEX HELPER -->
+  <!-- JAVASCRIPT LOGIC & CANVAS ENGINE -->
   <script>
     /* =========================================================================
-       1. GLOBAL STATE & KATEX AUTO-RENDER HELPER
+       1. GLOBAL STATE, LMS & KATEX AUTO-RENDER HELPER
        ========================================================================= */
     const state = {
       currentStep: 0, // 0 to 7
@@ -715,10 +798,12 @@
     }
 
     function LMS() {
-      return {
+      return window.AiducationLMS || {
+        ready: function () { },
         progress: function (data) { console.log('[LMS] Progress:', data); },
         event: function (name, data) { console.log('[LMS] Event:', name, data); },
         state: function (data) { console.log('[LMS] State:', data); },
+        resize: function (data) { console.log('[LMS] Resize:', data); },
         complete: function () {
           console.log('[LMS] Module 3 Parabol completed!');
           if (window.parent && window.parent.postMessage) {
@@ -738,53 +823,188 @@
       };
     }
 
+    /* LMS RESIZE REPORTING AS SPECIFIED IN 04_DESIGN_TOAN_3D.MD §2.9B */
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => {
+        clearTimeout(window._rz);
+        window._rz = setTimeout(reportHeight, 100);
+      });
+      ro.observe(document.body);
+    } else {
+      setInterval(reportHeight, 800);
+    }
+
     /* =========================================================================
-       2. CANVAS GRAPH ENGINE & DRAW-ON ANIMATION SYSTEM
+       2. CANVAS GRAPH ENGINE & INTERACTIVE ZOOM/PAN SYSTEM
        ========================================================================= */
     const canvas = document.getElementById('main-canvas');
     const ctx = canvas.getContext('2d');
 
     const viewport = {
-      xMin: -6, xMax: 16,
+      xMin: -8, xMax: 18,
       yMin: -16, yMax: 16,
-      zoom: 1
+      zoomFactor: 1.0,
+      panX: 0,
+      panY: 0
     };
+
+    let viewWidth = 600;
+    let viewHeight = 400;
+
+    function recalcViewportBounds() {
+      const A = (viewWidth && viewHeight) ? (viewWidth / viewHeight) : 1;
+      let rawXMin = -8, rawXMax = 18, rawYMin = -16, rawYMax = 16;
+      const cx = (rawXMin + rawXMax) / 2 + (viewport.panX || 0);
+      const cy = (rawYMin + rawYMax) / 2 + (viewport.panY || 0);
+      let w = (rawXMax - rawXMin) * viewport.zoomFactor;
+      let h = (rawYMax - rawYMin) * viewport.zoomFactor;
+
+      if (w / h < A) w = h * A; else h = w / A;
+
+      viewport.xMin = cx - w / 2;
+      viewport.xMax = cx + w / 2;
+      viewport.yMin = cy - h / 2;
+      viewport.yMax = cy + h / 2;
+    }
 
     function resizeCanvas() {
       const wrap = document.getElementById('canvas-wrap') || document.querySelector('.canvas-wrapper') || document.querySelector('.viewport-container');
       if (wrap) {
-        canvas.width = wrap.clientWidth || wrap.offsetWidth || 600;
-        canvas.height = wrap.clientHeight || wrap.offsetHeight || 400;
+        const rect = wrap.getBoundingClientRect();
+        viewWidth = rect.width || wrap.clientWidth || 600;
+        viewHeight = rect.height || wrap.clientHeight || 400;
+        const dpr = window.devicePixelRatio || 1;
+
+        canvas.style.width = viewWidth + 'px';
+        canvas.style.height = viewHeight + 'px';
+        canvas.width = Math.round(viewWidth * dpr);
+        canvas.height = Math.round(viewHeight * dpr);
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
       }
+      recalcViewportBounds();
       drawCanvas();
     }
     window.addEventListener('resize', resizeCanvas);
 
-    function toPxX(x) {
-      const spanX = (viewport.xMax - viewport.xMin) / viewport.zoom;
-      const midX = (viewport.xMin + viewport.xMax) / 2;
-      const minX = midX - spanX / 2;
-      return ((x - minX) / spanX) * canvas.width;
-    }
-
-    function toPxY(y) {
-      const spanY = (viewport.yMax - viewport.yMin) / viewport.zoom;
-      const midY = (viewport.yMin + viewport.yMax) / 2;
-      const minY = midY - spanY / 2;
-      return canvas.height - ((y - minY) / spanY) * canvas.height;
+    // ResizeObserver for instant canvas resize on container size change
+    if (typeof ResizeObserver !== 'undefined') {
+      const canvasRo = new ResizeObserver(() => {
+        resizeCanvas();
+      });
+      const wrapEl = document.getElementById('canvas-wrap') || document.querySelector('.viewport-container');
+      if (wrapEl) canvasRo.observe(wrapEl);
     }
 
     function autoFitViewport() {
-      viewport.xMin = -6; viewport.xMax = 16;
-      viewport.yMin = -16; viewport.yMax = 16;
-      viewport.zoom = 1;
+      viewport.zoomFactor = 1.0;
+      viewport.panX = 0;
+      viewport.panY = 0;
+      recalcViewportBounds();
       triggerCanvasAnimation();
     }
 
     function zoomViewport(factor) {
-      viewport.zoom *= factor;
+      viewport.zoomFactor *= factor;
+      viewport.zoomFactor = Math.max(0.25, Math.min(4.0, viewport.zoomFactor));
+      recalcViewportBounds();
       drawCanvas();
     }
+
+    function toPxX(x) {
+      return ((x - viewport.xMin) / (viewport.xMax - viewport.xMin)) * viewWidth;
+    }
+
+    function toPxY(y) {
+      return viewHeight - ((y - viewport.yMin) / (viewport.yMax - viewport.yMin)) * viewHeight;
+    }
+
+    /* MOUSE & TOUCH DRAG PANNING & WHEEL ZOOM */
+    let isDragging = false;
+    let startX = 0, startY = 0;
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      startX = e.clientX;
+      startY = e.clientY;
+
+      const unitsPerPxX = (viewport.xMax - viewport.xMin) / viewWidth;
+      const unitsPerPxY = (viewport.yMax - viewport.yMin) / viewHeight;
+
+      viewport.panX -= dx * unitsPerPxX;
+      viewport.panY += dy * unitsPerPxY;
+      recalcViewportBounds();
+      drawCanvas();
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const factor = e.deltaY > 0 ? 1.15 : 0.85;
+      zoomViewport(factor);
+    }, { passive: false });
+
+    // Touch Drag and Pinch Zoom Support
+    let initialPinchDist = null;
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        isDragging = false;
+        initialPinchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (isDragging && e.touches.length === 1) {
+        const dx = e.touches[0].clientX - startX;
+        const dy = e.touches[0].clientY - startY;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+
+        const unitsPerPxX = (viewport.xMax - viewport.xMin) / viewWidth;
+        const unitsPerPxY = (viewport.yMax - viewport.yMin) / viewHeight;
+
+        viewport.panX -= dx * unitsPerPxX;
+        viewport.panY += dy * unitsPerPxY;
+        recalcViewportBounds();
+        drawCanvas();
+      } else if (e.touches.length === 2 && initialPinchDist) {
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const factor = initialPinchDist / dist;
+        initialPinchDist = dist;
+        zoomViewport(factor > 1 ? 1.05 : 0.95);
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchend', () => {
+      isDragging = false;
+      initialPinchDist = null;
+    });
 
     /* HELPER: CROSS-BROWSER ROUNDED RECTANGLE */
     function drawRoundRectHelper(ctx, x, y, width, height, radius) {
@@ -881,7 +1101,7 @@
 
     /* MAIN CANVAS RENDERER */
     function drawCanvas() {
-      ctx.clearRect(0, 0, canvas.width, canvas.height);
+      ctx.clearRect(0, 0, viewWidth, viewHeight);
 
       // STEP 0: ILLUSTRATIVE SCENE ("Cảnh Đêm Đèn Pha Ô Tô")
       if (state.currentStep === 0) {
@@ -899,7 +1119,7 @@
       ctx.save();
       ctx.beginPath();
       let first = true;
-      const maxH = 15;
+      const maxH = 16;
       const stepH = 0.2;
       const curveProg = (state.currentStep === 1 || state.currentStep === 3) ? animProgress : 1;
 
@@ -984,74 +1204,92 @@
       }
     }
 
-    /* STEP 0: NIGHT ATMOSPHERE ILLUSTRATIVE SCENE */
+    /* STEP 0: NIGHT ATMOSPHERE ILLUSTRATIVE SCENE (AUTO-FIT RESPONSIVE) */
     function drawNightAtmosphereScene() {
-      const w = canvas.width || 600;
-      const h = canvas.height || 400;
+      const w = viewWidth;
+      const h = viewHeight;
+
+      ctx.save();
+
+      // Define logical design scene dimensions (520 x 280)
+      const sceneW = 520;
+      const sceneH = 280;
+
+      // Calculate fit scale so the ENTIRE scene fits nicely inside canvas
+      const scaleX = w / sceneW;
+      const scaleY = h / sceneH;
+      const fitScale = Math.min(scaleX, scaleY) * 0.94 / (viewport.zoomFactor || 1);
+
+      // Center the scene in canvas with panning offset
+      const offsetX = (w - sceneW * fitScale) / 2 + (viewport.panX || 0) * 15;
+      const offsetY = (h - sceneH * fitScale) / 2 - (viewport.panY || 0) * 15;
+
+      ctx.translate(offsetX, offsetY);
+      ctx.scale(fitScale, fitScale);
 
       // Dark Sky Background
-      const bgGrad = ctx.createLinearGradient(0, 0, 0, h);
+      const bgGrad = ctx.createLinearGradient(0, 0, 0, sceneH);
       bgGrad.addColorStop(0, '#090d16');
       bgGrad.addColorStop(0.7, '#0f172a');
       bgGrad.addColorStop(1, '#1e293b');
       ctx.fillStyle = bgGrad;
-      ctx.fillRect(0, 0, w, h);
+      ctx.fillRect(-200, -200, sceneW + 400, sceneH + 400);
 
       // Ground Road Surface
-      const roadY = h * 0.75;
+      const roadY = sceneH * 0.72;
       ctx.fillStyle = '#0f172a';
-      ctx.fillRect(0, roadY, w, h - roadY);
+      ctx.fillRect(-200, roadY, sceneW + 400, sceneH + 200);
 
       // Road Dashed Line
       ctx.save();
       ctx.strokeStyle = '#64748b';
       ctx.lineWidth = 3;
-      ctx.setLineDash([20, 15]);
+      ctx.setLineDash([18, 12]);
       ctx.beginPath();
-      ctx.moveTo(0, roadY + 25);
-      ctx.lineTo(w, roadY + 25);
+      ctx.moveTo(-200, roadY + 24);
+      ctx.lineTo(sceneW + 200, roadY + 24);
       ctx.stroke();
       ctx.restore();
 
       // Car Silhouette Body
-      const carX = w * 0.12;
-      const carY = roadY - 45;
+      const carX = 25;
+      const carY = roadY - 42;
       ctx.fillStyle = '#334155';
-      drawRoundRectHelper(ctx, carX, carY, 140, 45, 8);
+      drawRoundRectHelper(ctx, carX, carY, 125, 42, 8);
       ctx.fill();
 
       // Car Wheels
       ctx.fillStyle = '#0f172a';
       ctx.beginPath();
-      ctx.arc(carX + 30, roadY, 14, 0, Math.PI * 2);
-      ctx.arc(carX + 110, roadY, 14, 0, Math.PI * 2);
+      ctx.arc(carX + 26, roadY, 12, 0, Math.PI * 2);
+      ctx.arc(carX + 98, roadY, 12, 0, Math.PI * 2);
       ctx.fill();
 
       // Headlight Assembly (Parabol Mirror)
-      const headX = carX + 140;
-      const headY = carY + 20;
+      const headX = carX + 125;
+      const headY = carY + 19;
 
       ctx.save();
       ctx.beginPath();
-      ctx.arc(headX - 15, headY, 22, -Math.PI / 2, Math.PI / 2, true);
+      ctx.arc(headX - 12, headY, 19, -Math.PI / 2, Math.PI / 2, true);
       ctx.strokeStyle = '#cbd5e1';
-      ctx.lineWidth = 4;
+      ctx.lineWidth = 3.5;
       ctx.shadowColor = '#e2e8f0';
-      ctx.shadowBlur = 12;
+      ctx.shadowBlur = 10;
       ctx.stroke();
 
       // Light Bulb at Focus F
-      const focusX = headX - 25;
+      const focusX = headX - 22;
       ctx.beginPath();
-      ctx.arc(focusX, headY, 7, 0, Math.PI * 2);
+      ctx.arc(focusX, headY, 6, 0, Math.PI * 2);
       ctx.fillStyle = '#fbbf24';
       ctx.shadowColor = '#f59e0b';
-      ctx.shadowBlur = 20;
+      ctx.shadowBlur = 16;
       ctx.fill();
       ctx.restore();
 
       // Parallel Light Beams Emission
-      const beamGrad = ctx.createLinearGradient(focusX, headY, w, headY);
+      const beamGrad = ctx.createLinearGradient(focusX, headY, sceneW - 10, headY);
       beamGrad.addColorStop(0, 'rgba(251, 191, 36, 0.45)');
       beamGrad.addColorStop(0.5, 'rgba(251, 191, 36, 0.18)');
       beamGrad.addColorStop(1, 'rgba(251, 191, 36, 0)');
@@ -1059,21 +1297,21 @@
       ctx.save();
       ctx.fillStyle = beamGrad;
       ctx.beginPath();
-      ctx.moveTo(headX, headY - 22);
-      ctx.lineTo(w, headY - 22);
-      ctx.lineTo(w, headY + 22);
-      ctx.lineTo(headX, headY + 22);
+      ctx.moveTo(headX, headY - 19);
+      ctx.lineTo(sceneW - 10, headY - 19);
+      ctx.lineTo(sceneW - 10, headY + 19);
+      ctx.lineTo(headX, headY + 19);
       ctx.closePath();
       ctx.fill();
 
       // Parallel Ray Lines
-      for (let i = -18; i <= 18; i += 6) {
+      for (let i = -15; i <= 15; i += 5) {
         ctx.beginPath();
         ctx.moveTo(focusX, headY);
-        ctx.lineTo(headX - 5, headY + i);
-        ctx.lineTo(w, headY + i);
+        ctx.lineTo(headX - 4, headY + i);
+        ctx.lineTo(sceneW - 10, headY + i);
         ctx.strokeStyle = 'rgba(254, 240, 138, 0.65)';
-        ctx.lineWidth = 1.5;
+        ctx.lineWidth = 1.4;
         ctx.stroke();
       }
       ctx.restore();
@@ -1081,12 +1319,14 @@
       // Atmospheric Labels & Titles
       ctx.save();
       ctx.fillStyle = '#f8fafc';
-      ctx.font = '700 15px "Be Vietnam Pro", sans-serif';
-      ctx.fillText('🚗 MÔ HÌNH THỰC TẾ: GƯƠNG ĐÈN PHA Ô TÔ BAN ĐÊM', 24, 36);
+      ctx.font = '700 13.5px "Be Vietnam Pro", sans-serif';
+      ctx.fillText('🚗 MÔ HÌNH THỰC TẾ: GƯƠNG ĐÈN PHA Ô TÔ BAN ĐÊM', 14, 28);
 
       ctx.fillStyle = '#94a3b8';
-      ctx.font = '500 12px "Be Vietnam Pro", sans-serif';
-      ctx.fillText('Bóng đèn đặt tại Tiêu điểm F — Chùm tia phản xạ SONG SONG chiếu xa', 24, 56);
+      ctx.font = '500 11px "Be Vietnam Pro", sans-serif';
+      ctx.fillText('Bóng đèn đặt tại Tiêu điểm F — Chùm tia phản xạ SONG SONG chiếu xa', 14, 46);
+      ctx.restore();
+
       ctx.restore();
     }
 
@@ -1096,13 +1336,13 @@
       ctx.lineWidth = 1;
       const stepGrid = 2;
 
-      for (let x = -10; x <= 30; x += stepGrid) {
+      for (let x = -20; x <= 40; x += stepGrid) {
         const px = toPxX(x);
-        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, canvas.height); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, viewHeight); ctx.stroke();
       }
-      for (let y = -20; y <= 20; y += stepGrid) {
+      for (let y = -30; y <= 30; y += stepGrid) {
         const py = toPxY(y);
-        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(canvas.width, py); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(viewWidth, py); ctx.stroke();
       }
 
       // Main Axis Ox and Oy
@@ -1113,15 +1353,15 @@
       ctx.lineWidth = 2;
 
       // Ox Axis
-      ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(canvas.width, py0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(viewWidth, py0); ctx.stroke();
       // Oy Axis
-      ctx.beginPath(); ctx.moveTo(px0, 0); ctx.lineTo(px0, canvas.height); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px0, 0); ctx.lineTo(px0, viewHeight); ctx.stroke();
 
       // Axis Labels
       ctx.fillStyle = '#94a3b8';
       ctx.font = '600 12px "Be Vietnam Pro", sans-serif';
       ctx.fillText('O', px0 - 14, py0 + 16);
-      ctx.fillText('x (độ sâu)', canvas.width - 70, py0 + 18);
+      ctx.fillText('x (độ sâu)', viewWidth - 70, py0 + 18);
       ctx.fillText('h (bán kính)', px0 + 8, 18);
     }
 
@@ -1286,11 +1526,11 @@
 
           <div class="control-group" style="margin-bottom:10px;">
             <label class="control-label"><span>Tọa độ $(x; h)$ của điểm viền gương:</span></label>
-            <input type="text" class="text-input" id="inp-step2" placeholder="Nhập dạng (4; 12)..." value="${state.step2Input}" ${state.stepCompleted[2] ? 'disabled' : ''}>
+            <input type="text" class="text-input" id="inp-step2" placeholder="Nhập dạng (x;h)..." value="${state.step2Input}" ${state.stepCompleted[2] ? 'disabled' : ''}>
           </div>
 
           <div id="fb-step-2">
-            ${state.stepCompleted[2] ? `<div class="info-box correct"><b>✓ Chính xác!</b> Khẩu độ là ĐƯỜNG KÍNH $24cm \implies$ Bán kính $h = 12cm$. Tại độ sâu $x = 4cm$, điểm thuộc viền gương có tọa độ $(4; 12)$.</div>` : ''}
+            ${state.stepCompleted[2] ? `<div class="info-box correct"><b>✓ Chính xác!</b> Khẩu độ là ĐƯỜNG KÍNH $24cm \\implies$ Bán kính $h = 12cm$. Tại độ sâu $x = 4cm$, điểm thuộc viền gương có tọa độ $(4; 12)$.</div>` : ''}
           </div>
 
           ${!state.stepCompleted[2] ? `
@@ -1324,7 +1564,7 @@
         if (state.step2Attempts === 1) {
           fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng lưu ý: khẩu độ $24cm$ là ĐƯỜNG KÍNH, bán kính (tọa độ $h$) phải chia đôi nhé!</div>`;
         } else if (state.step2Attempts === 2) {
-          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Độ sâu $x = 4cm$, Bán kính $h = 24 / 2 = 12cm \implies$ Điểm có tọa độ $(4; 12)$.</div>`;
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Độ sâu $x = 4cm$, Bán kính $h = 24 / 2 = 12cm \\implies$ Điểm có tọa độ $(4; 12)$.</div>`;
         } else {
           fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>(4; 12)</b>.</div>`;
         }
@@ -1348,12 +1588,12 @@
             </div>
             <div class="control-group">
               <label class="control-label"><span>Phương trình chính tắc:</span></label>
-              <input type="text" class="text-input" id="inp-step3-eq" placeholder="h^2 = 36x" value="${state.step3EqInput}" ${state.stepCompleted[3] ? 'disabled' : ''}>
+              <input type="text" class="text-input" id="inp-step3-eq" placeholder="Nhập phương trình" value="${state.step3EqInput}" ${state.stepCompleted[3] ? 'disabled' : ''}>
             </div>
           </div>
 
           <div id="fb-step-3">
-            ${state.stepCompleted[3] ? `<div class="info-box correct"><b>✓ Xuất sắc!</b> $12^2 = 2p \cdot 4 \iff 144 = 8p \implies p = 18 \implies 2p = 36 \implies$ Phương trình chính tắc là $h^2 = 36x$ (hoặc $y^2 = 36x$).</div>` : ''}
+            ${state.stepCompleted[3] ? `<div class="info-box correct"><b>✓ Xuất sắc!</b> $12^2 = 2p \\cdot 4 \\iff 144 = 8p \\implies p = 18 \\implies 2p = 36 \\implies$ Phương trình chính tắc là $h^2 = 36x$ (hoặc $y^2 = 36x$).</div>` : ''}
           </div>
 
           ${!state.stepCompleted[3] ? `
@@ -1389,9 +1629,9 @@
         state.step3Attempts++;
         triggerShake('card-step-3');
         if (state.step3Attempts === 1) {
-          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng giải $12^2 = 2p \cdot 4 \implies 144 = 8p$ để tìm $p$ và thay $2p = 36$ vào PT nhé!</div>`;
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng giải $12^2 = 2p \\cdot 4 \\implies 144 = 8p$ để tìm $p$ và thay $2p = 36$ vào PT nhé!</div>`;
         } else if (state.step3Attempts === 2) {
-          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $p = 144 / 8 = 18 \implies 2p = 36 \implies$ Phương trình: $h^2 = 36x$ (hoặc $y^2 = 36x$).</div>`;
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $p = 144 / 8 = 18 \\implies 2p = 36 \\implies$ Phương trình: $h^2 = 36x$ (hoặc $y^2 = 36x$).</div>`;
         } else {
           fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>p = 18</b> và phương trình <b>h^2 = 36x</b>.</div>`;
         }
@@ -1414,7 +1654,7 @@
           </div>
 
           <div id="fb-step-4">
-            ${state.stepCompleted[4] ? `<div class="info-box correct"><b>✓ Chính xác!</b> Tiêu điểm của $h^2 = 2px$ là $F\left(\frac{p}{2}; 0\right) = (9; 0) \implies$ Phải đặt bóng đèn cách đỉnh gương đúng $9cm$. (Lưu ý: Tiêu điểm ở $p/2 = 9cm$, KHÔNG phải $p = 18cm$).</div>` : ''}
+            ${state.stepCompleted[4] ? `<div class="info-box correct"><b>✓ Chính xác!</b> Tiêu điểm của $h^2 = 2px$ là $F\\left(\\frac{p}{2}; 0\\right) = (9; 0) \\implies$ Phải đặt bóng đèn cách đỉnh gương đúng $9cm$. (Lưu ý: Tiêu điểm ở $p/2 = 9cm$, KHÔNG phải $p = 18cm$).</div>` : ''}
           </div>
 
           ${!state.stepCompleted[4] ? `
@@ -1446,7 +1686,7 @@
         if (state.step4Attempts === 1) {
           fb.innerHTML = `<div class="info-box error">Chưa đúng. Tiêu điểm của Parabol có tọa độ là $F(p/2; 0)$, KHÔNG phải $F(p; 0)$. Vui lòng chia đôi $p=18$ nhé!</div>`;
         } else if (state.step4Attempts === 2) {
-          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Bóng đèn phải đặt tại tiêu điểm $F(p/2; 0) = (18/2; 0) = (9; 0) \implies$ Khoảng cách là $9cm$.</div>`;
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Bóng đèn phải đặt tại tiêu điểm $F(p/2; 0) = (18/2; 0) = (9; 0) \\implies$ Khoảng cách là $9cm$.</div>`;
         } else {
           fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>9</b>.</div>`;
         }
@@ -1465,11 +1705,11 @@
 
           <div class="control-group" style="margin-bottom:10px;">
             <label class="control-label"><span>Bán kính gương $h$ ($cm$):</span></label>
-            <input type="text" class="text-input" id="inp-step5-rad" placeholder="Nhập kết quả làm tròn (ví dụ 8.49)..." value="${state.step5RadInput}" ${state.stepCompleted[5] ? 'disabled' : ''}>
+            <input type="text" class="text-input" id="inp-step5-rad" placeholder="Nhập kết quả làm tròn (ví dụ 5.68)..." value="${state.step5RadInput}" ${state.stepCompleted[5] ? 'disabled' : ''}>
           </div>
 
           <div id="fb-step-5">
-            ${state.stepCompleted[5] ? `<div class="info-box correct"><b>✓ Chính xác!</b> Thay $x = 2$ vào phương trình $h^2 = 36x \implies h^2 = 72 \implies h = 6\sqrt{2} \approx 8,49cm$.</div>` : ''}
+            ${state.stepCompleted[5] ? `<div class="info-box correct"><b>✓ Chính xác!</b> Thay $x = 2$ vào phương trình $h^2 = 36x \\implies h^2 = 72 \\implies h = 6\\sqrt{2} \\approx 8,49cm$.</div>` : ''}
           </div>
 
           ${!state.stepCompleted[5] ? `
@@ -1500,9 +1740,9 @@
         state.step5Attempts++;
         triggerShake('card-step-5');
         if (state.step5Attempts === 1) {
-          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng thay $x = 2$ vào phương trình $h^2 = 36x$ rồi khai căn $\sqrt{72}$ nhé!</div>`;
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng thay $x = 2$ vào phương trình $h^2 = 36x$ rồi khai căn $\\sqrt{72}$ nhé!</div>`;
         } else if (state.step5Attempts === 2) {
-          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $h^2 = 36 \times 2 = 72 \implies h = \sqrt{72} = 6\sqrt{2} \approx 8,49cm$.</div>`;
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $h^2 = 36 \times 2 = 72 \\implies h = \\sqrt{72} = 6\\sqrt{2} \\approx 8,49cm$.</div>`;
         } else {
           fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>8.49</b>.</div>`;
         }
@@ -1675,6 +1915,7 @@
 
     window.addEventListener('load', () => {
       resizeCanvas();
+      autoFitViewport();
       renderKaTeXInElement(document.body);
     });
   </script>
