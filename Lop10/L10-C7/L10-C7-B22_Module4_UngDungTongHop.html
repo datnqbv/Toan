@@ -1,0 +1,1820 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 22: Ba đường conic — Module 4: Ứng dụng tổng hợp "Chọn đúng đường conic"</title>
+
+  <!-- Google Fonts: Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+
+  <!-- KaTeX CSS & JS with Auto-Render -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js" onload="renderKaTeXInElement(document.body)"></script>
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
+
+  <style>
+    /* =========================================================================
+       1. DESIGN SYSTEM TOKENS (Jade & Cream Theme)
+       ========================================================================= */
+    :root {
+      --jade-dark: #14432F;
+      --jade-deep: #2D8B6F;
+      --cream: #FAF7F0;
+      --paper-line: #cbd5e1;
+
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+      --surface: #ffffff;
+      --border: var(--paper-line);
+      --text: #0f172a;
+      --text-2: #334155;
+      --sub: #64748b;
+
+      --correct: #16a34a;
+      --correct-bg: #f0fdf4;
+      --wrong: #dc2626;
+      --wrong-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --info: #2563eb;
+      --info-bg: #eff6ff;
+
+      --canvas-bg: #0f172a;
+      --font: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    /* BODY: UNLOCKED HEIGHT FOR NATURAL LMS RESIZE & PAGE SCROLLING */
+    body {
+      font-family: var(--font);
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    /* HEADER */
+    header {
+      height: 48px;
+      max-height: 48px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(20, 67, 47, 0.15);
+      z-index: 20;
+    }
+
+    .header-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      overflow: hidden;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .btn-header {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* SUB NAV / STEP PROGRESS BAR */
+    .sub-nav {
+      height: 40px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 6px;
+      flex-shrink: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
+    }
+
+    .sub-nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .step-pill {
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--sub);
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      flex-shrink: 0;
+    }
+
+    .step-pill.active {
+      color: var(--teal);
+      background: rgba(45, 139, 111, 0.1);
+      border-color: var(--teal);
+      font-weight: 700;
+    }
+
+    .step-pill.completed {
+      color: var(--correct);
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    /* MAIN APP BODY: 46% / 54% DESKTOP SPLIT AS SPECIFIED IN 04_DESIGN_TOAN_3D.MD §2.9 */
+    .app-body {
+      display: grid;
+      grid-template-columns: 46% 54%;
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 88px);
+      max-height: calc(100vh - 88px);
+      overflow: hidden;
+    }
+
+    /* LEFT VIEWPORT / CANVAS CONTAINER */
+    .viewport-container {
+      background: var(--canvas-bg);
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%;
+    }
+
+    .canvas-wrapper {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--canvas-bg);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+      cursor: grab;
+      touch-action: none;
+    }
+
+    canvas:active {
+      cursor: grabbing;
+    }
+
+    .canvas-toolbar {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      display: flex;
+      gap: 6px;
+      background: rgba(15, 23, 42, 0.85);
+      backdrop-filter: blur(8px);
+      padding: 5px 10px;
+      border-radius: 8px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      z-index: 10;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+    }
+
+    .tool-btn {
+      background: transparent;
+      color: #ffffff;
+      border: none;
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      font-family: var(--font);
+      white-space: nowrap;
+    }
+
+    .tool-btn:hover {
+      background: rgba(255, 255, 255, 0.2);
+      color: #86efac;
+    }
+
+    /* RIGHT SIDEBAR INTERACTIVE PANEL */
+    .sidebar {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100%;
+    }
+
+    .sidebar-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    /* CARD COMPONENTS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      transition: all 0.25s ease;
+      width: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    .card.shake {
+      animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translate3d(-1px, 0, 0); }
+      20%, 80% { transform: translate3d(2px, 0, 0); }
+      30%, 50%, 70% { transform: translate3d(-4px, 0, 0); }
+      40%, 60% { transform: translate3d(4px, 0, 0); }
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .info-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--teal);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.5;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .info-box.athena {
+      background: #f0fdf4;
+      border-left-color: var(--teal);
+      color: #166534;
+    }
+
+    .info-box.warning {
+      background: var(--warning-bg);
+      border-left-color: var(--warning);
+      color: #92400e;
+    }
+
+    .info-box.error {
+      background: var(--wrong-bg);
+      border-left-color: var(--wrong);
+      color: #991b1b;
+    }
+
+    .info-box.correct {
+      background: var(--correct-bg);
+      border-left-color: var(--correct);
+      color: #166534;
+    }
+
+    /* FORM CONTROLS & RADIO OPTIONS */
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      background: #ffffff;
+      transition: all 0.2s ease;
+    }
+
+    .option-item:hover {
+      border-color: var(--teal);
+      background: rgba(45, 139, 111, 0.04);
+    }
+
+    .option-item.selected {
+      border-color: var(--teal);
+      background: rgba(45, 139, 111, 0.08);
+      font-weight: 600;
+    }
+
+    .option-item input {
+      margin-top: 3px;
+      accent-color: var(--teal);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .control-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .text-input {
+      width: 100%;
+      box-sizing: border-box;
+      display: block;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13.5px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .text-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.15);
+    }
+
+    .btn {
+      padding: 9px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      font-family: var(--font);
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #236f58;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--text-2);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+    }
+
+    /* SUMMARY TABLE STYLE */
+    .summary-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 12px;
+      margin: 10px 0;
+    }
+
+    .summary-table th, .summary-table td {
+      border: 1px solid var(--border);
+      padding: 7px 9px;
+      text-align: left;
+    }
+
+    .summary-table th {
+      background: #f1f5f9;
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 580px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: var(--sub);
+      cursor: pointer;
+    }
+
+    /* STRICT COMPLIANCE WITH 04_DESIGN_TOAN_3D.MD §2.9 & REDESIGN_GUIDE_3D.MD §4 */
+    @media (max-width: 992px) {
+      body {
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+
+      header {
+        padding: 6px 10px;
+        flex-wrap: wrap;
+        gap: 6px;
+        height: auto;
+        min-height: 48px;
+      }
+
+      .header-title-group {
+        gap: 4px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .header-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        max-width: 100%;
+      }
+
+      .btn-header {
+        padding: 4px 8px;
+        font-size: 11px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .sub-nav {
+        padding: 0 8px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .step-pill {
+        padding: 4px 8px;
+        font-size: 11px;
+      }
+
+      .app-body {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .viewport-container {
+        width: 100% !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 50 !important;
+        height: calc((100vh - 48px) * 0.45) !important;
+        height: calc((100dvh - 48px) * 0.45) !important;
+        min-height: 280px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      }
+
+      .canvas-toolbar {
+        bottom: 8px;
+        left: 8px;
+        padding: 3px 6px;
+        gap: 4px;
+      }
+
+      .tool-btn {
+        padding: 4px 7px;
+        font-size: 11px;
+      }
+
+      .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .sidebar-content {
+        padding: 8px;
+        gap: 8px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .card {
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+      }
+
+      .info-box {
+        padding: 6px 10px;
+        font-size: 12px;
+        overflow-x: auto;
+      }
+
+      .text-input {
+        padding: 6px 8px;
+        font-size: 12.5px;
+        box-sizing: border-box;
+      }
+
+      .btn {
+        padding: 7px 10px;
+        font-size: 12.5px;
+        min-height: 36px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-title-group">
+      <div class="header-badge">
+        <i class="ti ti-bulb"></i> Toán 10 — Bài 22: Ba đường conic (Module 4: Ứng dụng tổng hợp)
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-header" onclick="openNotebookModal()">
+        <i class="ti ti-book"></i> Sổ tay kiến thức
+      </button>
+    </div>
+  </header>
+
+  <!-- SUB NAV STEP PROGRESS BAR -->
+  <div class="sub-nav">
+    <button class="step-pill active" id="pill-step-0" onclick="switchStep(0)">KD: Khởi động (4 câu)</button>
+    <button class="step-pill" id="pill-step-1" onclick="switchStep(1)">NV1: Thiên văn (Elip)</button>
+    <button class="step-pill" id="pill-step-2" onclick="switchStep(2)">NV2: LORAN (Hypebol)</button>
+    <button class="step-pill" id="pill-step-3" onclick="switchStep(3)">NV3: Ăng-ten (Parabol)</button>
+    <button class="step-pill" id="pill-step-4" onclick="switchStep(4)">TK: Bảng tổng kết</button>
+  </div>
+
+  <!-- MAIN APP BODY -->
+  <div class="app-body">
+    <!-- LEFT VIEWPORT / CANVAS CONTAINER -->
+    <div class="viewport-container">
+      <div class="canvas-wrapper" id="canvas-wrap">
+        <canvas id="main-canvas"></canvas>
+        <div class="canvas-toolbar">
+          <button class="tool-btn" onclick="autoFitViewport()"><i class="ti ti-focus-2"></i> Fit Khung nhìn</button>
+          <button class="tool-btn" onclick="zoomViewport(0.8)"><i class="ti ti-zoom-in"></i> Phóng to</button>
+          <button class="tool-btn" onclick="zoomViewport(1.25)"><i class="ti ti-zoom-out"></i> Thu nhỏ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR INTERACTIVE PANEL -->
+    <div class="sidebar">
+      <div class="sidebar-content" id="sidebar-panel">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SỔ TAY KIẾN THỨC TỔNG HỢP 3 CONIC -->
+  <div class="modal-overlay" id="modal-notebook">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-book" style="color:var(--teal);"></i> Sổ tay Kiến thức — Ba Đường Conic</div>
+        <button class="close-btn" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="info-box athena" style="margin-bottom:10px;">
+        <b>1. ĐƯỜNG ELIP:</b><br>
+        • Phương trình chính tắc: $$\frac{x^2}{a^2} + \frac{y^2}{b^2} = 1 \quad (a > b > 0)$$
+        • Định nghĩa: $MF_1 + MF_2 = 2a$ (Tổng khoảng cách không đổi). Liên hệ $c^2 = a^2 - b^2$.
+      </div>
+      <div class="info-box warning" style="margin-bottom:10px;">
+        <b>2. ĐƯỜNG HYPEBOL:</b><br>
+        • Phương trình chính tắc: $$\frac{x^2}{a^2} - \frac{y^2}{b^2} = 1 \quad (a, b > 0)$$
+        • Định nghĩa: $|MF_1 - MF_2| = 2a$ (Hiệu khoảng cách không đổi). Liên hệ $c^2 = a^2 + b^2$.
+      </div>
+      <div class="info-box info" style="margin-bottom:12px;">
+        <b>3. ĐƯỜNG PARABOL:</b><br>
+        • Phương trình chính tắc: $$y^2 = 2px \quad (p > 0)$$
+        • Định nghĩa: $MF = d(M, \Delta)$ (Cách đều điểm $F$ và đường chuẩn $\Delta$). Tiêu điểm $F\left(\frac{p}{2}; 0\right)$.
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="closeNotebookModal()">Đã hiểu kiến thức</button>
+    </div>
+  </div>
+
+  <!-- MODAL: TỔNG KẾT MODULE 4 -->
+  <div class="modal-overlay" id="modal-summary">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-award" style="color:var(--correct);"></i> Chúc mừng hoàn thành Module 4!</div>
+        <button class="close-btn" onclick="closeSummaryModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="info-box correct" style="margin-bottom:16px;">
+        <b>🎉 Bạn đã hoàn thành xuất sắc Module 4: Ứng dụng tổng hợp Role-play!</b><br><br>
+        Bạn đã chứng minh khả năng nhận diện đường Conic chuẩn xác từ dấu hiệu định nghĩa thực tế, vận dụng linh hoạt Elip (Thiên văn), Hypebol (Hệ thống LORAN) và Parabol (Ăng-ten chảo vệ tinh)!
+      </div>
+      <button class="btn btn-primary" style="width:100%;" onclick="closeSummaryModal()">Đóng bảng tổng kết</button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC & CANVAS ENGINE -->
+  <script>
+    /* =========================================================================
+       1. GLOBAL STATE, LMS & KATEX AUTO-RENDER HELPER
+       ========================================================================= */
+    const state = {
+      currentStep: 0, // 0: Khởi động, 1: NV1, 2: NV2, 3: NV3, 4: Tổng kết
+      stepCompleted: [false, false, false, false, false],
+
+      // Step 0 MCQ state
+      kdIndex: 0,
+      kdSelected: [null, null, null, null],
+      kdAttempts: [0, 0, 0, 0],
+
+      // Step 1 state
+      nv1Input: '',
+      nv1ShowHint2: false,
+      nv1Attempts: 0,
+
+      // Step 2 state
+      nv2Input: '',
+      nv2ShowHint: false,
+      nv2Attempts: 0,
+
+      // Step 3 state
+      nv3Input: '',
+      nv3ShowHint: false,
+      nv3Attempts: 0
+    };
+
+    function renderKaTeXInElement(el) {
+      if (!el) return;
+      if (typeof renderMathInElement === 'function') {
+        try {
+          renderMathInElement(el, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false },
+              { left: '\\(', right: '\\)', display: false },
+              { left: '\\[', right: '\\]', display: true }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {
+          console.warn('KaTeX render warning:', e);
+        }
+      }
+    }
+
+    function getDoneCount() {
+      let done = 0;
+      if (state.stepCompleted[0]) {
+        done += 4;
+      } else {
+        done += state.kdIndex;
+      }
+      if (state.stepCompleted[1]) done += 1;
+      if (state.stepCompleted[2]) done += 1;
+      if (state.stepCompleted[3]) done += 1;
+      return done;
+    }
+
+    function LMS() {
+      return window.AiducationLMS || {
+        ready: function () { },
+        progress: function (data) { console.log('[LMS] Progress:', data); },
+        event: function (name, data) { console.log('[LMS] Event:', name, data); },
+        state: function (data) { console.log('[LMS] State:', data); },
+        resize: function (data) { console.log('[LMS] Resize:', data); },
+        complete: function () {
+          console.log('[LMS] Module 4 Completed!');
+          if (window.parent && window.parent.postMessage) {
+            window.parent.postMessage({
+              type: 'LMS_COMPLETE',
+              moduleId: 'L10-C7-B22-M4',
+              items: [
+                { id: 'b22m4-kd', name: 'Vòng khởi động — Nhận dạng nhanh (4 câu)', completed: state.stepCompleted[0] },
+                { id: 'b22m4-nv1', name: 'Nhiệm vụ 1 — Nhà thiên văn (Elip)', completed: state.stepCompleted[1] },
+                { id: 'b22m4-nv2', name: 'Nhiệm vụ 2 — Kỹ sư LORAN (Hypebol)', completed: state.stepCompleted[2] },
+                { id: 'b22m4-nv3', name: 'Nhiệm vụ 3 — Kỹ sư ăng-ten (Parabol)', completed: state.stepCompleted[3] }
+              ]
+            }, '*');
+          }
+        }
+      };
+    }
+
+    function reportProgress() {
+      LMS().progress({ done: getDoneCount(), total: 7 });
+    }
+
+    /* LMS RESIZE REPORTING AS SPECIFIED IN 04_DESIGN_TOAN_3D.MD §2.9B */
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => {
+        clearTimeout(window._rz);
+        window._rz = setTimeout(reportHeight, 100);
+      });
+      ro.observe(document.body);
+    } else {
+      setInterval(reportHeight, 800);
+    }
+
+    /* =========================================================================
+       2. CANVAS GRAPH ENGINE & INTERACTIVE ZOOM/PAN SYSTEM
+       ========================================================================= */
+    const canvas = document.getElementById('main-canvas');
+    const ctx = canvas.getContext('2d');
+
+    const viewport = {
+      xMin: -8, xMax: 8,
+      yMin: -6, yMax: 6,
+      zoomFactor: 1.0,
+      panX: 0,
+      panY: 0
+    };
+
+    let viewWidth = 600;
+    let viewHeight = 400;
+
+    function recalcViewportBounds() {
+      const A = (viewWidth && viewHeight) ? (viewWidth / viewHeight) : 1;
+      let rawXMin = -8, rawXMax = 8, rawYMin = -6, rawYMax = 6;
+
+      if (state.currentStep === 1) { // Astronomy Ellipse
+        rawXMin = -8; rawXMax = 8; rawYMin = -6; rawYMax = 6;
+      } else if (state.currentStep === 2) { // LORAN Hyperbola bounds
+        rawXMin = -160; rawXMax = 160; rawYMin = -120; rawYMax = 120;
+      } else if (state.currentStep === 3) { // Antenna Parabola bounds
+        rawXMin = -1.5; rawXMax = 3.5; rawYMin = -2.5; rawYMax = 2.5;
+      }
+
+      const cx = (rawXMin + rawXMax) / 2 + (viewport.panX || 0);
+      const cy = (rawYMin + rawYMax) / 2 + (viewport.panY || 0);
+      let w = (rawXMax - rawXMin) * viewport.zoomFactor;
+      let h = (rawYMax - rawYMin) * viewport.zoomFactor;
+
+      if (w / h < A) w = h * A; else h = w / A;
+
+      viewport.xMin = cx - w / 2;
+      viewport.xMax = cx + w / 2;
+      viewport.yMin = cy - h / 2;
+      viewport.yMax = cy + h / 2;
+    }
+
+    function resizeCanvas() {
+      const wrap = document.getElementById('canvas-wrap') || document.querySelector('.canvas-wrapper') || document.querySelector('.viewport-container');
+      if (wrap) {
+        const rect = wrap.getBoundingClientRect();
+        viewWidth = rect.width || wrap.clientWidth || 600;
+        viewHeight = rect.height || wrap.clientHeight || 400;
+        const dpr = window.devicePixelRatio || 1;
+
+        canvas.style.width = viewWidth + 'px';
+        canvas.style.height = viewHeight + 'px';
+        canvas.width = Math.round(viewWidth * dpr);
+        canvas.height = Math.round(viewHeight * dpr);
+
+        ctx.setTransform(1, 0, 0, 1, 0, 0);
+        ctx.scale(dpr, dpr);
+      }
+      recalcViewportBounds();
+      drawCanvas();
+    }
+    window.addEventListener('resize', resizeCanvas);
+
+    if (typeof ResizeObserver !== 'undefined') {
+      const canvasRo = new ResizeObserver(() => { resizeCanvas(); });
+      const wrapEl = document.getElementById('canvas-wrap') || document.querySelector('.viewport-container');
+      if (wrapEl) canvasRo.observe(wrapEl);
+    }
+
+    function autoFitViewport() {
+      viewport.zoomFactor = 1.0;
+      viewport.panX = 0;
+      viewport.panY = 0;
+      recalcViewportBounds();
+      drawCanvas();
+    }
+
+    function zoomViewport(factor) {
+      viewport.zoomFactor *= factor;
+      viewport.zoomFactor = Math.max(0.25, Math.min(4.0, viewport.zoomFactor));
+      recalcViewportBounds();
+      drawCanvas();
+    }
+
+    function toPxX(x) {
+      return ((x - viewport.xMin) / (viewport.xMax - viewport.xMin)) * viewWidth;
+    }
+
+    function toPxY(y) {
+      return viewHeight - ((y - viewport.yMin) / (viewport.yMax - viewport.yMin)) * viewHeight;
+    }
+
+    /* MOUSE & TOUCH DRAG PANNING & WHEEL ZOOM */
+    let isDragging = false;
+    let startX = 0, startY = 0;
+
+    canvas.addEventListener('mousedown', (e) => {
+      isDragging = true;
+      startX = e.clientX;
+      startY = e.clientY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isDragging) return;
+      const dx = e.clientX - startX;
+      const dy = e.clientY - startY;
+      startX = e.clientX;
+      startY = e.clientY;
+
+      const unitsPerPxX = (viewport.xMax - viewport.xMin) / viewWidth;
+      const unitsPerPxY = (viewport.yMax - viewport.yMin) / viewHeight;
+
+      viewport.panX -= dx * unitsPerPxX;
+      viewport.panY += dy * unitsPerPxY;
+      recalcViewportBounds();
+      drawCanvas();
+    });
+
+    window.addEventListener('mouseup', () => { isDragging = false; });
+
+    canvas.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const factor = e.deltaY > 0 ? 1.15 : 0.85;
+      zoomViewport(factor);
+    }, { passive: false });
+
+    // Touch Drag and Pinch Zoom Support
+    let initialPinchDist = null;
+
+    canvas.addEventListener('touchstart', (e) => {
+      if (e.touches.length === 1) {
+        isDragging = true;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+      } else if (e.touches.length === 2) {
+        isDragging = false;
+        initialPinchDist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchmove', (e) => {
+      if (isDragging && e.touches.length === 1) {
+        const dx = e.touches[0].clientX - startX;
+        const dy = e.touches[0].clientY - startY;
+        startX = e.touches[0].clientX;
+        startY = e.touches[0].clientY;
+
+        const unitsPerPxX = (viewport.xMax - viewport.xMin) / viewWidth;
+        const unitsPerPxY = (viewport.yMax - viewport.yMin) / viewHeight;
+
+        viewport.panX -= dx * unitsPerPxX;
+        viewport.panY += dy * unitsPerPxY;
+        recalcViewportBounds();
+        drawCanvas();
+      } else if (e.touches.length === 2 && initialPinchDist) {
+        const dist = Math.hypot(
+          e.touches[0].clientX - e.touches[1].clientX,
+          e.touches[0].clientY - e.touches[1].clientY
+        );
+        const factor = initialPinchDist / dist;
+        initialPinchDist = dist;
+        zoomViewport(factor > 1 ? 1.05 : 0.95);
+      }
+    }, { passive: true });
+
+    canvas.addEventListener('touchend', () => {
+      isDragging = false;
+      initialPinchDist = null;
+    });
+
+    /* HELPER: CROSS-BROWSER ROUNDED RECTANGLE */
+    function drawRoundRectHelper(ctx, x, y, width, height, radius) {
+      ctx.beginPath();
+      ctx.moveTo(x + radius, y);
+      ctx.lineTo(x + width - radius, y);
+      ctx.quadraticCurveTo(x + width, y, x + width, y + radius);
+      ctx.lineTo(x + width, y + height - radius);
+      ctx.quadraticCurveTo(x + width, y + height, x + width - radius, y + height);
+      ctx.lineTo(x + radius, y + height);
+      ctx.quadraticCurveTo(x, y + height, x, y + height - radius);
+      ctx.lineTo(x, y + radius);
+      ctx.quadraticCurveTo(x, y, x + radius, y);
+      ctx.closePath();
+    }
+
+    function drawBadge(x, y, label, color, bg, border, align = 'center', baseline = 'bottom') {
+      const px = toPxX(x);
+      const py = toPxY(y);
+
+      ctx.save();
+      ctx.font = '600 11.5px "Be Vietnam Pro", sans-serif';
+      const textWidth = ctx.measureText(label).width;
+      const pxPad = 7;
+      const boxW = textWidth + pxPad * 2;
+      const boxH = 20;
+
+      let boxX = px - boxW / 2;
+      if (align === 'left') boxX = px;
+      if (align === 'right') boxX = px - boxW;
+
+      let boxY = py - boxH - 6;
+      if (baseline === 'top') boxY = py + 6;
+      if (baseline === 'middle') boxY = py - boxH / 2;
+
+      ctx.fillStyle = bg || '#ffffff';
+      ctx.strokeStyle = border || color;
+      ctx.lineWidth = 1.2;
+
+      drawRoundRectHelper(ctx, boxX, boxY, boxW, boxH, 6);
+      ctx.fill();
+      ctx.stroke();
+
+      ctx.fillStyle = color;
+      ctx.textAlign = 'center';
+      ctx.textBaseline = 'middle';
+      ctx.fillText(label, boxX + boxW / 2, boxY + boxH / 2);
+      ctx.restore();
+    }
+
+    function drawPoint(px, py, color, radius = 5) {
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(px, py, radius, 0, Math.PI * 2);
+      ctx.fillStyle = color;
+      ctx.shadowColor = color;
+      ctx.shadowBlur = 6;
+      ctx.fill();
+      ctx.restore();
+    }
+
+    /* MAIN CANVAS RENDERER */
+    function drawCanvas() {
+      ctx.clearRect(0, 0, viewWidth, viewHeight);
+
+      if (state.currentStep === 0) {
+        drawStep0Canvas();
+      } else if (state.currentStep === 1) {
+        drawStep1Canvas();
+      } else if (state.currentStep === 2) {
+        drawStep2Canvas();
+      } else if (state.currentStep === 3) {
+        drawStep3Canvas();
+      } else if (state.currentStep === 4) {
+        drawStep4Canvas();
+      }
+    }
+
+    /* STEP 0: VÒNG KHỞI ĐỘNG CANVAS WITH VISUAL CURVES */
+    function drawStep0Canvas() {
+      drawOxyGrid();
+
+      if (state.kdIndex === 0) {
+        // Question 1: 4x^2 + 9y^2 = 36 => Elip a=3, b=2
+        ctx.save();
+        ctx.beginPath();
+        for (let t = 0; t <= Math.PI * 2; t += 0.02) {
+          const x = 3 * Math.cos(t);
+          const y = 2 * Math.sin(t);
+          const px = toPxX(x), py = toPxY(y);
+          if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+        }
+        ctx.strokeStyle = '#2D8B6F';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = 'rgba(45, 139, 111, 0.5)';
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+        ctx.restore();
+
+        drawPoint(toPxX(3), toPxY(0), '#2D8B6F', 6);
+        drawPoint(toPxX(-3), toPxY(0), '#2D8B6F', 6);
+        drawPoint(toPxX(0), toPxY(2), '#2D8B6F', 6);
+        drawPoint(toPxX(0), toPxY(-2), '#2D8B6F', 6);
+
+        drawBadge(0, 2.5, 'KĐ.1: 4x² + 9y² = 36 ➔ Elip (a=3, b=2)', '#14432F', '#f0fdf4', '#86efac', 'center', 'bottom');
+      } else if (state.kdIndex === 1) {
+        // Question 2: 9x^2 - 4y^2 = 36 => Hypebol a=2, b=3
+        ctx.save();
+        ctx.strokeStyle = '#2563eb';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = 'rgba(37, 99, 235, 0.4)';
+        ctx.shadowBlur = 10;
+
+        // Right branch
+        ctx.beginPath();
+        let first = true;
+        for (let y = -5; y <= 5; y += 0.1) {
+          const x = 2 * Math.sqrt(1 + (y * y) / 9);
+          const px = toPxX(x), py = toPxY(y);
+          if (first) { ctx.moveTo(px, py); first = false; } else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+
+        // Left branch
+        ctx.beginPath();
+        first = true;
+        for (let y = -5; y <= 5; y += 0.1) {
+          const x = -2 * Math.sqrt(1 + (y * y) / 9);
+          const px = toPxX(x), py = toPxY(y);
+          if (first) { ctx.moveTo(px, py); first = false; } else ctx.lineTo(px, py);
+        }
+        ctx.stroke();
+        ctx.restore();
+
+        drawPoint(toPxX(2), toPxY(0), '#2563eb', 6);
+        drawPoint(toPxX(-2), toPxY(0), '#2563eb', 6);
+
+        drawBadge(0, 3.5, 'KĐ.2: 9x² - 4y² = 36 ➔ Hypebol (a=2, b=3)', '#1e3a8a', '#eff6ff', '#bfdbfe', 'center', 'bottom');
+      } else if (state.kdIndex === 2) {
+        // Question 3: y^2 = 8x => Parabol p=4
+        ctx.save();
+        ctx.beginPath();
+        let first = true;
+        for (let y = -5.5; y <= 5.5; y += 0.1) {
+          const x = (y * y) / 8;
+          const px = toPxX(x), py = toPxY(y);
+          if (first) { ctx.moveTo(px, py); first = false; } else ctx.lineTo(px, py);
+        }
+        ctx.strokeStyle = '#16a34a';
+        ctx.lineWidth = 3;
+        ctx.shadowColor = 'rgba(22, 163, 74, 0.4)';
+        ctx.shadowBlur = 10;
+        ctx.stroke();
+        ctx.restore();
+
+        drawPoint(toPxX(2), toPxY(0), '#f59e0b', 7);
+        drawBadge(2, 0, 'Tiêu điểm F(2; 0)', '#d97706', '#fffbeb', '#fde68a', 'center', 'bottom');
+        drawBadge(0, 3.8, 'KĐ.3: y² = 8x ➔ Parabol (2p=8 => p=4)', '#166534', '#f0fdf4', '#bbf7d0', 'center', 'bottom');
+      } else if (state.kdIndex === 3) {
+        // Question 4: 2x^2 + 2y^2 - 8 = 0 => Đường tròn R=2
+        ctx.save();
+        ctx.beginPath();
+        const cxPx = toPxX(0), cyPx = toPxY(0);
+        const rPx = (toPxX(2) - toPxX(0));
+        ctx.arc(cxPx, cyPx, rPx, 0, Math.PI * 2);
+        ctx.strokeStyle = '#d97706';
+        ctx.lineWidth = 3;
+        ctx.setLineDash([6, 4]);
+        ctx.stroke();
+        ctx.restore();
+
+        drawBadge(0, 2.5, 'KĐ.4: 2x² + 2y² - 8 = 0 ➔ Đường tròn (R=2)', '#92400e', '#fffbeb', '#fde68a', 'center', 'bottom');
+      }
+    }
+
+    /* STEP 1: NHÀ THIÊN VĂN (ELIP) */
+    function drawStep1Canvas() {
+      drawOxyGrid();
+      const a = 5, b = 4, c = 3;
+
+      // Draw Orbit Elip
+      ctx.save();
+      ctx.beginPath();
+      for (let t = 0; t <= Math.PI * 2; t += 0.02) {
+        const x = a * Math.cos(t);
+        const y = b * Math.sin(t);
+        const px = toPxX(x), py = toPxY(y);
+        if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.strokeStyle = '#2D8B6F';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.restore();
+
+      // Star at Focus F1(-3, 0)
+      const starPx = toPxX(-c), starPy = toPxY(0);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(starPx, starPy, 11, 0, Math.PI * 2);
+      ctx.fillStyle = '#f59e0b';
+      ctx.shadowColor = '#fbbf24';
+      ctx.shadowBlur = 18;
+      ctx.fill();
+      ctx.restore();
+
+      // Planet at Perihelion (-5, 0) and Aphelion (5, 0)
+      const periPx = toPxX(-a), periPy = toPxY(0);
+      const aphPx = toPxX(a), aphPy = toPxY(0);
+
+      drawPoint(periPx, periPy, '#2563eb', 7);
+      drawPoint(aphPx, aphPy, '#64748b', 5);
+
+      drawBadge(-c, 0, '☀️ Ngôi sao (Tiêu điểm F1)', '#d97706', '#fffbeb', '#fde68a', 'center', 'bottom');
+      drawBadge(-a, 0, 'Cận tinh (2 AU)', '#2563eb', '#eff6ff', '#bfdbfe', 'right', 'top');
+      drawBadge(a, 0, 'Viễn tinh (8 AU)', '#64748b', '#f8fafc', '#cbd5e1', 'left', 'top');
+    }
+
+    /* STEP 2: KỸ SƯ LORAN (HYPEBOL) */
+    function drawStep2Canvas() {
+      drawOxyGrid();
+      const a = 60, b = 80, c = 100;
+
+      // Draw Hyperbola Left Branch (near Station A at x = -100)
+      ctx.save();
+      ctx.beginPath();
+      let first = true;
+      for (let y = -110; y <= 110; y += 2) {
+        const x = -Math.sqrt(a * a * (1 + (y * y) / (b * b)));
+        const px = toPxX(x), py = toPxY(y);
+        if (first) { ctx.moveTo(px, py); first = false; } else ctx.lineTo(px, py);
+      }
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+      ctx.restore();
+
+      // Stations A(-100, 0) and B(100, 0)
+      const stAPx = toPxX(-c), stAPy = toPxY(0);
+      const stBPx = toPxX(c), stBPy = toPxY(0);
+
+      drawPoint(stAPx, stAPy, '#dc2626', 8);
+      drawPoint(stBPx, stBPy, '#16a34a', 8);
+
+      // Ship Position on Hyperbola Branch (-75, 60)
+      const shipX = -a * Math.sqrt(1 + (60 * 60) / (b * b));
+      const shipPx = toPxX(shipX), shipPy = toPxY(60);
+      drawPoint(shipPx, shipPy, '#f59e0b', 9);
+
+      drawBadge(-c, 0, '📡 Trạm phát A (-100; 0)', '#dc2626', '#fef2f2', '#fca5a5', 'center', 'bottom');
+      drawBadge(c, 0, '📡 Trạm phát B (100; 0)', '#16a34a', '#f0fdf4', '#86efac', 'center', 'bottom');
+      drawBadge(shipX, 60, '🚢 Vị trí tàu biển', '#d97706', '#fffbeb', '#fde68a', 'left', 'bottom');
+    }
+
+    /* STEP 3: KỸ SƯ ĂNG-TEN (PARABOL) */
+    function drawStep3Canvas() {
+      drawOxyGrid();
+      const p = 2.25; // y^2 = 2px = 4.5x => h^2 = 4.5x
+
+      // Draw Parabol Dish (x from 0 to 0.5)
+      ctx.save();
+      ctx.beginPath();
+      let first = true;
+      for (let h = -1.5; h <= 1.5; h += 0.05) {
+        const x = (h * h) / (2 * p);
+        const px = toPxX(x), py = toPxY(h);
+        if (first) { ctx.moveTo(px, py); first = false; } else ctx.lineTo(px, py);
+      }
+      ctx.strokeStyle = '#2D8B6F';
+      ctx.lineWidth = 4;
+      ctx.stroke();
+      ctx.restore();
+
+      // Focus Receiver F(p/2 = 1.125, 0)
+      const fX = p / 2;
+      const fPx = toPxX(fX), fPy = toPxY(0);
+      ctx.save();
+      ctx.beginPath();
+      ctx.arc(fPx, fPy, 9, 0, Math.PI * 2);
+      ctx.fillStyle = '#f59e0b';
+      ctx.shadowColor = '#fbbf24';
+      ctx.shadowBlur = 15;
+      ctx.fill();
+      ctx.restore();
+
+      drawPoint(toPxX(0.5), toPxY(1.5), '#2563eb', 6);
+      drawPoint(toPxX(0.5), toPxY(-1.5), '#2563eb', 6);
+
+      drawBadge(fX, 0, '📡 Đầu thu tín hiệu F (1.125m)', '#d97706', '#fffbeb', '#fde68a', 'center', 'bottom');
+      drawBadge(0.5, 1.5, 'Miệng chảo (0.5; 1.5)', '#2563eb', '#eff6ff', '#bfdbfe', 'left', 'bottom');
+    }
+
+    /* STEP 4: BẢNG TỔNG KẾT CANVAS */
+    function drawStep4Canvas() {
+      drawOxyGrid();
+      ctx.save();
+
+      // Draw Elip
+      ctx.beginPath();
+      for (let t = 0; t <= Math.PI * 2; t += 0.05) {
+        const px = toPxX(4 * Math.cos(t)), py = toPxY(2.5 * Math.sin(t));
+        if (t === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+      }
+      ctx.strokeStyle = '#2D8B6F';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Draw Parabol
+      ctx.beginPath();
+      let first = true;
+      for (let y = -4; y <= 4; y += 0.1) {
+        const x = (y * y) / 4;
+        const px = toPxX(x), py = toPxY(y);
+        if (first) { ctx.moveTo(px, py); first = false; } else ctx.lineTo(px, py);
+      }
+      ctx.strokeStyle = '#16a34a';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      // Draw Hyperbola Right Branch
+      ctx.beginPath();
+      first = true;
+      for (let y = -4; y <= 4; y += 0.1) {
+        const x = 2 * Math.sqrt(1 + (y * y) / 4);
+        const px = toPxX(x), py = toPxY(y);
+        if (first) { ctx.moveTo(px, py); first = false; } else ctx.lineTo(px, py);
+      }
+      ctx.strokeStyle = '#2563eb';
+      ctx.lineWidth = 2.5;
+      ctx.stroke();
+
+      ctx.restore();
+
+      drawBadge(-4, 0, 'Elip', '#2D8B6F', '#f0fdf4', '#86efac', 'center', 'bottom');
+      drawBadge(4, 0, 'Hypebol', '#2563eb', '#eff6ff', '#bfdbfe', 'center', 'bottom');
+      drawBadge(2, 2.8, 'Parabol', '#16a34a', '#f0fdf4', '#bbf7d0', 'center', 'bottom');
+    }
+
+    function drawOxyGrid() {
+      ctx.strokeStyle = '#1e293b';
+      ctx.lineWidth = 1;
+
+      for (let x = -200; x <= 200; x += (viewport.xMax - viewport.xMin) / 10) {
+        const px = toPxX(x);
+        ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, viewHeight); ctx.stroke();
+      }
+      for (let y = -200; y <= 200; y += (viewport.yMax - viewport.yMin) / 10) {
+        const py = toPxY(y);
+        ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(viewWidth, py); ctx.stroke();
+      }
+
+      const px0 = toPxX(0);
+      const py0 = toPxY(0);
+
+      ctx.strokeStyle = '#64748b';
+      ctx.lineWidth = 2;
+      ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(viewWidth, py0); ctx.stroke();
+      ctx.beginPath(); ctx.moveTo(px0, 0); ctx.lineTo(px0, viewHeight); ctx.stroke();
+
+      ctx.fillStyle = '#94a3b8';
+      ctx.font = '600 11.5px "Be Vietnam Pro", sans-serif';
+      ctx.fillText('O', px0 - 12, py0 + 14);
+      ctx.fillText('x', viewWidth - 16, py0 + 14);
+      ctx.fillText('y', px0 + 8, 16);
+    }
+
+    /* =========================================================================
+       3. SIDEBAR STEP RENDERERS & HANDLERS
+       ========================================================================= */
+    function switchStep(stepNum) {
+      if (stepNum > 0 && !state.stepCompleted[stepNum - 1] && !state.stepCompleted[stepNum]) {
+        return; // Locked
+      }
+      state.currentStep = stepNum;
+      document.querySelectorAll('.step-pill').forEach((pill, idx) => {
+        pill.classList.remove('active');
+        if (idx === stepNum) pill.classList.add('active');
+        if (state.stepCompleted[idx]) pill.classList.add('completed');
+      });
+      renderSidebar();
+      autoFitViewport();
+    }
+
+    function renderSidebar() {
+      const container = document.getElementById('sidebar-panel');
+      const step = state.currentStep;
+
+      if (step === 0) renderStep0(container);
+      else if (step === 1) renderStep1(container);
+      else if (step === 2) renderStep2(container);
+      else if (step === 3) renderStep3(container);
+      else if (step === 4) renderStep4(container);
+
+      renderKaTeXInElement(container);
+    }
+
+    /* STEP 0: VÒNG KHỞI ĐỘNG (4 MCQ) */
+    function renderStep0(container) {
+      const questions = [
+        { title: 'KĐ.1: Cho phương trình $4x^2 + 9y^2 = 36$. Đây là đường conic nào?', opts: ['(A) Elip', '(B) Hypebol', '(C) Parabol'], correct: 0, hint: 'Chia 2 vế cho 36 để đưa về dạng $\\frac{x^2}{9} + \\frac{y^2}{4} = 1$.' },
+        { title: 'KĐ.2: Cho phương trình $9x^2 - 4y^2 = 36$. Đây là đường conic nào?', opts: ['(A) Elip', '(B) Hypebol', '(C) Parabol'], correct: 1, hint: 'Chia 2 vế cho 36 để đưa về dạng $\\frac{x^2}{4} - \\frac{y^2}{9} = 1$.' },
+        { title: 'KĐ.3: Cho phương trình $y^2 = 8x$. Đây là đường conic nào?', opts: ['(A) Elip', '(B) Hypebol', '(C) Parabol'], correct: 2, hint: 'Đây là phương trình chính tắc Parabol với $2p = 8 \\implies p = 4$.' },
+        { title: 'KĐ.4: Cho phương trình $2x^2 + 2y^2 - 8 = 0$. Chọn kết luận đúng:', opts: ['(A) Elip', '(B) Hypebol', '(C) Parabol', '(D) Không thuộc 3 loại đã học'], correct: 3, hint: 'Hệ số $x^2, y^2$ bằng nhau ($x^2 + y^2 = 4$) là đường tròn.' }
+      ];
+
+      const q = questions[state.kdIndex];
+      const curSel = state.kdSelected[state.kdIndex];
+
+      container.innerHTML = `
+        <div class="card" id="card-kd">
+          <div class="card-title"><i class="ti ti-bolt" style="color:var(--teal);"></i> Vòng Khởi Động: Nhận dạng Conic (${state.kdIndex + 1}/4)</div>
+          <div style="font-size:13px; color:var(--text-2); margin-bottom:10px;">
+            <b>${q.title}</b>
+          </div>
+
+          <div class="option-list">
+            ${q.opts.map((opt, idx) => `
+              <label class="option-item ${curSel === idx ? 'selected' : ''}">
+                <input type="radio" name="opt_kd" value="${idx}" ${curSel === idx ? 'checked' : ''} onchange="state.kdSelected[${state.kdIndex}]=${idx}; renderSidebar();">
+                <span>${opt}</span>
+              </label>
+            `).join('')}
+          </div>
+
+          <div id="fb-kd"></div>
+
+          <button class="btn btn-primary" style="width:100%; margin-top:8px;" onclick="submitKD(${q.correct})">
+            <i class="ti ti-check"></i> Xác nhận đáp án
+          </button>
+        </div>
+      `;
+    }
+
+    function submitKD(correctIdx) {
+      const sel = state.kdSelected[state.kdIndex];
+      const fb = document.getElementById('fb-kd');
+      const q = [
+        { answerStr: '(A) Elip', explain: 'Chia 2 vế cho 36: $\\frac{x^2}{9} + \\frac{y^2}{4} = 1$', hint: 'Chia 2 vế cho 36 để đưa về dạng chuẩn.' },
+        { answerStr: '(B) Hypebol', explain: 'Chia 2 vế cho 36: $\\frac{x^2}{4} - \\frac{y^2}{9} = 1$', hint: 'Chia 2 vế cho 36, giữ nguyên dấu trừ.' },
+        { answerStr: '(C) Parabol', explain: 'Đã ở dạng chính tắc $y^2 = 2px$ với $2p = 8 \\implies p = 4$', hint: 'So sánh với dạng $y^2 = 2px$.' },
+        { answerStr: '(D) Không thuộc 3 loại đã học', explain: 'Hệ số $x^2, y^2$ bằng nhau ($x^2 + y^2 = 4$) là đường tròn', hint: 'Kiểm tra xem hệ số $x^2$ và $y^2$ có bằng nhau không.' }
+      ][state.kdIndex];
+
+      if (sel === null) {
+        fb.innerHTML = `<div class="info-box warning">Vui lòng chọn 1 phương án trước khi xác nhận nhé!</div>`;
+        renderKaTeXInElement(fb);
+        return;
+      }
+
+      if (sel === correctIdx) {
+        state.kdAttempts[state.kdIndex] = 0;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> ${q.explain}.</div>`;
+        renderKaTeXInElement(fb);
+        LMS().event('answered', { step: 0, q: state.kdIndex, correct: true });
+
+        setTimeout(() => {
+          if (state.kdIndex < 3) {
+            state.kdIndex++;
+            renderSidebar();
+            recalcViewportBounds();
+            drawCanvas();
+          } else {
+            state.stepCompleted[0] = true;
+            switchStep(1);
+          }
+        }, 1200);
+      } else {
+        state.kdAttempts[state.kdIndex]++;
+        triggerShake('card-kd');
+        const attempts = state.kdAttempts[state.kdIndex];
+
+        if (attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa chính xác. Thử kiểm tra kỹ lại phương trình hoặc biến đổi về dạng chuẩn nhé!</div>`;
+        } else if (attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> ${q.hint}</div>`;
+        } else {
+          // 3+ attempts (sai từ 2 lần trở lên): Reveal correct answer & explanation!
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Đáp án chuẩn:</b> <b>${q.answerStr}</b>. ${q.explain}.</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 1: NHÀ THIÊN VĂN (ELIP) */
+    function renderStep1(container) {
+      container.innerHTML = `
+        <div class="card" id="card-nv1">
+          <div class="card-title"><i class="ti ti-planet" style="color:var(--teal);"></i> Nhiệm vụ 1: Nhà Thiên Văn (Quỹ đạo Elip)</div>
+          <div style="font-size:12.5px; color:var(--text-2); line-height:1.6; margin-bottom:10px;">
+            Một hành tinh quay quanh 1 ngôi sao theo quỹ đạo Elip, ngôi sao nằm tại 1 tiêu điểm. Khoảng cách gần nhất (điểm cận tinh) là $2\\text{ AU}$, xa nhất (điểm viễn tinh) là $8\\text{ AU}$. Lập phương trình chính tắc mô tả quỹ đạo.
+          </div>
+
+          <div class="info-box athena" style="margin-bottom:10px;">
+            💡 <b>Gợi ý có sẵn:</b> Khoảng cách gần nhất $= a - c = 2$, khoảng cách xa nhất $= a + c = 8$.
+          </div>
+
+          ${state.nv1ShowHint2 ? `
+            <div class="info-box warning" style="margin-bottom:10px;">
+              💡 <b>Gợi ý thêm:</b> Cộng 2 vế $\\implies 2a = 10 \\implies a = 5$. Trừ 2 vế $\\implies 2c = 6 \\implies c = 3 \\implies b^2 = a^2 - c^2 = 16$.
+            </div>
+          ` : ''}
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Phương trình chính tắc của Elip:</span></label>
+            <input type="text" class="text-input" id="inp-nv1" placeholder="Ví dụ: x^2/25 + y^2/16 = 1" value="${state.nv1Input}" ${state.stepCompleted[1] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-nv1">
+            ${state.stepCompleted[1] ? `<div class="info-box correct"><b>✓ Xuất sắc!</b> $a = 5, c = 3 \\implies b^2 = 25 - 9 = 16 \\implies \\frac{x^2}{25} + \\frac{y^2}{16} = 1$.</div>` : ''}
+          </div>
+
+          <div style="display:flex; gap:6px; margin-top:8px;">
+            ${!state.nv1ShowHint2 ? `<button class="btn btn-secondary" onclick="state.nv1ShowHint2=true; renderSidebar();"><i class="ti ti-help"></i> Xin thêm gợi ý</button>` : ''}
+            ${!state.stepCompleted[1] ? `
+              <button class="btn btn-primary" style="flex:1;" onclick="submitNV1()">
+                <i class="ti ti-check"></i> Nộp đáp án NV1
+              </button>
+            ` : `
+              <button class="btn btn-primary" style="flex:1;" onclick="switchStep(2)">
+                Sang NV2: Kỹ sư LORAN <i class="ti ti-arrow-right"></i>
+              </button>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function submitNV1() {
+      const raw = document.getElementById('inp-nv1').value.trim().toLowerCase().replace(/\s+/g, '');
+      const fb = document.getElementById('fb-nv1');
+      state.nv1Input = document.getElementById('inp-nv1').value;
+
+      const isOk = raw.includes('x^2/25+y^2/16=1') || raw.includes('x²/25+y²/16=1') || (raw.includes('25') && raw.includes('16') && raw.includes('1'));
+
+      if (isOk) {
+        state.stepCompleted[1] = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Xuất sắc!</b> $a = 5, c = 3 \\implies b^2 = 25 - 9 = 16 \\implies \\frac{x^2}{25} + \\frac{y^2}{16} = 1$.</div>`;
+        renderKaTeXInElement(fb);
+        LMS().event('answered', { step: 1, correct: true });
+        setTimeout(() => { if (state.currentStep === 1) switchStep(2); }, 1500);
+      } else {
+        state.nv1Attempts++;
+        triggerShake('card-nv1');
+        const attempts = state.nv1Attempts;
+
+        if (attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng giải $a-c=2$ và $a+c=8$ để tìm $a, c$ nhé!</div>`;
+        } else if (attempts === 2) {
+          state.nv1ShowHint2 = true;
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Cộng 2 vế $\\implies 2a = 10 \\implies a = 5$. Trừ 2 vế $\\implies 2c = 6 \\implies c = 3 \\implies b^2 = a^2 - c^2 = 16$.</div>`;
+        } else {
+          // 3+ attempts: Reveal correct answer & explanation!
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Đáp án chuẩn:</b> Phương trình Elip là <b>$\\frac{x^2}{25} + \\frac{y^2}{16} = 1$</b> ($a=5, b=4, c=3$).</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 2: KỸ SƯ LORAN (HYPEBOL) */
+    function renderStep2(container) {
+      container.innerHTML = `
+        <div class="card" id="card-nv2">
+          <div class="card-title"><i class="ti ti-antenna-bars-5" style="color:var(--teal);"></i> Nhiệm vụ 2: Kỹ Sư Định Vị LORAN (Hypebol)</div>
+          <div style="font-size:12.5px; color:var(--text-2); line-height:1.6; margin-bottom:10px;">
+            2 trạm phát sóng $A, B$ cách nhau $200\\text{ km}$. Một tàu thu tín hiệu từ $A$ sớm hơn từ $B$ đúng $0,0004\\text{ giây}$ (vận tốc sóng $300.000\\text{ km/s}$). Xác định phương trình chính tắc của nhánh Hypebol chứa vị trí tàu.
+          </div>
+
+          ${state.nv2ShowHint ? `
+            <div class="info-box warning" style="margin-bottom:10px;">
+              💡 <b>Gợi ý:</b> $2c = 200 \\implies c = 100$. Hiệu khoảng cách $2a = 300.000 \\times 0,0004 = 120 \\implies a = 60 \\implies b^2 = c^2 - a^2 = 10000 - 3600 = 6400$.
+            </div>
+          ` : ''}
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Phương trình chính tắc của Hypebol:</span></label>
+            <input type="text" class="text-input" id="inp-nv2" placeholder="Ví dụ: x^2/3600 - y^2/6400 = 1" value="${state.nv2Input}" ${state.stepCompleted[2] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-nv2">
+            ${state.stepCompleted[2] ? `<div class="info-box correct"><b>✓ Chính xác!</b> $2c = 200 \\implies c = 100, 2a = 120 \\implies a = 60 \\implies b^2 = 6400 \\implies \\frac{x^2}{3600} - \\frac{y^2}{6400} = 1$.</div>` : ''}
+          </div>
+
+          <div style="display:flex; gap:6px; margin-top:8px;">
+            ${!state.nv2ShowHint ? `<button class="btn btn-secondary" onclick="state.nv2ShowHint=true; renderSidebar();"><i class="ti ti-help"></i> Xin gợi ý</button>` : ''}
+            ${!state.stepCompleted[2] ? `
+              <button class="btn btn-primary" style="flex:1;" onclick="submitNV2()">
+                <i class="ti ti-check"></i> Nộp đáp án NV2
+              </button>
+            ` : `
+              <button class="btn btn-primary" style="flex:1;" onclick="switchStep(3)">
+                Sang NV3: Kỹ sư Ăng-ten <i class="ti ti-arrow-right"></i>
+              </button>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function submitNV2() {
+      const raw = document.getElementById('inp-nv2').value.trim().toLowerCase().replace(/\s+/g, '');
+      const fb = document.getElementById('fb-nv2');
+      state.nv2Input = document.getElementById('inp-nv2').value;
+
+      const isOk = raw.includes('x^2/3600-y^2/6400=1') || raw.includes('x²/3600-y²/6400=1') || (raw.includes('3600') && raw.includes('6400') && raw.includes('1'));
+
+      if (isOk) {
+        state.stepCompleted[2] = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> $2c = 200 \\implies c = 100, 2a = 120 \\implies a = 60 \\implies b^2 = 6400 \\implies \\frac{x^2}{3600} - \\frac{y^2}{6400} = 1$.</div>`;
+        renderKaTeXInElement(fb);
+        LMS().event('answered', { step: 2, correct: true });
+        setTimeout(() => { if (state.currentStep === 2) switchStep(3); }, 1500);
+      } else {
+        state.nv2Attempts++;
+        triggerShake('card-nv2');
+        const attempts = state.nv2Attempts;
+
+        if (attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng tính khoảng cách 2 trạm $2c=200$ và độ lệch $2a = v \\times t$ nhé!</div>`;
+        } else if (attempts === 2) {
+          state.nv2ShowHint = true;
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $2c = 200 \\implies c = 100$. Hiệu khoảng cách $2a = 300.000 \\times 0,0004 = 120 \\implies a = 60 \\implies b^2 = c^2 - a^2 = 6400$.</div>`;
+        } else {
+          // 3+ attempts: Reveal correct answer & explanation!
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Đáp án chuẩn:</b> Phương trình Hypebol là <b>$\\frac{x^2}{3600} - \\frac{y^2}{6400} = 1$</b> ($a=60, b=80, c=100$).</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 3: KỸ SƯ ĂNG-TEN (PARABOL) */
+    function renderStep3(container) {
+      container.innerHTML = `
+        <div class="card" id="card-nv3">
+          <div class="card-title"><i class="ti ti-broadcast" style="color:var(--teal);"></i> Nhiệm vụ 3: Kỹ Sư Ăng-Ten (Parabol)</div>
+          <div style="font-size:12.5px; color:var(--text-2); line-height:1.6; margin-bottom:10px;">
+            Ăng-ten vệ tinh dạng chảo Parabol có đường kính miệng $3\\text{ m}$ (khẩu độ) và độ sâu $0,5\\text{ m}$. Xác định khoảng cách từ đỉnh chảo đến vị trí cần đặt đầu thu tín hiệu.
+          </div>
+
+          ${state.nv3ShowHint ? `
+            <div class="info-box warning" style="margin-bottom:10px;">
+              💡 <b>Gợi ý định hướng:</b> Đặt đỉnh chảo tại gốc $O(0;0)$. Điểm thuộc viền miệng chảo có tọa độ $(x=0,5; h=1,5)$. Thay vào $h^2 = 2px$ để tìm $p$ và khoảng cách tiêu điểm $\\frac{p}{2}$.
+            </div>
+          ` : ''}
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Khoảng cách từ đỉnh đến đầu thu ($m$):</span></label>
+            <input type="text" class="text-input" id="inp-nv3" placeholder="Nhập kết quả số (ví dụ 1.125)..." value="${state.nv3Input}" ${state.stepCompleted[3] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-nv3">
+            ${state.stepCompleted[3] ? `<div class="info-box correct"><b>✓ Xuất sắc!</b> $(0,5; 1,5) \\implies 1,5^2 = 2p(0,5) \\implies p = 2,25 \\implies F = \\frac{p}{2} = 1,125\\text{ m}$.</div>` : ''}
+          </div>
+
+          <div style="display:flex; gap:6px; margin-top:8px;">
+            ${!state.nv3ShowHint ? `<button class="btn btn-secondary" onclick="state.nv3ShowHint=true; renderSidebar();"><i class="ti ti-help"></i> Xin gợi ý</button>` : ''}
+            ${!state.stepCompleted[3] ? `
+              <button class="btn btn-primary" style="flex:1;" onclick="submitNV3()">
+                <i class="ti ti-check"></i> Nộp đáp án NV3
+              </button>
+            ` : `
+              <button class="btn btn-primary" style="flex:1;" onclick="switchStep(4)">
+                Sang Bảng Tổng Kết <i class="ti ti-arrow-right"></i>
+              </button>
+            `}
+          </div>
+        </div>
+      `;
+    }
+
+    function submitNV3() {
+      const valStr = document.getElementById('inp-nv3').value.trim().replace(',', '.');
+      const val = parseFloat(valStr);
+      const fb = document.getElementById('fb-nv3');
+      state.nv3Input = document.getElementById('inp-nv3').value;
+
+      if (!isNaN(val) && Math.abs(val - 1.125) <= 0.05) {
+        state.stepCompleted[3] = true;
+        fb.innerHTML = `<div class="info-box correct"><b>✓ Xuất sắc!</b> $(0,5; 1,5) \\implies 1,5^2 = 2p(0,5) \\implies p = 2,25 \\implies F = \\frac{p}{2} = 1,125\\text{ m}$.</div>`;
+        renderKaTeXInElement(fb);
+        LMS().event('answered', { step: 3, correct: true });
+        setTimeout(() => { if (state.currentStep === 3) switchStep(4); }, 1500);
+      } else {
+        state.nv3Attempts++;
+        triggerShake('card-nv3');
+        const attempts = state.nv3Attempts;
+
+        if (attempts === 1) {
+          fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng xác định tọa độ điểm viền chảo và giải phương trình $h^2 = 2px$ nhé!</div>`;
+        } else if (attempts === 2) {
+          state.nv3ShowHint = true;
+          fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Điểm viền có $(x=0,5; h=1,5) \\implies 1,5^2 = 2p(0,5) \\implies p = 2,25 \\implies F = \\frac{p}{2} = 1,125\\text{ m}$.</div>`;
+        } else {
+          // 3+ attempts: Reveal correct answer & explanation!
+          fb.innerHTML = `<div class="info-box athena">💡 <b>Đáp án chuẩn:</b> Khoảng cách là <b>1,125 m</b> ($p=2,25 \\implies F = \\frac{p}{2} = 1,125\\text{ m}$).</div>`;
+        }
+        renderKaTeXInElement(fb);
+      }
+    }
+
+    /* STEP 4: BẢNG TỔNG KẾT 3 CONIC */
+    function renderStep4(container) {
+      container.innerHTML = `
+        <div class="card" id="card-sum">
+          <div class="card-title"><i class="ti ti-table" style="color:var(--teal);"></i> Bảng Tổng Kết So Sánh 3 Đường Conic</div>
+          <div style="font-size:12px; color:var(--text-2); margin-bottom:10px;">
+            Tự điền tóm tắt các đặc điểm định nghĩa và phương trình chính tắc của 3 loại Conic:
+          </div>
+
+          <table class="summary-table">
+            <thead>
+              <tr>
+                <th>Loại Conic</th>
+                <th>Tính chất định nghĩa</th>
+                <th>PT chính tắc</th>
+                <th>Ứng dụng thực tế</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><b>Elip</b></td>
+                <td>$MF_1 + MF_2 = 2a$</td>
+                <td>$\\frac{x^2}{a^2} + \\frac{y^2}{b^2} = 1$</td>
+                <td>Quỹ đạo hành tinh</td>
+              </tr>
+              <tr>
+                <td><b>Hypebol</b></td>
+                <td>$|MF_1 - MF_2| = 2a$</td>
+                <td>$\\frac{x^2}{a^2} - \\frac{y^2}{b^2} = 1$</td>
+                <td>Hệ thống LORAN</td>
+              </tr>
+              <tr>
+                <td><b>Parabol</b></td>
+                <td>$MF = d(M, \\Delta)$</td>
+                <td>$y^2 = 2px$</td>
+                <td>Gương/Ăng-ten chảo</td>
+              </tr>
+            </tbody>
+          </table>
+
+          <button class="btn btn-primary" style="width:100%; margin-top:12px;" onclick="finishModule4()">
+            <i class="ti ti-award"></i> Hoàn thành Module 4
+          </button>
+        </div>
+      `;
+    }
+
+    function finishModule4() {
+      state.stepCompleted[4] = true;
+      openSummaryModal();
+      LMS().complete();
+    }
+
+    /* =========================================================================
+       4. MODALS & INITIALIZATION
+       ========================================================================= */
+    function openNotebookModal() {
+      const modal = document.getElementById('modal-notebook');
+      modal.classList.add('active');
+      renderKaTeXInElement(modal);
+    }
+    function closeNotebookModal() {
+      document.getElementById('modal-notebook').classList.remove('active');
+    }
+    function openSummaryModal() {
+      const modal = document.getElementById('modal-summary');
+      modal.classList.add('active');
+      renderKaTeXInElement(modal);
+    }
+    function closeSummaryModal() {
+      document.getElementById('modal-summary').classList.remove('active');
+    }
+
+    function triggerShake(elementId) {
+      const el = document.getElementById(elementId);
+      if (el) {
+        el.classList.remove('shake');
+        void el.offsetWidth;
+        el.classList.add('shake');
+      }
+    }
+
+    window.addEventListener('DOMContentLoaded', () => {
+      renderSidebar();
+      resizeCanvas();
+      autoFitViewport();
+      renderKaTeXInElement(document.body);
+    });
+
+    window.addEventListener('load', () => {
+      resizeCanvas();
+      autoFitViewport();
+      renderKaTeXInElement(document.body);
+    });
+  </script>
+</body>
+
+</html>
