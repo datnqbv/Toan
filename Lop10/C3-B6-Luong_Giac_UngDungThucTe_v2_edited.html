@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -9,322 +10,800 @@
   <!-- Google Fonts Be Vietnam Pro -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    rel="stylesheet">
   <style>
     /* DESIGN TOKENS - Bảng màu chuẩn Aiducation (Cream · Jade · Sage · Accent) */
     :root {
       /* Neutrals · giấy & mực */
-      --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC;
-      --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
-      --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+      --cream: #FAF7F0;
+      --cream-2: #F0EADD;
+      --cream-3: #E7DECC;
+      --paper-line: #E5DECF;
+      --paper-line-2: #D6CCB6;
+      --ink: #1A1A1A;
+      --ink-2: #514C44;
+      --ink-3: #7C756A;
+      --ink-faint: #ABA396;
 
       /* Jade · hành động chính */
-      --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F;
-      --jade-text:#1B5E48; --jade-soft:#A9D0BE; --jade-pale:#DCEAE1;
+      --jade: #3CA57A;
+      --jade-deep: #2D8B6F;
+      --jade-dark: #14432F;
+      --jade-text: #1B5E48;
+      --jade-soft: #A9D0BE;
+      --jade-pale: #DCEAE1;
 
       /* Sage · phụ trợ */
-      --sage:#A8C9B8; --sage-deep:#7CA792; --sage-text:#46685A; --sage-pale:#E1ECE4;
+      --sage: #A8C9B8;
+      --sage-deep: #7CA792;
+      --sage-text: #46685A;
+      --sage-pale: #E1ECE4;
 
       /* Accent · điểm nhấn ấm */
-      --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+      --accent: #E8A24A;
+      --accent-deep: #CE8A33;
+      --accent-text: #8A551A;
+      --accent-pale: #F7E7CD;
 
       /* Semantic · phản hồi */
-      --correct:#2D8B6F; --correct-bg:#DCEAE1;
-      --wrong:#C15F3C; --wrong-bg:#F3E2D6;
-      --warning:#C58A2E; --warning-bg:#F5E7CB;
-      --info:#4E7F92; --info-bg:#DCE7EB;
+      --correct: #2D8B6F;
+      --correct-bg: #DCEAE1;
+      --wrong: #C15F3C;
+      --wrong-bg: #F3E2D6;
+      --warning: #C58A2E;
+      --warning-bg: #F5E7CB;
+      --info: #4E7F92;
+      --info-bg: #DCE7EB;
 
       /* Illustration only · fill phẳng */
-      --il-terracotta:#C1704B; --il-brick:#9E4A2E; --il-ochre:#C99A3C; --il-olive:#8A9A5B;
-      --il-forest:#2E6B52; --il-dusty-blue:#6E93A6; --il-slate:#4E6E7E; --il-mauve:#8A6A7E; --il-sand:#D8C4A0;
+      --il-terracotta: #C1704B;
+      --il-brick: #9E4A2E;
+      --il-ochre: #C99A3C;
+      --il-olive: #8A9A5B;
+      --il-forest: #2E6B52;
+      --il-dusty-blue: #6E93A6;
+      --il-slate: #4E6E7E;
+      --il-mauve: #8A6A7E;
+      --il-sand: #D8C4A0;
 
       /* ===== Ánh xạ sang tên biến cũ đang dùng khắp file (giữ nguyên tên → không phải sửa lại toàn bộ CSS/inline style bên dưới) ===== */
-      --primary:       var(--jade-deep);
-      --primary-mid:   var(--jade-dark);
+      --primary: var(--jade-deep);
+      --primary-mid: var(--jade-dark);
       --primary-light: var(--jade-pale);
-      --bg:            var(--cream);
-      --surface:       #FFFFFF;
-      --border:        var(--paper-line);
-      --text:          var(--ink);
-      --text-2:        var(--ink-2);
-      --text-3:        var(--ink-3);
+      --bg: var(--cream);
+      --surface: #FFFFFF;
+      --border: var(--paper-line);
+      --text: var(--ink);
+      --text-2: var(--ink-2);
+      --text-3: var(--ink-3);
 
-      --green:         var(--correct);
-      --green-light:   var(--correct-bg);
-      --red:           var(--wrong);
-      --red-light:     var(--wrong-bg);
-      --amber:         var(--warning);
-      --amber-light:   var(--warning-bg);
-      --amber-dark:    var(--accent-text);
-      --blue:          var(--info);
-      --blue-light:    var(--info-bg);
+      --green: var(--correct);
+      --green-light: var(--correct-bg);
+      --red: var(--wrong);
+      --red-light: var(--wrong-bg);
+      --amber: var(--warning);
+      --amber-light: var(--warning-bg);
+      --amber-dark: var(--accent-text);
+      --blue: var(--info);
+      --blue-light: var(--info-bg);
 
-      --radius-lg:     14px;
-      --radius:        10px;
-      --radius-sm:     6px;
+      --radius-lg: 14px;
+      --radius: 10px;
+      --radius-sm: 6px;
 
       --shadow: 0 4px 12px rgba(45, 139, 111, 0.10);
       --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
     }
 
-    * { box-sizing: border-box; margin: 0; padding: 0; }
-    html { -webkit-text-size-adjust: 100%; }
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+    }
+
     body {
       font-family: 'Be Vietnam Pro', system-ui, sans-serif;
-      font-size: 15px; line-height: 1.6;
-      color: var(--text); background: var(--bg);
+      font-size: 15px;
+      line-height: 1.6;
+      color: var(--text);
+      background: var(--bg);
       min-height: 100vh;
     }
 
     /* TOP NAVIGATION (thay cho sidebar trái cũ — chuyển 4 module thành tab cuộn ngang, dùng tốt trên cả mobile & desktop) */
     /* TOP NAVIGATION */
     .topbar {
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      position: sticky; top: 0; z-index: 30; padding: 0.5rem 1.25rem 0;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      position: sticky;
+      top: 0;
+      z-index: 30;
+      padding: 0.5rem 1.25rem 0;
     }
-    .topbar-brand { display: flex; align-items: baseline; gap: 8px; flex-wrap: wrap; margin-bottom: 0.35rem; }
+
+    .topbar-brand {
+      display: flex;
+      align-items: baseline;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 0.35rem;
+    }
+
     .logo {
-      font-weight: 800; font-size: 1.1rem; color: var(--primary);
-      display: flex; align-items: center; gap: 6px;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: var(--primary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
     }
-    .logo i { font-size: 1.2rem; }
-    .sidebar-desc { font-size: 0.75rem; color: var(--text-3); }
+
+    .logo i {
+      font-size: 1.2rem;
+    }
+
+    .sidebar-desc {
+      font-size: 0.75rem;
+      color: var(--text-3);
+    }
 
     .menu-list {
-      list-style: none; display: flex; gap: 4px; margin-top: 0;
-      overflow-x: auto; -webkit-overflow-scrolling: touch; scrollbar-width: none;
+      list-style: none;
+      display: flex;
+      gap: 4px;
+      margin-top: 0;
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      scrollbar-width: none;
     }
-    .menu-list::-webkit-scrollbar { display: none; }
+
+    .menu-list::-webkit-scrollbar {
+      display: none;
+    }
+
     .menu-item {
-      flex: 0 0 auto; padding: 8px 14px; min-height: 40px; border-radius: var(--radius) var(--radius) 0 0;
-      cursor: pointer; display: flex; align-items: center; gap: 6px; transition: all 0.2s ease;
-      border: 1px solid transparent; border-bottom: 3px solid transparent;
-      font-weight: 600; font-size: 0.82rem; color: var(--text-2); white-space: nowrap;
+      flex: 0 0 auto;
+      padding: 8px 14px;
+      min-height: 40px;
+      border-radius: var(--radius) var(--radius) 0 0;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+      border: 1px solid transparent;
+      border-bottom: 3px solid transparent;
+      font-weight: 600;
+      font-size: 0.82rem;
+      color: var(--text-2);
+      white-space: nowrap;
       background: transparent;
     }
-    .menu-item i { font-size: 16px; color: var(--text-3); transition: all 0.2s; }
-    .menu-item:hover { background: var(--bg); color: var(--primary); }
-    .menu-item.active {
-      background: var(--primary-light); color: var(--primary); border-bottom-color: var(--primary);
+
+    .menu-item i {
+      font-size: 16px;
+      color: var(--text-3);
+      transition: all 0.2s;
     }
-    .menu-item.active i { color: var(--primary); }
+
+    .menu-item:hover {
+      background: var(--bg);
+      color: var(--primary);
+    }
+
+    .menu-item.active {
+      background: var(--primary-light);
+      color: var(--primary);
+      border-bottom-color: var(--primary);
+    }
+
+    .menu-item.active i {
+      color: var(--primary);
+    }
 
     /* MAIN CONTAINER */
     .main-panel {
-      display: flex; flex-direction: column; width: 100%; background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      background: var(--bg);
     }
+
     .module-header {
-      background: var(--surface); border-bottom: 1px solid var(--border);
-      padding: 0.75rem 1.5rem; display: flex; justify-content: space-between; align-items: center;
+      background: var(--surface);
+      border-bottom: 1px solid var(--border);
+      padding: 0.75rem 1.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
-    .module-title { font-weight: 700; font-size: 1.25rem; color: var(--text); display: flex; align-items: center; gap: 8px; }
-    .module-title i { color: var(--primary); }
-    .module-subtitle { font-size: 0.8rem; color: var(--text-3); margin-top: 1px; }
+
+    .module-title {
+      font-weight: 700;
+      font-size: 1.25rem;
+      color: var(--text);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .module-title i {
+      color: var(--primary);
+    }
+
+    .module-subtitle {
+      font-size: 0.8rem;
+      color: var(--text-3);
+      margin-top: 1px;
+    }
 
     /* WORKSPACE */
     .workspace {
-      padding: 1rem 1.5rem; display: flex; flex-direction: column; gap: 0.85rem; max-width: 1200px; width: 100%; margin: 0 auto;
+      padding: 1rem 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.85rem;
+      max-width: 1200px;
+      width: 100%;
+      margin: 0 auto;
     }
 
     /* INFO PANEL (Context and Instructions) */
-    .info-panel { display: flex; border-radius: var(--radius-lg); overflow: hidden; box-shadow: var(--shadow-sm); }
-    .info-col { flex: 1; padding: 0.75rem 1rem; }
-    .info-col-observe { background: #FCF9FB; border: 1px solid #FFABC7; border-radius: 12px 0 0 12px; border-right: none; }
-    .info-col-guide { background: #EAF6FC; border: 1px solid #7BB9E5; border-radius: 0 12px 12px 0; }
-    .info-col-label {
-      display: flex; align-items: center; gap: 6px; font-size: 11px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 0.5px; color: var(--text); margin-bottom: 4px;
+    .info-panel {
+      display: flex;
+      border-radius: var(--radius-lg);
+      overflow: hidden;
+      box-shadow: var(--shadow-sm);
     }
-    .info-col ul { list-style: none; }
-    .info-col ul li { font-size: 0.82rem; color: var(--text-2); margin-bottom: 3px; display: flex; gap: 6px; }
-    .info-col ul li i { color: var(--primary); font-size: 13px; margin-top: 3px; }
+
+    .info-col {
+      flex: 1;
+      padding: 0.75rem 1rem;
+    }
+
+    .info-col-observe {
+      background: #FCF9FB;
+      border: 1px solid #FFABC7;
+      border-radius: 12px 0 0 12px;
+      border-right: none;
+    }
+
+    .info-col-guide {
+      background: #EAF6FC;
+      border: 1px solid #7BB9E5;
+      border-radius: 0 12px 12px 0;
+    }
+
+    .info-col-label {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text);
+      margin-bottom: 4px;
+    }
+
+    .info-col ul {
+      list-style: none;
+    }
+
+    .info-col ul li {
+      font-size: 0.82rem;
+      color: var(--text-2);
+      margin-bottom: 3px;
+      display: flex;
+      gap: 6px;
+    }
+
+    .info-col ul li i {
+      color: var(--primary);
+      font-size: 13px;
+      margin-top: 3px;
+    }
 
     /* SIMULATION WORKSPACE ROW */
-    .sim-row { display: flex; gap: 1rem; flex-wrap: wrap; }
-    
+    .sim-row {
+      display: flex;
+      gap: 1rem;
+      flex-wrap: wrap;
+    }
+
     /* CANVAS / SVG WRAPPER */
     .sim-canvas-wrap {
-      flex: 1.6; min-width: 440px; position: relative; height: 390px;
-      border: 1px solid var(--border); border-radius: 12px;
-      overflow: hidden; background: #1a2a3a; box-shadow: var(--shadow-sm);
+      flex: 1.6;
+      min-width: 440px;
+      position: relative;
+      height: 390px;
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      overflow: hidden;
+      background: #1a2a3a;
+      box-shadow: var(--shadow-sm);
     }
+
     .bg-image {
-      position: absolute; inset: 0; background-size: cover; background-position: center;
-      opacity: 0.72; filter: none; transition: background-image 0.5s ease;
+      position: absolute;
+      inset: 0;
+      background-size: cover;
+      background-position: center;
+      opacity: 0.72;
+      filter: none;
+      transition: background-image 0.5s ease;
     }
+
     .svg-layer {
-      position: absolute; inset: 0; width: 100%; height: 100%; z-index: 2; pointer-events: auto;
+      position: absolute;
+      inset: 0;
+      width: 100%;
+      height: 100%;
+      z-index: 2;
+      pointer-events: auto;
     }
 
     /* INTERACTIVE SIDE PANEL */
     .sim-interactive-panel {
-      flex: 1; min-width: 300px; background: var(--surface); border: 1px solid var(--border);
-      border-radius: 12px; padding: 1.15rem; display: flex; flex-direction: column;
-      justify-content: flex-start; box-shadow: var(--shadow-sm); min-height: auto;
+      flex: 1;
+      min-width: 300px;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 12px;
+      padding: 1.15rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start;
+      box-shadow: var(--shadow-sm);
+      min-height: auto;
     }
 
     /* STEP WIDGET STYLING */
-    .step-indicator { font-size: 10px; font-weight: 700; text-transform: uppercase; color: var(--primary); letter-spacing: 0.5px; margin-bottom: 4px; }
-    .step-title { font-weight: 700; font-size: 1.1rem; color: var(--text); margin-bottom: 8px; }
-    .step-content { flex-grow: 0; font-size: 0.88rem; color: var(--text-2); margin-bottom: 0.75rem; }
+    .step-indicator {
+      font-size: 10px;
+      font-weight: 700;
+      text-transform: uppercase;
+      color: var(--primary);
+      letter-spacing: 0.5px;
+      margin-bottom: 4px;
+    }
+
+    .step-title {
+      font-weight: 700;
+      font-size: 1.1rem;
+      color: var(--text);
+      margin-bottom: 8px;
+    }
+
+    .step-content {
+      flex-grow: 0;
+      font-size: 0.88rem;
+      color: var(--text-2);
+      margin-bottom: 0.75rem;
+    }
 
     /* OPTION CHOICES */
-    .option-list { display: flex; flex-direction: column; gap: 8px; margin-top: 8px; }
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-top: 8px;
+    }
+
     .option-btn {
-      padding: 8px 12px; border: 1.5px solid var(--border); border-radius: 8px;
-      background: #F8FAFC; text-align: left; cursor: pointer; font-size: 0.85rem; font-weight: 600;
-      color: var(--text-2); transition: all 0.2s; display: flex; align-items: center; gap: 8px; min-height: 40px;
+      padding: 8px 12px;
+      border: 1.5px solid var(--border);
+      border-radius: 8px;
+      background: #F8FAFC;
+      text-align: left;
+      cursor: pointer;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--text-2);
+      transition: all 0.2s;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-height: 40px;
     }
-    .option-btn:hover { border-color: var(--primary); color: var(--primary); }
+
+    .option-btn:hover {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
     .option-btn.selected {
-      border-color: var(--primary); background: var(--primary-light); color: var(--primary);
+      border-color: var(--primary);
+      background: var(--primary-light);
+      color: var(--primary);
     }
-    .option-btn i { font-size: 17px; color: var(--text-3); }
-    .option-btn.selected i { color: var(--primary); }
+
+    .option-btn i {
+      font-size: 17px;
+      color: var(--text-3);
+    }
+
+    .option-btn.selected i {
+      color: var(--primary);
+    }
 
     /* FORM FORMULA EDITOR */
     .math-formula-box {
-      background: #FAF8F6; border: 1px solid var(--border); border-radius: 8px;
-      padding: 10px 12px; margin-top: 8px; font-family: 'Courier New', monospace; font-weight: 700;
-      font-size: 0.95rem; line-height: 1.8; display: flex; flex-direction: column; gap: 6px;
+      background: #FAF8F6;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      padding: 10px 12px;
+      margin-top: 8px;
+      font-family: 'Courier New', monospace;
+      font-weight: 700;
+      font-size: 0.95rem;
+      line-height: 1.8;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
     }
-    .math-input-row { display: flex; align-items: center; flex-wrap: wrap; gap: 5px; }
+
+    .math-input-row {
+      display: flex;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 5px;
+    }
+
     .math-input {
-      width: 45px; height: 34px; text-align: center; border: 1.5px solid var(--border);
-      border-radius: 4px; font-family: 'Courier New', monospace; font-size: 0.95rem; font-weight: 700;
-      color: var(--text); outline: none; background: #fff;
+      width: 45px;
+      height: 34px;
+      text-align: center;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      outline: none;
+      background: #fff;
     }
-    .math-input:focus { border-color: var(--primary); }
-    .math-input.error { border-color: var(--red); background: var(--red-light); color: var(--red); }
-    .math-input.success { border-color: var(--green); background: var(--green-light); color: var(--green); }
-    
+
+    .math-input:focus {
+      border-color: var(--primary);
+    }
+
+    .math-input.error {
+      border-color: var(--red);
+      background: var(--red-light);
+      color: var(--red);
+    }
+
+    .math-input.success {
+      border-color: var(--green);
+      background: var(--green-light);
+      color: var(--green);
+    }
+
     .math-select {
-      height: 34px; padding: 0 4px; border: 1.5px solid var(--border); border-radius: 4px;
-      font-family: 'Courier New', monospace; font-size: 0.95rem; font-weight: 700;
-      color: var(--text); outline: none; background: #fff;
+      height: 34px;
+      padding: 0 4px;
+      border: 1.5px solid var(--border);
+      border-radius: 4px;
+      font-family: 'Courier New', monospace;
+      font-size: 0.95rem;
+      font-weight: 700;
+      color: var(--text);
+      outline: none;
+      background: #fff;
     }
-    .math-select:focus { border-color: var(--primary); }
-    .math-select.error { border-color: var(--red); background: var(--red-light); color: var(--red); }
+
+    .math-select:focus {
+      border-color: var(--primary);
+    }
+
+    .math-select.error {
+      border-color: var(--red);
+      background: var(--red-light);
+      color: var(--red);
+    }
 
     /* QUICK CHIPS - Nút điền nhanh số liệu */
     .quick-chips-wrap {
-      display: flex; align-items: center; gap: 6px; flex-wrap: wrap;
-      margin-top: 8px; padding: 6px 10px; background: var(--jade-pale);
-      border: 1px solid var(--sage); border-radius: var(--radius-sm);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      flex-wrap: wrap;
+      margin-top: 8px;
+      padding: 6px 10px;
+      background: var(--jade-pale);
+      border: 1px solid var(--sage);
+      border-radius: var(--radius-sm);
     }
+
     .quick-chips-wrap.hint-chips {
       border-color: #6EE7B7;
     }
+
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
+
     .quick-chips-label {
-      font-size: 0.76rem; font-weight: 700; color: var(--jade-dark);
-      display: flex; align-items: center; gap: 4px; white-space: nowrap;
+      font-size: 0.76rem;
+      font-weight: 700;
+      color: var(--jade-dark);
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      white-space: nowrap;
     }
+
     .chip-btn {
-      padding: 3px 9px; border-radius: 12px; font-size: 0.8rem; font-weight: 700;
-      font-family: 'Courier New', monospace; background: #FFFFFF; color: var(--jade-dark);
-      border: 1.5px solid var(--jade-soft); cursor: pointer; transition: all 0.15s ease;
-      outline: none; display: inline-flex; align-items: center; justify-content: center;
+      padding: 3px 9px;
+      border-radius: 12px;
+      font-size: 0.8rem;
+      font-weight: 700;
+      font-family: 'Courier New', monospace;
+      background: #FFFFFF;
+      color: var(--jade-dark);
+      border: 1.5px solid var(--jade-soft);
+      cursor: pointer;
+      transition: all 0.15s ease;
+      outline: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
     }
+
     .chip-btn:hover {
-      background: var(--jade-deep); color: #FFFFFF; border-color: var(--jade-deep);
-      transform: translateY(-1px); box-shadow: 0 2px 4px rgba(45, 139, 111, 0.2);
+      background: var(--jade-deep);
+      color: #FFFFFF;
+      border-color: var(--jade-deep);
+      transform: translateY(-1px);
+      box-shadow: 0 2px 4px rgba(45, 139, 111, 0.2);
     }
-    .chip-btn:active { transform: translateY(0); }
+
+    .chip-btn:active {
+      transform: translateY(0);
+    }
 
     /* CONTROLS ROW */
-    .ctrl-actions { display: flex; justify-content: space-between; gap: 8px; margin-top: 0.85rem; }
-    
+    .ctrl-actions {
+      display: flex;
+      justify-content: space-between;
+      gap: 8px;
+      margin-top: 0.85rem;
+    }
+
     /* TOOLTIP OVERLAY */
     .canvas-tooltip {
-      position: absolute; background: rgba(13, 59, 46, 0.95); color: #fff;
-      padding: 6px 12px; border-radius: 6px; font-size: 12px; font-family: 'Courier New', monospace;
-      pointer-events: none; opacity: 0; transition: opacity 0.2s; z-index: 10;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.15); border: 1px solid rgba(255,255,255,0.1);
+      position: absolute;
+      background: rgba(13, 59, 46, 0.95);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-family: 'Courier New', monospace;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 0.2s;
+      z-index: 10;
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.15);
+      border: 1px solid rgba(255, 255, 255, 0.1);
     }
 
     /* EXPLANATION / CAPTION BOX */
     .sim-caption-box {
-      background: #F0FDF8; border: 1px solid #6EE7B7; border-left: 4px solid var(--primary);
-      border-radius: 12px; padding: 0.75rem 1rem; transition: all 0.3s;
+      background: #F0FDF8;
+      border: 1px solid #6EE7B7;
+      border-left: 4px solid var(--primary);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      transition: all 0.3s;
       box-shadow: var(--shadow-sm);
     }
-    .sim-caption-box.alert { background: #FFF8E1; border-color: #FFE082; border-left-color: var(--amber); }
+
+    .sim-caption-box.alert {
+      background: #FFF8E1;
+      border-color: #FFE082;
+      border-left-color: var(--amber);
+    }
+
     .sim-caption-box.success {
       background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
-      border: 1.5px solid #10B981; border-left: 6px solid #059669;
+      border: 1.5px solid #10B981;
+      border-left: 6px solid #059669;
       box-shadow: 0 6px 18px rgba(16, 185, 129, 0.25);
       animation: popSuccess 0.45s cubic-bezier(0.175, 0.885, 0.32, 1.275);
     }
+
     .sim-caption-title {
-      display: flex; align-items: center; gap: 6px; font-size: 0.88rem; font-weight: 700;
-      color: var(--primary); margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.88rem;
+      font-weight: 700;
+      color: var(--primary);
+      margin-bottom: 2px;
     }
-    .sim-caption-box.alert .sim-caption-title { color: var(--amber-dark); }
-    .sim-caption-box.success .sim-caption-title { color: #047857; font-size: 0.98rem; font-weight: 800; letter-spacing: 0.3px; }
-    .sim-caption-box.success #captionBody { color: #065F46; font-size: 0.92rem; font-weight: 600; line-height: 1.5; }
-    
+
+    .sim-caption-box.alert .sim-caption-title {
+      color: var(--amber-dark);
+    }
+
+    .sim-caption-box.success .sim-caption-title {
+      color: #047857;
+      font-size: 0.98rem;
+      font-weight: 800;
+      letter-spacing: 0.3px;
+    }
+
+    .sim-caption-box.success #captionBody {
+      color: #065F46;
+      font-size: 0.92rem;
+      font-weight: 600;
+      line-height: 1.5;
+    }
+
     @keyframes popSuccess {
-      0% { transform: scale(0.96); opacity: 0.8; }
-      50% { transform: scale(1.02); }
-      100% { transform: scale(1); opacity: 1; }
+      0% {
+        transform: scale(0.96);
+        opacity: 0.8;
+      }
+
+      50% {
+        transform: scale(1.02);
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
     }
-    .sim-caption-body { font-size: 0.82rem; color: var(--text-2); }
+
+    .sim-caption-body {
+      font-size: 0.82rem;
+      color: var(--text-2);
+    }
 
     /* BUTTONS */
     .btn {
-      padding: 8px 16px; border-radius: 20px; font-size: 0.85rem; font-weight: 600;
-      cursor: pointer; transition: all 0.2s; border: 1.5px solid var(--border);
-      background: #F8FAFC; color: var(--text-2); display: inline-flex; align-items: center; gap: 5px;
+      padding: 8px 16px;
+      border-radius: 20px;
+      font-size: 0.85rem;
+      font-weight: 600;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 1.5px solid var(--border);
+      background: #F8FAFC;
+      color: var(--text-2);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
       outline: none;
     }
-    .btn:hover:not(:disabled) { border-color: var(--primary); color: var(--primary); }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--primary);
+      color: var(--primary);
+    }
+
     .btn.btn-primary {
-      background: var(--primary); color: #fff; border-color: var(--primary);
+      background: var(--primary);
+      color: #fff;
+      border-color: var(--primary);
     }
+
     .btn.btn-primary:hover:not(:disabled) {
-      background: var(--primary-mid); border-color: var(--primary-mid);
+      background: var(--primary-mid);
+      border-color: var(--primary-mid);
     }
-    .btn:disabled { opacity: 0.5; cursor: not-allowed; }
+
+    .btn:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
 
     /* MATH SYMBOLS & LABELS */
     text {
-      font-family: 'Courier New', monospace; font-weight: 700;
-      text-shadow: 0 1px 2px rgba(0,0,0,0.8), 0 0 4px rgba(0,0,0,0.5);
+      font-family: 'Courier New', monospace;
+      font-weight: 700;
+      text-shadow: 0 1px 2px rgba(0, 0, 0, 0.8), 0 0 4px rgba(0, 0, 0, 0.5);
     }
 
     /* COMPASS COMPONENT (Module 4) */
     .compass-wrap {
-      stroke: #fff; fill: none; stroke-width: 1.5;
+      stroke: #fff;
+      fill: none;
+      stroke-width: 1.5;
     }
+
     .compass-needle {
-      stroke-width: 2.5; stroke-linecap: round;
+      stroke-width: 2.5;
+      stroke-linecap: round;
     }
 
     /* ANGLE ARC */
     .angle-arc {
-      stroke: var(--accent); fill: rgba(242, 201, 123, 0.15); stroke-width: 1.5;
+      stroke: var(--accent);
+      fill: rgba(242, 201, 123, 0.15);
+      stroke-width: 1.5;
     }
 
     /* DIALOG POPUP */
     .popup-overlay {
-      position: fixed; inset: 0; background: rgba(13, 59, 46, 0.6); z-index: 100;
-      display: none; align-items: center; justify-content: center; opacity: 0; transition: opacity 0.3s;
+      position: fixed;
+      inset: 0;
+      background: rgba(13, 59, 46, 0.6);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      transition: opacity 0.3s;
     }
-    .popup-overlay.show { display: flex; opacity: 1; }
+
+    .popup-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+
     .popup-box {
-      background: var(--surface); border-radius: var(--radius-lg); padding: 1.5rem;
-      max-width: 480px; width: 90%; box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+      background: var(--surface);
+      border-radius: var(--radius-lg);
+      padding: 1.5rem;
+      max-width: 480px;
+      width: 90%;
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
     }
-    .popup-title { font-weight: 700; font-size: 1.15rem; color: var(--text); margin-bottom: 8px; display: flex; align-items: center; gap: 6px; }
-    .popup-title i { color: var(--primary); }
-    .popup-body { font-size: 0.85rem; color: var(--text-2); margin-bottom: 1.5rem; line-height: 1.6; }
-    .popup-body table { width: 100%; border-collapse: collapse; margin-top: 10px; }
-    .popup-body th, .popup-body td { padding: 6px; border: 1px solid var(--border); text-align: center; }
-    .popup-body th { background: #FAF8F6; }
+
+    .popup-title {
+      font-weight: 700;
+      font-size: 1.15rem;
+      color: var(--text);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .popup-title i {
+      color: var(--primary);
+    }
+
+    .popup-body {
+      font-size: 0.85rem;
+      color: var(--text-2);
+      margin-bottom: 1.5rem;
+      line-height: 1.6;
+    }
+
+    .popup-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+    }
+
+    .popup-body th,
+    .popup-body td {
+      padding: 6px;
+      border: 1px solid var(--border);
+      text-align: center;
+    }
+
+    .popup-body th {
+      background: #FAF8F6;
+    }
 
     /* ANIMATED PATHS */
     .animated-path {
@@ -332,87 +811,262 @@
       stroke-dashoffset: 1000;
       transition: stroke-dashoffset 2s ease-in-out;
     }
+
     .animated-path.draw {
       stroke-dashoffset: 0;
     }
-    
+
     .ship-icon {
       transition: transform 2s ease-in-out;
     }
 
     /* ============ RESPONSIVE / TOUCH-FRIENDLY (Bố cục siêu gọn theo yêu cầu) ============ */
-    .btn { min-height: 40px; }
-    .option-btn { min-height: 40px; }
-    .menu-item { min-height: 40px; }
+    .btn {
+      min-height: 40px;
+    }
+
+    .option-btn {
+      min-height: 40px;
+    }
+
+    .menu-item {
+      min-height: 40px;
+    }
 
     @media (max-width: 900px) {
-      .sim-canvas-wrap { min-width: 0; }
-      .sim-interactive-panel { min-width: 260px; }
+      .sim-canvas-wrap {
+        min-width: 0;
+      }
+
+      .sim-interactive-panel {
+        min-width: 260px;
+      }
     }
 
     @media (max-width: 768px) {
+
       /* Bố cục Mobile: Topbar & Header tối ưu cực gọn */
-      .topbar { padding: 0.35rem 0.5rem 0; }
-      .topbar-brand { margin-bottom: 0.25rem; gap: 6px; }
-      .logo { font-size: 1rem; }
-      .sidebar-desc { display: none; } /* Ẩn mô tả 2 dòng để tiết kiệm khoảng trắng trên mobile */
+      .topbar {
+        padding: 0.35rem 0.5rem 0;
+      }
 
-      .module-header { padding: 0.5rem 0.75rem; flex-direction: column; align-items: stretch; gap: 0.35rem; }
-      .module-header > div:last-child { width: 100%; }
-      .module-header .btn { width: 100%; justify-content: center; min-height: 36px; font-size: 0.8rem; }
-      .module-title { font-size: 1.05rem; }
-      .module-subtitle { font-size: 0.75rem; }
+      .topbar-brand {
+        margin-bottom: 0.25rem;
+        gap: 6px;
+      }
 
-      .workspace { padding: 0.4rem; gap: 0.4rem; }
+      .logo {
+        font-size: 1rem;
+      }
+
+      .sidebar-desc {
+        display: none;
+      }
+
+      /* Ẩn mô tả 2 dòng để tiết kiệm khoảng trắng trên mobile */
+
+      .module-header {
+        padding: 0.5rem 0.75rem;
+        flex-direction: column;
+        align-items: stretch;
+        gap: 0.35rem;
+      }
+
+      .module-header>div:last-child {
+        width: 100%;
+      }
+
+      .module-header .btn {
+        width: 100%;
+        justify-content: center;
+        min-height: 36px;
+        font-size: 0.8rem;
+      }
+
+      .module-title {
+        font-size: 1.05rem;
+      }
+
+      .module-subtitle {
+        font-size: 0.75rem;
+      }
+
+      .workspace {
+        padding: 0.4rem;
+        gap: 0.4rem;
+      }
 
       /* Bối cảnh thực tế & Nhiệm vụ: Stack gọn */
-      .info-panel { flex-direction: column; }
-      .info-col { padding: 0.5rem 0.75rem; }
-      .info-col-observe { border-radius: 10px 10px 0 0; border-right: 1px solid #FFABC7; border-bottom: none; }
-      .info-col-guide { border-radius: 0 0 10px 10px; }
+      .info-panel {
+        flex-direction: column;
+      }
+
+      .info-col {
+        padding: 0.5rem 0.75rem;
+      }
+
+      .info-col-observe {
+        border-radius: 10px 10px 0 0;
+        border-right: 1px solid #FFABC7;
+        border-bottom: none;
+      }
+
+      .info-col-guide {
+        border-radius: 0 0 10px 10px;
+      }
 
       /* Bố cục Stack dọc siêu gọn: Canvas và Panel nằm sát nhau (gap 6px), Canvas bám sát tỷ lệ aspect-ratio 800/420 */
-      .sim-row { flex-direction: column; gap: 0.4rem; }
-      .sim-canvas-wrap { width: 100%; height: auto; min-height: 260px; aspect-ratio: 800 / 420; max-height: 45vh; flex: none; border-radius: 10px; }
-      .sim-interactive-panel { width: 100%; min-width: 0; min-height: auto; padding: 0.75rem; flex: none; border-radius: 10px; }
+      .sim-row {
+        flex-direction: column;
+        gap: 0.4rem;
+      }
 
-      .step-indicator { font-size: 10px; margin-bottom: 2px; }
-      .step-title { font-size: 1rem; margin-bottom: 4px; }
-      .step-content { margin-bottom: 0.5rem; font-size: 0.82rem; }
-      .step-content p { margin-top: 3px; }
-      .step-content ul { margin-top: 3px; }
-      .step-content ul li { margin-bottom: 2px; }
+      .sim-canvas-wrap {
+        width: 100%;
+        height: auto;
+        min-height: 260px;
+        aspect-ratio: 800 / 420;
+        max-height: 45vh;
+        flex: none;
+        border-radius: 10px;
+      }
+
+      .sim-interactive-panel {
+        width: 100%;
+        min-width: 0;
+        min-height: auto;
+        padding: 0.75rem;
+        flex: none;
+        border-radius: 10px;
+      }
+
+      .step-indicator {
+        font-size: 10px;
+        margin-bottom: 2px;
+      }
+
+      .step-title {
+        font-size: 1rem;
+        margin-bottom: 4px;
+      }
+
+      .step-content {
+        margin-bottom: 0.5rem;
+        font-size: 0.82rem;
+      }
+
+      .step-content p {
+        margin-top: 3px;
+      }
+
+      .step-content ul {
+        margin-top: 3px;
+      }
+
+      .step-content ul li {
+        margin-bottom: 2px;
+      }
 
       /* Các nút điều hướng & thao tác gọn gàng */
-      .ctrl-actions { flex-wrap: wrap; gap: 6px; margin-top: 0.5rem; }
-      .ctrl-actions .btn { flex: 1 1 calc(50% - 4px); min-height: 40px; padding: 8px 10px; justify-content: center; font-size: 0.85rem; border-radius: 18px; }
+      .ctrl-actions {
+        flex-wrap: wrap;
+        gap: 6px;
+        margin-top: 0.5rem;
+      }
 
-      .btn { min-height: 40px; padding: 8px 12px; font-size: 0.85rem; }
-      .math-formula-box { padding: 8px 10px; font-size: 0.88rem; border-radius: 8px; }
-      
+      .ctrl-actions .btn {
+        flex: 1 1 calc(50% - 4px);
+        min-height: 40px;
+        padding: 8px 10px;
+        justify-content: center;
+        font-size: 0.85rem;
+        border-radius: 18px;
+      }
+
+      .btn {
+        min-height: 40px;
+        padding: 8px 12px;
+        font-size: 0.85rem;
+      }
+
+      .math-formula-box {
+        padding: 8px 10px;
+        font-size: 0.88rem;
+        border-radius: 8px;
+      }
+
       /* font-size 1rem (16px) cho ô nhập liệu chống tự động zoom */
-      .math-input { width: 44px; height: 36px; font-size: 1rem; }
-      .math-select { height: 36px; font-size: 1rem; }
-      .option-btn { padding: 8px 12px; min-height: 40px; font-size: 0.85rem; border-radius: 8px; }
+      .math-input {
+        width: 44px;
+        height: 36px;
+        font-size: 1rem;
+      }
 
-      .sim-caption-box { padding: 0.5rem 0.75rem; border-radius: 10px; }
-      .sim-caption-title { font-size: 0.82rem; margin-bottom: 2px; }
-      .sim-caption-body { font-size: 0.78rem; }
+      .math-select {
+        height: 36px;
+        font-size: 1rem;
+      }
+
+      .option-btn {
+        padding: 8px 12px;
+        min-height: 40px;
+        font-size: 0.85rem;
+        border-radius: 8px;
+      }
+
+      .sim-caption-box {
+        padding: 0.5rem 0.75rem;
+        border-radius: 10px;
+      }
+
+      .sim-caption-title {
+        font-size: 0.82rem;
+        margin-bottom: 2px;
+      }
+
+      .sim-caption-body {
+        font-size: 0.78rem;
+      }
     }
 
     @media (max-width: 540px) {
-      .topbar-brand { flex-direction: row; align-items: center; gap: 6px; }
-      .menu-item { padding: 6px 10px; font-size: 0.78rem; min-height: 38px; }
+      .topbar-brand {
+        flex-direction: row;
+        align-items: center;
+        gap: 6px;
+      }
+
+      .menu-item {
+        padding: 6px 10px;
+        font-size: 0.78rem;
+        min-height: 38px;
+      }
     }
 
     @media (max-width: 420px) {
-      .module-title { font-size: 1rem; }
-      .ctrl-actions .btn { flex: 1 1 calc(50% - 4px); min-height: 38px; font-size: 0.8rem; }
-      .math-input-row { gap: 3px; }
-      .math-input { width: 40px; height: 34px; font-size: 1rem; }
+      .module-title {
+        font-size: 1rem;
+      }
+
+      .ctrl-actions .btn {
+        flex: 1 1 calc(50% - 4px);
+        min-height: 38px;
+        font-size: 0.8rem;
+      }
+
+      .math-input-row {
+        gap: 3px;
+      }
+
+      .math-input {
+        width: 40px;
+        height: 34px;
+        font-size: 1rem;
+      }
     }
   </style>
 </head>
+
 <body>
 
   <!-- TOP NAVIGATION (thay cho sidebar trái) -->
@@ -450,10 +1104,12 @@
     <header class="module-header">
       <div>
         <h2 class="module-title" id="modTitle"><i class="ti ti-building-lighthouse"></i> MODULE 1 — NHÀ TRẮC ĐỊA</h2>
-        <div class="module-subtitle" id="modSub">Áp dụng định lý cosin để tính khoảng cách giữa 2 hòn đảo khuất góc</div>
+        <div class="module-subtitle" id="modSub">Áp dụng định lý cosin để tính khoảng cách giữa 2 hòn đảo khuất góc
+        </div>
       </div>
       <div>
-        <button class="btn btn-primary" id="btnCompass" onclick="openCompassHelp()"><i class="ti ti-compass"></i> Hướng dẫn toán học</button>
+        <button class="btn btn-primary" id="btnCompass" onclick="openCompassHelp()"><i class="ti ti-compass"></i> Hướng
+          dẫn toán học</button>
       </div>
     </header>
 
@@ -463,7 +1119,9 @@
       <div class="info-panel">
         <div class="info-col info-col-observe">
           <div class="info-col-label"><i class="ti ti-target"></i> Bối cảnh thực tế</div>
-          <p id="infoContext" style="font-size: 0.85rem; color: var(--text-2);">Tính khoảng cách trực tiếp giữa 2 hòn đảo B và C khi trạm quan sát A nằm trong bờ biển. Do núi che khuất, người ta không thể đo trực tiếp đoạn BC mà chỉ đo được khoảng cách từ trạm A tới hai đảo và góc ngắm giữa chúng.</p>
+          <p id="infoContext" style="font-size: 0.85rem; color: var(--text-2);">Tính khoảng cách trực tiếp giữa 2 hòn
+            đảo B và C khi trạm quan sát A nằm trong bờ biển. Do núi che khuất, người ta không thể đo trực tiếp đoạn BC
+            mà chỉ đo được khoảng cách từ trạm A tới hai đảo và góc ngắm giữa chúng.</p>
         </div>
         <div class="info-col info-col-guide">
           <div class="info-col-label"><i class="ti ti-hand-click"></i> Nhiệm vụ & Chỉ dẫn</div>
@@ -479,14 +1137,15 @@
       <div class="sim-row">
         <!-- SVG Canvas Area -->
         <div class="sim-canvas-wrap" id="canvasWrap">
-          <div class="bg-image" id="canvasBg" style="background-image: url('https://lh3.googleusercontent.com/d/1xh2EsHqESSEGmoExuX57YbfzCkeBoX8C'); background-color: #0D47A1;"></div>
-          
-          <svg class="svg-layer" id="svgLayer" viewBox="0 0 800 420"
-            onmousemove="showSVGCoords(event)"
+          <div class="bg-image" id="canvasBg"
+            style="background-image: url('https://lh3.googleusercontent.com/d/1xh2EsHqESSEGmoExuX57YbfzCkeBoX8C'); background-color: #0D47A1;">
+          </div>
+
+          <svg class="svg-layer" id="svgLayer" viewBox="0 0 800 420" onmousemove="showSVGCoords(event)"
             onmouseleave="document.getElementById('coordDisplay').style.display='none'">
             <!-- Dynamic elements generated by script -->
           </svg>
-          
+
           <div class="canvas-tooltip" id="canvasTooltip"></div>
           <!-- Coordinate Display Overlay -->
           <div id="coordDisplay" style="
@@ -509,10 +1168,12 @@
           </div>
 
           <div class="ctrl-actions">
-            <button class="btn" id="btnPrev" onclick="prevStep()" disabled><i class="ti ti-chevron-left"></i> Quay lại</button>
+            <button class="btn" id="btnPrev" onclick="prevStep()" disabled><i class="ti ti-chevron-left"></i> Quay
+              lại</button>
             <button class="btn" id="btnReset" onclick="resetModule()"><i class="ti ti-refresh"></i> Làm lại</button>
             <button class="btn" id="btnRandom" onclick="randomData()"><i class="ti ti-dice"></i> Đổi số</button>
-            <button class="btn btn-primary" id="btnNext" onclick="nextStep()">Bắt đầu <i class="ti ti-chevron-right"></i></button>
+            <button class="btn btn-primary" id="btnNext" onclick="nextStep()">Bắt đầu <i
+                class="ti ti-chevron-right"></i></button>
           </div>
         </div>
       </div>
@@ -520,7 +1181,8 @@
       <!-- Bottom Caption box -->
       <div class="sim-caption-box" id="captionBox">
         <div class="sim-caption-title" id="captionTitle"><i class="ti ti-info-circle"></i> Chỉ dẫn</div>
-        <div class="sim-caption-body" id="captionBody">Bạn là nhà trắc địa. Tính khoảng cách giữa 2 hòn đảo từ trạm quan sát.</div>
+        <div class="sim-caption-body" id="captionBody">Bạn là nhà trắc địa. Tính khoảng cách giữa 2 hòn đảo từ trạm quan
+          sát.</div>
       </div>
     </div>
   </main>
@@ -540,7 +1202,7 @@
     // ─── 1. GLOBAL STATE ─────────────────────────────
     let activeModule = 1;
     let currentStep = 1;
-    
+
     // Module 1 Data (Nhà Trắc Địa)
     let m1Data = {
       ab: 12, // km
@@ -721,11 +1383,11 @@
       activeModule = modIndex;
       currentStep = 1;
       resetAllWrongCounts();
-      
+
       // Update UI menu
-      for(let i = 1; i <= 4; i++) {
+      for (let i = 1; i <= 4; i++) {
         const item = document.getElementById(`menu-mod-${i}`);
-        if(i === modIndex) item.classList.add('active');
+        if (i === modIndex) item.classList.add('active');
         else item.classList.remove('active');
       }
 
@@ -736,7 +1398,7 @@
       const infoContext = document.getElementById('infoContext');
       const infoGuide = document.getElementById('infoGuide');
 
-      if(modIndex === 1) {
+      if (modIndex === 1) {
         title.innerHTML = '<i class="ti ti-building-lighthouse"></i> MODULE 1 — NHÀ TRẮC ĐỊA';
         subtitle.textContent = 'Áp dụng định lý cosin để tính khoảng cách giữa 2 hòn đảo khuất góc';
         bg.style.backgroundImage = "url('https://lh3.googleusercontent.com/d/1xh2EsHqESSEGmoExuX57YbfzCkeBoX8C')";
@@ -748,7 +1410,7 @@
           <li><i class="ti ti-circle-number-3"></i><span>Cẩn thận lỗi dấu của cosin góc tù khi thế số!</span></li>
         `;
         resetM1Data();
-      } else if(modIndex === 2) {
+      } else if (modIndex === 2) {
         title.innerHTML = '<i class="ti ti-mountain"></i> MODULE 2 — TRẠM CÁP TREO';
         subtitle.textContent = 'Áp dụng định lý sin để tính chiều cao của đỉnh núi từ hai điểm ngắm';
         bg.style.backgroundImage = "url('https://lh3.googleusercontent.com/d/12YfPPcuwLJSd1u_uPp28oy6-FziYdfV1')";
@@ -760,7 +1422,7 @@
           <li><i class="ti ti-circle-number-3"></i><span>Quy đổi chiều cao h bằng liên hệ góc vuông.</span></li>
         `;
         resetM2Data();
-      } else if(modIndex === 3) {
+      } else if (modIndex === 3) {
         title.innerHTML = '<i class="ti ti-chart-grid-cols"></i> MODULE 3 — PHÂN LÔ ĐẤT';
         subtitle.textContent = 'Áp dụng công thức Heron để đo đạc và tính diện tích lô đất hình tứ giác';
         bg.style.backgroundImage = "url('https://lh3.googleusercontent.com/d/1du7hqFyMrzgtXMStLBxuoCth23f2BmU7')";
@@ -772,7 +1434,7 @@
           <li><i class="ti ti-circle-number-3"></i><span>Cộng tổng diện tích 2 tam giác để ra kết quả cuối cùng.</span></li>
         `;
         resetM3Data();
-      } else if(modIndex === 4) {
+      } else if (modIndex === 4) {
         title.innerHTML = '<i class="ti ti-sailboat"></i> MODULE 4 — CỨU HỘ TRÊN BIỂN';
         subtitle.textContent = 'Áp dụng liên hệ phương hướng và định lý cosin để tính vị trí tàu gặp nạn';
         bg.style.backgroundImage = "url('https://lh3.googleusercontent.com/d/1FHJBw4yL-74OgqYC3AraXL-dKF5xZZ-u')";
@@ -793,12 +1455,12 @@
     function loadStep() {
       // Toggle prev button disable
       document.getElementById('btnPrev').disabled = (currentStep === 1);
-      
+
       // Update step indicator
       document.getElementById('stepIndicator').textContent = `BƯỚC ${currentStep} / 5`;
 
       const nextBtn = document.getElementById('btnNext');
-      if(currentStep === 5) {
+      if (currentStep === 5) {
         nextBtn.innerHTML = 'Kiểm tra <i class="ti ti-check"></i>';
       } else {
         nextBtn.innerHTML = 'Tiếp theo <i class="ti ti-chevron-right"></i>';
@@ -806,16 +1468,16 @@
 
       setCaptionBox("info", ""); // Clear alert
 
-      if(activeModule === 1) renderM1();
-      else if(activeModule === 2) renderM2();
-      else if(activeModule === 3) renderM3();
-      else if(activeModule === 4) renderM4();
+      if (activeModule === 1) renderM1();
+      else if (activeModule === 2) renderM2();
+      else if (activeModule === 3) renderM3();
+      else if (activeModule === 4) renderM4();
     }
 
     function nextStep() {
-      if(currentStep < 5) {
+      if (currentStep < 5) {
         const canAdvance = validateStepInput();
-        if(canAdvance) {
+        if (canAdvance) {
           currentStep++;
           loadStep();
         }
@@ -826,35 +1488,35 @@
     }
 
     function prevStep() {
-      if(currentStep > 1) {
+      if (currentStep > 1) {
         currentStep--;
         loadStep();
       }
     }
 
     function resetModule() {
-      if(activeModule === 1) resetM1Data();
-      else if(activeModule === 2) resetM2Data();
-      else if(activeModule === 3) resetM3Data();
-      else if(activeModule === 4) resetM4Data();
-      
+      if (activeModule === 1) resetM1Data();
+      else if (activeModule === 2) resetM2Data();
+      else if (activeModule === 3) resetM3Data();
+      else if (activeModule === 4) resetM4Data();
+
       resetAllWrongCounts();
       currentStep = 1;
       loadStep();
     }
 
     function randomData() {
-      if(activeModule === 1) {
+      if (activeModule === 1) {
         m1Data.ab = Math.floor(Math.random() * 8) + 8; // 8-15
         m1Data.ac = Math.floor(Math.random() * 6) + 6; // 6-11
         m1Data.angle = [120, 135, 150][Math.floor(Math.random() * 3)];
         resetM1Data();
-      } else if(activeModule === 2) {
+      } else if (activeModule === 2) {
         m2Data.ab = Math.floor(Math.random() * 300) + 300; // 300-600
         m2Data.alpha = Math.floor(Math.random() * 10) + 30; // 30-39
         m2Data.beta = Math.floor(Math.random() * 15) + 50; // 50-64
         resetM2Data();
-      } else if(activeModule === 3) {
+      } else if (activeModule === 3) {
         // Generate valid cyclic/convex side lengths
         m3Data.ab = Math.floor(Math.random() * 5) + 6; // 6-10
         m3Data.bc = Math.floor(Math.random() * 4) + 8; // 8-11
@@ -862,7 +1524,7 @@
         m3Data.da = Math.floor(Math.random() * 3) + 5; // 5-7
         m3Data.ac = Math.max(m3Data.ab, m3Data.bc) + Math.floor(Math.random() * 3) + 1; // valid diagonal
         resetM3Data();
-      } else if(activeModule === 4) {
+      } else if (activeModule === 4) {
         m4Data.v1 = Math.floor(Math.random() * 10) + 15; // 15-24
         m4Data.v2 = Math.floor(Math.random() * 10) + 12; // 12-21
         m4Data.time = [2, 3][Math.floor(Math.random() * 2)];
@@ -880,7 +1542,7 @@
       const body = document.getElementById('popupBody');
 
       popup.classList.add('show');
-      if(activeModule === 1) {
+      if (activeModule === 1) {
         title.innerHTML = '<i class="ti ti-building-lighthouse"></i> Lý thuyết Định lý Cosin';
         body.innerHTML = `
           <p>Trong tam giác ABC bất kỳ với các cạnh tương ứng là a, b, c:</p>
@@ -893,7 +1555,7 @@
           <span style="color: var(--green); font-weight: bold;">− 2bc · (−0.5) = + bc</span> (chuyển thành dấu CỘNG).</p>
           <p>Nhiều học sinh viết nhầm thành dấu cộng ngay từ đầu công thức dẫn đến tính sai dấu kép.</p>
         `;
-      } else if(activeModule === 2) {
+      } else if (activeModule === 2) {
         title.innerHTML = '<i class="ti ti-mountain"></i> Lý thuyết Định lý Sin';
         body.innerHTML = `
           <p>Trong tam giác ABC với bán kính đường tròn ngoại tiếp R:</p>
@@ -905,7 +1567,7 @@
           <span style="color: var(--green); font-weight: bold;">∠ABC = 180° − β</span>.</p>
           <p>Không dùng trực tiếp β làm góc trong của tam giác vì β là góc nâng ngang.</p>
         `;
-      } else if(activeModule === 3) {
+      } else if (activeModule === 3) {
         title.innerHTML = '<i class="ti ti-chart-grid-cols"></i> Lý thuyết Công thức Heron';
         body.innerHTML = `
           <p>Công thức Heron dùng để tính diện tích tam giác khi đã biết độ dài 3 cạnh a, b, c:</p>
@@ -917,7 +1579,7 @@
           <p>1. Nhầm lẫn <b>p là NỬA chu vi</b>, viết nhầm thành chu vi p = a+b+c (không chia 2) làm diện tích tính ra lớn bất thường.</p>
           <p>2. Chọn nhầm sang công thức diện tích chứa bán kính đường tròn ngoại tiếp <b>S = abc/4R</b> khi chưa có R.</p>
         `;
-      } else if(activeModule === 4) {
+      } else if (activeModule === 4) {
         title.innerHTML = '<i class="ti ti-compass"></i> Lý thuyết Góc Trên La Bàn';
         body.innerHTML = `
           <p>Quy ước phương hướng la bàn:</p>
@@ -945,26 +1607,26 @@
 
       caption.classList.remove('alert', 'success');
 
-      if(type === "alert") {
+      if (type === "alert") {
         caption.classList.add('alert');
         title.innerHTML = `<i class="ti ti-alert-triangle"></i> Cảnh báo lỗi`;
-      } else if(type === "success") {
+      } else if (type === "success") {
         caption.classList.add('success');
         title.innerHTML = `<i class="ti ti-trophy"></i> HOÀN THÀNH XUẤT SẮC!`;
       } else {
         title.innerHTML = `<i class="ti ti-info-circle"></i> Chỉ dẫn`;
       }
-      if(text) body.innerHTML = text;
+      if (text) body.innerHTML = text;
     }
 
     // Hiển thị Banner hoàn thành stage nổi bật trong bảng tương tác
     function showStageCompleteBanner(detailText) {
       const existing = document.getElementById('stageCompleteBanner');
       if (existing) existing.remove();
-      
+
       const stepContent = document.getElementById('stepContent');
       if (!stepContent) return;
-      
+
       const banner = document.createElement('div');
       banner.id = 'stageCompleteBanner';
       banner.className = 'stage-complete-banner';
@@ -1131,7 +1793,7 @@
       }
 
       // Draw connections based on step
-      if(currentStep >= 2) {
+      if (currentStep >= 2) {
         // Draw Triangle Paths
         // AB
         const pathAB = createSVGElement('line', {
@@ -1139,40 +1801,40 @@
           stroke: '#1565C0', 'stroke-width': 3, class: 'animated-path draw'
         });
         svg.appendChild(pathAB);
-        
+
         // Label AB (Placed dynamically relative to line)
         addLineLabel(svg, posA, posB, `AB = ${m1Data.ab} km`, '#1565C0', 15);
       }
 
-      if(currentStep >= 3) {
+      if (currentStep >= 3) {
         // AC
         const pathAC = createSVGElement('line', {
           x1: posA.x, y1: posA.y, x2: posC.x, y2: posC.y,
           stroke: '#2E7D32', 'stroke-width': 3, class: 'animated-path draw'
         });
         svg.appendChild(pathAC);
-        
+
         // Label AC (Placed dynamically relative to line)
         addLineLabel(svg, posA, posC, `AC = ${m1Data.ac} km`, '#2E7D32', 15, true);
       }
 
-      if(currentStep >= 4) {
+      if (currentStep >= 4) {
         // Dynamic Angle Arc at A
         const radius = 40;
         const thetaB = Math.atan2(posB.y - posA.y, posB.x - posA.x);
         const thetaC = Math.atan2(posC.y - posA.y, posC.x - posA.x);
-        
+
         const x1 = posA.x + radius * Math.cos(thetaB);
         const y1 = posA.y + radius * Math.sin(thetaB);
         const x2 = posA.x + radius * Math.cos(thetaC);
         const y2 = posA.y + radius * Math.sin(thetaC);
-        
+
         let diff = thetaC - thetaB;
         while (diff < -Math.PI) diff += 2 * Math.PI;
         while (diff > Math.PI) diff -= 2 * Math.PI;
         const sweepFlag = diff > 0 ? 1 : 0;
         const largeArcFlag = Math.abs(diff) > Math.PI ? 1 : 0;
-        
+
         const arcPath = `M ${x1} ${y1} A ${radius} ${radius} 0 ${largeArcFlag} ${sweepFlag} ${x2} ${y2} L ${posA.x} ${posA.y} Z`;
 
         const arc = createSVGElement('path', {
@@ -1209,11 +1871,11 @@
       const foA = createSVGElement('foreignObject', { x: posA.x - 12, y: posA.y - 12, width: 24, height: 24 });
       foA.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"><i class="ti ti-building-lighthouse" style="color: #fff; font-size: 16px;"></i></div>`;
       groupA.appendChild(foA);
-      
+
       const labelA = createSVGElement('text', { x: posA.x, y: posA.y + 35, fill: '#fff', 'font-size': '14px', 'font-weight': 'bold', 'text-anchor': 'middle' });
       labelA.textContent = 'Trạm A';
       groupA.appendChild(labelA);
-      
+
       bindTapTooltip(groupA, 'm1-stationA', posA.x, posA.y, `Trạm Quan Sát A (Cố định ở đất liền)`);
       svg.appendChild(groupA);
 
@@ -1223,7 +1885,7 @@
       const foB = createSVGElement('foreignObject', { x: posB.x - 12, y: posB.y - 12, width: 24, height: 24 });
       foB.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"><i class="ti ti-mountain" style="color: #fff; font-size: 16px;"></i></div>`;
       groupB.appendChild(foB);
-      
+
       const labelB = createSVGElement('text', { x: posB.x, y: posB.y - 25, fill: '#fff', 'font-size': '14px', 'font-weight': 'bold', 'text-anchor': 'middle' });
       labelB.textContent = 'Đảo B';
       groupB.appendChild(labelB);
@@ -1236,7 +1898,7 @@
       const foC = createSVGElement('foreignObject', { x: posC.x - 12, y: posC.y - 12, width: 24, height: 24 });
       foC.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"><i class="ti ti-mountain" style="color: #fff; font-size: 16px;"></i></div>`;
       groupC.appendChild(foC);
-      
+
       const labelC = createSVGElement('text', { x: posC.x, y: posC.y + 35, fill: '#fff', 'font-size': '14px', 'font-weight': 'bold', 'text-anchor': 'middle' });
       labelC.textContent = 'Đảo C';
       groupC.appendChild(labelC);
@@ -1244,7 +1906,7 @@
       svg.appendChild(groupC);
 
       // STEP 1 CONTENT
-      if(currentStep === 1) {
+      if (currentStep === 1) {
         stepTitle.textContent = "Phân tích bối cảnh";
         stepContent.innerHTML = `
           <p>Nhà trắc địa đứng tại <b>Trạm A</b> cần tính khoảng cách giữa <b>Đảo B</b> và <b>Đảo C</b>.</p>
@@ -1258,18 +1920,18 @@
         `;
         setCaptionBox("info", "Tính khoảng cách BC khi biết 2 cạnh AB, AC và góc xen giữa.");
       }
-      
+
       // STEP 2 CONTENT
-      else if(currentStep === 2) {
+      else if (currentStep === 2) {
         stepTitle.textContent = "Lập mô hình hình học";
         stepContent.innerHTML = `
           <p>Để tìm khoảng cách BC, ta vẽ các đường liên kết để đưa bài toán thực tế về bài toán giải tam giác trong hình học phẳng.</p>
           <p style="margin-top: 10px;">Sơ đồ đã vẽ đường nối Trạm A đến Đảo B. Bấm "Tiếp theo" để hoàn thiện sơ đồ.</p>
         `;
       }
-      
+
       // STEP 3 CONTENT
-      else if(currentStep === 3) {
+      else if (currentStep === 3) {
         stepTitle.textContent = "Chọn định lý phù hợp";
         stepContent.innerHTML = `
           <p>Đã hoàn tất sơ đồ tam giác ABC. Cần chọn một định lý hoặc công thức phù hợp nhất để tính cạnh BC khi biết 2 cạnh kề và góc kề xen giữa:</p>
@@ -1279,14 +1941,14 @@
             <button class="option-btn" id="opt-heron" onclick="selectFormulaM1('heron')"><i class="ti ti-circle"></i> Công thức Heron</button>
           </div>
         `;
-        if(m1Data.inputs.formula === 'cos') {
+        if (m1Data.inputs.formula === 'cos') {
           document.getElementById('opt-cos').classList.add('selected');
           document.getElementById('opt-cos').querySelector('i').className = 'ti ti-circle-check';
         }
       }
 
       // STEP 4 CONTENT
-      else if(currentStep === 4) {
+      else if (currentStep === 4) {
         const signVal = m1Data.inputs.sign || '';
         stepTitle.textContent = "Thiết lập công thức";
         stepContent.innerHTML = `
@@ -1323,15 +1985,15 @@
       }
 
       // STEP 5 CONTENT
-      else if(currentStep === 5) {
-        const exactBC = Math.round(Math.sqrt(m1Data.ab**2 + m1Data.ac**2 - 2*m1Data.ab*m1Data.ac*Math.cos(m1Data.angle * Math.PI / 180)));
+      else if (currentStep === 5) {
+        const exactBC = Math.round(Math.sqrt(m1Data.ab ** 2 + m1Data.ac ** 2 - 2 * m1Data.ab * m1Data.ac * Math.cos(m1Data.angle * Math.PI / 180)));
         stepTitle.textContent = "Tính khoảng cách BC";
         stepContent.innerHTML = `
           <p>Sử dụng máy tính cá nhân để giải phương trình vừa điền:</p>
           <div class="math-formula-box" style="font-size: 0.9rem;">
             BC² = ${m1Data.ab}² + ${m1Data.ac}² − 2·${m1Data.ab}·${m1Data.ac}·cos(${m1Data.angle}°) <br>
-            BC² = ${m1Data.ab**2} + ${m1Data.ac**2} − (${2*m1Data.ab*m1Data.ac})·(${Math.cos(m1Data.angle * Math.PI / 180).toFixed(1)}) <br>
-            BC² = ${m1Data.ab**2 + m1Data.ac**2} − (${2*m1Data.ab*m1Data.ac * Math.cos(m1Data.angle * Math.PI / 180)}) = ${Math.round(m1Data.ab**2 + m1Data.ac**2 - 2*m1Data.ab*m1Data.ac*Math.cos(m1Data.angle * Math.PI / 180))}
+            BC² = ${m1Data.ab ** 2} + ${m1Data.ac ** 2} − (${2 * m1Data.ab * m1Data.ac})·(${Math.cos(m1Data.angle * Math.PI / 180).toFixed(1)}) <br>
+            BC² = ${m1Data.ab ** 2 + m1Data.ac ** 2} − (${2 * m1Data.ab * m1Data.ac * Math.cos(m1Data.angle * Math.PI / 180)}) = ${Math.round(m1Data.ab ** 2 + m1Data.ac ** 2 - 2 * m1Data.ab * m1Data.ac * Math.cos(m1Data.angle * Math.PI / 180))}
           </div>
           <p style="margin-top: 10px;">Nhập khoảng cách cuối cùng giữa 2 đảo:</p>
           <div style="display: flex; align-items: center; gap: 8px; margin-top: 8px;">
@@ -1350,7 +2012,7 @@
     function selectFormulaM1(type) {
       m1Data.inputs.formula = type;
       loadStep();
-      if(type === 'cos') {
+      if (type === 'cos') {
         setCaptionBox("info", "Chính xác! Biết hai cạnh bên và góc kề xen giữa thì định lý Cosin là tối ưu.");
       } else {
         setCaptionBox("alert", "Lựa chọn chưa tối ưu! Chúng ta chưa có đủ số liệu về các góc để dùng định lý Sin, hoặc Heron khi chưa có cạnh thứ ba.");
@@ -1364,15 +2026,15 @@
     }
 
     function validateM1Step() {
-      if(currentStep === 3) {
-        if(m1Data.inputs.formula !== 'cos') {
+      if (currentStep === 3) {
+        if (m1Data.inputs.formula !== 'cos') {
           setCaptionBox("alert", "Hãy chọn Định lý Cosin để giải quyết bài toán này.");
           incWrongCount();
           return false;
         }
       }
-      
-      if(currentStep === 4) {
+
+      if (currentStep === 4) {
         const ab = parseInt(m1Data.inputs.ab);
         const ac = parseInt(m1Data.inputs.ac);
         const sign = m1Data.inputs.sign;
@@ -1381,19 +2043,19 @@
 
         let hasError = false;
 
-        if(ab !== m1Data.ab) { document.getElementById('in-ab').classList.add('error'); hasError = true; }
+        if (ab !== m1Data.ab) { document.getElementById('in-ab').classList.add('error'); hasError = true; }
         else { document.getElementById('in-ab').classList.remove('error'); }
 
-        if(ac !== m1Data.ac) { document.getElementById('in-ac').classList.add('error'); hasError = true; }
+        if (ac !== m1Data.ac) { document.getElementById('in-ac').classList.add('error'); hasError = true; }
         else { document.getElementById('in-ac').classList.remove('error'); }
 
-        if(double !== m1Data.ab * m1Data.ac) { document.getElementById('in-double').classList.add('error'); hasError = true; }
+        if (double !== m1Data.ab * m1Data.ac) { document.getElementById('in-double').classList.add('error'); hasError = true; }
         else { document.getElementById('in-double').classList.remove('error'); }
 
-        if(ang !== m1Data.angle) { document.getElementById('in-ang').classList.add('error'); hasError = true; }
+        if (ang !== m1Data.angle) { document.getElementById('in-ang').classList.add('error'); hasError = true; }
         else { document.getElementById('in-ang').classList.remove('error'); }
 
-        if(sign !== '-') {
+        if (sign !== '-') {
           document.getElementById('in-sign').classList.add('error');
           setCaptionBox("alert", "Kiên nhẫn kiểm tra lại dấu! Công thức định lý cosin chuẩn là: a² = b² + c² − 2bc·cos(A). Mặc dù cos góc tù âm sẽ biến đổi phép tính sau đó thành cộng, nhưng công thức cơ bản vẫn bắt đầu bằng dấu TRỪ (−) nhé!");
           hasError = true;
@@ -1401,49 +2063,49 @@
           document.getElementById('in-sign').classList.remove('error');
         }
 
-        if(hasError) {
+        if (hasError) {
           incWrongCount();
           return false;
         }
       }
-      
+
       return true;
     }
 
     function validateM1Final() {
       const rad = m1Data.angle * Math.PI / 180;
-      const exactBC2 = m1Data.ab**2 + m1Data.ac**2 - 2 * m1Data.ab * m1Data.ac * Math.cos(rad);
+      const exactBC2 = m1Data.ab ** 2 + m1Data.ac ** 2 - 2 * m1Data.ab * m1Data.ac * Math.cos(rad);
       const correctAns = Math.sqrt(exactBC2);
       const userAns = parseFloat(m1Data.inputs.result);
 
-      if(isNaN(userAns)) {
+      if (isNaN(userAns)) {
         alert("Vui lòng điền kết quả tính toán.");
         incWrongCount();
         return;
       }
 
       // Check if user fell into the positive sign mistake (getting a shorter distance)
-      const wrongBC2 = m1Data.ab**2 + m1Data.ac**2 + 2 * m1Data.ab * m1Data.ac * Math.cos(rad);
+      const wrongBC2 = m1Data.ab ** 2 + m1Data.ac ** 2 + 2 * m1Data.ab * m1Data.ac * Math.cos(rad);
       const wrongAns = Math.sqrt(wrongBC2);
 
-      if(Math.abs(userAns - correctAns) < 0.5 || Math.abs(userAns - Math.round(correctAns)) <= 0.5) {
+      if (Math.abs(userAns - correctAns) < 0.5 || Math.abs(userAns - Math.round(correctAns)) <= 0.5) {
         // Success
         setCaptionBox("success", `Xuất sắc! Khoảng cách giữa 2 hòn đảo BC ≈ <b>${correctAns.toFixed(2)} km</b> (làm tròn ≈ <b>${Math.round(correctAns)} km</b>). Nhiệm vụ trắc địa hoàn thành hoàn hảo! 🗺️`);
         showStageCompleteBanner(`Khoảng cách giữa 2 đảo BC ≈ ${correctAns.toFixed(2)} km`);
-        
+
         // Draw the final path as a solid green path
         const svg = document.getElementById('svgLayer');
         const lines = svg.querySelectorAll('line');
         // Find the BC line (the dashed one) and change its color to solid green
         lines.forEach(l => {
-          if(l.getAttribute('stroke') === '#C62828') {
+          if (l.getAttribute('stroke') === '#C62828') {
             l.setAttribute('stroke', 'var(--green)');
             l.removeAttribute('stroke-dasharray');
           }
         });
-      } else if(Math.abs(userAns - wrongAns) < 0.5) {
+      } else if (Math.abs(userAns - wrongAns) < 0.5) {
         // Did the wrong sign trap
-        setCaptionBox("alert", `Bạn đã tính sai khoảng cách do nhầm dấu kép của góc tù cos${m1Data.angle}°! Do cos(${m1Data.angle}°) = ${Math.cos(rad).toFixed(1)} (mang số âm), ta phải có: −2·${m1Data.ab}·${m1Data.ac}·(${Math.cos(rad).toFixed(1)}) = +${(-2*m1Data.ab*m1Data.ac*Math.cos(rad)).toFixed(0)}. Có phải bạn đã tính trừ thay vì cộng không? Hãy thử lại nhé!`);
+        setCaptionBox("alert", `Bạn đã tính sai khoảng cách do nhầm dấu kép của góc tù cos${m1Data.angle}°! Do cos(${m1Data.angle}°) = ${Math.cos(rad).toFixed(1)} (mang số âm), ta phải có: −2·${m1Data.ab}·${m1Data.ac}·(${Math.cos(rad).toFixed(1)}) = +${(-2 * m1Data.ab * m1Data.ac * Math.cos(rad)).toFixed(0)}. Có phải bạn đã tính trừ thay vì cộng không? Hãy thử lại nhé!`);
         document.getElementById('in-result').classList.add('error');
         incWrongCount();
       } else {
@@ -1472,7 +2134,7 @@
 
       // Ground horizontal line
       svg.appendChild(createSVGElement('line', { x1: 50, y1: 350, x2: 750, y2: 350, stroke: '#795548', 'stroke-width': 3 }));
-      
+
       // Draw mountain shape
       svg.appendChild(createSVGElement('path', {
         d: `M 530 350 L ${posC.x} ${posC.y} L 750 350 Z`,
@@ -1488,12 +2150,12 @@
       svg.appendChild(flagGroup);
 
       // Draw Ray A to C
-      if(currentStep >= 2) {
+      if (currentStep >= 2) {
         svg.appendChild(createSVGElement('line', {
           x1: posA.x, y1: posA.y, x2: posC.x, y2: posC.y,
           stroke: '#1565C0', 'stroke-width': 2, 'stroke-dasharray': '4, 4', class: 'animated-path draw'
         }));
-        
+
         // Arc at A
         svg.appendChild(createSVGElement('path', {
           d: `M 405 332 A 30 30 0 0 0 400 350 L ${posA.x} ${posA.y} Z`,
@@ -1505,12 +2167,12 @@
       }
 
       // Draw Ray B to C
-      if(currentStep >= 3) {
+      if (currentStep >= 3) {
         svg.appendChild(createSVGElement('line', {
           x1: posB.x, y1: posB.y, x2: posC.x, y2: posC.y,
           stroke: '#E65100', 'stroke-width': 2, 'stroke-dasharray': '4, 4', class: 'animated-path draw'
         }));
-        
+
         // Arc at B
         svg.appendChild(createSVGElement('path', {
           d: `M 205 330 A 30 30 0 0 0 200 350 L ${posB.x} ${posB.y} Z`,
@@ -1522,12 +2184,12 @@
       }
 
       // Draw Height line CH
-      if(currentStep >= 4) {
+      if (currentStep >= 4) {
         svg.appendChild(createSVGElement('line', {
           x1: posC.x, y1: posC.y, x2: posH.x, y2: posH.y,
           stroke: '#C62828', 'stroke-width': 2.5, class: 'animated-path draw'
         }));
-        const textH = createSVGElement('text', { x: posC.x + 10, y: (posC.y+posH.y)/2, fill: '#C62828', 'font-size': '13px' });
+        const textH = createSVGElement('text', { x: posC.x + 10, y: (posC.y + posH.y) / 2, fill: '#C62828', 'font-size': '13px' });
         textH.textContent = `h = ?`;
         svg.appendChild(textH);
 
@@ -1559,12 +2221,12 @@
       svg.appendChild(grB);
 
       // Label AB distance
-      const textAB = createSVGElement('text', { x: (posA.x+posB.x)/2 - 25, y: posA.y + 20, fill: '#fff', 'font-size': '12px' });
+      const textAB = createSVGElement('text', { x: (posA.x + posB.x) / 2 - 25, y: posA.y + 20, fill: '#fff', 'font-size': '12px' });
       textAB.textContent = `AB = ${m2Data.ab} m`;
       svg.appendChild(textAB);
 
       // STEP 1
-      if(currentStep === 1) {
+      if (currentStep === 1) {
         stepTitle.textContent = "Nh\u1eadn \u0111\u1ecbnh b\u1ed1i c\u1ea3nh";
         stepContent.innerHTML = `
           <p>T\u00ednh to\u00e1n chi\u1ec1u cao ng\u1ecdn n\u00fai <b>h</b> d\u1ef1a tr\u00ean hai tr\u1ea1m \u0111o m\u1eb7t \u0111\u1ea5t <b>A v\u00e0 B</b> c\u00e1ch nhau <b>${m2Data.ab} m</b>.</p>
@@ -1577,7 +2239,7 @@
       }
 
       // STEP 2
-      else if(currentStep === 2) {
+      else if (currentStep === 2) {
         stepTitle.textContent = "V\u1ebd tia n\u00e2ng tr\u1ea1m A";
         stepContent.innerHTML = `
           <p>Tia ng\u1eafm h\u01b0\u1edbng t\u1eeb Tr\u1ea1m A l\u00ean \u0111\u1ec9nh n\u00fai C t\u1ea1o g\u00f3c n\u00e2ng <b>\u03b1 = ${m2Data.alpha}\u00b0</b> so v\u1edbi m\u1eb7t \u0111\u1ea5t.</p>
@@ -1586,7 +2248,7 @@
       }
 
       // STEP 3
-      else if(currentStep === 3) {
+      else if (currentStep === 3) {
         stepTitle.textContent = "X\u00e1c \u0111\u1ecbnh g\u00f3c B trong tam gi\u00e1c";
         stepContent.innerHTML = `
           <p>QUAN TR\u1eccNG: G\u00f3c n\u00e2ng \u0111o t\u1eeb tr\u1ea1m B l\u00e0 <b>\u03b2 = ${m2Data.beta}\u00b0</b>. H\u00e3y t\u00ednh g\u00f3c <b>\u2220ABC</b> b\u00ean trong c\u1ee7a tam gi\u00e1c ABC:</p>
@@ -1597,18 +2259,18 @@
           </div>
         `;
         const valB = parseInt(m2Data.inputs.angleB);
-        if(valB === m2Data.beta) {
+        if (valB === m2Data.beta) {
           document.getElementById('opt-b1').classList.add('selected');
-        } else if(valB === (180 - m2Data.beta)) {
+        } else if (valB === (180 - m2Data.beta)) {
           document.getElementById('opt-b2').classList.add('selected');
           document.getElementById('opt-b2').querySelector('i').className = 'ti ti-circle-check';
-        } else if(valB === m2Data.alpha) {
+        } else if (valB === m2Data.alpha) {
           document.getElementById('opt-b3').classList.add('selected');
         }
       }
 
       // STEP 4
-      else if(currentStep === 4) {
+      else if (currentStep === 4) {
         const correctAngleB = 180 - m2Data.beta;
         const correctAngleC = 180 - m2Data.alpha - correctAngleB;
         stepTitle.textContent = "Điền định lý Sin";
@@ -1652,7 +2314,7 @@
       }
 
       // STEP 5
-      else if(currentStep === 5) {
+      else if (currentStep === 5) {
         const cVal = 180 - m2Data.alpha - (180 - m2Data.beta);
         const exactBC = m2Data.ab * Math.sin(m2Data.alpha * Math.PI / 180) / Math.sin(cVal * Math.PI / 180);
         const exactH = Math.round(exactBC * Math.sin(m2Data.beta * Math.PI / 180));
@@ -1681,7 +2343,7 @@
       m2Data.inputs.angleB = val;
       loadStep();
       const correctAngle = 180 - m2Data.beta;
-      if(val === correctAngle) {
+      if (val === correctAngle) {
         setCaptionBox("info", `Chính xác! Do A, B và chân núi H thẳng hàng nên góc trong ∠ABC bù với góc nâng ∠CBH (180° − ${m2Data.beta}° = ${correctAngle}°).`);
       } else {
         setCaptionBox("alert", `Lưu ý: Góc ${m2Data.beta}° là góc ngắm so với phương ngang bên ngoài tam giác. Góc trong tam giác kề bên phải là góc kề bù: 180° − ${m2Data.beta}° = ${correctAngle}°!`);
@@ -1695,43 +2357,43 @@
     }
 
     function validateM2Step() {
-      if(currentStep === 3) {
-        if(parseInt(m2Data.inputs.angleB) !== (180 - m2Data.beta)) {
+      if (currentStep === 3) {
+        if (parseInt(m2Data.inputs.angleB) !== (180 - m2Data.beta)) {
           setCaptionBox("alert", "Chọn đúng góc ∠ABC bù kề bên để tiếp tục.");
           return false;
         }
       }
 
-      if(currentStep === 4) {
+      if (currentStep === 4) {
         const abSide = parseInt(m2Data.inputs.abSide);
         const sinC = parseInt(m2Data.inputs.sinC);
         const sinA = parseInt(m2Data.inputs.sinA);
-        
+
         const correctC = 180 - m2Data.alpha - (180 - m2Data.beta);
         let hasError = false;
         let errorMsg = [];
 
-        if(abSide !== m2Data.ab) {
+        if (abSide !== m2Data.ab) {
           document.getElementById('in-ab-side').classList.add('error');
           errorMsg.push(`AB phải là <b>${m2Data.ab}</b> m (khoảng cách 2 trạm đo)`);
           hasError = true;
         } else { document.getElementById('in-ab-side').classList.remove('error'); }
 
-        if(sinC !== correctC) {
+        if (sinC !== correctC) {
           document.getElementById('in-sinc').classList.add('error');
-          if(sinC === m2Data.beta) {
-            errorMsg.push(`Ô "Góc C": Bạn nhập β=${m2Data.beta}° nhưng β là góc ngắm bên ngoài! Góc C trong tam giác = 180° − ${m2Data.alpha}° − ${180-m2Data.beta}° = <b>${correctC}°</b>`);
-          } else if(sinC === m2Data.alpha) {
+          if (sinC === m2Data.beta) {
+            errorMsg.push(`Ô "Góc C": Bạn nhập β=${m2Data.beta}° nhưng β là góc ngắm bên ngoài! Góc C trong tam giác = 180° − ${m2Data.alpha}° − ${180 - m2Data.beta}° = <b>${correctC}°</b>`);
+          } else if (sinC === m2Data.alpha) {
             errorMsg.push(`Ô "Góc C": Bạn nhập α=${m2Data.alpha}° nhưng đó là góc tại A, không phải tại C! Góc C = <b>${correctC}°</b>`);
           } else {
-            errorMsg.push(`Ô "Góc C" chưa đúng. Góc ∠ACB = 180° − ${m2Data.alpha}° − ${180-m2Data.beta}° = <b>${correctC}°</b>`);
+            errorMsg.push(`Ô "Góc C" chưa đúng. Góc ∠ACB = 180° − ${m2Data.alpha}° − ${180 - m2Data.beta}° = <b>${correctC}°</b>`);
           }
           hasError = true;
         } else { document.getElementById('in-sinc').classList.remove('error'); }
 
-        if(sinA !== m2Data.alpha) {
+        if (sinA !== m2Data.alpha) {
           document.getElementById('in-sina').classList.add('error');
-          if(sinA === m2Data.beta) {
+          if (sinA === m2Data.beta) {
             errorMsg.push(`Ô "Góc A": Bạn nhập β=${m2Data.beta}° nhưng β là góc ngắm tại B! Cần nhập góc ∠BAC = α = <b>${m2Data.alpha}°</b>`);
           } else {
             errorMsg.push(`Ô "Góc A" = ∠BAC = α = <b>${m2Data.alpha}°</b>`);
@@ -1739,7 +2401,7 @@
           hasError = true;
         } else { document.getElementById('in-sina').classList.remove('error'); }
 
-        if(hasError) {
+        if (hasError) {
           setCaptionBox("alert", errorMsg.join('<br>'));
           return false;
         }
@@ -1754,12 +2416,12 @@
       const correctH = exactBC * Math.sin(m2Data.beta * Math.PI / 180);
       const userH = parseFloat(m2Data.inputs.resultH);
 
-      if(isNaN(userH)) {
+      if (isNaN(userH)) {
         alert("Vui lòng điền kết quả chiều cao.");
         return;
       }
 
-      if(Math.abs(userH - correctH) < 5 || Math.abs(userH - Math.round(correctH)) <= 5) {
+      if (Math.abs(userH - correctH) < 5 || Math.abs(userH - Math.round(correctH)) <= 5) {
         setCaptionBox("success", `Tuyệt vời! Ngọn núi cao ≈ <b>${correctH.toFixed(0)} m</b>. Trạm cáp treo đã được nghiệm thu thiết kế thành công! ⛰️`);
         showStageCompleteBanner(`Chiều cao ngọn núi h ≈ ${correctH.toFixed(0)} m`);
       } else {
@@ -1792,8 +2454,8 @@
 
       // Draw Main Quadrilateral ABCD
       let colorQuad = 'rgba(139, 195, 74, 0.2)';
-      if(currentStep >= 3) colorQuad = 'none'; // Separate shading
-      
+      if (currentStep >= 3) colorQuad = 'none'; // Separate shading
+
       svg.appendChild(createSVGElement('polygon', {
         points: `${posA.x},${posA.y} ${posB.x},${posB.y} ${posC.x},${posC.y} ${posD.x},${posD.y}`,
         fill: colorQuad, stroke: '#795548', 'stroke-width': 3
@@ -1805,26 +2467,26 @@
       svg.appendChild(foHome);
 
       // Diagonal AC representing Step 2
-      if(currentStep >= 2) {
+      if (currentStep >= 2) {
         svg.appendChild(createSVGElement('line', {
           x1: posA.x, y1: posA.y, x2: posC.x, y2: posC.y,
           stroke: '#C62828', 'stroke-width': 2, 'stroke-dasharray': '5, 5', class: 'animated-path draw'
         }));
-        
-        const textAC = createSVGElement('text', { x: (posA.x+posC.x)/2 - 10, y: (posA.y+posC.y)/2 - 10, fill: '#C62828', 'font-size': '13px' });
+
+        const textAC = createSVGElement('text', { x: (posA.x + posC.x) / 2 - 10, y: (posA.y + posC.y) / 2 - 10, fill: '#C62828', 'font-size': '13px' });
         textAC.textContent = `AC = ${m3Data.ac} m`;
         svg.appendChild(textAC);
       }
 
       // Shade Triangles based on Steps
-      if(currentStep === 3) {
+      if (currentStep === 3) {
         // Highlight ABC
         svg.appendChild(createSVGElement('polygon', {
           points: `${posA.x},${posA.y} ${posB.x},${posB.y} ${posC.x},${posC.y}`,
           fill: 'rgba(21, 101, 192, 0.2)', stroke: 'none'
         }));
       }
-      if(currentStep === 4) {
+      if (currentStep === 4) {
         // Highlight ACD
         svg.appendChild(createSVGElement('polygon', {
           points: `${posA.x},${posA.y} ${posC.x},${posC.y} ${posD.x},${posD.y}`,
@@ -1841,8 +2503,8 @@
       ];
       sides.forEach(s => {
         const txt = createSVGElement('text', {
-          x: (s.p1.x + s.p2.x)/2 - 15,
-          y: (s.p1.y + s.p2.y)/2 + (s.p1.y > s.p2.y ? 15 : -15),
+          x: (s.p1.x + s.p2.x) / 2 - 15,
+          y: (s.p1.y + s.p2.y) / 2 + (s.p1.y > s.p2.y ? 15 : -15),
           fill: '#fff', 'font-size': '12px'
         });
         txt.textContent = `${s.label} = ${s.val} m`;
@@ -1859,7 +2521,7 @@
       });
 
       // STEP 1
-      if(currentStep === 1) {
+      if (currentStep === 1) {
         stepTitle.textContent = "Khảo sát đất đai";
         stepContent.innerHTML = `
           <p>Tính diện tích mảnh đất hình tứ giác <b>ABCD</b> biết độ dài các cạnh:</p>
@@ -1872,7 +2534,7 @@
       }
 
       // STEP 2
-      else if(currentStep === 2) {
+      else if (currentStep === 2) {
         stepTitle.textContent = "Phân chia thành tam giác";
         stepContent.innerHTML = `
           <p>Bằng cách đo đường chéo <b>AC = ${m3Data.ac} m</b>, ta chia thửa đất tứ giác ABCD thành 2 mảnh tam giác: <b>ΔABC</b> và <b>ΔACD</b>.</p>
@@ -1881,7 +2543,7 @@
       }
 
       // STEP 3
-      else if(currentStep === 3) {
+      else if (currentStep === 3) {
         const p1 = (m3Data.ab + m3Data.bc + m3Data.ac) / 2;
         const s1 = Math.sqrt(p1 * (p1 - m3Data.ab) * (p1 - m3Data.bc) * (p1 - m3Data.ac)).toFixed(1);
 
@@ -1912,7 +2574,7 @@
       }
 
       // STEP 4
-      else if(currentStep === 4) {
+      else if (currentStep === 4) {
         const p2 = (m3Data.ac + m3Data.cd + m3Data.da) / 2;
         const s2 = Math.sqrt(p2 * (p2 - m3Data.ac) * (p2 - m3Data.cd) * (p2 - m3Data.da)).toFixed(1);
 
@@ -1943,7 +2605,7 @@
       }
 
       // STEP 5
-      else if(currentStep === 5) {
+      else if (currentStep === 5) {
         // Compute correct areas
         const p1 = (m3Data.ab + m3Data.bc + m3Data.ac) / 2;
         const s1 = Math.sqrt(p1 * (p1 - m3Data.ab) * (p1 - m3Data.bc) * (p1 - m3Data.ac));
@@ -1979,22 +2641,22 @@
     }
 
     function validateM3Step() {
-      if(currentStep === 3) {
+      if (currentStep === 3) {
         const num = m3Data.inputs.p1Numerator;
         const den = parseInt(m3Data.inputs.p1Denominator);
         const s1 = parseFloat(m3Data.inputs.s1Result);
 
         let hasError = false;
-        
+
         // Check numerator
         const parts = num.split('+').map(p => parseInt(p.trim()));
-        const sum = parts.reduce((a,b) => a+b, 0);
+        const sum = parts.reduce((a, b) => a + b, 0);
         const correctSum = m3Data.ab + m3Data.bc + m3Data.ac;
-        if(sum !== correctSum) { document.getElementById('in-p1-num').classList.add('error'); hasError = true; }
+        if (sum !== correctSum) { document.getElementById('in-p1-num').classList.add('error'); hasError = true; }
         else { document.getElementById('in-p1-num').classList.remove('error'); }
 
         // Check denominator
-        if(den !== 2) {
+        if (den !== 2) {
           document.getElementById('in-p1-den').classList.add('error');
           setCaptionBox("alert", "Nhầm lẫn nguy hiểm! p là NỬA chu vi (tổng 3 cạnh chia 2). Không được chia cho 1 hay giá trị khác chu vi.");
           hasError = true;
@@ -2005,20 +2667,20 @@
         // Check S1
         const p1 = correctSum / 2;
         const exactS1 = Math.sqrt(p1 * (p1 - m3Data.ab) * (p1 - m3Data.bc) * (p1 - m3Data.ac));
-        if(isNaN(s1) || Math.abs(s1 - exactS1) > 0.5) {
+        if (isNaN(s1) || Math.abs(s1 - exactS1) > 0.5) {
           document.getElementById('in-s1').classList.add('error');
           hasError = true;
         } else {
           document.getElementById('in-s1').classList.remove('error');
         }
 
-        if(hasError) {
+        if (hasError) {
           incWrongCount();
           return false;
         }
       }
 
-      if(currentStep === 4) {
+      if (currentStep === 4) {
         const num = m3Data.inputs.p2Numerator;
         const den = parseInt(m3Data.inputs.p2Denominator);
         const s2 = parseFloat(m3Data.inputs.s2Result);
@@ -2026,12 +2688,12 @@
         let hasError = false;
 
         const parts = num.split('+').map(p => parseInt(p.trim()));
-        const sum = parts.reduce((a,b) => a+b, 0);
+        const sum = parts.reduce((a, b) => a + b, 0);
         const correctSum = m3Data.ac + m3Data.cd + m3Data.da;
-        if(sum !== correctSum) { document.getElementById('in-p2-num').classList.add('error'); hasError = true; }
+        if (sum !== correctSum) { document.getElementById('in-p2-num').classList.add('error'); hasError = true; }
         else { document.getElementById('in-p2-num').classList.remove('error'); }
 
-        if(den !== 2) {
+        if (den !== 2) {
           document.getElementById('in-p2-den').classList.add('error');
           setCaptionBox("alert", "p là NỬA chu vi (tổng 3 cạnh chia 2)!");
           hasError = true;
@@ -2041,14 +2703,14 @@
 
         const p2 = correctSum / 2;
         const exactS2 = Math.sqrt(p2 * (p2 - m3Data.ac) * (p2 - m3Data.cd) * (p2 - m3Data.da));
-        if(isNaN(s2) || Math.abs(s2 - exactS2) > 0.5) {
+        if (isNaN(s2) || Math.abs(s2 - exactS2) > 0.5) {
           document.getElementById('in-s2').classList.add('error');
           hasError = true;
         } else {
           document.getElementById('in-s2').classList.remove('error');
         }
 
-        if(hasError) {
+        if (hasError) {
           incWrongCount();
           return false;
         }
@@ -2064,13 +2726,13 @@
       const correctTotal = s1 + s2;
       const userTotal = parseFloat(m3Data.inputs.sTotal);
 
-      if(isNaN(userTotal)) {
+      if (isNaN(userTotal)) {
         alert("Vui lòng điền tổng diện tích.");
         incWrongCount();
         return;
       }
 
-      if(Math.abs(userTotal - correctTotal) < 0.8 || Math.abs(userTotal - Math.round(correctTotal)) <= 1) {
+      if (Math.abs(userTotal - correctTotal) < 0.8 || Math.abs(userTotal - Math.round(correctTotal)) <= 1) {
         setCaptionBox("success", `Tuyệt vời! Tổng diện tích thửa ruộng ABCD ≈ <b>${correctTotal.toFixed(2)} m²</b>. Báo cáo pháp lý hoàn thành! 📐`);
         showStageCompleteBanner(`Tổng diện tích thửa ruộng S ≈ ${correctTotal.toFixed(2)} m²`);
       } else {
@@ -2102,7 +2764,7 @@
 
       const posA = { x: posO.x + distA * Math.cos(rad1), y: posO.y + distA * Math.sin(rad1) };
       const posB = { x: posO.x + distB * Math.cos(rad2), y: posO.y + distB * Math.sin(rad2) };
-      const posMid = { x: (posA.x + posB.x)/2, y: (posA.y + posB.y)/2 };
+      const posMid = { x: (posA.x + posB.x) / 2, y: (posA.y + posB.y) / 2 };
 
       // Background grids representing ocean
       for (let i = 50; i < 800; i += 100) {
@@ -2121,55 +2783,55 @@
       const textW = createSVGElement('text', { x: -48, y: 4, fill: '#fff', 'font-size': '10px' }); textW.textContent = 'W'; compassGroup.appendChild(textW);
       svg.appendChild(compassGroup);
 
-      if(currentStep >= 2) {
+      if (currentStep >= 2) {
         // Draw Traveled paths
         svg.appendChild(createSVGElement('line', {
           x1: posO.x, y1: posO.y, x2: posA.x, y2: posA.y,
           stroke: '#1565C0', 'stroke-width': 2, 'stroke-dasharray': '4, 4', class: 'animated-path draw'
         }));
-        
+
         svg.appendChild(createSVGElement('line', {
           x1: posO.x, y1: posO.y, x2: posB.x, y2: posB.y,
           stroke: '#E65100', 'stroke-width': 2, 'stroke-dasharray': '4, 4', class: 'animated-path draw'
         }));
       }
 
-      if(currentStep >= 3) {
+      if (currentStep >= 3) {
         // Draw angle AOB arc
         svg.appendChild(createSVGElement('path', {
           d: `M ${posO.x + 30 * Math.cos(rad1)} ${posO.y + 30 * Math.sin(rad1)} A 30 30 0 0 1 ${posO.x + 30 * Math.cos(rad2)} ${posO.y + 30 * Math.sin(rad2)} L ${posO.x} ${posO.y} Z`,
           class: 'angle-arc'
         }));
-        
+
         const textAngle = createSVGElement('text', { x: posO.x - 10, y: posO.y - 45, fill: '#EF9F27', 'font-size': '13px' });
         textAngle.textContent = `∠AOB = 150°`;
         svg.appendChild(textAngle);
       }
 
-      if(currentStep >= 4) {
+      if (currentStep >= 4) {
         // Red distance segment AB
         svg.appendChild(createSVGElement('line', {
           x1: posA.x, y1: posA.y, x2: posB.x, y2: posB.y,
           stroke: '#C62828', 'stroke-width': 3, 'stroke-dasharray': '5, 5', class: 'animated-path draw'
         }));
-        
-        const textAB = createSVGElement('text', { x: (posA.x+posB.x)/2 + 10, y: (posA.y+posB.y)/2 + 20, fill: '#C62828', 'font-size': '13px' });
+
+        const textAB = createSVGElement('text', { x: (posA.x + posB.x) / 2 + 10, y: (posA.y + posB.y) / 2 + 20, fill: '#C62828', 'font-size': '13px' });
         textAB.textContent = `AB = ? km`;
         svg.appendChild(textAB);
       }
 
       // Draw Rescue ship path animation if completed
-      if(m4Data.isRescueStarted) {
+      if (m4Data.isRescueStarted) {
         svg.appendChild(createSVGElement('line', {
           x1: posO.x, y1: posO.y, x2: posMid.x, y2: posMid.y,
           stroke: '#1B8C5A', 'stroke-width': 2.5, 'stroke-dasharray': '4, 4', class: 'animated-path draw'
         }));
-        
+
         // Draw rescue ship icon moving
         const rescueShip = createSVGElement('g');
         const dxR = posO.x - posMid.x;
         const dyR = posO.y - posMid.y;
-        
+
         // Add dynamic style for rescue ship animation
         const styleR = document.createElementNS("http://www.w3.org/2000/svg", "style");
         styleR.textContent = `
@@ -2179,7 +2841,7 @@
           }
         `;
         svg.appendChild(styleR);
-        
+
         rescueShip.appendChild(createSVGElement('circle', { cx: posMid.x, cy: posMid.y, r: 14, fill: '#1B8C5A' }));
         const foR = createSVGElement('foreignObject', { x: posMid.x - 10, y: posMid.y - 10, width: 20, height: 20 });
         foR.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"><i class="ti ti-lifebuoy" style="color: #fff; font-size: 14px;"></i></div>`;
@@ -2194,13 +2856,13 @@
       const foO = createSVGElement('foreignObject', { x: posO.x - 12, y: posO.y - 12, width: 24, height: 24 });
       foO.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"><i class="ti ti-anchor" style="color: #fff; font-size: 16px;"></i></div>`;
       groupO.appendChild(foO);
-      
+
       const labelO = createSVGElement('text', { x: posO.x - 22, y: posO.y + 32, fill: '#fff', 'font-size': '13px', 'font-weight': 'bold' });
       labelO.textContent = 'Cảng O';
       groupO.appendChild(labelO);
       svg.appendChild(groupO);
 
-      if(currentStep >= 2) {
+      if (currentStep >= 2) {
         const dxA = posO.x - posA.x;
         const dyA = posO.y - posA.y;
         const dxB = posO.x - posB.x;
@@ -2225,11 +2887,11 @@
         const foA = createSVGElement('foreignObject', { x: posA.x - 10, y: posA.y - 10, width: 20, height: 20 });
         foA.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"><i class="ti ti-sailboat" style="color: #fff; font-size: 14px;"></i></div>`;
         groupA.appendChild(foA);
-        
+
         const labelA = createSVGElement('text', { x: posA.x - 20, y: posA.y - 18, fill: '#fff', 'font-size': '12px', 'font-weight': 'bold' });
         labelA.textContent = `Tàu A (${m4Data.v1 * m4Data.time} km)`;
         groupA.appendChild(labelA);
-        
+
         if (currentStep === 2) {
           groupA.setAttribute('style', `animation: sailA 2.5s ease-in-out forwards; transform-origin: ${posA.x}px ${posA.y}px;`);
         }
@@ -2241,11 +2903,11 @@
         const foB = createSVGElement('foreignObject', { x: posB.x - 10, y: posB.y - 10, width: 20, height: 20 });
         foB.innerHTML = `<div style="display:flex; justify-content:center; align-items:center; width:100%; height:100%;"><i class="ti ti-ship" style="color: #fff; font-size: 14px;"></i></div>`;
         groupB.appendChild(foB);
-        
+
         const labelB = createSVGElement('text', { x: posB.x - 20, y: posB.y + 28, fill: '#fff', 'font-size': '12px', 'font-weight': 'bold' });
         labelB.textContent = `Tàu B (${m4Data.v2 * m4Data.time} km)`;
         groupB.appendChild(labelB);
-        
+
         if (currentStep === 2) {
           groupB.setAttribute('style', `animation: sailB 2.5s ease-in-out forwards; transform-origin: ${posB.x}px ${posB.y}px;`);
         }
@@ -2253,7 +2915,7 @@
       }
 
       // STEP 1
-      if(currentStep === 1) {
+      if (currentStep === 1) {
         stepTitle.textContent = "Bối cảnh cứu hộ";
         stepContent.innerHTML = `
           <p>Hai tàu khởi hành từ <b>Cảng O</b>:</p>
@@ -2267,7 +2929,7 @@
       }
 
       // STEP 2
-      else if(currentStep === 2) {
+      else if (currentStep === 2) {
         stepTitle.textContent = "Tính độ dài OA và OB";
         stepContent.innerHTML = `
           <p>Tính quãng đường di chuyển của hai tàu sau <b>${m4Data.time} giờ</b>:</p>
@@ -2296,7 +2958,7 @@
       }
 
       // STEP 3
-      else if(currentStep === 3) {
+      else if (currentStep === 3) {
         stepTitle.textContent = "Xác định góc AOB";
         stepContent.innerHTML = `
           <p>Nhìn vào bản đồ la bàn và xác định góc tạo bởi hai hướng đi <b>N60°E</b> và <b>S30°W</b>:</p>
@@ -2316,7 +2978,7 @@
       }
 
       // STEP 4
-      else if(currentStep === 4) {
+      else if (currentStep === 4) {
         stepTitle.textContent = "Công thức tính AB";
         stepContent.innerHTML = `
           <p>Áp dụng định lý Cosin cho tam giác AOB để tính AB²:</p>
@@ -2329,10 +2991,10 @@
       }
 
       // STEP 5
-      else if(currentStep === 5) {
+      else if (currentStep === 5) {
         const oa = m4Data.v1 * m4Data.time;
         const ob = m4Data.v2 * m4Data.time;
-        const exactAB2 = oa**2 + ob**2 - 2 * oa * ob * Math.cos(150 * Math.PI / 180);
+        const exactAB2 = oa ** 2 + ob ** 2 - 2 * oa * ob * Math.cos(150 * Math.PI / 180);
         const exactAB = Math.round(Math.sqrt(exactAB2));
 
         stepTitle.textContent = "Khoảng cách giữa hai tàu";
@@ -2364,33 +3026,33 @@
     }
 
     function validateM4Step() {
-      if(currentStep === 1 && !m4Data.isDeparted) {
+      if (currentStep === 1 && !m4Data.isDeparted) {
         setCaptionBox("alert", "Vui lòng bấm 'Khởi hành' để tàu bắt đầu di chuyển.");
         return false;
       }
-      
-      if(currentStep === 2) {
+
+      if (currentStep === 2) {
         const oa = parseInt(m4Data.inputs.oa);
         const ob = parseInt(m4Data.inputs.ob);
         let hasError = false;
 
-        if(oa !== m4Data.v1 * m4Data.time) { document.getElementById('in-oa').classList.add('error'); hasError = true; }
+        if (oa !== m4Data.v1 * m4Data.time) { document.getElementById('in-oa').classList.add('error'); hasError = true; }
         else { document.getElementById('in-oa').classList.remove('error'); }
 
-        if(ob !== m4Data.v2 * m4Data.time) { document.getElementById('in-ob').classList.add('error'); hasError = true; }
+        if (ob !== m4Data.v2 * m4Data.time) { document.getElementById('in-ob').classList.add('error'); hasError = true; }
         else { document.getElementById('in-ob').classList.remove('error'); }
 
-        if(hasError) {
+        if (hasError) {
           incWrongCount();
           return false;
         }
       }
 
-      if(currentStep === 3) {
+      if (currentStep === 3) {
         const angle = parseInt(m4Data.inputs.angleAOB);
-        if(angle !== 150) {
+        if (angle !== 150) {
           document.getElementById('in-angleaob').classList.add('error');
-          if(angle === 90) {
+          if (angle === 90) {
             setCaptionBox("alert", "Sai lầm thường gặp! Hướng N60°E và S30°W không vuông góc với nhau. Bắc lệch Đông 60 độ và Nam lệch Tây 30 độ tạo ra góc tù chéo 150 độ.");
           } else {
             setCaptionBox("alert", "Góc chưa chính xác. Đo góc trên la bàn: góc giữa hai vector di chuyển là 150 độ.");
@@ -2408,27 +3070,27 @@
     function validateM4Final() {
       const oa = m4Data.v1 * m4Data.time;
       const ob = m4Data.v2 * m4Data.time;
-      const exactAB2 = oa**2 + ob**2 - 2 * oa * ob * Math.cos(150 * Math.PI / 180);
+      const exactAB2 = oa ** 2 + ob ** 2 - 2 * oa * ob * Math.cos(150 * Math.PI / 180);
       const exactAB = Math.sqrt(exactAB2);
-      
+
       // Wrong sign calculation trap
-      const wrongAB2 = oa**2 + ob**2 + 2 * oa * ob * Math.cos(150 * Math.PI / 180);
+      const wrongAB2 = oa ** 2 + ob ** 2 + 2 * oa * ob * Math.cos(150 * Math.PI / 180);
       const wrongAB = Math.sqrt(wrongAB2);
 
       const userAB = parseFloat(m4Data.inputs.abResult);
 
-      if(isNaN(userAB)) {
+      if (isNaN(userAB)) {
         alert("Vui lòng nhập khoảng cách.");
         incWrongCount();
         return;
       }
 
-      if(Math.abs(userAB - exactAB) < 0.8 || Math.abs(userAB - Math.round(exactAB)) <= 1) {
+      if (Math.abs(userAB - exactAB) < 0.8 || Math.abs(userAB - Math.round(exactAB)) <= 1) {
         m4Data.isRescueStarted = true;
         renderM4(); // Draw rescue path
         setCaptionBox("success", `Tuyệt vời! Khoảng cách giữa 2 tàu AB ≈ <b>${exactAB.toFixed(2)} km</b>. Tàu cứu hộ đã xuất phát thẳng tới trung điểm cứu nạn thành công! 🚢`);
         showStageCompleteBanner(`Khoảng cách giữa 2 tàu AB ≈ ${exactAB.toFixed(2)} km`);
-      } else if(Math.abs(userAB - wrongAB) < 0.5) {
+      } else if (Math.abs(userAB - wrongAB) < 0.5) {
         setCaptionBox("alert", `Có phải bạn đã nhầm dấu cosin? Do cos(150°) = −0.866, công thức trừ biến thành phép cộng: AB² = ${oa}² + ${ob}² − 2·${oa}·${ob}·(−0.866) = ${exactAB2.toFixed(0)}. Khoảng cách thật sự phải dài hơn các cạnh đơn lẻ.`);
         document.getElementById('in-result-ab').classList.add('error');
         incWrongCount();
@@ -2442,17 +3104,17 @@
 
     // ─── 9. INTEGRATED VALIDATION DISPATCHER ──────────
     function validateFinalStep() {
-      if(activeModule === 1) validateM1Final();
-      else if(activeModule === 2) validateM2Final();
-      else if(activeModule === 3) validateM3Final();
-      else if(activeModule === 4) validateM4Final();
+      if (activeModule === 1) validateM1Final();
+      else if (activeModule === 2) validateM2Final();
+      else if (activeModule === 3) validateM3Final();
+      else if (activeModule === 4) validateM4Final();
     }
 
     function validateStepInput() {
-      if(activeModule === 1) return validateM1Step();
-      else if(activeModule === 2) return validateM2Step();
-      else if(activeModule === 3) return validateM3Step();
-      else if(activeModule === 4) return validateM4Step();
+      if (activeModule === 1) return validateM1Step();
+      else if (activeModule === 2) return validateM2Step();
+      else if (activeModule === 3) return validateM3Step();
+      else if (activeModule === 4) return validateM4Step();
       return true;
     }
 
@@ -2470,4 +3132,5 @@
     }
   </script>
 </body>
+
 </html>
