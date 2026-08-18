@@ -1,0 +1,1458 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bài 22: Ba đường conic — Module 2: Hypebol "Tháp giải nhiệt nhà máy điện"</title>
+
+  <!-- Google Fonts: Plus Jakarta Sans -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&display=swap"
+    rel="stylesheet">
+
+  <!-- KaTeX CSS & JS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+    onload="renderKaTeXInElement(document.body)"></script>
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
+
+  <style>
+    /* =========================================================================
+       1. DESIGN SYSTEM TOKENS (Jade & Cream Theme)
+       ========================================================================= */
+    :root {
+      --jade-dark: #14432F;
+      --jade-deep: #2D8B6F;
+      --cream: #FAF7F0;
+      --paper-line: #cbd5e1;
+
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+      --surface: #ffffff;
+      --border: var(--paper-line);
+      --text: #0f172a;
+      --text-2: #334155;
+      --sub: #64748b;
+
+      --correct: #16a34a;
+      --correct-bg: #f0fdf4;
+      --wrong: #dc2626;
+      --wrong-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --info: #2563eb;
+      --info-bg: #eff6ff;
+
+      --canvas-bg: #fafcfb;
+    }
+
+    html,
+    body {
+      height: 100%;
+      max-height: 100vh;
+      overflow: hidden;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Plus Jakarta Sans', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* HEADER */
+    header {
+      height: 48px;
+      max-height: 48px;
+      flex-shrink: 0;
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      padding: 0 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: 0 2px 8px rgba(20, 67, 47, 0.15);
+    }
+
+    .header-title-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 4px 10px;
+      border-radius: 20px;
+      font-size: 11.5px;
+      font-weight: 600;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+    }
+
+    .btn-header {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 5px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      transition: all 0.2s ease;
+      white-space: nowrap;
+    }
+
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* SUB NAV / STEP PROGRESS BAR */
+    .sub-nav {
+      height: 40px;
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      display: flex;
+      align-items: center;
+      padding: 0 16px;
+      gap: 6px;
+      flex-shrink: 0;
+      overflow-x: auto;
+    }
+
+    .step-pill {
+      padding: 4px 10px;
+      font-size: 11.5px;
+      font-weight: 600;
+      color: var(--sub);
+      background: #f8fafc;
+      border: 1px solid var(--border);
+      border-radius: 16px;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+    }
+
+    .step-pill.active {
+      color: var(--teal);
+      background: rgba(45, 139, 111, 0.1);
+      border-color: var(--teal);
+    }
+
+    .step-pill.completed {
+      color: var(--correct);
+      border-color: #bbf7d0;
+      background: #f0fdf4;
+    }
+
+    .step-pill.optional {
+      border-style: dashed;
+    }
+
+    /* MAIN APP BODY */
+    .app-body {
+      display: grid;
+      grid-template-columns: 46% 54%;
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 88px);
+      max-height: calc(100vh - 88px);
+      overflow: hidden;
+    }
+
+    /* LEFT VIEWPORT / CANVAS CONTAINER */
+    .viewport-container {
+      background: #ffffff;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%;
+    }
+
+    .canvas-wrapper {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--canvas-bg);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    .canvas-toolbar {
+      position: absolute;
+      bottom: 12px;
+      left: 12px;
+      display: flex;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(8px);
+      padding: 4px 8px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+      z-index: 10;
+    }
+
+    .tool-btn {
+      background: #ffffff;
+      color: var(--navy);
+      border: 1px solid var(--border);
+      padding: 5px 10px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .tool-btn:hover {
+      background: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
+    }
+
+    /* RIGHT SIDEBAR INTERACTIVE PANEL */
+    .sidebar {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100%;
+    }
+
+    .sidebar-content {
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* CARD COMPONENTS */
+    .card {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 14px 16px;
+      box-shadow: 0 2px 4px rgba(0, 0, 0, 0.02);
+      transition: all 0.25s ease;
+      width: 100%;
+      box-sizing: border-box;
+      overflow-x: hidden;
+    }
+
+    .card.shake {
+      animation: shake 0.4s cubic-bezier(.36, .07, .19, .97) both;
+    }
+
+    @keyframes shake {
+
+      10%,
+      90% {
+        transform: translate3d(-1px, 0, 0);
+      }
+
+      20%,
+      80% {
+        transform: translate3d(2px, 0, 0);
+      }
+
+      30%,
+      50%,
+      70% {
+        transform: translate3d(-4px, 0, 0);
+      }
+
+      40%,
+      60% {
+        transform: translate3d(4px, 0, 0);
+      }
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 8px;
+    }
+
+    .info-box {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-left: 3px solid var(--teal);
+      padding: 10px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      color: var(--text-2);
+      line-height: 1.5;
+      max-width: 100%;
+      box-sizing: border-box;
+      word-break: break-word;
+      overflow-wrap: break-word;
+    }
+
+    .info-box.athena {
+      background: #f0fdf4;
+      border-left-color: var(--teal);
+      color: #166534;
+    }
+
+    .info-box.warning {
+      background: var(--warning-bg);
+      border-left-color: var(--warning);
+      color: #92400e;
+    }
+
+    .info-box.error {
+      background: var(--wrong-bg);
+      border-left-color: var(--wrong);
+      color: #991b1b;
+    }
+
+    .info-box.correct {
+      background: var(--correct-bg);
+      border-left-color: var(--correct);
+      color: #166534;
+    }
+
+    /* FORM CONTROLS & RADIO OPTIONS */
+    .option-list {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin: 10px 0;
+    }
+
+    .option-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 13px;
+      background: #ffffff;
+      transition: all 0.2s ease;
+    }
+
+    .option-item:hover {
+      border-color: var(--teal);
+      background: rgba(45, 139, 111, 0.04);
+    }
+
+    .option-item.selected {
+      border-color: var(--teal);
+      background: rgba(45, 139, 111, 0.08);
+      font-weight: 600;
+    }
+
+    .option-item input {
+      margin-top: 3px;
+      accent-color: var(--teal);
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+      width: 100%;
+      box-sizing: border-box;
+    }
+
+    .control-label {
+      font-size: 13px;
+      font-weight: 600;
+      color: var(--text);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .text-input {
+      width: 100%;
+      box-sizing: border-box;
+      display: block;
+      padding: 8px 12px;
+      border: 1px solid var(--border);
+      border-radius: 6px;
+      font-family: inherit;
+      font-size: 13.5px;
+      outline: none;
+      transition: all 0.2s ease;
+    }
+
+    .text-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.15);
+    }
+
+    .btn {
+      padding: 8px 16px;
+      border-radius: 6px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      border: none;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: #ffffff;
+    }
+
+    .btn-primary:hover {
+      background: #236f58;
+    }
+
+    .btn-secondary {
+      background: #ffffff;
+      color: var(--text-2);
+      border: 1px solid var(--border);
+    }
+
+    .btn-secondary:hover {
+      background: #f8fafc;
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 640px;
+      width: 90%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 28px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 16px;
+    }
+
+    .modal-title {
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: var(--sub);
+      cursor: pointer;
+    }
+
+    /* RESPONSIVE MOBILE & TABLET LAYOUT (max-width: 992px) */
+    @media (max-width: 992px) {
+      body {
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+
+      header {
+        padding: 6px 10px;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .header-title-group {
+        gap: 4px;
+      }
+
+      .header-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+        white-space: nowrap;
+      }
+
+      .btn-header {
+        padding: 4px 8px;
+        font-size: 11px;
+        white-space: nowrap;
+      }
+
+      .sub-nav {
+        padding: 0 8px;
+        overflow-x: auto;
+        flex-wrap: nowrap;
+      }
+
+      .step-pill {
+        padding: 4px 8px;
+        font-size: 11px;
+      }
+
+      .app-body {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .viewport-container {
+        width: 100% !important;
+        position: sticky !important;
+        top: 0 !important;
+        z-index: 50 !important;
+        height: calc((100vh - 48px) * 0.45) !important;
+        height: calc((100dvh - 48px) * 0.45) !important;
+        min-height: 280px !important;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border) !important;
+        box-shadow: 0 4px 16px rgba(0, 0, 0, 0.12);
+      }
+
+      .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .sidebar-content {
+        padding: 8px;
+        gap: 8px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .card {
+        padding: 10px;
+        width: 100%;
+        box-sizing: border-box;
+        overflow-x: hidden;
+      }
+
+      .info-box {
+        padding: 6px 10px;
+        font-size: 12px;
+        overflow-x: auto;
+      }
+
+      .text-input {
+        padding: 6px 8px;
+        font-size: 12.5px;
+        box-sizing: border-box;
+      }
+
+      .btn {
+        padding: 7px 10px;
+        font-size: 12.5px;
+        min-height: 36px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <div class="header-title-group">
+      <div class="header-badge">
+        <i class="ti ti-flame"></i> Toán 10 — Bài 22: Ba đường conic
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="btn-header" onclick="openNotebookModal()">
+        <i class="ti ti-book"></i> Sổ tay kiến thức
+      </button>
+    </div>
+  </header>
+
+  <!-- SUB NAV STEP PROGRESS BAR -->
+  <div class="sub-nav">
+    <button class="step-pill active" id="pill-step-1" onclick="switchStep(1)">B1: Đặt hệ trục</button>
+    <button class="step-pill" id="pill-step-2" onclick="switchStep(2)">B2: Xác định a</button>
+    <button class="step-pill" id="pill-step-3" onclick="switchStep(3)">B3: Giải ngược tìm b</button>
+    <button class="step-pill" id="pill-step-4" onclick="switchStep(4)">B4: PT chính tắc</button>
+    <button class="step-pill" id="pill-step-5" onclick="switchStep(5)">B5: Bán kính móng</button>
+    <button class="step-pill optional" id="pill-step-6" onclick="switchStep(6)">B6: Mở rộng (Tiêu cự)</button>
+  </div>
+
+  <!-- MAIN APP BODY -->
+  <div class="app-body">
+    <!-- LEFT VIEWPORT / CANVAS CONTAINER -->
+    <div class="viewport-container">
+      <div class="canvas-wrapper">
+        <canvas id="main-canvas"></canvas>
+        <div class="canvas-toolbar">
+          <button class="tool-btn" onclick="resetViewport()"><i class="ti ti-focus-2"></i> Fit Khung nhìn</button>
+          <button class="tool-btn" onclick="zoomViewport(0.85)"><i class="ti ti-zoom-in"></i> Phóng to</button>
+          <button class="tool-btn" onclick="zoomViewport(1.18)"><i class="ti ti-zoom-out"></i> Thu nhỏ</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RIGHT SIDEBAR INTERACTIVE PANEL -->
+    <div class="sidebar">
+      <div class="sidebar-content" id="sidebar-panel">
+        <!-- Rendered by JS -->
+      </div>
+    </div>
+  </div>
+
+  <!-- MODAL: SỔ TAY KIẾN THỨC -->
+  <div class="modal-overlay" id="modal-notebook">
+    <div class="modal-card">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-book" style="color:var(--teal);"></i> Sổ tay Kiến thức Hypebol</div>
+        <button class="close-btn" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="info-box athena" style="margin-bottom:12px;">
+        <b>📌 Phương trình chính tắc của Hypebol:</b><br>
+        $$\frac{x^2}{a^2} - \frac{y^2}{b^2} = 1 \quad (\text{hoặc } \frac{r^2}{a^2} - \frac{h^2}{b^2} = 1) \quad (a, b >
+        0)$$
+      </div>
+      <div class="info-box warning" style="margin-bottom:12px;">
+        • <b>$a$ (Nửa trục thực):</b> Khoảng cách từ tâm đến đỉnh gần nhất (tại cổ tháp, $h=0$).<br>
+        • <b>Mối quan hệ 3 đại lượng:</b> $c^2 = a^2 + b^2$ (Hypebol dùng dấu <b>CỘNG</b> — ngược lại với Elip).<br>
+        • <b>Tiêu điểm & Tiêu cự:</b> $F_1(-c; 0), F_2(c; 0)$, khoảng cách giữa 2 tiêu điểm là $2c$.<br>
+        • <b>Tính chất 2 nhánh:</b> Hypebol gồm 2 nhánh đối xứng nhau qua tâm $O$ (dù $h > 0$ hay $h < 0$ đều dùng chung
+          1 công thức). </div>
+          <button class="btn btn-primary" style="width:100%;" onclick="closeNotebookModal()">Đã hiểu kiến thức</button>
+      </div>
+    </div>
+
+    <!-- MODAL: TỔNG KẾT MODULE 2 -->
+    <div class="modal-overlay" id="modal-summary">
+      <div class="modal-card">
+        <div class="modal-header">
+          <div class="modal-title"><i class="ti ti-award" style="color:var(--correct);"></i> Chúc mừng hoàn thành Module
+            2!</div>
+          <button class="close-btn" onclick="closeSummaryModal()"><i class="ti ti-x"></i></button>
+        </div>
+        <div class="info-box correct" style="margin-bottom:16px;">
+          <b>🎉 Bạn đã xuất sắc mô hình hóa mặt cắt tháp giải nhiệt nhà máy điện thành đường Hypebol!</b><br>
+          Bằng cách đặt hệ trục tại cổ tháp, xác định $a=20m$, giải ngược tìm $b=40m$, bạn đã lập được phương trình
+          chính tắc $\frac{r^2}{400} - \frac{h^2}{1600} = 1$, đồng thời tính chuẩn bán kính móng tháp $r \approx 32,02m$
+          tại độ sâu $h=-50m$.
+        </div>
+        <button class="btn btn-primary" style="width:100%;" onclick="closeSummaryModal()">Đóng bảng tổng kết</button>
+      </div>
+    </div>
+
+    <!-- JAVASCRIPT LOGIC -->
+    <script>
+      /* =========================================================================
+         1. GLOBAL STATE & KATEX HELPER
+         ========================================================================= */
+      const state = {
+        currentStep: 1, // 1 to 6
+        stepCompleted: [false, false, false, false, false, false, false],
+
+        // Step 1: Origin selection (A=0: cổ tháp, B=1: đáy tháp, C=2: đỉnh tháp)
+        step1Selected: null,
+        step1Attempts: 0,
+
+        // Step 2: Input a
+        step2AInput: '',
+        step2Attempts: 0,
+
+        // Step 3: Solve b from point (r=25, h=30)
+        step3BInput: '',
+        step3Attempts: 0,
+
+        // Step 4: Canonical Equation input
+        step4EqInput: '',
+        step4Attempts: 0,
+
+        // Step 5: Foundation radius at h = -50
+        step5RadiusInput: '',
+        step5Attempts: 0,
+
+        // Step 6: Optional focal distance 2c
+        step6DistInput: '',
+        step6Attempts: 0
+      };
+
+      function renderKaTeXInElement(el) {
+        if (!el) return;
+        if (typeof renderMathInElement === 'function') {
+          try {
+            renderMathInElement(el, {
+              delimiters: [
+                { left: '$$', right: '$$', display: true },
+                { left: '$', right: '$', display: false },
+                { left: '\\(', right: '\\)', display: false },
+                { left: '\\[', right: '\\]', display: true }
+              ],
+              throwOnError: false
+            });
+          } catch (e) {
+            console.warn('KaTeX render warning:', e);
+          }
+        }
+      }
+
+      function LMS() {
+        return {
+          progress: function (data) { console.log('[LMS] Progress:', data); },
+          event: function (name, data) { console.log('[LMS] Event:', name, data); },
+          state: function (data) { console.log('[LMS] State:', data); },
+          complete: function () {
+            console.log('[LMS] Module 2 completed!');
+            if (window.parent && window.parent.postMessage) {
+              window.parent.postMessage({
+                type: 'LMS_COMPLETE',
+                moduleId: 'L10-C7-B22-M2',
+                items: [
+                  { id: 'b22m2-b1', name: 'Bước 1 — Đặt hệ trục (tháp giải nhiệt)', completed: state.stepCompleted[1] },
+                  { id: 'b22m2-b2', name: 'Bước 2 — Xác định a', completed: state.stepCompleted[2] },
+                  { id: 'b22m2-b3', name: 'Bước 3 — Giải ngược tìm b', completed: state.stepCompleted[3] },
+                  { id: 'b22m2-b4', name: 'Bước 4 — Viết PT chính tắc', completed: state.stepCompleted[4] },
+                  { id: 'b22m2-b5', name: 'Bước 5 — Tính bán kính đáy móng', completed: state.stepCompleted[5] }
+                ]
+              }, '*');
+            }
+          }
+        };
+      }
+
+      /* =========================================================================
+         2. CANVAS GRAPH ENGINE
+         ========================================================================= */
+      const canvas = document.getElementById('main-canvas');
+      const ctx = canvas.getContext('2d');
+
+      const viewport = {
+        xMin: -60, xMax: 60,
+        yMin: -70, yMax: 50,
+        zoomFactor: 1.0
+      };
+
+      let viewWidth = 600;
+      let viewHeight = 500;
+
+      function resizeCanvas() {
+        if (!canvas || !canvas.parentElement) return;
+        const rect = canvas.parentElement.getBoundingClientRect();
+        if (rect.width > 0 && rect.height > 0) {
+          viewWidth = rect.width;
+          viewHeight = rect.height;
+          const dpr = window.devicePixelRatio || 1;
+          canvas.width = rect.width * dpr;
+          canvas.height = rect.height * dpr;
+          ctx.resetTransform();
+          ctx.scale(dpr, dpr);
+          autoFitViewport();
+        }
+      }
+      window.addEventListener('resize', resizeCanvas);
+
+      function resetViewport() {
+        viewport.zoomFactor = 1.0;
+        autoFitViewport();
+      }
+
+      function toPxX(x) { return (x - viewport.xMin) / (viewport.xMax - viewport.xMin) * viewWidth; }
+      function toPxY(y) { return viewHeight - (y - viewport.yMin) / (viewport.yMax - viewport.yMin) * viewHeight; }
+
+      function autoFitViewport() {
+        const A = viewWidth / viewHeight;
+        let rawXMin = -60, rawXMax = 60, rawYMin = -70, rawYMax = 50;
+        const cx = (rawXMin + rawXMax) / 2;
+        const cy = (rawYMin + rawYMax) / 2;
+        let w = (rawXMax - rawXMin) * viewport.zoomFactor;
+        let h = (rawYMax - rawYMin) * viewport.zoomFactor;
+
+        if (w / h < A) w = h * A; else h = w / A;
+
+        viewport.xMin = cx - w / 2; viewport.xMax = cx + w / 2;
+        viewport.yMin = cy - h / 2; viewport.yMax = cy + h / 2;
+
+        drawTowerCanvas();
+      }
+
+      function zoomViewport(factor) {
+        viewport.zoomFactor *= factor;
+        autoFitViewport();
+      }
+
+      function drawBadge(x, y, text, color, bgColor = 'rgba(255, 255, 255, 0.95)', borderColor = '#cbd5e1', alignX = 'center', alignY = 'bottom') {
+        ctx.font = 'bold 11px "Plus Jakarta Sans", sans-serif';
+        const textWidth = ctx.measureText(text).width;
+        const px = toPxX(x);
+        const py = toPxY(y);
+
+        const paddingX = 8, paddingY = 4;
+        const boxW = textWidth + paddingX * 2, boxH = 20;
+
+        let drawX = px - boxW / 2;
+        if (alignX === 'left') drawX = px + 8;
+        else if (alignX === 'right') drawX = px - boxW - 8;
+
+        let drawY = py - boxH - 6;
+        if (alignY === 'top') drawY = py + 6;
+        else if (alignY === 'middle') drawY = py - boxH / 2;
+
+        // Keep within canvas bounds
+        if (drawX < 6) drawX = 6;
+        if (drawX + boxW > viewWidth - 6) drawX = viewWidth - boxW - 6;
+        if (drawY < 6) drawY = 6;
+        if (drawY + boxH > viewHeight - 6) drawY = viewHeight - boxH - 6;
+
+        ctx.fillStyle = bgColor; ctx.strokeStyle = borderColor; ctx.lineWidth = 1.2;
+        ctx.beginPath(); ctx.roundRect(drawX, drawY, boxW, boxH, 6); ctx.fill(); ctx.stroke();
+        ctx.fillStyle = color; ctx.fillText(text, drawX + paddingX, drawY + 14);
+      }
+
+      function drawTowerCanvas() {
+        if (!viewWidth || !viewHeight) return;
+        ctx.clearRect(0, 0, viewWidth, viewHeight);
+        ctx.fillStyle = '#fafcfb'; ctx.fillRect(0, 0, viewWidth, viewHeight);
+
+        const px0 = toPxX(0), py0 = toPxY(0);
+
+        // Grid
+        ctx.strokeStyle = '#f1f5f9'; ctx.lineWidth = 1;
+        for (let x = Math.ceil(viewport.xMin); x <= Math.floor(viewport.xMax); x += 10) {
+          const px = toPxX(x); ctx.beginPath(); ctx.moveTo(px, 0); ctx.lineTo(px, viewHeight); ctx.stroke();
+        }
+        for (let y = Math.ceil(viewport.yMin); y <= Math.floor(viewport.yMax); y += 10) {
+          const py = toPxY(y); ctx.beginPath(); ctx.moveTo(0, py); ctx.lineTo(viewWidth, py); ctx.stroke();
+        }
+
+        // Draw Hyperbolic Cooling Tower Wall Curves (a=20, b=40)
+        // Equation: r^2 / 400 - h^2 / 1600 = 1 => r = 20 * sqrt(1 + h^2 / 1600)
+        const hMin = -50, hMax = 35;
+
+        // Fill Tower Interior
+        ctx.fillStyle = 'rgba(45, 139, 111, 0.06)';
+        ctx.beginPath();
+        let first = true;
+        // Right branch from hMin to hMax
+        for (let h = hMin; h <= hMax; h += 0.5) {
+          const r = 20 * Math.sqrt(1 + (h * h) / 1600);
+          const px = toPxX(r), py = toPxY(h);
+          if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
+        }
+        // Top boundary
+        const rTop = 20 * Math.sqrt(1 + (hMax * hMax) / 1600);
+        ctx.lineTo(toPxX(-rTop), toPxY(hMax));
+        // Left branch from hMax to hMin
+        for (let h = hMax; h >= hMin; h -= 0.5) {
+          const r = 20 * Math.sqrt(1 + (h * h) / 1600);
+          const px = toPxX(-r), py = toPxY(h);
+          ctx.lineTo(px, py);
+        }
+        // Bottom boundary
+        const rBot = 20 * Math.sqrt(1 + (hMin * hMin) / 1600);
+        ctx.lineTo(toPxX(rBot), toPxY(hMin));
+        ctx.closePath();
+        ctx.fill();
+
+        // Right Branch Outline
+        ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 3.5; ctx.beginPath();
+        first = true;
+        for (let h = hMin; h <= hMax; h += 0.5) {
+          const r = 20 * Math.sqrt(1 + (h * h) / 1600);
+          const px = toPxX(r), py = toPxY(h);
+          if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
+        }
+        ctx.stroke();
+
+        // Left Branch Outline
+        ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 3.5; ctx.beginPath();
+        first = true;
+        for (let h = hMin; h <= hMax; h += 0.5) {
+          const r = 20 * Math.sqrt(1 + (h * h) / 1600);
+          const px = toPxX(-r), py = toPxY(h);
+          if (first) { ctx.moveTo(px, py); first = false; } else { ctx.lineTo(px, py); }
+        }
+        ctx.stroke();
+
+        // Top Ring and Bottom Ring Dashed lines
+        ctx.strokeStyle = '#cbd5e1'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+        ctx.beginPath(); ctx.moveTo(toPxX(-rTop), toPxY(hMax)); ctx.lineTo(toPxX(rTop), toPxY(hMax)); ctx.stroke();
+        ctx.beginPath(); ctx.moveTo(toPxX(-rBot), toPxY(hMin)); ctx.lineTo(toPxX(rBot), toPxY(hMin)); ctx.stroke();
+        ctx.setLineDash([]);
+
+        // STEP 1: Candidate Origin Points A(0,0 cổ tháp), B(0,-50 đáy tháp), C(0,35 đỉnh tháp)
+        if (state.currentStep === 1) {
+          // Point A (Cổ tháp - điểm hẹp nhất)
+          drawPoint(toPxX(0), toPxY(0), state.step1Selected === 0 ? '#16a34a' : '#2563eb', 7);
+          drawBadge(0, 0, 'A (Cổ tháp - Hẹp nhất)', state.step1Selected === 0 ? '#16a34a' : '#2563eb', '#ffffff', '#cbd5e1', 'center', 'top');
+
+          // Point B (Đáy tháp)
+          drawPoint(toPxX(0), toPxY(-50), state.step1Selected === 1 ? '#dc2626' : '#64748b', 6);
+          drawBadge(0, -50, 'B (Đáy tháp)', state.step1Selected === 1 ? '#dc2626' : '#64748b', '#ffffff', '#cbd5e1', 'center', 'top');
+
+          // Point C (Đỉnh tháp)
+          drawPoint(toPxX(0), toPxY(35), state.step1Selected === 2 ? '#dc2626' : '#64748b', 6);
+          drawBadge(0, 35, 'C (Đỉnh tháp)', state.step1Selected === 2 ? '#dc2626' : '#64748b', '#ffffff', '#cbd5e1', 'center', 'bottom');
+        }
+
+        // Draw Axes O-rh if Step 1 completed or Step >= 2
+        if (state.stepCompleted[1] || state.currentStep >= 2) {
+          ctx.strokeStyle = '#334155'; ctx.lineWidth = 2;
+          ctx.beginPath(); ctx.moveTo(0, py0); ctx.lineTo(viewWidth, py0); ctx.stroke(); // Axis r (horizontal)
+          ctx.beginPath(); ctx.moveTo(px0, viewHeight); ctx.lineTo(px0, 0); ctx.stroke(); // Axis h (vertical)
+
+          ctx.fillStyle = '#0f172a'; ctx.font = 'bold 12px "Plus Jakarta Sans", sans-serif';
+          ctx.fillText('r (bán kính)', viewWidth - 75, py0 + 16); ctx.fillText('h (độ cao)', px0 + 10, 14); ctx.fillText('O', px0 - 14, py0 + 16);
+        }
+
+        // STEP 2+: Highlight semi-real axis a=20 (radius at neck h=0)
+        if (state.currentStep >= 2) {
+          ctx.strokeStyle = '#2563eb'; ctx.lineWidth = 3;
+          ctx.beginPath(); ctx.moveTo(px0, py0); ctx.lineTo(toPxX(20), py0); ctx.stroke();
+          drawPoint(toPxX(20), py0, '#2563eb', 6);
+          drawBadge(10, 0, 'a = 20m (Bán kính cổ tháp)', '#2563eb', '#eff6ff', '#bfdbfe', 'center', 'bottom');
+        }
+
+        // STEP 3+: Highlight Measurement Point (r=25, h=30)
+        if (state.currentStep >= 3) {
+          const px25 = toPxX(25), py30 = toPxY(30);
+          ctx.strokeStyle = '#d97706'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+          ctx.beginPath(); ctx.moveTo(px0, py30); ctx.lineTo(px25, py30); ctx.stroke();
+          ctx.beginPath(); ctx.moveTo(px25, py0); ctx.lineTo(px25, py30); ctx.stroke();
+          ctx.setLineDash([]);
+
+          drawPoint(px25, py30, '#d97706', 7);
+          drawBadge(25, 30, '📍 Điểm đo (r=25; h=30)', '#d97706', '#fffbeb', '#fde68a', 'left', 'middle');
+        }
+
+        // STEP 5+: Foundation Radius at h = -50
+        if (state.currentStep >= 5) {
+          const rBotExact = 20 * Math.sqrt(1 + 2500 / 1600); // ~32.015m
+          const pxBot = toPxX(rBotExact), pyBot = toPxY(-50);
+
+          ctx.strokeStyle = '#16a34a'; ctx.lineWidth = 2.5;
+          ctx.beginPath(); ctx.moveTo(px0, pyBot); ctx.lineTo(pxBot, pyBot); ctx.stroke();
+
+          drawPoint(pxBot, pyBot, '#16a34a', 7);
+          drawBadge(rBotExact / 2, -50, 'r ≈ 32.02m (Móng tháp h = -50)', '#16a34a', '#f0fdf4', '#86efac', 'center', 'top');
+        }
+
+        // STEP 6: Foci F1(-44.72, 0) and F2(44.72, 0)
+        if (state.currentStep === 6) {
+          const cVal = Math.sqrt(2000); // ~44.72m
+          const pxF1 = toPxX(-cVal), pxF2 = toPxX(cVal);
+
+          drawPoint(pxF1, py0, '#dc2626', 7);
+          drawPoint(pxF2, py0, '#dc2626', 7);
+
+          drawBadge(-cVal, 0, 'F1 (-44.72; 0)', '#dc2626', '#fef2f2', '#fca5a5', 'center', 'bottom');
+          drawBadge(cVal, 0, 'F2 (44.72; 0)', '#dc2626', '#fef2f2', '#fca5a5', 'center', 'bottom');
+
+          ctx.strokeStyle = '#dc2626'; ctx.lineWidth = 1.5; ctx.setLineDash([4, 4]);
+          ctx.beginPath(); ctx.moveTo(pxF1, py0); ctx.lineTo(pxF2, py0); ctx.stroke();
+          ctx.setLineDash([]);
+
+          drawBadge(0, -15, 'Tiêu cự 2c ≈ 89.44m', '#dc2626', '#ffffff', '#dc2626', 'center', 'top');
+        }
+      }
+
+      function drawPoint(px, py, color, r = 5) {
+        ctx.fillStyle = color; ctx.beginPath(); ctx.arc(px, py, r, 0, Math.PI * 2); ctx.fill();
+        ctx.strokeStyle = '#ffffff'; ctx.lineWidth = 1.5; ctx.stroke();
+      }
+
+      /* =========================================================================
+         3. SIDEBAR STEP RENDERERS & HANDLERS
+         ========================================================================= */
+      function switchStep(stepNum) {
+        if (stepNum > 1 && !state.stepCompleted[stepNum - 1] && !state.stepCompleted[stepNum]) {
+          return; // Locked
+        }
+        state.currentStep = stepNum;
+        document.querySelectorAll('.step-pill').forEach((pill, idx) => {
+          pill.classList.remove('active');
+          if (idx + 1 === stepNum) pill.classList.add('active');
+          if (state.stepCompleted[idx + 1]) pill.classList.add('completed');
+        });
+        renderSidebar();
+        autoFitViewport();
+      }
+
+      function renderSidebar() {
+        const container = document.getElementById('sidebar-panel');
+        const step = state.currentStep;
+
+        if (step === 1) renderStep1(container);
+        else if (step === 2) renderStep2(container);
+        else if (step === 3) renderStep3(container);
+        else if (step === 4) renderStep4(container);
+        else if (step === 5) renderStep5(container);
+        else if (step === 6) renderStep6(container);
+
+        renderKaTeXInElement(container);
+      }
+
+      /* STEP 1: CHỌN GỐC TỌA ĐỘ */
+      function renderStep1(container) {
+        container.innerHTML = `
+        <div class="card" id="card-step-1">
+          <div class="card-title"><i class="ti ti-pin" style="color:var(--teal);"></i> Bước 1: Chọn vị trí đặt hệ trục tọa độ $O-rh$</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Quan sát mặt cắt dọc tháp giải nhiệt nhà máy điện. Chọn vị trí gốc $O$ sao cho phương trình mô tả tháp là <b>ĐƠN GIẢN NHẤT</b>:
+          </div>
+
+          <div class="option-list">
+            <label class="option-item ${state.step1Selected === 0 ? 'selected' : ''}">
+              <input type="radio" name="opt_step1" value="0" ${state.step1Selected === 0 ? 'checked' : ''} onchange="state.step1Selected=0; autoFitViewport();">
+              <div>
+                <b>(A) Tại "cổ" tháp:</b> Điểm hẹp nhất của tháp (đỉnh của nhánh Hypebol).
+              </div>
+            </label>
+            <label class="option-item ${state.step1Selected === 1 ? 'selected' : ''}">
+              <input type="radio" name="opt_step1" value="1" ${state.step1Selected === 1 ? 'checked' : ''} onchange="state.step1Selected=1; autoFitViewport();">
+              <div>
+                <b>(B) Tại móng đáy tháp:</b> Điểm chính giữa mặt đất nơi chân tháp tọa lạc.
+              </div>
+            </label>
+            <label class="option-item ${state.step1Selected === 2 ? 'selected' : ''}">
+              <input type="radio" name="opt_step1" value="2" ${state.step1Selected === 2 ? 'checked' : ''} onchange="state.step1Selected=2; autoFitViewport();">
+              <div>
+                <b>(C) Tại miệng đỉnh tháp:</b> Điểm chính giữa vòng tròn trên cùng của tháp.
+              </div>
+            </label>
+          </div>
+
+          <div id="fb-step-1"></div>
+
+          ${!state.stepCompleted[1] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep1()">
+              <i class="ti ti-check"></i> Xác nhận Vị trí Đặt Hệ trục
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(2)">
+              Chuyển sang Bước 2: Xác định a <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+      }
+
+      function submitStep1() {
+        const fb = document.getElementById('fb-step-1');
+        if (state.step1Selected === null) {
+          fb.innerHTML = `<div class="info-box warning">Vui lòng chọn 1 phương án vị trí trước khi xác nhận nhé!</div>`;
+          return;
+        }
+
+        if (state.step1Selected === 0) {
+          state.stepCompleted[1] = true;
+          fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> Đặt gốc tại điểm hẹp nhất (cổ tháp) giúp phương trình đạt dạng chính tắc $\\frac{r^2}{a^2} - \\frac{h^2}{b^2} = 1$ với trục ngang là bán kính $r$ và trục đứng là độ cao $h$.</div>`;
+          renderKaTeXInElement(fb);
+          LMS().event('answered', { step: 1, correct: true });
+          switchStep(2);
+        } else {
+          state.step1Attempts++;
+          triggerShake('card-step-1');
+          if (state.step1Attempts === 1) {
+            fb.innerHTML = `<div class="info-box error">Chưa đúng. Vị trí này vẫn mô tả được nhưng phương trình sẽ không ở dạng chính tắc đơn giản. Thử lại nhé!</div>`;
+          } else if (state.step1Attempts === 2) {
+            fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Hãy đặt gốc tại điểm <b>HẸP NHẤT</b> của tháp — đó chính là đỉnh của nhánh Hypebol.</div>`;
+          } else {
+            fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Chọn phương án <b>(A) Tại "cổ" tháp</b>.</div>`;
+          }
+          renderKaTeXInElement(fb);
+        }
+      }
+
+      /* STEP 2: XÁC ĐỊNH a */
+      function renderStep2(container) {
+        container.innerHTML = `
+        <div class="card" id="card-step-2">
+          <div class="card-title"><i class="ti ti-ruler" style="color:var(--teal);"></i> Bước 2: Xác định tham số $a$</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Tại cổ tháp (ứng với độ cao $h = 0$), bán kính tháp đo được trực tiếp là $20m$.
+          </div>
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Tham số $a$ (bán kính cổ tháp) ($m$):</span></label>
+            <input type="text" class="text-input" id="inp-step2-a" placeholder="Nhập số..." value="${state.step2AInput}" ${state.stepCompleted[2] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-step-2"></div>
+
+          ${!state.stepCompleted[2] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep2()">
+              <i class="ti ti-check"></i> Xác nhận Tham số a
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(3)">
+              Chuyển sang Bước 3: Giải ngược tìm b <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+      }
+
+      function submitStep2() {
+        const valA = document.getElementById('inp-step2-a').value.trim();
+        const fb = document.getElementById('fb-step-2');
+        state.step2AInput = valA;
+
+        if (valA === '20') {
+          state.stepCompleted[2] = true;
+          fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> Tại cổ tháp ($h = 0$), bán kính đo được chính là khoảng cách từ tâm đến đỉnh hypebol $\\implies a = 20m$ ($a^2 = 400$).</div>`;
+          renderKaTeXInElement(fb);
+          LMS().event('answered', { step: 2, correct: true });
+          switchStep(3);
+        } else {
+          state.step2Attempts++;
+          triggerShake('card-step-2');
+          if (state.step2Attempts === 1) {
+            fb.innerHTML = `<div class="info-box error">Chưa đúng. Quan sát bán kính đo được tại vị trí cổ tháp $h=0$ và nhập số thích hợp nhé!</div>`;
+          } else if (state.step2Attempts === 2) {
+            fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Bán kính tại điểm hẹp nhất ($h=0$) chính là giá trị $a = 20$.</div>`;
+          } else {
+            fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>a = 20</b>.</div>`;
+          }
+          renderKaTeXInElement(fb);
+        }
+      }
+
+      /* STEP 3: GIẢI NGƯỢC TÌM b */
+      function renderStep3(container) {
+        container.innerHTML = `
+        <div class="card" id="card-step-3">
+          <div class="card-title"><i class="ti ti-calculator" style="color:var(--teal);"></i> Bước 3: Giải ngược tìm tham số $b$ từ điểm đo thêm</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Tại độ cao $h = 30m$ phía trên cổ tháp, người ta đo được bán kính tháp tại đó là $r = 25m$. Thay điểm $(r=25; h=30)$ vào phương trình $\\frac{r^2}{a^2} - \\frac{h^2}{b^2} = 1$ (với $a=20$) để giải tìm $b$:
+          </div>
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Tham số $b$ (bán trục ảo):</span></label>
+            <input type="text" class="text-input" id="inp-step3-b" placeholder="Nhập số..." value="${state.step3BInput}" ${state.stepCompleted[3] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-step-3"></div>
+
+          ${!state.stepCompleted[3] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep3()">
+              <i class="ti ti-check"></i> Xác nhận Tham số b
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(4)">
+              Chuyển sang Bước 4: Viết PT chính tắc <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+      }
+
+      function submitStep3() {
+        const valB = document.getElementById('inp-step3-b').value.trim();
+        const fb = document.getElementById('fb-step-3');
+        state.step3BInput = valB;
+
+        if (valB === '40') {
+          state.stepCompleted[3] = true;
+          fb.innerHTML = `<div class="info-box correct"><b>✓ Xuất sắc!</b> $\\frac{25^2}{20^2} - \\frac{30^2}{b^2} = 1 \\iff \\frac{625}{400} - \\frac{900}{b^2} = 1 \\iff \\frac{900}{b^2} = \\frac{225}{400} \\implies b^2 = 1600 \\implies b = 40$.</div>`;
+          renderKaTeXInElement(fb);
+          LMS().event('answered', { step: 3, correct: true });
+          switchStep(4);
+        } else {
+          state.step3Attempts++;
+          triggerShake('card-step-3');
+          if (state.step3Attempts === 1) {
+            fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng sử dụng đúng công thức TRỪ $\\frac{r^2}{a^2} - \\frac{h^2}{b^2} = 1$ (của Hypebol, không phải dấu cộng như elip).</div>`;
+          } else if (state.step3Attempts === 2) {
+            fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Thay $r=25, h=30, a=20$: $\\frac{625}{400} - \\frac{900}{b^2} = 1 \\iff \\frac{900}{b^2} = \\frac{225}{400} = \\frac{9}{16} \\implies b^2 = 1600 \\implies b = 40$.</div>`;
+          } else {
+            fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>b = 40</b>.</div>`;
+          }
+          renderKaTeXInElement(fb);
+        }
+      }
+
+      /* STEP 4: VIẾT PT CHÍNH TẮC */
+      function renderStep4(container) {
+        container.innerHTML = `
+        <div class="card" id="card-step-4">
+          <div class="card-title"><i class="ti ti-math" style="color:var(--teal);"></i> Bước 4: Viết Phương trình chính tắc</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Với $a = 20$ ($a^2 = 400$) và $b = 40$ ($b^2 = 1600$), phương trình chính tắc Hypebol mô tả mặt cắt tháp giải nhiệt là:
+          </div>
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Phương trình chính tắc:</span></label>
+            <input type="text" class="text-input" id="inp-step4-eq" placeholder="Nhập phương trình dạng r^2/... - h^2/... = 1" value="${state.step4EqInput}" ${state.stepCompleted[4] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-step-4"></div>
+
+          ${!state.stepCompleted[4] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep4()">
+              <i class="ti ti-check"></i> Xác nhận Phương trình
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(5)">
+              Chuyển sang Bước 5: Tính Bán kính Móng <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+      }
+
+      function submitStep4() {
+        const rawVal = document.getElementById('inp-step4-eq').value.trim().toLowerCase().replace(/\s+/g, '');
+        const fb = document.getElementById('fb-step-4');
+        state.step4EqInput = document.getElementById('inp-step4-eq').value;
+
+        const isOk = rawVal.includes('r^2/400-h^2/1600=1') || rawVal.includes('r²/400-h²/1600=1') ||
+          rawVal.includes('x^2/400-y^2/1600=1') || rawVal.includes('x²/400-y²/1600=1');
+
+        if (isOk) {
+          state.stepCompleted[4] = true;
+          fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> Phương trình chính tắc: $\\frac{r^2}{400} - \\frac{h^2}{1600} = 1$.</div>`;
+          renderKaTeXInElement(fb);
+          LMS().event('answered', { step: 4, correct: true });
+          switchStep(5);
+        } else {
+          state.step4Attempts++;
+          triggerShake('card-step-4');
+          if (state.step4Attempts === 1) {
+            fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng kiểm tra lại $a^2 = 20^2 = 400$ và $b^2 = 40^2 = 1600$ với dấu TRỪ nhé!</div>`;
+          } else if (state.step4Attempts === 2) {
+            fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> Mẫu số thứ nhất là $a^2 = 400$, mẫu số thứ hai là $b^2 = 1600$. Thử lại nhé!</div>`;
+          } else {
+            fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Gõ <b>r^2/400 - h^2/1600 = 1</b>.</div>`;
+          }
+          renderKaTeXInElement(fb);
+        }
+      }
+
+      /* STEP 5: TÍNH BÁN KÍNH ĐÁY MÓNG THÁP */
+      function renderStep5(container) {
+        container.innerHTML = `
+        <div class="card" id="card-step-5">
+          <div class="card-title"><i class="ti ti-building" style="color:var(--teal);"></i> Bước 5: Tính bán kính đáy móng tháp</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            Đáy móng tháp nằm ở độ sâu $50m$ PHÍA DƯỚI cổ tháp (ứng với độ cao $h = -50m$). Tính bán kính đáy móng $r$:
+          </div>
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Bán kính đáy móng tháp $r$ ($m$):</span></label>
+            <input type="text" class="text-input" id="inp-step5-rad" placeholder="Nhập kết quả làm tròn (ví dụ 35.02)..." value="${state.step5RadiusInput}" ${state.stepCompleted[5] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-step-5"></div>
+
+          ${!state.stepCompleted[5] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep5()">
+              <i class="ti ti-check"></i> Xác nhận Bán kính Móng
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="switchStep(6)">
+              Chuyển sang Bước 6: Mở rộng (Tiêu cự) <i class="ti ti-arrow-right"></i>
+            </button>
+          `}
+        </div>
+      `;
+      }
+
+      function submitStep5() {
+        const valStr = document.getElementById('inp-step5-rad').value.trim().replace(',', '.');
+        const val = parseFloat(valStr);
+        const fb = document.getElementById('fb-step-5');
+        state.step5RadiusInput = document.getElementById('inp-step5-rad').value;
+
+        if (!isNaN(val) && Math.abs(val - 32.02) <= 0.3) {
+          state.stepCompleted[5] = true;
+          fb.innerHTML = `<div class="info-box correct"><b>✓ Chính xác!</b> Thay $h = -50$ vào PT: $\\frac{r^2}{400} - \\frac{2500}{1600} = 1 \\iff \\frac{r^2}{400} = 1 + \\frac{25}{16} = \\frac{41}{16} \\iff r^2 = 1025 \\implies r \\approx 32,02m$. (Lưu ý: Hypebol đối xứng qua tâm $O$ nên $h = -50$ dùng chung 1 công thức như $h > 0$).</div>`;
+          renderKaTeXInElement(fb);
+          LMS().event('answered', { step: 5, correct: true });
+          LMS().complete();
+          switchStep(6);
+        } else {
+          state.step5Attempts++;
+          triggerShake('card-step-5');
+          if (state.step5Attempts === 1) {
+            fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng thay $h = -50$ vào phương trình đã tìm ở Bước 4 và tính $r = \\sqrt{1025}$ nhé!</div>`;
+          } else if (state.step5Attempts === 2) {
+            fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $\\frac{r^2}{400} - \\frac{(-50)^2}{1600} = 1 \\iff r^2 = 400 \\times (1 + \\frac{2500}{1600}) = 1025 \\implies r \\approx 32,02m$.</div>`;
+          } else {
+            fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>32.02</b>.</div>`;
+          }
+          renderKaTeXInElement(fb);
+        }
+      }
+
+      /* STEP 6: MỞ RỘNG (TÍNH TIÊU CỰ - KHÔNG BẮT BUỘC) */
+      function renderStep6(container) {
+        container.innerHTML = `
+        <div class="card" id="card-step-6">
+          <div class="card-title"><i class="ti ti-star" style="color:var(--warning);"></i> Bước 6: Mở rộng — Tính tiêu cự của mặt cắt tháp</div>
+          <div style="font-size:12.5px; color:var(--text-2); margin-bottom:10px;">
+            (Không bắt buộc) Với $a^2 = 400$ và $b^2 = 1600$, tính khoảng cách tiêu cự $2c$ giữa 2 tiêu điểm của Hypebol:
+          </div>
+
+          <div class="control-group" style="margin-bottom:10px;">
+            <label class="control-label"><span>Khoảng cách giữa 2 tiêu điểm $2c$ ($m$):</span></label>
+            <input type="text" class="text-input" id="inp-step6-dist" placeholder="Nhập kết quả làm tròn (ví dụ 68.34)..." value="${state.step6DistInput}" ${state.stepCompleted[6] ? 'disabled' : ''}>
+          </div>
+
+          <div id="fb-step-6"></div>
+
+          ${!state.stepCompleted[6] ? `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="submitStep6()">
+              <i class="ti ti-check"></i> Xác nhận Tiêu cự 2c
+            </button>
+          ` : `
+            <button class="btn btn-primary" style="width:100%; margin-top:6px;" onclick="finishModule2()">
+              <i class="ti ti-award"></i> Hoàn thành Module 2
+            </button>
+          `}
+        </div>
+      `;
+      }
+
+      function submitStep6() {
+        const valStr = document.getElementById('inp-step6-dist').value.trim().replace(',', '.');
+        const val = parseFloat(valStr);
+        const fb = document.getElementById('fb-step-6');
+        state.step6DistInput = document.getElementById('inp-step6-dist').value;
+
+        if (!isNaN(val) && Math.abs(val - 89.44) <= 0.5) {
+          state.stepCompleted[6] = true;
+          fb.innerHTML = `<div class="info-box correct"><b>✓ Xuất sắc!</b> Hypebol dùng công thức CỘNG $c^2 = a^2 + b^2 = 400 + 1600 = 2000 \\implies c = 20\\sqrt{5} \\approx 44,72m \\implies 2c \\approx 89,44m$. (Khác hẳn dấu TRỪ của elip!).</div>`;
+          renderKaTeXInElement(fb);
+          LMS().event('answered', { step: 6, correct: true, required: false });
+          autoFitViewport();
+        } else {
+          state.step6Attempts++;
+          triggerShake('card-step-6');
+          if (state.step6Attempts === 1) {
+            fb.innerHTML = `<div class="info-box error">Chưa đúng. Vui lòng lưu ý Hypebol dùng công thức CỘNG $c^2 = a^2 + b^2$ (không phải trừ).</div>`;
+          } else if (state.step6Attempts === 2) {
+            fb.innerHTML = `<div class="info-box warning">💡 <b>Gợi ý:</b> $c^2 = 400 + 1600 = 2000 \\implies c = 20\\sqrt{5} \\approx 44,72 \\implies 2c \\approx 89,44m$.</div>`;
+          } else {
+            fb.innerHTML = `<div class="info-box athena">💡 <b>Gợi ý đáp án chuẩn:</b> Nhập <b>89.44</b>.</div>`;
+          }
+          renderKaTeXInElement(fb);
+        }
+      }
+
+      function finishModule2() {
+        openSummaryModal();
+      }
+
+      /* =========================================================================
+         4. MODALS & INITIALIZATION
+         ========================================================================= */
+      function openNotebookModal() {
+        const modal = document.getElementById('modal-notebook');
+        modal.classList.add('active');
+        renderKaTeXInElement(modal);
+      }
+      function closeNotebookModal() {
+        document.getElementById('modal-notebook').classList.remove('active');
+      }
+      function openSummaryModal() {
+        const modal = document.getElementById('modal-summary');
+        modal.classList.add('active');
+        renderKaTeXInElement(modal);
+      }
+      function closeSummaryModal() {
+        document.getElementById('modal-summary').classList.remove('active');
+      }
+
+      function triggerShake(elementId) {
+        const el = document.getElementById(elementId);
+        if (el) {
+          el.classList.remove('shake');
+          void el.offsetWidth;
+          el.classList.add('shake');
+        }
+      }
+
+      window.addEventListener('DOMContentLoaded', () => {
+        renderSidebar();
+        resizeCanvas();
+        resetViewport();
+        renderKaTeXInElement(document.body);
+      });
+
+      window.addEventListener('load', () => {
+        renderKaTeXInElement(document.body);
+      });
+    </script>
+</body>
+
+</html>
