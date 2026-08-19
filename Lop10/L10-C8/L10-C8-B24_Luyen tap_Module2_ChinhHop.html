@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Module 1: Hoán vị (Tổng kết nhanh) — Bài 24 Toán 10</title>
+  <title>Module 2: Chỉnh hợp (Tổng kết nhanh) — Bài 24 Toán 10</title>
 
   <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -227,6 +227,16 @@
       line-height: 1.5;
     }
 
+    .formula-highlight {
+      display: inline-block;
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      font-weight: 700;
+      padding: 2px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--accent);
+    }
+
     /* =========================================================
        5. DRILL CALCULATOR SECTION (SYMBOL PAD)
        ========================================================= */
@@ -401,6 +411,17 @@
 
     .btn-key.shift-key:hover:not(:disabled) {
       background: var(--accent);
+      color: #FFF;
+    }
+
+    .btn-key.npr-key {
+      background: #EAF4FA;
+      border-color: #3B7A9E;
+      color: #1E4B66;
+    }
+
+    .btn-key.npr-key:hover:not(:disabled) {
+      background: #3B7A9E;
       color: #FFF;
     }
 
@@ -975,9 +996,9 @@
   <!-- INTRO HEADER -->
   <header class="intro-text">
     <div class="badge-topic">🎯 Bài 24 · Hoán vị, Chỉnh hợp & Tổ hợp · Toán 10</div>
-    <h1 class="intro-title">Module 1: Hoán vị (Tổng kết nhanh)</h1>
+    <h1 class="intro-title">Module 2: Chỉnh hợp (Tổng kết nhanh)</h1>
     <p class="intro-desc">
-      Ôn tập nhanh công thức tính số hoán vị $P_n = n!$, thực hành kỹ năng bấm máy tính cầm tay và áp dụng tính nhanh qua 4 bài toán thực tế quen thuộc.
+      Ôn tập công thức chỉnh hợp $A_n^k = \frac{n!}{(n-k)!}$, phân biệt bản chất với hoán vị, thực hành bấm phím <code>nPr</code> trên máy tính cầm tay và giải nhanh 4 bài toán thực tế.
     </p>
 
     <div class="progress-wrap">
@@ -997,39 +1018,40 @@
     </div>
     <div class="formula-content">
       <div class="formula-math">
-        $P_n = n \cdot (n-1) \cdot (n-2) \cdots 2 \cdot 1 = n!$
+        $A_n^k = n \cdot (n-1) \cdots (n-k+1) = \frac{n!}{(n-k)!} \quad (1 \le k \le n)$
       </div>
       <div class="formula-note">
-        • Quy ước: $0! = 1$<br>
-        • <strong>Dấu hiệu nhận biết:</strong> Đề bài yêu cầu sắp xếp <strong>TẤT CẢ</strong> $n$ phần tử của tập hợp theo một thứ tự xác định.
+        • <strong>Dấu hiệu then chốt:</strong> Chỉnh hợp là <span class="formula-highlight">CHỌN $k$ trong $n$ phần tử ($k \le n$) RỒI XẾP THỨ TỰ / PHÂN VAI TRÒ</span>.<br>
+        • <em>Mối liên hệ:</em> Khi $k = n$ (chọn tất cả rồi xếp thứ tự), chỉnh hợp trở thành hoán vị: $P_n = A_n^n = n!$.
       </div>
     </div>
   </section>
 
-  <!-- CALCULATOR DRILL (SYMBOL PAD) -->
+  <!-- CALCULATOR DRILL (SYMBOL PAD + CASIO LCD) -->
   <section class="drill-card" id="card-drill">
     <div class="drill-header">
       <div class="drill-title">
-        <span>🔢</span> Drill luyện bấm máy tính: Tính $6!$
+        <span>🔢</span> Drill luyện bấm máy tính: Tính $A_9^3$
       </div>
       <span id="drill-status-icon" class="drill-status-icon">⏳</span>
     </div>
     <p class="drill-desc">
-      Hãy nhập hoặc sử dụng hàng phím bên dưới để chèn đúng trình tự bấm phím tính $6!$ trên máy tính khoa học (Casio / Vinacal).
+      Hãy nhập hoặc sử dụng hàng phím bên dưới để chèn đúng trình tự bấm phím tính $A_9^3$ trên máy tính khoa học (Casio / Vinacal).
     </p>
 
     <div class="calculator-interactive-wrap">
       <div class="calc-row">
-        <input type="text" id="calc-screen" class="calc-input-screen" placeholder="VD: 6 SHIFT x! =" autocomplete="off">
+        <input type="text" id="calc-screen" class="calc-input-screen" placeholder="VD: 9 SHIFT nPr 3 =" autocomplete="off">
         <button class="btn-calc-check" id="btn-drill-submit" onclick="submitDrill()">Kiểm tra</button>
       </div>
 
       <!-- Mini Symbol Pad -->
       <div class="symbol-pad">
         <span class="symbol-pad-label">Phím hỗ trợ:</span>
-        <button class="btn-key" onclick="insertToken('6')">6</button>
+        <button class="btn-key" onclick="insertToken('9')">9</button>
         <button class="btn-key shift-key" onclick="insertToken('SHIFT')">SHIFT</button>
-        <button class="btn-key" onclick="insertToken('x!')">x!</button>
+        <button class="btn-key npr-key" onclick="insertToken('nPr')">nPr</button>
+        <button class="btn-key" onclick="insertToken('3')">3</button>
         <button class="btn-key" onclick="insertToken('=')">=</button>
         <button class="btn-key clear-key" onclick="clearToken()">⌫ Xóa</button>
       </div>
@@ -1064,18 +1086,18 @@
 
   <main class="practice-list">
 
-    <!-- CÂU 1: XẾP SÁCH -->
+    <!-- CÂU 1: BAN CÁN SỰ LỚP -->
     <article class="q-card" id="card-q1">
       <div class="q-header">
-        <div class="q-badge">Câu 1 · Giá sách</div>
+        <div class="q-badge">Câu 1 · Cán sự lớp</div>
         <div class="q-status" id="status-q1">⏳</div>
       </div>
       <p class="q-prompt">
-        Có bao nhiêu cách xếp <strong>5 cuốn sách khác nhau</strong> thành một hàng lên giá sách?
+        Từ <strong>6 bạn</strong> trong lớp, có bao nhiêu cách chọn ra 3 bạn làm <strong>lớp trưởng, lớp phó, thư ký</strong> (3 vai trò khác nhau)?
       </p>
       <div class="q-interactive-wrap">
         <div class="q-action-row">
-          <label for="input-q1" class="q-action-label">Tổng số cách xếp:</label>
+          <label for="input-q1" class="q-action-label">Tổng số cách chọn:</label>
           <input type="text" inputmode="numeric" id="input-q1" class="q-input" placeholder="Nhập số..." autocomplete="off">
           <button class="btn-q-submit" id="btn-q1" onclick="submitQuestion(1)">Kiểm tra</button>
         </div>
@@ -1083,18 +1105,18 @@
       </div>
     </article>
 
-    <!-- CÂU 2: XẾP CÚP -->
+    <!-- CÂU 2: TRƯNG BÀY ÁO -->
     <article class="q-card" id="card-q2">
       <div class="q-header">
-        <div class="q-badge">Câu 2 · Tủ cúp</div>
+        <div class="q-badge">Câu 2 · Tủ kính mẫu áo</div>
         <div class="q-status" id="status-q2">⏳</div>
       </div>
       <p class="q-prompt">
-        Có bao nhiêu cách xếp <strong>4 chiếc cúp khác nhau</strong> thành một hàng trên tủ trưng bày của lớp?
+        Một cửa hàng có <strong>8 mẫu áo khác nhau</strong>. Hỏi có bao nhiêu cách chọn 3 mẫu để trưng bày ở <strong>vị trí 1, 2, 3</strong> trên tủ kính?
       </p>
       <div class="q-interactive-wrap">
         <div class="q-action-row">
-          <label for="input-q2" class="q-action-label">Tổng số cách xếp:</label>
+          <label for="input-q2" class="q-action-label">Tổng số cách chọn:</label>
           <input type="text" inputmode="numeric" id="input-q2" class="q-input" placeholder="Nhập số..." autocomplete="off">
           <button class="btn-q-submit" id="btn-q2" onclick="submitQuestion(2)">Kiểm tra</button>
         </div>
@@ -1102,18 +1124,18 @@
       </div>
     </article>
 
-    <!-- CÂU 3: CHẬU HOA -->
+    <!-- CÂU 3: HUY CHƯƠNG -->
     <article class="q-card" id="card-q3">
       <div class="q-header">
-        <div class="q-badge">Câu 3 · Chậu hoa</div>
+        <div class="q-badge">Câu 3 · Trao huy chương</div>
         <div class="q-status" id="status-q3">⏳</div>
       </div>
       <p class="q-prompt">
-        Có bao nhiêu cách xếp <strong>6 chậu hoa khác loại</strong> thành một hàng trước cổng trường?
+        Từ <strong>5 vận động viên</strong> lọt vào vòng chung kết, có bao nhiêu cách chọn 2 người để nhận <strong>huy chương Vàng và Bạc</strong>?
       </p>
       <div class="q-interactive-wrap">
         <div class="q-action-row">
-          <label for="input-q3" class="q-action-label">Tổng số cách xếp:</label>
+          <label for="input-q3" class="q-action-label">Tổng số cách chọn:</label>
           <input type="text" inputmode="numeric" id="input-q3" class="q-input" placeholder="Nhập số..." autocomplete="off">
           <button class="btn-q-submit" id="btn-q3" onclick="submitQuestion(3)">Kiểm tra</button>
         </div>
@@ -1121,18 +1143,18 @@
       </div>
     </article>
 
-    <!-- CÂU 4: HỘP THƯ -->
+    <!-- CÂU 4: THI HÁT -->
     <article class="q-card" id="card-q4">
       <div class="q-header">
-        <div class="q-badge">Câu 4 · Hộp thư</div>
+        <div class="q-badge">Câu 4 · Thứ tự biểu diễn</div>
         <div class="q-status" id="status-q4">⏳</div>
       </div>
       <p class="q-prompt">
-        Có bao nhiêu cách xếp <strong>3 lá thư khác nhau</strong> vào <strong>3 hộp thư</strong> đánh số khác nhau?
+        Một lớp có <strong>7 bạn đăng ký thi hát</strong>. Ban tổ chức cần chọn 4 bạn và xếp theo <strong>thứ tự biểu diễn 1 - 2 - 3 - 4</strong>. Hỏi có bao nhiêu cách?
       </p>
       <div class="q-interactive-wrap">
         <div class="q-action-row">
-          <label for="input-q4" class="q-action-label">Tổng số cách xếp:</label>
+          <label for="input-q4" class="q-action-label">Tổng số cách chọn:</label>
           <input type="text" inputmode="numeric" id="input-q4" class="q-input" placeholder="Nhập số..." autocomplete="off">
           <button class="btn-q-submit" id="btn-q4" onclick="submitQuestion(4)">Kiểm tra</button>
         </div>
@@ -1165,9 +1187,9 @@
         </svg>
       </div>
       <div class="summary-text">
-        <h3>🎉 Xuất sắc! Bạn đã hoàn thành Module 1: Hoán vị</h3>
+        <h3>🎉 Xuất sắc! Bạn đã hoàn thành Module 2: Chỉnh hợp</h3>
         <p>
-          "Bạn đã nắm rất vững công thức tính số hoán vị <strong>$P_n = n!$</strong> và thành thạo thao tác bấm phím trên máy tính cầm tay. Nhớ rằng: khi cần xếp <strong>tất cả $n$ phần tử</strong> vào $n$ vị trí có thứ tự, chúng ta luôn dùng hoán vị!"
+          "Chìa khoá vàng để phân biệt chỉnh hợp là: <strong>chọn $k$ phần tử trong $n$ phần tử và có thứ tự / phân biệt vai trò</strong>. Khi bấm máy tính, luôn nhớ bấm <strong>$n \to \text{SHIFT} \to \text{nPr} \to k \to =$</strong> nhé!"
         </p>
         <button class="btn-restart-all" onclick="restartAll()">
           <span>↺</span> Làm lại bài luyện tập
@@ -1188,26 +1210,26 @@
     "subject": "math",
     "chapter": 8,
     "lesson": 24,
-    "topic": "hoan_vi",
-    "module": 1
+    "topic": "chinh_hop",
+    "module": 2
   },
   "structure": [
-    { "id": "m1_may_tinh", "type": "explored", "required": true },
-    { "id": "m1_cau1", "type": "answered", "required": true },
-    { "id": "m1_cau2", "type": "answered", "required": true },
-    { "id": "m1_cau3", "type": "answered", "required": true },
-    { "id": "m1_cau4", "type": "answered", "required": true }
+    { "id": "m2_may_tinh", "type": "explored", "required": true },
+    { "id": "m2_cau1", "type": "answered", "required": true },
+    { "id": "m2_cau2", "type": "answered", "required": true },
+    { "id": "m2_cau3", "type": "answered", "required": true },
+    { "id": "m2_cau4", "type": "answered", "required": true }
   ],
   "progress": {
     "total": 5,
     "current": 0
   },
   "athenaGuidance": {
-    "m1_may_tinh": "Chỉ nhắc đúng trình tự phím: số -> SHIFT -> x! -> =, không bấm hộ học sinh.",
-    "m1_cau1": "Gợi ý nhắc lại công thức P_n = n! và hỏi ngược 'Ở đây n bằng bao nhiêu?' — không tính hộ đáp án 120.",
-    "m1_cau2": "Gợi ý: P_4 = 4! — không tính hộ đáp án 24.",
-    "m1_cau3": "Gợi ý: P_6 = 6! — không tính hộ đáp án 720.",
-    "m1_cau4": "Gợi ý: P_3 = 3! — không tính hộ đáp án 6."
+    "m2_may_tinh": "Chỉ nhắc đúng trình tự phím: n -> SHIFT -> nPr -> k -> =, không bấm hộ học sinh.",
+    "m2_cau1": "Gợi ý nhắc lại công thức A_n^k và hỏi ngược 'Ở đây n và k bằng bao nhiêu? Các vai trò có phân biệt không?' — không tính hộ đáp án 120.",
+    "m2_cau2": "Gợi ý: A_8^3 = 8!/5! — không tính hộ đáp án 336.",
+    "m2_cau3": "Gợi ý: A_5^2 = 5!/3! — không tính hộ đáp án 20.",
+    "m2_cau4": "Gợi ý: A_7^4 = 7!/3! — không tính hộ đáp án 840."
   }
 }
 </script>
@@ -1250,24 +1272,28 @@
      ========================================================= */
   const QUESTION_DATA = {
     1: {
-      n: 5,
+      n: 6,
+      k: 3,
       correct: 120,
-      explain: "Đúng! $P_5 = 5! = 5 \\times 4 \\times 3 \\times 2 \\times 1 = 120$, vì xếp 5 cuốn sách khác nhau vào 5 vị trí là một hoán vị của 5 phần tử."
+      explain: "Đúng! $A_6^3 = \\frac{6!}{(6-3)!} = \\frac{6!}{3!} = 6 \\times 5 \\times 4 = 120$, vì 3 vai trò (Lớp trưởng, Lớp phó, Thư ký) là có thứ tự và phân biệt rõ ràng."
     },
     2: {
-      n: 4,
-      correct: 24,
-      explain: "Chính xác! $P_4 = 4! = 4 \\times 3 \\times 2 \\times 1 = 24$, vì xếp 4 chiếc cúp vào 4 vị trí trên tủ là một hoán vị của 4 phần tử."
+      n: 8,
+      k: 3,
+      correct: 336,
+      explain: "Chính xác! $A_8^3 = \\frac{8!}{(8-3)!} = \\frac{8!}{5!} = 8 \\times 7 \\times 6 = 336$, vì xếp vào 3 vị trí 1, 2, 3 là có phân biệt thứ tự."
     },
     3: {
-      n: 6,
-      correct: 720,
-      explain: "Tuyệt vời! $P_6 = 6! = 6 \\times 5 \\times 4 \\times 3 \\times 2 \\times 1 = 720$, vì xếp 6 chậu hoa khác nhau là một hoán vị của 6 phần tử."
+      n: 5,
+      k: 2,
+      correct: 20,
+      explain: "Tuyệt vời! $A_5^2 = \\frac{5!}{(5-2)!} = \\frac{5!}{3!} = 5 \\times 4 = 20$, vì nhận 2 giải HCV và HCB là 2 vai trò khác nhau."
     },
     4: {
-      n: 3,
-      correct: 6,
-      explain: "Rất tốt! $P_3 = 3! = 3 \\times 2 \\times 1 = 6$, vì xếp 3 lá thư vào 3 hộp thư đánh số là một hoán vị của 3 phần tử."
+      n: 7,
+      k: 4,
+      correct: 840,
+      explain: "Rất tốt! $A_7^4 = \\frac{7!}{(7-4)!} = \\frac{7!}{3!} = 7 \\times 6 \\times 5 \\times 4 = 840$, vì 4 bạn được xếp theo thứ tự biểu diễn 1-2-3-4."
     }
   };
 
@@ -1318,20 +1344,21 @@
 
     // Parse tokens
     const hasShift = /\bshift\b/i.test(raw);
-    const hasXFact = /\bx!\b/i.test(raw) || /!/.test(raw);
+    const hasNPr = /\bnpr\b/i.test(raw) || /p/i.test(raw);
     const hasEquals = /=/.test(raw);
 
     // Indicator [S]
-    if (hasShift && !hasXFact && !hasEquals) {
+    if (hasShift && !hasNPr && !hasEquals) {
       indShift.classList.add('active');
     } else {
       indShift.classList.remove('active');
     }
 
-    // Format Expression on LCD
+    // Format Expression on LCD (Casio displays 9P3)
     let expr = '';
-    if (norm.includes('6')) expr += '6';
-    if (hasXFact) expr += '!';
+    if (norm.includes('9')) expr += '9';
+    if (hasNPr) expr += 'P';
+    if (norm.includes('3')) expr += '3';
 
     if (!expr && !hasShift && !hasEquals) {
       exprEl.textContent = '';
@@ -1339,11 +1366,11 @@
       resultEl.classList.remove('show');
       resultEl.textContent = '';
     } else {
-      exprEl.textContent = expr || (hasShift ? '6' : '');
+      exprEl.textContent = expr || (hasShift ? '9' : '');
       cursorEl.style.display = hasEquals ? 'none' : 'inline-block';
 
-      if (hasEquals && (expr === '6!' || norm.includes('6shiftx!='))) {
-        resultEl.textContent = '720';
+      if (hasEquals && (expr === '9P3' || norm.includes('9shiftnpr3='))) {
+        resultEl.textContent = '504';
         resultEl.classList.add('show');
       } else if (hasEquals) {
         resultEl.textContent = 'Syntax ERROR';
@@ -1385,32 +1412,32 @@
       calcScreen.classList.add('shake-anim');
       setTimeout(() => calcScreen.classList.remove('shake-anim'), 400);
       fbEl.className = 'feedback-box wrong show';
-      fbEl.innerHTML = '⚠️ Hãy nhập hoặc bấm phím chọn trình tự tính $6!$.';
+      fbEl.innerHTML = '⚠️ Hãy nhập hoặc bấm phím chọn trình tự tính $A_9^3$.';
       return;
     }
 
     state.drillAttempts++;
     const normalized = normMath(rawVal);
-    // Accepted patterns: 6shiftx!=, 6shiftx!
-    const isCorrect = (normalized === '6shiftx!=' || normalized === '6shiftx!');
+    // Accepted patterns: 9shiftnpr3=, 9shiftnpr3, 9p3=, 9p3
+    const isCorrect = (normalized === '9shiftnpr3=' || normalized === '9shiftnpr3' || normalized === '9p3=' || normalized === '9p3');
 
     if (isCorrect) {
       state.drillDone = true;
-      calcScreen.value = '6 SHIFT x! = 720';
+      calcScreen.value = '9 SHIFT nPr 3 = 504';
       calcScreen.className = 'calc-input-screen correct';
       calcScreen.disabled = true;
       btnEl.disabled = true;
       cardEl.classList.add('completed');
       document.getElementById('drill-status-icon').textContent = '✅';
       fbEl.className = 'feedback-box success show';
-      fbEl.innerHTML = '🎉 <strong>Chính xác!</strong> Kết quả máy tính trả về: $6! = 720$. Bạn đã nhớ đúng trình tự bấm phím!';
+      fbEl.innerHTML = '🎉 <strong>Chính xác!</strong> Kết quả máy tính trả về: $A_9^3 = 504$. Bạn đã nhớ đúng trình tự bấm phím chỉnh hợp!';
 
       // Update LCD display to final result
       document.getElementById('lcd-ind-shift').classList.remove('active');
-      document.getElementById('lcd-expr').textContent = '6!';
+      document.getElementById('lcd-expr').textContent = '9P3';
       document.getElementById('lcd-cursor').style.display = 'none';
       const resEl = document.getElementById('lcd-result');
-      resEl.textContent = '720';
+      resEl.textContent = '504';
       resEl.classList.add('show');
 
       updateGlobalProgress();
@@ -1421,13 +1448,13 @@
 
       if (state.drillAttempts === 1) {
         fbEl.className = 'feedback-box wrong show';
-        fbEl.innerHTML = '❌ Trình tự phím chưa đúng. Hãy thử nhớ lại cách gọi hàm giai thừa $(x!)$ trên máy tính.';
+        fbEl.innerHTML = '❌ Trình tự phím chưa đúng. Hãy nhớ: Chỉnh hợp $A_n^k$ được gọi bằng phím <code>nPr</code> (phím nhân) trên máy tính.';
       } else if (state.drillAttempts === 2) {
         fbEl.className = 'feedback-box hint show';
-        fbEl.innerHTML = '💡 <strong>Gợi ý:</strong> Bạn cần bấm số <code>6</code> $\\to$ bấm phím vàng <code>SHIFT</code> $\\to$ bấm phím <code>x!</code> $\\to$ bấm phím <code>=</code>.';
+        fbEl.innerHTML = '💡 <strong>Gợi ý:</strong> Bạn cần bấm số $n$ (<code>9</code>) $\\to$ bấm <code>SHIFT</code> $\\to$ bấm <code>nPr</code> $\\to$ bấm số $k$ (<code>3</code>) $\\to$ bấm <code>=</code>.';
       } else {
         fbEl.className = 'feedback-box hint show';
-        fbEl.innerHTML = '📘 <strong>Trình tự chuẩn:</strong> <code>6 SHIFT x! =</code>.<br><span style="color:var(--jade-dark); font-weight:700;">👉 Hãy gõ hoặc bấm các phím hỗ trợ theo đúng trình tự này rồi bấm "Kiểm tra".</span>';
+        fbEl.innerHTML = '📘 <strong>Trình tự chuẩn:</strong> <code>9 SHIFT nPr 3 =</code>.<br><span style="color:var(--jade-dark); font-weight:700;">👉 Hãy gõ hoặc bấm các phím hỗ trợ theo đúng trình tự này rồi bấm "Kiểm tra".</span>';
         calcScreen.focus();
         calcScreen.select();
       }
@@ -1491,12 +1518,12 @@
       } else if (q.attempts === 2) {
         inputEl.className = 'q-input wrong';
         fbEl.className = 'feedback-box hint show';
-        fbEl.innerHTML = `💡 <strong>Gợi ý:</strong> Áp dụng công thức hoán vị $P_n = n!$. Ở đây có $n = ${data.n}$ phần tử, vậy $P_${data.n} = ${data.n}! = ?$`;
+        fbEl.innerHTML = `💡 <strong>Gợi ý:</strong> Áp dụng công thức chỉnh hợp $A_n^k = \\frac{n!}{(n-k)!}$. Ở đây chọn $k = ${data.k}$ trong $n = ${data.n}$ phần tử có thứ tự, vậy $A_${data.n}^${data.k} = \\frac{${data.n}!}{(${data.n}-${data.k})!} = ?$`;
       } else {
         // Strike 3+: Reveal answer, user MUST type it manually
         inputEl.className = 'q-input wrong';
         fbEl.className = 'feedback-box hint show';
-        fbEl.innerHTML = `📘 <strong>Đáp án đúng:</strong> $P_${data.n} = ${data.n}! = ${data.correct}$.<br><span style="color:var(--jade-dark); font-weight:700;">👉 Hãy tự nhập kết quả <strong>${data.correct}</strong> vào ô bên trên và bấm "Kiểm tra" để hoàn thành câu này.</span>`;
+        fbEl.innerHTML = `📘 <strong>Đáp án đúng:</strong> $A_${data.n}^${data.k} = ${data.correct}$.<br><span style="color:var(--jade-dark); font-weight:700;">👉 Hãy tự nhập kết quả <strong>${data.correct}</strong> vào ô bên trên và bấm "Kiểm tra" để hoàn thành câu này.</span>`;
         inputEl.focus();
         inputEl.select();
       }
