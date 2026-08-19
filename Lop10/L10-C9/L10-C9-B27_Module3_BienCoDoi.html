@@ -1,0 +1,1173 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 3: Xác suất của biến cố đối — Bài 27 Toán 10</title>
+
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for beautiful math formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+          onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <style>
+    /* =========================================================
+       1. DESIGN TOKENS (JADE & CREAM PALETTE - 02_design_toan_final.md)
+       ========================================================= */
+    :root {
+      --bg: #FAF8F5;            /* Nền trang Cream ấm */
+      --paper: #FFFFFF;         /* Nền card trắng */
+      --paper-subtle: #F7F5F0;  /* Nền khối con nhạt */
+      --paper-line: #E8E4DC;    /* Viền nhẹ */
+      
+      --jade-deep: #14432F;     /* Xanh đậm thương hiệu */
+      --jade-dark: #1E5C45;     /* Xanh ngọc đậm */
+      --jade: #2D8B6F;          /* Xanh ngọc chính */
+      --jade-light: #E6F4EE;    /* Xanh ngọc nhạt */
+      --sage: #4A7C59;          /* Xanh lá xô thơm */
+      --sage-pale: #EBF3ED;     /* Nền sage nhẹ */
+      
+      --accent: #D97736;        /* Cam đất nhấn */
+      --accent-light: #FDF2E9;  /* Cam nhạt */
+      --accent-dark: #B25822;   /* Cam đậm */
+      
+      --ink: #1F2937;           /* Chữ chính */
+      --ink-2: #4B5563;         /* Chữ phụ */
+      --ink-3: #9CA3AF;         /* Chữ mờ / placeholder */
+      
+      --correct: #16A34A;       /* Đúng */
+      --correct-bg: #DCFCE7;
+      --wrong: #DC2626;         /* Sai */
+      --wrong-bg: #FEE2E2;
+      --warning: #D97706;       /* Cảnh báo / gợi ý */
+      --warning-bg: #FEF3C7;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
+      --shadow-lg: 0 10px 25px rgba(20,67,47,0.1);
+
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+    }
+
+    /* =========================================================
+       2. BASE & RESET
+       ========================================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      padding: 24px 16px 80px 16px;
+      -webkit-font-smoothing: antialiased;
+      font-size: 18px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* =========================================================
+       3. INTRO HEADER & PROGRESS BAR
+       ========================================================= */
+    .intro-text {
+      background: var(--paper);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-xl);
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .badge-topic {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--jade-light);
+      color: var(--jade-dark);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .intro-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .intro-desc {
+      font-size: 16px;
+      color: var(--ink-2);
+      margin-bottom: 18px;
+    }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--paper-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      border: 1px solid var(--paper-line);
+    }
+
+    .progress-info {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-2);
+    }
+
+    .progress-bar-bg {
+      flex: 1;
+      max-width: 320px;
+      height: 8px;
+      background: #E5E7EB;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--jade) 0%, var(--correct) 100%);
+      border-radius: var(--radius-full);
+      transition: width 0.35s ease;
+    }
+
+    /* =========================================================
+       4. COMPLEMENTARY BAR CANVAS (MÔ HÌNH THANH CHIA Ô BÀI 26)
+       ========================================================= */
+    .bar-model-card {
+      background: var(--paper);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-xl);
+      padding: 20px 22px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .bar-model-title {
+      font-size: 16px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      margin-bottom: 12px;
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 6px;
+      line-height: 1.4;
+    }
+
+    .prob-bar-container {
+      width: 100%;
+      height: 56px;
+      background: #E5E7EB;
+      border-radius: var(--radius-md);
+      display: flex;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0,0,0,0.08);
+      border: 2px solid var(--paper-line);
+      margin-bottom: 12px;
+    }
+
+    .bar-segment-e {
+      background: linear-gradient(135deg, var(--jade) 0%, var(--jade-dark) 100%);
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      transition: width 0.4s ease;
+      position: relative;
+      padding: 0 6px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .bar-segment-not-e {
+      background: linear-gradient(135deg, var(--accent) 0%, var(--accent-dark) 100%);
+      color: #FFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 14px;
+      font-weight: 700;
+      transition: width 0.4s ease;
+      position: relative;
+      padding: 0 6px;
+      text-align: center;
+      overflow: hidden;
+    }
+
+    .bar-legend {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 8px;
+      font-size: 13.5px;
+      color: var(--ink-2);
+      font-weight: 600;
+    }
+
+    /* =========================================================
+       5. STEP CARDS & FLOW LIST
+       ========================================================= */
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--jade-dark);
+      margin: 28px 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .flow-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    .step-card {
+      background: var(--paper);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-xl);
+      padding: 24px 28px;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-normal);
+    }
+
+    .step-card.completed {
+      border-color: var(--correct);
+      background: linear-gradient(180deg, var(--paper) 0%, var(--jade-light) 300%);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--paper-subtle);
+      color: var(--ink-2);
+      border: 1px solid var(--paper-line);
+    }
+
+    .step-card.completed .step-badge {
+      background: var(--correct-bg);
+      color: var(--correct);
+      border-color: var(--correct);
+    }
+
+    .step-status {
+      font-size: 18px;
+    }
+
+    .step-prompt {
+      font-size: 16px;
+      color: var(--ink);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .step-prompt strong {
+      color: var(--jade-dark);
+    }
+
+    /* Comparison Cases Layout (Step 2 vs Step 3) */
+    .cases-comparison-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .case-box {
+      background: var(--paper-subtle);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      position: relative;
+    }
+
+    .case-box.hard {
+      border-color: #FCA5A5;
+      background: #FFFBFB;
+    }
+
+    .case-box.easy {
+      border-color: var(--jade);
+      background: var(--jade-light);
+    }
+
+    .case-box-title {
+      font-size: 15px;
+      font-weight: 800;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .case-box.hard .case-box-title { color: var(--wrong); }
+    .case-box.easy .case-box-title { color: var(--jade-deep); }
+
+    .case-item-list {
+      font-size: 14px;
+      color: var(--ink-2);
+      line-height: 1.6;
+      margin-bottom: 10px;
+    }
+
+    /* Controls & Options Row */
+    .q-action-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .q-input {
+      flex: 1;
+      width: 100%;
+      min-width: 140px;
+      max-width: 260px;
+      box-sizing: border-box;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--paper);
+      border: 2px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      padding: 9px 14px;
+      text-align: center;
+      outline: none;
+      transition: var(--transition-fast);
+      min-height: 44px;
+    }
+
+    .q-input:focus {
+      border-color: var(--jade);
+      box-shadow: 0 0 0 3px var(--jade-light);
+    }
+
+    .q-input.correct {
+      background: var(--correct-bg);
+      border-color: var(--correct);
+      color: var(--jade-dark);
+    }
+
+    .q-input.wrong {
+      background: var(--wrong-bg);
+      border-color: var(--wrong);
+      color: var(--wrong);
+    }
+
+    .btn-q-submit {
+      background: var(--jade);
+      color: #FFF;
+      border: none;
+      padding: 10px 20px;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      box-shadow: var(--shadow-sm);
+      white-space: normal;
+      word-break: break-word;
+      line-height: 1.4;
+      text-align: center;
+      min-height: 44px;
+    }
+
+    .btn-q-submit:hover:not(:disabled) {
+      background: var(--jade-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-q-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Feedback Box */
+    .feedback-box {
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: 14.5px;
+      margin-top: 12px;
+      display: none;
+      animation: fadeIn 0.25s ease;
+      line-height: 1.5;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback-box.show {
+      display: block;
+    }
+
+    .feedback-box.hint {
+      background: var(--warning-bg);
+      color: var(--accent-dark);
+      border: 1px solid var(--accent);
+    }
+
+    .feedback-box.success {
+      background: var(--correct-bg);
+      color: var(--jade-dark);
+      border: 1px solid var(--correct);
+    }
+
+    .feedback-box.wrong {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+      border: 1px solid var(--wrong);
+    }
+
+    /* Shake Animation */
+    .shake-anim {
+      animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translateX(-3px); }
+      20%, 80% { transform: translateX(4px); }
+      30%, 50%, 70% { transform: translateX(-6px); }
+      40%, 60% { transform: translateX(6px); }
+    }
+
+    /* =========================================================
+       6. ATHENA SUMMARY CARD
+       ========================================================= */
+    .summary-card {
+      background: linear-gradient(135deg, var(--jade-dark) 0%, #1c523d 100%);
+      color: #FFF;
+      border-radius: var(--radius-xl);
+      padding: 30px;
+      margin-top: 28px;
+      box-shadow: var(--shadow-lg);
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .summary-card.active {
+      display: block;
+    }
+
+    .summary-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+    }
+
+    .athena-avatar {
+      width: 72px;
+      height: 72px;
+      flex-shrink: 0;
+      background: #FFF;
+      border-radius: var(--radius-full);
+      padding: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: var(--radius-full);
+    }
+
+    .summary-text h3 {
+      font-size: 21px;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 8px;
+    }
+
+    .summary-text p {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .rule-highlight-box {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      margin: 12px 0 16px 0;
+    }
+
+    .btn-restart-all {
+      background: var(--accent);
+      color: #FFF;
+      border: none;
+      padding: 9px 20px;
+      border-radius: var(--radius-full);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-restart-all:hover {
+      background: #e68544;
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       7. RESPONSIVE (MOBILE OPTIMIZATION - KHỚP MODULE 1)
+       ========================================================= */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px 10px 60px 10px;
+        font-size: 16px;
+      }
+
+      .intro-text, .step-card, .bar-model-card {
+        padding: 18px 14px;
+        border-radius: var(--radius-lg);
+      }
+
+      .intro-title {
+        font-size: 20px;
+      }
+
+      .step-header {
+        align-items: flex-start;
+        gap: 8px;
+      }
+
+      .step-badge {
+        white-space: normal;
+        line-height: 1.35;
+        padding: 6px 10px;
+      }
+
+      .bar-legend {
+        flex-direction: column;
+        align-items: center;
+        gap: 6px;
+        text-align: center;
+      }
+
+      .cases-comparison-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .q-action-row {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 10px;
+      }
+
+      .q-input {
+        width: 100%;
+        max-width: 100%;
+        min-height: 48px;
+        font-size: 18px;
+      }
+
+      .btn-q-submit {
+        width: 100%;
+        min-height: 48px;
+        font-size: 15px;
+        padding: 12px 14px;
+      }
+
+      .summary-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- INTRO HEADER -->
+  <header class="intro-text">
+    <div class="badge-topic">🎲 Bài 27 · Xác suất cổ điển · Toán 10</div>
+    <h1 class="intro-title">Module 3: Xác suất của biến cố đối</h1>
+    <p class="intro-desc">
+      Nhận diện chiến thuật sử dụng <strong>Biến cố đối ($\overline{E}$)</strong> khi gặp các bài toán có từ khóa <em>"ít nhất"</em>, biến các bài toán phức tạp phải chia nhiều trường hợp thành một phép tính duy nhất: $P(E) = 1 - P(\overline{E})$.
+    </p>
+
+    <div class="progress-wrap">
+      <div class="progress-info">
+        Tiến độ: <span id="progress-text" style="color:var(--jade-dark); font-weight:800;">0/5</span> bước hoàn thành
+      </div>
+      <div class="progress-bar-bg">
+        <div id="progress-bar" class="progress-bar-fill"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- THANH CHIA Ô CANVAS (NỐI LẠI TỪ BÀI 26) -->
+  <section class="bar-model-card" id="barModelSection">
+    <div class="bar-model-title">
+      <span>📊</span> Mô hình thanh chia ô trực quan (Không gian mẫu $\Omega = 1$)
+    </div>
+    <div class="prob-bar-container">
+      <div class="bar-segment-e" id="barSegE" style="width: 49.1%;">
+        <span>$P(E) = \frac{27}{55}$</span>
+      </div>
+      <div class="bar-segment-not-e" id="barSegNotE" style="width: 50.9%;">
+        <span>$P(\overline{E}) = \frac{28}{55}$</span>
+      </div>
+    </div>
+    <div class="bar-legend">
+      <span>🟢 Biến cố $E$ (xảy ra)</span>
+      <span style="font-weight:700; color:var(--jade-deep);">$P(E) + P(\overline{E}) = 1$</span>
+      <span>🟠 Biến cố đối $\overline{E}$ (đối lập)</span>
+    </div>
+  </section>
+
+  <!-- PHẦN I: MẠCH HÌNH THÀNH CHIẾN THUẬT BIẾN CỐ ĐỐI -->
+  <div class="section-title">
+    <span>💡</span> Phần I: Trải nghiệm đối chất & Hình thành chiến thuật
+  </div>
+
+  <main class="flow-list">
+
+    <!-- BƯỚC 1 & 2: ĐẶT VẤN ĐỀ - THỬ CÁCH KHÓ TRƯỚC (ĐỐI CHẤT) -->
+    <article class="step-card" id="card-step1">
+      <div class="step-header">
+        <div class="step-badge">Bước 1 · Đối chất: Thử tính trực tiếp (Cách khó)</div>
+        <div class="step-status" id="status-step1">⏳</div>
+      </div>
+      <p class="step-prompt">
+        Chọn ngẫu nhiên <strong>2 số</strong> từ tập hợp 11 số: $\{1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11\}$.
+        <br>Xét biến cố $H$: <em>"Trong 2 số được chọn có <strong>ÍT NHẤT 1 số chia hết cho 3</strong>"</em>.
+      </p>
+
+      <div class="cases-comparison-grid">
+        <div class="case-box hard">
+          <div class="case-box-title">
+            <span>⚠️</span> Cách 1: Tính trực tiếp (Chia trường hợp)
+          </div>
+          <div class="case-item-list">
+            • Tập có 3 số chia hết cho 3 ($\{3, 6, 9\}$) và 8 số không chia hết cho 3.<br>
+            • <strong>TH1:</strong> Đúng 1 số chia hết cho 3 $\to C_3^1 \times C_8^1 = 3 \times 8 = \mathbf{24}$.<br>
+            • <strong>TH2:</strong> Cả 2 số chia hết cho 3 $\to C_3^2 = \mathbf{3}$.<br>
+            $\implies n(H) = 24 + 3 = \mathbf{27}$.
+          </div>
+        </div>
+
+        <div class="case-box easy">
+          <div class="case-box-title">
+            <span>✨</span> Cách 2: Biến cố đối $\overline{H}$ (Cách thông minh)
+          </div>
+          <div class="case-item-list">
+            • Biến cố đối $\overline{H}$: <em>"CẢ 2 số được chọn đều <strong>KHÔNG</strong> chia hết cho 3"</em>.<br>
+            • Chỉ cần chọn 2 số từ 8 số không chia hết cho 3:<br>
+            $\implies n(\overline{H}) = C_8^2 = \mathbf{28}$.<br>
+            • $n(\Omega) = C_{11}^2 = \mathbf{55} \implies P(\overline{H}) = \frac{28}{55}$.
+          </div>
+        </div>
+      </div>
+
+      <div style="margin-top:14px; background:var(--paper-subtle); padding:14px 16px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+        <p style="font-size:15px; color:var(--ink-2); margin-bottom:10px;">
+          Athena: <em>"Bạn thấy đấy, tính trực tiếp phải chia nhiều trường hợp. Trong khi biến cố đối $\overline{H}$ chỉ cần <strong>đúng 1 phép tính tổ hợp $C_8^2$</strong>!"</em>
+        </p>
+        <button class="btn-q-submit" id="btn-step1" onclick="submitStep1Explore()">
+          Tiếp tục: Tính $P(H)$ qua biến cố đối ➔
+        </button>
+      </div>
+      <div class="feedback-box" id="feedback-step1"></div>
+    </article>
+
+    <!-- BƯỚC 3 & 4: TÍNH P(H) VÀ KHÁI QUÁT HOÁ -->
+    <article class="step-card" id="card-step2" style="display:none;">
+      <div class="step-header">
+        <div class="step-badge">Bước 2 · Áp dụng công thức $P(H) = 1 - P(\overline{H})$</div>
+        <div class="step-status" id="status-step2">⏳</div>
+      </div>
+      <p class="step-prompt">
+        Đã biết $P(\overline{H}) = \frac{28}{55}$. Hãy tính xác suất của biến cố $H$ bằng công thức biến cố đối:
+        $$P(H) = 1 - P(\overline{H}) = 1 - \frac{28}{55} = ?$$
+      </p>
+
+      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+        <div class="q-action-row">
+          <label for="input-step2" style="font-size:15px; font-weight:700;">$P(H) = $</label>
+          <input type="text" id="input-step2" class="q-input" placeholder="Ví dụ: 1/2 hoặc a/b..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-step2" onclick="submitStep2H()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-step2"></div>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- PHẦN II: 3 BÀI TẬP LUYỆN TẬP ĐỘC LẬP -->
+  <div class="section-title">
+    <span>✍️</span> Phần II: Bài tập luyện tập chiến thuật biến cố đối
+  </div>
+
+  <div class="flow-list">
+
+    <!-- BÀI TẬP 1 -->
+    <article class="step-card" id="card-bt1">
+      <div class="step-header">
+        <div class="step-badge">Bài tập 1 · Rút thẻ từ 3 hộp</div>
+        <div class="step-status" id="status-bt1">⏳</div>
+      </div>
+      <p class="step-prompt">
+        Hộp A có 4 thẻ: $\{1, 2, 3, 4\}$. Hộp B có 3 thẻ: $\{2, 3, 4\}$ (không có số 1). Hộp C có 2 thẻ: $\{1, 2\}$.
+        <br>Rút ngẫu nhiên 1 thẻ từ mỗi hộp ($n(\Omega) = 4 \times 3 \times 2 = 24$).
+        <br>Tính xác suất để trong 3 thẻ rút ra có <strong>ÍT NHẤT 1 thẻ số 1</strong> (Biến cố $M$):
+      </p>
+
+      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+        <div style="font-size:14px; color:var(--ink-2); margin-bottom:8px;">
+          💡 <em>Gợi ý: Xét biến cố đối $\overline{M}$: "Không có thẻ số 1 nào được rút ra".</em>
+        </div>
+        <div class="q-action-row">
+          <label for="input-bt1" style="font-size:15px; font-weight:700;">$P(M) = $</label>
+          <input type="text" id="input-bt1" class="q-input" placeholder="Ví dụ: 1/2 hoặc a/b..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-bt1" onclick="submitBT1()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-bt1"></div>
+      </div>
+    </article>
+
+    <!-- BÀI TẬP 2 -->
+    <article class="step-card" id="card-bt2">
+      <div class="step-header">
+        <div class="step-badge">Bài tập 2 · Chọn 3 số từ tập {1..10}</div>
+        <div class="step-status" id="status-bt2">⏳</div>
+      </div>
+      <p class="step-prompt">
+        Chọn ngẫu nhiên 3 số phân biệt từ tập $\{1, 2, 3, 4, 5, 6, 7, 8, 9, 10\}$ ($n(\Omega) = C_{10}^3 = 120$).
+        <br>Tính xác suất để trong 3 số được chọn có <strong>ÍT NHẤT 1 số lẻ</strong>:
+      </p>
+
+      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+        <div style="font-size:14px; color:var(--ink-2); margin-bottom:8px;">
+          💡 <em>Gợi ý: Biến cố đối là "Cả 3 số được chọn đều là số CHẴN" ($C_5^3$).</em>
+        </div>
+        <div class="q-action-row">
+          <label for="input-bt2" style="font-size:15px; font-weight:700;">$P(E) = $</label>
+          <input type="text" id="input-bt2" class="q-input" placeholder="Ví dụ: 1/2 hoặc a/b..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-bt2" onclick="submitBT2()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-bt2"></div>
+      </div>
+    </article>
+
+    <!-- BÀI TẬP 3: VẬN DỤNG XỔ SỐ & NGUYÊN LÝ XÁC SUẤT BÉ -->
+    <article class="step-card" id="card-bt3">
+      <div class="step-header">
+        <div class="step-badge">Bài tập 3 (Vận dụng) · Giải xổ số 6/40 & Nguyên lý xác suất bé</div>
+        <div class="step-status" id="status-bt3">⏳</div>
+      </div>
+      <p class="step-prompt">
+        Một giải xổ số chọn ngẫu nhiên 6 số từ 1 đến 40 ($n(\Omega) = C_{40}^6 = 3\ 838\ 380$).
+        <br>Một người chơi đã mua vé với bộ số $\{2, 9, 17, 24, 31, 38\}$.
+        <br>Tính số kết quả thuận lợi $n(G)$ để người chơi <strong>trúng giải Nhất (khớp đúng 5 trong 6 số đã chọn)</strong>:
+      </p>
+
+      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+        <div style="font-size:14px; color:var(--ink-2); margin-bottom:8px;">
+          💡 <em>Gợi ý: Chọn 5 số từ 6 số trúng thưởng ($C_6^5$) VÀ chọn 1 số từ 34 số còn lại ($C_{34}^1$).</em>
+        </div>
+        <div class="q-action-row">
+          <label for="input-bt3" style="font-size:15px; font-weight:700;">$n(G) = $</label>
+          <input type="text" inputmode="numeric" id="input-bt3" class="q-input" placeholder="Nhập số cách..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-bt3" onclick="submitBT3()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-bt3"></div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- ATHENA SUMMARY -->
+  <section class="summary-card" id="final-summary">
+    <div class="summary-content">
+      <!-- Mascot Athena WebP Avatar -->
+      <div class="athena-avatar">
+        <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot" loading="lazy">
+      </div>
+      <div class="summary-text">
+        <h3>🎉 Xuất sắc! Bạn đã làm chủ Module 3: Biến cố đối</h3>
+        <p>
+          "Bất cứ khi nào gặp bài toán có từ 'ít nhất', hãy luôn tự hỏi: Biến cố đối (nghĩa là 'không có... nào cả') có dễ tính hơn không? Nếu có, hãy tính $P(\overline{E})$ trước rồi suy ra $P(E) = 1 - P(\overline{E})$!"
+        </p>
+        <div class="rule-highlight-box">
+          • <strong>Công thức biến cố đối:</strong> $P(E) = 1 - P(\overline{E})$.<br>
+          • <strong>Dấu hiệu nhận biết:</strong> Từ khóa <em>"ít nhất"</em> $\to$ chuyển sang đối <em>"không có cái nào"</em>.<br>
+          • <strong>Nguyên lý kiểm tra:</strong> Luôn đảm bảo $P(E) + P(\overline{E}) = 1$.
+        </div>
+        <button class="btn-restart-all" onclick="restartModule()">
+          🔄 Làm lại toàn bộ Module 3
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ATHENA CONTEXT JSON FOR LMS / AI ORCHESTRATION -->
+<script type="application/json" id="athena-context">
+{
+  "context": {
+    "grade": 10,
+    "chapter": 9,
+    "lesson": 27,
+    "module": 3,
+    "topic": "bien_co_doi",
+    "title": "Xác suất của biến cố đối"
+  },
+  "structure": [
+    { "id": "m3_thu_cach_kho", "type": "explored", "required": true, "title": "Bước 1: Đối chất cách khó" },
+    { "id": "m3_bien_co_doi_h", "type": "answered", "required": true, "title": "Bước 2: Áp dụng P(H)=1-P(H-bar)" },
+    { "id": "m3_bt1", "type": "answered", "required": true, "title": "Bài tập 1: Rút thẻ 3 hộp" },
+    { "id": "m3_bt2", "type": "answered", "required": true, "title": "Bài tập 2: Chọn 3 số {1..10}" },
+    { "id": "m3_bt3_van_dung", "type": "answered", "required": true, "title": "Bài tập 3: Xổ số 6/40" }
+  ],
+  "pedagogy": {
+    "total_progress": 5,
+    "strike_rule": "3 strikes: strike 1 shake & hint retry, strike 2 show formula hint, strike 3 show answer & explanation requiring manual typing"
+  }
+}
+</script>
+
+<script>
+  /* =========================================================
+     8. JAVASCRIPT STATE MANAGEMENT & PEDAGOGY LOGIC
+     ========================================================= */
+
+  const state = {
+    steps: {
+      m3_thu_cach_kho: false,
+      m3_bien_co_doi_h: false,
+      m3_bt1: false,
+      m3_bt2: false,
+      m3_bt3_van_dung: false
+    },
+    attempts: {
+      step2: 0,
+      bt1: 0,
+      bt2: 0,
+      bt3: 0
+    },
+    totalSteps: 5,
+    completedSteps: 0
+  };
+
+  // KaTeX Helper with explicit delimiters
+  function renderKatex(el) {
+    if (typeof renderMathInElement === 'function') {
+      renderMathInElement(el || document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  /* =========================================================
+     BƯỚC 1: ĐỐI CHẤT CÁCH KHÓ
+     ========================================================= */
+  function submitStep1Explore() {
+    if (state.steps.m3_thu_cach_kho) return;
+    state.steps.m3_thu_cach_kho = true;
+
+    document.getElementById('btn-step1').disabled = true;
+    document.getElementById('card-step1').classList.add('completed');
+    document.getElementById('status-step1').textContent = '✅';
+
+    const fb = document.getElementById('feedback-step1');
+    fb.className = 'feedback-box success show';
+    fb.innerHTML = '✨ <strong>Đã hiểu chiến thuật!</strong> Chuyển sang biến cố đối giúp biến 2 trường hợp phức tạp thành 1 phép tính $C_8^2 = 28$.';
+    renderKatex(fb);
+
+    document.getElementById('card-step2').style.display = 'block';
+    renderKatex(document.getElementById('card-step2'));
+    updateOverallProgress('m3_thu_cach_kho');
+  }
+
+  /* =========================================================
+     BƯỚC 2: TÍNH P(H) = 1 - P(H_BAR) = 27/55
+     ========================================================= */
+  function submitStep2H() {
+    if (state.steps.m3_bien_co_doi_h) return;
+    const inp = document.getElementById('input-step2');
+    const fb = document.getElementById('feedback-step2');
+    const val = inp.value.trim();
+
+    if (val === '27/55' || val === '27 / 55' || Math.abs(parseFloat(val) - (27/55)) < 0.005) {
+      state.steps.m3_bien_co_doi_h = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-step2').disabled = true;
+      document.getElementById('card-step2').classList.add('completed');
+      document.getElementById('status-step2').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> $P(H) = 1 - P(\\overline{H}) = 1 - \\frac{28}{55} = \\mathbf{\\frac{27}{55}}$.';
+      renderKatex(fb);
+      updateOverallProgress('m3_bien_co_doi_h');
+    } else {
+      state.attempts.step2++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.step2 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy lấy $1 - \\frac{28}{55} = \\frac{55 - 28}{55}$.';
+      } else if (state.attempts.step2 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> $1 - \\frac{28}{55} = \\frac{55 - 28}{55} = \\frac{27}{55}$.';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 27/55</strong> ($P(H) = \\mathbf{\\frac{27}{55}}$).<br><em>👉 Hãy tự gõ <strong>27/55</strong> vào ô kết quả và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  /* =========================================================
+     BÀI TẬP LUYỆN TẬP 1, 2, 3
+     ========================================================= */
+  function submitBT1() {
+    if (state.steps.m3_bt1) return;
+    const inp = document.getElementById('input-bt1');
+    const fb = document.getElementById('feedback-bt1');
+    const val = inp.value.trim();
+
+    if (val === '5/8' || val === '5 / 8' || Math.abs(parseFloat(val) - (5/8)) < 0.005) {
+      state.steps.m3_bt1 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-bt1').disabled = true;
+      document.getElementById('card-bt1').classList.add('completed');
+      document.getElementById('status-bt1').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> $n(\\overline{M}) = 3 \\times 3 \\times 1 = 9 \\implies P(\\overline{M}) = \\frac{9}{24} = \\frac{3}{8}$.<br>$\\implies P(M) = 1 - \\frac{3}{8} = \\mathbf{\\frac{5}{8}}$.';
+      renderKatex(fb);
+      updateOverallProgress('m3_bt1');
+    } else {
+      state.attempts.bt1++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.bt1 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Biến cố đối $\\overline{M}$ (không có thẻ số 1) có $3 \\times 3 \\times 1 = 9$ cách.';
+      } else if (state.attempts.bt1 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> $P(\\overline{M}) = \\frac{9}{24} = \\frac{3}{8} \\implies P(M) = 1 - \\frac{3}{8} = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 5/8</strong> ($P(M) = 1 - \\frac{3}{8} = \\mathbf{\\frac{5}{8}}$).<br><em>👉 Hãy tự gõ <strong>5/8</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function submitBT2() {
+    if (state.steps.m3_bt2) return;
+    const inp = document.getElementById('input-bt2');
+    const fb = document.getElementById('feedback-bt2');
+    const val = inp.value.trim();
+
+    if (val === '11/12' || val === '11 / 12' || Math.abs(parseFloat(val) - (11/12)) < 0.005) {
+      state.steps.m3_bt2 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-bt2').disabled = true;
+      document.getElementById('card-bt2').classList.add('completed');
+      document.getElementById('status-bt2').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> $n(\\text{đối}) = C_5^3 = 10 \\implies P(\\text{đối}) = \\frac{10}{120} = \\frac{1}{12}$.<br>$\\implies P(E) = 1 - \\frac{1}{12} = \\mathbf{\\frac{11}{12}}$.';
+      renderKatex(fb);
+      updateOverallProgress('m3_bt2');
+    } else {
+      state.attempts.bt2++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.bt2 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Biến cố đối "cả 3 số đều chẵn" chọn từ 5 số chẵn $\{2, 4, 6, 8, 10\}$.';
+      } else if (state.attempts.bt2 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> $P(\\text{đối}) = \\frac{C_5^3}{C_{10}^3} = \\frac{10}{120} = \\frac{1}{12} \\implies P(E) = 1 - \\frac{1}{12} = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 11/12</strong> ($P(E) = 1 - \\frac{1}{12} = \\mathbf{\\frac{11}{12}}$).<br><em>👉 Hãy tự gõ <strong>11/12</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function submitBT3() {
+    if (state.steps.m3_bt3_van_dung) return;
+    const inp = document.getElementById('input-bt3');
+    const fb = document.getElementById('feedback-bt3');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 204) {
+      state.steps.m3_bt3_van_dung = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-bt3').disabled = true;
+      document.getElementById('card-bt3').classList.add('completed');
+      document.getElementById('status-bt3').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> $n(G) = C_6^5 \\times C_{34}^1 = 6 \\times 34 = \\mathbf{204}$.<br>Xác suất: $P(G) = \\frac{204}{3\\ 838\\ 380} \\approx \\mathbf{0,0000531}$.<br><em>(Xác suất này cực kỳ bé — đúng với nguyên lý xác suất bé trong thực tế!)</em>';
+      renderKatex(fb);
+      updateOverallProgress('m3_bt3_van_dung');
+    } else {
+      state.attempts.bt3++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.bt3 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Áp dụng quy tắc nhân: chọn 5 số từ 6 số trúng ($C_6^5$) và 1 số từ 34 số còn lại ($C_{34}^1$).';
+      } else if (state.attempts.bt3 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> $n(G) = C_6^5 \\times C_{34}^1 = 6 \\times 34 = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 204</strong> ($6 \\times 34 = \\mathbf{204}$).<br><em>👉 Hãy tự gõ số <strong>204</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  /* =========================================================
+     PROGRESS & LMS REPORT
+     ========================================================= */
+  function updateOverallProgress(itemId) {
+    let count = 0;
+    Object.keys(state.steps).forEach(k => {
+      if (state.steps[k]) count++;
+    });
+    state.completedSteps = count;
+
+    const pct = Math.round((count / state.totalSteps) * 100);
+    document.getElementById('progress-text').textContent = `${count}/${state.totalSteps}`;
+    document.getElementById('progress-bar').style.width = `${pct}%`;
+
+    // Report to LMS
+    if (typeof LMS === 'function') {
+      try {
+        LMS().reportProgress(itemId, true);
+        LMS().reportState('module3_b27', state);
+      } catch (e) {
+        console.warn('LMS error:', e);
+      }
+    }
+
+    if (count === state.totalSteps) {
+      const summary = document.getElementById('final-summary');
+      summary.classList.add('active');
+      renderKatex(summary);
+      setTimeout(() => {
+        summary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 200);
+    }
+  }
+
+  function restartModule() {
+    window.location.reload();
+  }
+
+  // Auto-resize for LMS iframe
+  window.addEventListener('load', () => {
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(() => {
+        const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+        if (window.parent && window.parent.postMessage) {
+          window.parent.postMessage({ type: 'setHeight', height: height }, '*');
+        }
+      });
+      ro.observe(document.body);
+    }
+  });
+</script>
+
+</body>
+</html>
