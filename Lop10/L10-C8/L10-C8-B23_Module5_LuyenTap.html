@@ -1,0 +1,1403 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 5: Luyện tập tổng hợp quy tắc đếm — Bài 23 Toán 10</title>
+
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;500;600;700&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for rendering mathematical formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+          onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <style>
+    /* =========================================================
+       1. DESIGN TOKENS (JADE / CREAM / SAGE / ACCENT)
+       ========================================================= */
+    :root {
+      --cream: #FAF8F5;
+      --paper: #FFFFFF;
+      --paper-line: #E8E2D9;
+      --paper-subtle: #F3EFE9;
+      --paper-card: #FFFFFF;
+
+      --jade: #2D8B6F;
+      --jade-dark: #14432F;
+      --jade-light: #E6F4EE;
+      --jade-deep: #2D8B6F;
+
+      --sage: #7BA896;
+      --sage-light: #EBF3F0;
+
+      --accent: #D97736;
+      --accent-light: #FDF3EB;
+      --accent-dark: #A54D16;
+
+      --ink: #1C2826;
+      --ink-2: #4A5854;
+      --ink-3: #7D8C87;
+
+      --correct: #2D8B6F;
+      --correct-bg: #E6F4EE;
+      --wrong: #C84B31;
+      --wrong-bg: #FCEBE6;
+      --warning: #D97736;
+      --warning-bg: #FDF3EB;
+      --info: #3B7A9E;
+      --info-bg: #EAF4FA;
+
+      --radius-sm: 8px;
+      --radius-md: 12px;
+      --radius-lg: 16px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 2px 6px rgba(28, 40, 38, 0.05);
+      --shadow-md: 0 6px 18px rgba(28, 40, 38, 0.08);
+      --shadow-lg: 0 12px 32px rgba(28, 40, 38, 0.12);
+
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+    }
+
+    /* =========================================================
+       2. BASE & TYPOGRAPHY
+       ========================================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-size: 18px;
+      line-height: 1.6;
+      color: var(--ink);
+      background-color: var(--cream);
+      background-image: radial-gradient(var(--paper-line) 1px, transparent 1px);
+      background-size: 24px 24px;
+      min-height: 100vh;
+      padding: 24px 16px 80px 16px;
+    }
+
+    .math, .katex {
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+    }
+
+    /* =========================================================
+       3. INTRO & HEADER
+       ========================================================= */
+    .intro-text {
+      background: var(--paper);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      margin-bottom: 24px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .intro-text::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 6px;
+      background: linear-gradient(90deg, var(--jade-dark), var(--jade), var(--accent));
+    }
+
+    .badge-topic {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 14px;
+      border-radius: var(--radius-full);
+      background: var(--jade-light);
+      color: var(--jade-dark);
+      font-size: 14px;
+      font-weight: 700;
+      letter-spacing: 0.5px;
+      text-transform: uppercase;
+      margin-bottom: 12px;
+    }
+
+    .intro-title {
+      font-size: 26px;
+      font-weight: 800;
+      color: var(--jade-dark);
+      margin-bottom: 10px;
+      line-height: 1.3;
+    }
+
+    .intro-desc {
+      font-size: 17px;
+      color: var(--ink-2);
+      margin-bottom: 18px;
+    }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      padding-top: 14px;
+      border-top: 1px dashed var(--paper-line);
+    }
+
+    .progress-info {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-2);
+    }
+
+    .progress-bar-bg {
+      flex: 1;
+      height: 10px;
+      background: var(--paper-subtle);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--sage), var(--jade));
+      border-radius: var(--radius-full);
+      transition: width 0.4s cubic-bezier(0.34, 1.56, 0.64, 1);
+    }
+
+    /* Floating Notebook Button */
+    .btn-notebook-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--accent-light);
+      color: var(--accent-dark);
+      border: 1px solid var(--accent);
+      padding: 8px 18px;
+      border-radius: var(--radius-full);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-notebook-toggle:hover {
+      background: var(--accent);
+      color: #FFF;
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       4. NOTEBOOK DRAWER / MODAL
+       ========================================================= */
+    .notebook-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 67, 47, 0.45);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .notebook-overlay.active {
+      display: flex;
+      opacity: 1;
+    }
+
+    .notebook-card {
+      background: var(--paper);
+      border-radius: var(--radius-xl);
+      max-width: 680px;
+      width: 100%;
+      max-height: 85vh;
+      overflow-y: auto;
+      box-shadow: var(--shadow-lg);
+      border: 1px solid var(--paper-line);
+      animation: modalSlideUp 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+
+    @keyframes modalSlideUp {
+      from { transform: translateY(20px); opacity: 0; }
+      to { transform: translateY(0); opacity: 1; }
+    }
+
+    .notebook-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 20px 24px;
+      border-bottom: 1px solid var(--paper-line);
+      background: var(--jade-dark);
+      color: #FFF;
+      border-top-left-radius: var(--radius-xl);
+      border-top-right-radius: var(--radius-xl);
+    }
+
+    .notebook-header h3 {
+      font-size: 19px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-close-notebook {
+      background: rgba(255, 255, 255, 0.15);
+      border: none;
+      color: #FFF;
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      font-size: 18px;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: var(--transition-fast);
+    }
+
+    .btn-close-notebook:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    .notebook-body {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .rule-box {
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      border-left: 5px solid;
+    }
+
+    .rule-box.add {
+      background: var(--jade-light);
+      border-color: var(--jade);
+    }
+
+    .rule-box.multiply {
+      background: var(--info-bg);
+      border-color: var(--info);
+    }
+
+    .rule-box.combine {
+      background: var(--accent-light);
+      border-color: var(--accent);
+    }
+
+    .rule-title {
+      font-weight: 700;
+      font-size: 17px;
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .rule-box.add .rule-title { color: var(--jade-dark); }
+    .rule-box.multiply .rule-title { color: #1e4b66; }
+    .rule-box.combine .rule-title { color: var(--accent-dark); }
+
+    .rule-desc {
+      font-size: 15px;
+      color: var(--ink-2);
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       5. QUESTION CARDS (4 BÀI LUYỆN TẬP)
+       ========================================================= */
+    .questions-container {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    .q-card {
+      background: var(--paper);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-xl);
+      padding: 28px 32px;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-normal);
+      position: relative;
+    }
+
+    .q-card.locked {
+      opacity: 0.65;
+      pointer-events: none;
+      background: var(--paper-subtle);
+    }
+
+    .q-card.active-focus {
+      border-color: var(--jade);
+      box-shadow: 0 0 0 2px var(--jade-light), var(--shadow-md);
+    }
+
+    .q-card.completed {
+      border-color: var(--sage);
+      background: linear-gradient(180deg, var(--paper) 0%, var(--jade-light) 250%);
+    }
+
+    .q-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+
+    .q-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 14px;
+      font-weight: 700;
+      background: var(--paper-subtle);
+      color: var(--ink-2);
+    }
+
+    .q-card.completed .q-badge {
+      background: var(--correct-bg);
+      color: var(--correct);
+    }
+
+    .q-status-icon {
+      font-size: 20px;
+    }
+
+    .q-scenario {
+      font-size: 18px;
+      color: var(--ink);
+      margin-bottom: 22px;
+      background: var(--paper-subtle);
+      border-radius: var(--radius-md);
+      padding: 18px 22px;
+      border-left: 4px solid var(--jade);
+      line-height: 1.6;
+    }
+
+    .q-scenario strong {
+      color: var(--jade-dark);
+    }
+
+    /* ROUND 1: IDENTIFY RULE */
+    .round-block {
+      margin-bottom: 20px;
+      padding-top: 16px;
+      border-top: 1px solid var(--paper-line);
+    }
+
+    .round-label {
+      font-size: 15px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
+      color: var(--ink-3);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .round-label .step-num {
+      width: 24px;
+      height: 24px;
+      border-radius: var(--radius-full);
+      background: var(--ink-3);
+      color: #FFF;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 12px;
+    }
+
+    .round-block.active .round-label {
+      color: var(--jade-dark);
+    }
+
+    .round-block.active .round-label .step-num {
+      background: var(--jade);
+    }
+
+    .rules-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .btn-rule-option {
+      background: var(--paper);
+      border: 2px solid var(--paper-line);
+      border-radius: var(--radius-lg);
+      padding: 14px 10px;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink-2);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+      text-align: center;
+    }
+
+    .btn-rule-option:hover:not(:disabled) {
+      border-color: var(--jade);
+      background: var(--jade-light);
+      color: var(--jade-dark);
+      transform: translateY(-2px);
+    }
+
+    .btn-rule-option.selected-correct {
+      background: var(--correct-bg) !important;
+      border-color: var(--correct) !important;
+      color: var(--jade-dark) !important;
+      box-shadow: 0 0 0 2px var(--correct);
+    }
+
+    .btn-rule-option.selected-wrong {
+      background: var(--wrong-bg) !important;
+      border-color: var(--wrong) !important;
+      color: var(--wrong) !important;
+    }
+
+    .btn-rule-option.hint-correct {
+      border-color: var(--jade) !important;
+      background: var(--jade-light) !important;
+      color: var(--jade-dark) !important;
+      box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.3) !important;
+      animation: pulseHint 1.5s infinite;
+    }
+
+    @keyframes pulseHint {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.02); }
+    }
+
+    .btn-rule-option:disabled {
+      cursor: default;
+    }
+
+    /* ROUND 2: CALCULATION */
+    .calc-input-wrap {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 14px;
+    }
+
+    .calc-input {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 20px;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--paper);
+      border: 2px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      width: 150px;
+      text-align: center;
+      transition: var(--transition-fast);
+      outline: none;
+    }
+
+    .calc-input:focus {
+      border-color: var(--jade);
+      box-shadow: 0 0 0 3px var(--jade-light);
+    }
+
+    .calc-input.correct {
+      background: var(--correct-bg);
+      border-color: var(--correct);
+      color: var(--jade-dark);
+    }
+
+    .calc-input.wrong {
+      background: var(--wrong-bg);
+      border-color: var(--wrong);
+      color: var(--wrong);
+    }
+
+    .btn-submit-calc {
+      background: var(--jade);
+      color: #FFF;
+      border: none;
+      padding: 12px 24px;
+      border-radius: var(--radius-md);
+      font-size: 16px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .btn-submit-calc:hover:not(:disabled) {
+      background: var(--jade-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit-calc:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Feedback Message Box */
+    .feedback-box {
+      border-radius: var(--radius-md);
+      padding: 12px 18px;
+      font-size: 15px;
+      margin-top: 10px;
+      display: none;
+      animation: fadeIn 0.25s ease;
+      line-height: 1.5;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback-box.show {
+      display: block;
+    }
+
+    .feedback-box.hint {
+      background: var(--warning-bg);
+      color: var(--accent-dark);
+      border: 1px solid var(--accent);
+    }
+
+    .feedback-box.success {
+      background: var(--correct-bg);
+      color: var(--jade-dark);
+      border: 1px solid var(--correct);
+    }
+
+    .feedback-box.wrong {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+      border: 1px solid var(--wrong);
+    }
+
+    /* Shake Animation for Wrong attempts */
+    .shake-anim {
+      animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translateX(-3px); }
+      20%, 80% { transform: translateX(4px); }
+      30%, 50%, 70% { transform: translateX(-6px); }
+      40%, 60% { transform: translateX(6px); }
+    }
+
+    /* =========================================================
+       6. ATHENA FINAL SUMMARY CARD
+       ========================================================= */
+    .summary-card {
+      background: linear-gradient(135deg, var(--jade-dark) 0%, #1c523d 100%);
+      color: #FFF;
+      border-radius: var(--radius-xl);
+      padding: 32px;
+      margin-top: 32px;
+      box-shadow: var(--shadow-lg);
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .summary-card.active {
+      display: block;
+    }
+
+    .summary-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 24px;
+    }
+
+    .athena-avatar {
+      width: 72px;
+      height: 72px;
+      flex-shrink: 0;
+      background: #FFF;
+      border-radius: var(--radius-full);
+      padding: 8px;
+      box-shadow: 0 4px 14px rgba(0, 0, 0, 0.2);
+    }
+
+    .summary-text h3 {
+      font-size: 22px;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .summary-text p {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+
+    .btn-restart-all {
+      background: var(--accent);
+      color: #FFF;
+      border: none;
+      padding: 10px 22px;
+      border-radius: var(--radius-full);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-restart-all:hover {
+      background: #e68544;
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       7. RESPONSIVE DESIGN
+       ========================================================= */
+    @media (max-width: 768px) {
+      body {
+        padding: 16px 12px 60px 12px;
+        font-size: 16px;
+      }
+
+      .intro-text {
+        padding: 20px 18px;
+      }
+
+      .intro-title {
+        font-size: 22px;
+      }
+
+      .q-card {
+        padding: 20px 16px;
+      }
+
+      .rules-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .calc-input-wrap {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .calc-input {
+        width: 100%;
+      }
+
+      .btn-submit-calc {
+        width: 100%;
+      }
+
+      .summary-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- INTRO HEADER -->
+  <header class="intro-text">
+    <div class="badge-topic">🎯 Bài 23 · Chương VIII · Toán 10</div>
+    <h1 class="intro-title">Module 5: Luyện tập tổng hợp quy tắc đếm</h1>
+    <p class="intro-desc">
+      Thử thách qua <strong>4 bối cảnh thực tế mới</strong>: Nhiệm vụ của bạn là nhận diện chính xác loại quy tắc cần dùng (Cộng / Nhân / Kết hợp) ở <em>Vòng 1</em>, sau đó tính toán số cách ở <em>Vòng 2</em>.
+    </p>
+
+    <div class="progress-wrap">
+      <div class="progress-info">
+        Tiến độ: <span id="progress-text" style="color:var(--jade-dark); font-weight:800;">0/8</span> bước hoàn thành
+      </div>
+      <div class="progress-bar-bg">
+        <div id="progress-bar" class="progress-bar-fill"></div>
+      </div>
+      <button class="btn-notebook-toggle" onclick="openNotebook()">
+        <span>📖</span> Sổ tay quy tắc đếm
+      </button>
+    </div>
+  </header>
+
+  <!-- 4 PRACTICE QUESTION CARDS -->
+  <main class="questions-container" id="questions-list">
+
+    <!-- CÂU 1: CLB SÁCH -->
+    <section class="q-card active-focus" id="card-q1">
+      <div class="q-header">
+        <div class="q-badge">Câu 1 / 4 · Thảo luận sách</div>
+        <div class="q-status-icon" id="status-icon-q1">⏳</div>
+      </div>
+      <div class="q-scenario">
+        <strong>Bối cảnh:</strong> Câu lạc bộ đọc sách cần chọn ra <strong>1 đầu sách duy nhất</strong> để cả nhóm cùng thảo luận tuần này. Danh sách đề cử gồm: <strong>6 đầu sách trinh thám</strong>, <strong>5 đầu sách khoa học viễn tưởng</strong>, và <strong>4 đầu sách tản văn</strong>. Hỏi có tất cả bao nhiêu cách chọn?
+      </div>
+
+      <!-- Vòng 1: Nhận diện -->
+      <div class="round-block active" id="round1-q1">
+        <div class="round-label">
+          <span class="step-num">1</span> Vòng 1: Nhận diện quy tắc đếm
+        </div>
+        <div class="rules-grid">
+          <button class="btn-rule-option" onclick="handleRuleSelect(1, 'add')">
+            <span>➕ Quy tắc Cộng</span>
+            <small style="font-weight:400; font-size:13px;">Chọn 1 trong các phương án</small>
+          </button>
+          <button class="btn-rule-option" onclick="handleRuleSelect(1, 'multiply')">
+            <span>✖️ Quy tắc Nhân</span>
+            <small style="font-weight:400; font-size:13px;">Nhiều công đoạn liên tiếp</small>
+          </button>
+          <button class="btn-rule-option" onclick="handleRuleSelect(1, 'combine')">
+            <span>🔀 Kết hợp Cộng & Nhân</span>
+            <small style="font-weight:400; font-size:13px;">Chia trường hợp + Công đoạn</small>
+          </button>
+        </div>
+        <div class="feedback-box" id="feedback-r1-q1"></div>
+      </div>
+
+      <!-- Vòng 2: Tính toán -->
+      <div class="round-block" id="round2-q1" style="display:none;">
+        <div class="round-label">
+          <span class="step-num">2</span> Vòng 2: Tính toán kết quả
+        </div>
+        <div class="calc-input-wrap">
+          <label for="input-q1" style="font-weight:600; font-size:16px;">Tổng số cách chọn:</label>
+          <input type="text" inputmode="numeric" id="input-q1" class="calc-input" placeholder="Nhập số..." autocomplete="off">
+          <button class="btn-submit-calc" id="btn-calc-q1" onclick="handleCalcSubmit(1)">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-r2-q1"></div>
+      </div>
+    </section>
+
+    <!-- CÂU 2: ĐỒ CẮM TRẠI -->
+    <section class="q-card locked" id="card-q2">
+      <div class="q-header">
+        <div class="q-badge">Câu 2 / 4 · Chuẩn bị dã ngoại</div>
+        <div class="q-status-icon" id="status-icon-q2">🔒</div>
+      </div>
+      <div class="q-scenario">
+        <strong>Bối cảnh:</strong> Bạn An chuẩn bị đồ đi cắm trại cuối tuần. An cần chọn <strong>đủ cả 2 món đồ</strong>: chọn <strong>1 loại lều</strong> (trong 3 loại lều khác nhau) <em>VÀ</em> <strong>1 loại túi ngủ</strong> (trong 2 loại túi ngủ khác nhau). Hỏi An có bao nhiêu cách phối hợp bộ đồ cắm trại?
+      </div>
+
+      <!-- Vòng 1: Nhận diện -->
+      <div class="round-block active" id="round1-q2">
+        <div class="round-label">
+          <span class="step-num">1</span> Vòng 1: Nhận diện quy tắc đếm
+        </div>
+        <div class="rules-grid">
+          <button class="btn-rule-option" onclick="handleRuleSelect(2, 'add')">
+            <span>➕ Quy tắc Cộng</span>
+            <small style="font-weight:400; font-size:13px;">Chọn 1 trong các phương án</small>
+          </button>
+          <button class="btn-rule-option" onclick="handleRuleSelect(2, 'multiply')">
+            <span>✖️ Quy tắc Nhân</span>
+            <small style="font-weight:400; font-size:13px;">Nhiều công đoạn liên tiếp</small>
+          </button>
+          <button class="btn-rule-option" onclick="handleRuleSelect(2, 'combine')">
+            <span>🔀 Kết hợp Cộng & Nhân</span>
+            <small style="font-weight:400; font-size:13px;">Chia trường hợp + Công đoạn</small>
+          </button>
+        </div>
+        <div class="feedback-box" id="feedback-r1-q2"></div>
+      </div>
+
+      <!-- Vòng 2: Tính toán -->
+      <div class="round-block" id="round2-q2" style="display:none;">
+        <div class="round-label">
+          <span class="step-num">2</span> Vòng 2: Tính toán kết quả
+        </div>
+        <div class="calc-input-wrap">
+          <label for="input-q2" style="font-weight:600; font-size:16px;">Tổng số cách phối hợp:</label>
+          <input type="text" inputmode="numeric" id="input-q2" class="calc-input" placeholder="Nhập số..." autocomplete="off">
+          <button class="btn-submit-calc" id="btn-calc-q2" onclick="handleCalcSubmit(2)">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-r2-q2"></div>
+      </div>
+    </section>
+
+    <!-- CÂU 3: ĐĂNG KÝ HỘI THAO -->
+    <section class="q-card locked" id="card-q3">
+      <div class="q-header">
+        <div class="q-badge">Câu 3 / 4 · Đăng ký hội thao</div>
+        <div class="q-status-icon" id="status-icon-q3">🔒</div>
+      </div>
+      <div class="q-scenario">
+        <strong>Bối cảnh:</strong> Học sinh tham gia hội thao trường được chọn đăng ký 1 môn:
+        <ul style="margin: 8px 0 8px 20px;">
+          <li><strong>HOẶC thi Điền kinh:</strong> Chọn 1 trong 3 nội dung $\times$ 1 trong 2 buổi thi (Sáng/Chiều).</li>
+          <li><strong>HOẶC thi Bơi lội:</strong> Chọn 1 trong 4 kiểu bơi $\times$ 1 trong 2 cự ly (50m/100m).</li>
+        </ul>
+        Hỏi một học sinh có tất cả bao nhiêu lựa chọn đăng ký môn thi?
+      </div>
+
+      <!-- Vòng 1: Nhận diện -->
+      <div class="round-block active" id="round1-q3">
+        <div class="round-label">
+          <span class="step-num">1</span> Vòng 1: Nhận diện quy tắc đếm
+        </div>
+        <div class="rules-grid">
+          <button class="btn-rule-option" onclick="handleRuleSelect(3, 'add')">
+            <span>➕ Quy tắc Cộng</span>
+            <small style="font-weight:400; font-size:13px;">Chọn 1 trong các phương án</small>
+          </button>
+          <button class="btn-rule-option" onclick="handleRuleSelect(3, 'multiply')">
+            <span>✖️ Quy tắc Nhân</span>
+            <small style="font-weight:400; font-size:13px;">Nhiều công đoạn liên tiếp</small>
+          </button>
+          <button class="btn-rule-option" onclick="handleRuleSelect(3, 'combine')">
+            <span>🔀 Kết hợp Cộng & Nhân</span>
+            <small style="font-weight:400; font-size:13px;">Chia trường hợp + Công đoạn</small>
+          </button>
+        </div>
+        <div class="feedback-box" id="feedback-r1-q3"></div>
+      </div>
+
+      <!-- Vòng 2: Tính toán -->
+      <div class="round-block" id="round2-q3" style="display:none;">
+        <div class="round-label">
+          <span class="step-num">2</span> Vòng 2: Tính toán kết quả
+        </div>
+        <div class="calc-input-wrap">
+          <label for="input-q3" style="font-weight:600; font-size:16px;">Tổng số cách đăng ký:</label>
+          <input type="text" inputmode="numeric" id="input-q3" class="calc-input" placeholder="Nhập số..." autocomplete="off">
+          <button class="btn-submit-calc" id="btn-calc-q3" onclick="handleCalcSubmit(3)">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-r2-q3"></div>
+      </div>
+    </section>
+
+    <!-- CÂU 4: LỊCH DÃ NGOẠI -->
+    <section class="q-card locked" id="card-q4">
+      <div class="q-header">
+        <div class="q-badge">Câu 4 / 4 · Kế hoạch dã ngoại</div>
+        <div class="q-status-icon" id="status-icon-q4">🔒</div>
+      </div>
+      <div class="q-scenario">
+        <strong>Bối cảnh:</strong> Nhóm bạn lên kế hoạch cho 1 buổi dã ngoại đặc biệt:
+        <ul style="margin: 8px 0 8px 20px;">
+          <li><strong>HOẶC đi Buổi sáng:</strong> Chọn 1 trong 3 điểm đến $\times$ 1 trong 2 phương tiện di chuyển (xe đạp/xe buýt).</li>
+          <li><strong>HOẶC đi Buổi chiều:</strong> Chọn 1 trong 4 hoạt động ngoài trời $\times$ 1 trong 3 món ăn nhẹ mang theo.</li>
+        </ul>
+        Hỏi nhóm bạn có tất cả bao nhiêu phương án lên lịch trình?
+      </div>
+
+      <!-- Vòng 1: Nhận diện -->
+      <div class="round-block active" id="round1-q4">
+        <div class="round-label">
+          <span class="step-num">1</span> Vòng 1: Nhận diện quy tắc đếm
+        </div>
+        <div class="rules-grid">
+          <button class="btn-rule-option" onclick="handleRuleSelect(4, 'add')">
+            <span>➕ Quy tắc Cộng</span>
+            <small style="font-weight:400; font-size:13px;">Chọn 1 trong các phương án</small>
+          </button>
+          <button class="btn-rule-option" onclick="handleRuleSelect(4, 'multiply')">
+            <span>✖️ Quy tắc Nhân</span>
+            <small style="font-weight:400; font-size:13px;">Nhiều công đoạn liên tiếp</small>
+          </button>
+          <button class="btn-rule-option" onclick="handleRuleSelect(4, 'combine')">
+            <span>🔀 Kết hợp Cộng & Nhân</span>
+            <small style="font-weight:400; font-size:13px;">Chia trường hợp + Công đoạn</small>
+          </button>
+        </div>
+        <div class="feedback-box" id="feedback-r1-q4"></div>
+      </div>
+
+      <!-- Vòng 2: Tính toán -->
+      <div class="round-block" id="round2-q4" style="display:none;">
+        <div class="round-label">
+          <span class="step-num">2</span> Vòng 2: Tính toán kết quả
+        </div>
+        <div class="calc-input-wrap">
+          <label for="input-q4" style="font-weight:600; font-size:16px;">Tổng số phương án:</label>
+          <input type="text" inputmode="numeric" id="input-q4" class="calc-input" placeholder="Nhập số..." autocomplete="off">
+          <button class="btn-submit-calc" id="btn-calc-q4" onclick="handleCalcSubmit(4)">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-r2-q4"></div>
+      </div>
+    </section>
+
+  </main>
+
+  <!-- ATHENA FINAL SUMMARY -->
+  <section class="summary-card" id="final-summary">
+    <div class="summary-content">
+      <!-- Athena Mascot SVG -->
+      <div class="athena-avatar">
+        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
+          <circle cx="50" cy="50" r="45" fill="#E6F4EE"/>
+          <!-- Owl Body -->
+          <ellipse cx="50" cy="55" rx="30" ry="32" fill="#2D8B6F"/>
+          <ellipse cx="50" cy="58" rx="22" ry="24" fill="#FAF8F5"/>
+          <!-- Eyes -->
+          <circle cx="38" cy="42" r="12" fill="#FFFFFF" stroke="#14432F" stroke-width="2.5"/>
+          <circle cx="62" cy="42" r="12" fill="#FFFFFF" stroke="#14432F" stroke-width="2.5"/>
+          <circle cx="40" cy="42" r="6" fill="#14432F"/>
+          <circle cx="60" cy="42" r="6" fill="#14432F"/>
+          <circle cx="42" cy="40" r="2" fill="#FFFFFF"/>
+          <circle cx="62" cy="40" r="2" fill="#FFFFFF"/>
+          <!-- Beak -->
+          <polygon points="50,48 45,56 55,56" fill="#D97736"/>
+          <!-- Graduation Cap -->
+          <polygon points="50,18 22,28 50,38 78,28" fill="#14432F"/>
+          <rect x="36" y="28" width="28" height="8" fill="#14432F"/>
+          <circle cx="50" cy="28" r="3" fill="#D97736"/>
+          <path d="M72,30 L76,46" stroke="#D97736" stroke-width="2.5" stroke-linecap="round"/>
+        </svg>
+      </div>
+      <div class="summary-text">
+        <h3>🎉 Xuất sắc! Bạn đã hoàn thành toàn bộ Bài 23</h3>
+        <p>
+          "Qua cả bài học này, bạn đã đi từ lớp học có 2 CLB giao nhau (Module 1), đến quầy trà sữa cần đếm bằng sơ đồ hình cây (Module 2), đến mật mã điều tra viên cần quy tắc nhân (Module 3), và giải cờ vua cần kết hợp cả hai quy tắc (Module 4). Chìa khoá để không bao giờ nhầm lẫn là luôn tự hỏi: <strong>các phương án có tách biệt nhau không (cộng)</strong>, hay <strong>phải làm đủ nhiều công đoạn nối tiếp (nhân)</strong>?"
+        </p>
+        <button class="btn-restart-all" onclick="restartAll()">
+          <span>↺</span> Làm lại bài luyện tập
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- NOTEBOOK MODAL -->
+<div class="notebook-overlay" id="notebook-modal" onclick="closeNotebookOnOverlay(event)">
+  <div class="notebook-card">
+    <div class="notebook-header">
+      <h3><span>📖</span> Sổ tay quy tắc đếm nhanh</h3>
+      <button class="btn-close-notebook" onclick="closeNotebook()">✕</button>
+    </div>
+    <div class="notebook-body">
+      <div class="rule-box add">
+        <div class="rule-title">➕ 1. Quy tắc Cộng (Từ khóa: "HOẶC", "CHỌN 1 TRONG CÁC PHƯƠNG ÁN")</div>
+        <div class="rule-desc">
+          Một công việc có thể hoàn thành bởi một trong các phương án $A_1, A_2, \dots, A_k$ <strong>rời nhau (không trùng lặp)</strong>. Số cách chọn là:<br>
+          <strong style="color:var(--jade-dark); font-size:16px;">$N = n_1 + n_2 + \dots + n_k$</strong>
+        </div>
+      </div>
+
+      <div class="rule-box multiply">
+        <div class="rule-title">✖️ 2. Quy tắc Nhân (Từ khóa: "VÀ", "CÔNG ĐOẠN LIÊN TIẾP")</div>
+        <div class="rule-desc">
+          Một công việc phải thực hiện qua các công đoạn $B_1, B_2, \dots, B_k$ <strong>nối tiếp, độc lập</strong> và phải làm <strong>đủ tất cả</strong>. Số cách chọn là:<br>
+          <strong style="color:#1e4b66; font-size:16px;">$N = m_1 \times m_2 \times \dots \times m_k$</strong>
+        </div>
+      </div>
+
+      <div class="rule-box combine">
+        <div class="rule-title">🔀 3. Quy trình Kết hợp Cộng & Nhân</div>
+        <div class="rule-desc">
+          1. <strong>Bước 1:</strong> Chia công việc thành các <strong>trường hợp rời nhau</strong> (Quy tắc Cộng).<br>
+          2. <strong>Bước 2:</strong> Trong mỗi trường hợp, tính số cách bằng các <strong>công đoạn liên tiếp</strong> (Quy tắc Nhân).<br>
+          3. <strong>Bước 3:</strong> <strong>Cộng kết quả</strong> của các trường hợp lại.
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
+
+<!-- =========================================================
+     8. ATHENA MANIFEST & LMS INTEGRATION
+     ========================================================= -->
+<script type="application/json" id="athena-context">
+{
+  "context": {
+    "grade": 10,
+    "subject": "math",
+    "chapter": 8,
+    "lesson": 23,
+    "topic": "quy_tac_dem_tong_hop",
+    "module": 5
+  },
+  "structure": [
+    { "id": "m5_c1_nhan_dien", "type": "answered", "required": true },
+    { "id": "m5_c1_tinh_toan", "type": "answered", "required": true },
+    { "id": "m5_c2_nhan_dien", "type": "answered", "required": true },
+    { "id": "m5_c2_tinh_toan", "type": "answered", "required": true },
+    { "id": "m5_c3_nhan_dien", "type": "answered", "required": true },
+    { "id": "m5_c3_tinh_toan", "type": "answered", "required": true },
+    { "id": "m5_c4_nhan_dien", "type": "answered", "required": true },
+    { "id": "m5_c4_tinh_toan", "type": "answered", "required": true }
+  ],
+  "progress": {
+    "total": 8,
+    "current": 0
+  },
+  "athenaGuidance": {
+    "m5_c1_nhan_dien": "Gợi ý lần sai thứ 2: Bạn chỉ chọn 1 đầu sách duy nhất trong 3 thể loại tách biệt — đây là chọn 1 trong các phương án hay làm đủ các công đoạn?",
+    "m5_c1_tinh_toan": "Chỉ nhắc lại: Cộng số đầu sách của 3 thể loại lại.",
+    "m5_c2_nhan_dien": "Gợi ý: Bạn cần chọn ĐỦ cả lều VÀ túi ngủ — đây có phải làm nhiều công đoạn nối tiếp không?",
+    "m5_c2_tinh_toan": "Chỉ nhắc: Nhân số loại lều với số loại túi ngủ.",
+    "m5_c3_nhan_dien": "Gợi ý: Đây là 'hoặc' giữa Điền kinh/Bơi, hay 'và' để làm đủ các bước trong 1 môn?",
+    "m5_c3_tinh_toan": "Chỉ nhắc quy trình 3 bước: chia trường hợp, nhân trong mỗi trường hợp, rồi cộng lại.",
+    "m5_c4_nhan_dien": "Gợi ý: Tương tự câu 3, áp dụng cho 2 buổi dã ngoại Sáng / Chiều.",
+    "m5_c4_tinh_toan": "Chỉ nhắc: Tính số cách buổi sáng, tính số cách buổi chiều, rồi cộng lại."
+  }
+}
+</script>
+
+<script>
+  /* =========================================================
+     9. LMS SAFE ACCESSOR & AUTO-RESIZE
+     ========================================================= */
+  function LMS() {
+    return {
+      reportProgress: function(current, total) {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ATHENA_PROGRESS', current, total }, '*');
+        }
+      },
+      reportState: function(state) {
+        if (window.parent && window.parent !== window) {
+          window.parent.postMessage({ type: 'ATHENA_STATE', state }, '*');
+        }
+      },
+      resize: function() {
+        if (window.parent && window.parent !== window) {
+          const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+          window.parent.postMessage({ type: 'ATHENA_RESIZE', height }, '*');
+        }
+      }
+    };
+  }
+
+  // Setup ResizeObserver for seamless LMS iframe height
+  window.addEventListener('load', () => {
+    LMS().resize();
+    if (window.ResizeObserver) {
+      new ResizeObserver(() => LMS().resize()).observe(document.body);
+    }
+  });
+
+  /* =========================================================
+     10. DATA & PEDAGOGICAL 3-STRIKE LOGIC
+     ========================================================= */
+  const QUESTION_DATA = {
+    1: {
+      ruleCorrect: 'add',
+      calcCorrect: 15,
+      r1Hints: {
+        strike2: "💡 <strong>Gợi ý:</strong> Bạn chỉ cần chọn <strong>1 đầu sách duy nhất</strong> trong 3 thể loại hoàn toàn tách biệt nhau — đây là chọn 1 trong các phương án rời nhau.",
+        strike3: "📘 <strong>Đáp án Vòng 1:</strong> Đây là <strong>Quy tắc Cộng</strong> vì 3 thể loại sách không trùng nhau và chỉ chọn đúng 1 cuốn."
+      },
+      r1Explain: "Chính xác! 3 thể loại sách (Trinh thám, Viễn tưởng, Tản văn) là các phương án rời nhau, chỉ chọn 1 cuốn nên dùng <strong>Quy tắc Cộng</strong>.",
+      r2Hints: {
+        strike2: "💡 <strong>Gợi ý:</strong> Áp dụng quy tắc cộng: Hãy cộng số đầu sách của cả 3 thể loại lại với nhau.",
+        strike3: "📘 <strong>Đáp án Vòng 2:</strong> Số cách chọn là: $6 + 5 + 4 = 15$ cách."
+      },
+      r2Explain: "Tuyệt vời! Tổng số cách chọn 1 đầu sách là: $6 + 5 + 4 = 15$ cách."
+    },
+    2: {
+      ruleCorrect: 'multiply',
+      calcCorrect: 6,
+      r1Hints: {
+        strike2: "💡 <strong>Gợi ý:</strong> Bạn cần chọn <strong>ĐỦ cả lều VÀ túi ngủ</strong> (làm đủ cả 2 công đoạn nối tiếp) — hãy nghĩ xem đây là quy tắc nào?",
+        strike3: "📘 <strong>Đáp án Vòng 1:</strong> Đây là <strong>Quy tắc Nhân</strong> vì công việc gồm 2 công đoạn độc lập liên tiếp: chọn lều rồi chọn túi ngủ."
+      },
+      r1Explain: "Chính xác! Để có bộ cắm trại, An phải thực hiện đủ 2 công đoạn liên tiếp (chọn lều rồi chọn túi ngủ) nên dùng <strong>Quy tắc Nhân</strong>.",
+      r2Hints: {
+        strike2: "💡 <strong>Gợi ý:</strong> Áp dụng quy tắc nhân: Nhân số loại lều với số loại túi ngủ.",
+        strike3: "📘 <strong>Đáp án Vòng 2:</strong> Số cách phối hợp là: $3 \\times 2 = 6$ cách."
+      },
+      r2Explain: "Chính xác! Số cách phối hợp bộ đồ cắm trại là: $3 \\times 2 = 6$ cách."
+    },
+    3: {
+      ruleCorrect: 'combine',
+      calcCorrect: 14,
+      r1Hints: {
+        strike2: "💡 <strong>Gợi ý:</strong> Bạn được chọn <strong>HOẶC</strong> thi Điền kinh (gồm 2 công đoạn) <strong>HOẶC</strong> thi Bơi (gồm 2 công đoạn). Cần kết hợp cả chia trường hợp và công đoạn.",
+        strike3: "📘 <strong>Đáp án Vòng 1:</strong> Đây là <strong>Quy trình Kết hợp</strong>: chia 2 trường hợp (Điền kinh / Bơi), trong mỗi môn nhân các công đoạn, rồi cộng lại."
+      },
+      r1Explain: "Chính xác! Bài toán chia làm 2 trường hợp môn thi (Quy tắc Cộng), mỗi môn lại gồm 2 công đoạn chọn nội dung và thời gian/cự ly (Quy tắc Nhân).",
+      r2Hints: {
+        strike2: "💡 <strong>Gợi ý:</strong> Tính số cách thi Điền kinh ($3 \\times 2$), tính số cách thi Bơi ($4 \\times 2$), sau đó cộng 2 kết quả lại.",
+        strike3: "📘 <strong>Đáp án Vòng 2:</strong> Điền kinh có $3 \\times 2 = 6$, Bơi có $4 \\times 2 = 8$. Tổng cộng: $6 + 8 = 14$ cách."
+      },
+      r2Explain: "Rất tốt! Điền kinh: $3 \\times 2 = 6$ cách; Bơi: $4 \\times 2 = 8$ cách. Tổng số lựa chọn là: $6 + 8 = 14$ cách."
+    },
+    4: {
+      ruleCorrect: 'combine',
+      calcCorrect: 18,
+      r1Hints: {
+        strike2: "💡 <strong>Gợi ý:</strong> Bạn chọn <strong>HOẶC</strong> đi Sáng (Điểm đến $\\times$ Phương tiện) <strong>HOẶC</strong> đi Chiều (Hoạt động $\\times$ Món ăn). Hãy phối hợp cả 2 quy tắc.",
+        strike3: "📘 <strong>Đáp án Vòng 1:</strong> Đây là <strong>Quy trình Kết hợp</strong>: 2 trường hợp buổi dã ngoại, mỗi buổi có 2 công đoạn liên tiếp."
+      },
+      r1Explain: "Chính xác! Lịch trình chia làm 2 trường hợp Sáng hoặc Chiều (Cộng), trong mỗi buổi phải làm đủ 2 công đoạn (Nhân).",
+      r2Hints: {
+        strike2: "💡 <strong>Gợi ý:</strong> Tính số cách đi Buổi sáng ($3 \\times 2$), tính số cách đi Buổi chiều ($4 \\times 3$), rồi cộng 2 kết quả lại.",
+        strike3: "📘 <strong>Đáp án Vòng 2:</strong> Buổi sáng: $3 \\times 2 = 6$; Buổi chiều: $4 \\times 3 = 12$. Tổng cộng: $6 + 12 = 18$ phương án."
+      },
+      r2Explain: "Xuất sắc! Buổi sáng: $3 \\times 2 = 6$ cách; Buổi chiều: $4 \\times 3 = 12$ cách. Tổng số phương án là: $6 + 12 = 18$ cách."
+    }
+  };
+
+  // State tracker
+  const state = {
+    progressCount: 0,
+    qState: {
+      1: { r1Attempts: 0, r1Done: false, r2Attempts: 0, r2Done: false },
+      2: { r1Attempts: 0, r1Done: false, r2Attempts: 0, r2Done: false },
+      3: { r1Attempts: 0, r1Done: false, r2Attempts: 0, r2Done: false },
+      4: { r1Attempts: 0, r1Done: false, r2Attempts: 0, r2Done: false }
+    }
+  };
+
+  function updateGlobalProgress() {
+    let completedSteps = 0;
+    for (let q = 1; q <= 4; q++) {
+      if (state.qState[q].r1Done) completedSteps++;
+      if (state.qState[q].r2Done) completedSteps++;
+    }
+    state.progressCount = completedSteps;
+    const percent = (completedSteps / 8) * 100;
+    document.getElementById('progress-bar').style.width = `${percent}%`;
+    document.getElementById('progress-text').textContent = `${completedSteps}/8`;
+    LMS().reportProgress(completedSteps, 8);
+    LMS().reportState(state);
+
+    if (completedSteps === 8) {
+      document.getElementById('final-summary').classList.add('active');
+      document.getElementById('final-summary').scrollIntoView({ behavior: 'smooth', block: 'start' });
+    }
+  }
+
+  /* =========================================================
+     11. ROUND 1: IDENTIFY RULE HANDLER (3-STRIKE)
+     ========================================================= */
+  function handleRuleSelect(qNum, selectedRule) {
+    const q = state.qState[qNum];
+    if (q.r1Done) return;
+
+    q.r1Attempts++;
+    const data = QUESTION_DATA[qNum];
+    const fbEl = document.getElementById(`feedback-r1-q1`.replace('q1', `q${qNum}`));
+    const cardEl = document.getElementById(`card-q${qNum}`);
+    const buttons = cardEl.querySelectorAll('#round1-q' + qNum + ' .btn-rule-option');
+
+    // Remove focus outline from all buttons
+    buttons.forEach(btn => btn.blur());
+
+    if (selectedRule === data.ruleCorrect) {
+      // CORRECT
+      q.r1Done = true;
+      buttons.forEach(btn => {
+        btn.disabled = true;
+        btn.classList.remove('hint-correct', 'selected-wrong');
+        if (btn.getAttribute('onclick').includes(`'${selectedRule}'`)) {
+          btn.classList.add('selected-correct');
+        }
+      });
+      fbEl.className = 'feedback-box success show';
+      fbEl.innerHTML = data.r1Explain;
+      unlockRound2(qNum);
+      updateGlobalProgress();
+    } else {
+      // WRONG — 3-STRIKE
+      cardEl.classList.add('shake-anim');
+      setTimeout(() => cardEl.classList.remove('shake-anim'), 400);
+
+      // Flash red on clicked wrong button
+      buttons.forEach(btn => {
+        if (btn.getAttribute('onclick').includes(`'${selectedRule}'`)) {
+          btn.classList.add('selected-wrong');
+          setTimeout(() => btn.classList.remove('selected-wrong'), 500);
+        }
+      });
+
+      if (q.r1Attempts === 1) {
+        // Strike 1: Shake & gentle warning
+        fbEl.className = 'feedback-box wrong show';
+        fbEl.innerHTML = '❌ Chưa đúng, hãy đọc lại kỹ yêu cầu và cấu trúc của bài toán.';
+      } else if (q.r1Attempts === 2) {
+        // Strike 2: Method hint
+        fbEl.className = 'feedback-box hint show';
+        fbEl.innerHTML = data.r1Hints.strike2;
+      } else {
+        // Strike 3+: Highlight the actual correct button with .hint-correct and prompt user to click it
+        buttons.forEach(btn => {
+          if (btn.getAttribute('onclick').includes(`'${data.ruleCorrect}'`)) {
+            btn.classList.add('hint-correct');
+          }
+        });
+        fbEl.className = 'feedback-box hint show';
+        fbEl.innerHTML = data.r1Hints.strike3 + '<br><span style="color:var(--jade-dark); font-weight:700; display:inline-block; margin-top:6px;">👉 Hãy bấm chọn nút quy tắc đúng ở trên để mở khóa Vòng 2.</span>';
+      }
+    }
+
+    if (window.renderMathInElement) {
+      renderMathInElement(fbEl, {delimiters: [{left: '$', right: '$', display: false}]});
+    }
+  }
+
+  function unlockRound2(qNum) {
+    const r2El = document.getElementById(`round2-q${qNum}`);
+    r2El.style.display = 'block';
+    r2El.classList.add('active');
+    r2El.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+    const inputEl = document.getElementById(`input-q${qNum}`);
+    if (inputEl) inputEl.focus();
+  }
+
+  /* =========================================================
+     12. ROUND 2: CALCULATION HANDLER (3-STRIKE)
+     ========================================================= */
+  function handleCalcSubmit(qNum) {
+    const q = state.qState[qNum];
+    if (q.r2Done) return;
+
+    const data = QUESTION_DATA[qNum];
+    const inputEl = document.getElementById(`input-q${qNum}`);
+    const btnEl = document.getElementById(`btn-calc-q${qNum}`);
+    const fbEl = document.getElementById(`feedback-r2-q${qNum}`);
+    const cardEl = document.getElementById(`card-q${qNum}`);
+    const val = parseInt(inputEl.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inputEl.classList.add('shake-anim');
+      setTimeout(() => inputEl.classList.remove('shake-anim'), 400);
+      fbEl.className = 'feedback-box wrong show';
+      fbEl.innerHTML = '⚠️ Vui lòng nhập một số nguyên kết quả hợp lệ.';
+      return;
+    }
+
+    q.r2Attempts++;
+
+    if (val === data.calcCorrect) {
+      // CORRECT
+      q.r2Done = true;
+      inputEl.disabled = true;
+      btnEl.disabled = true;
+      inputEl.className = 'calc-input correct';
+      fbEl.className = 'feedback-box success show';
+      fbEl.innerHTML = data.r2Explain;
+      completeQuestion(qNum);
+      updateGlobalProgress();
+    } else {
+      // WRONG — 3-STRIKE
+      inputEl.classList.add('shake-anim');
+      setTimeout(() => inputEl.classList.remove('shake-anim'), 400);
+
+      if (q.r2Attempts === 1) {
+        // Strike 1: Shake
+        inputEl.className = 'calc-input wrong';
+        fbEl.className = 'feedback-box wrong show';
+        fbEl.innerHTML = '❌ Kết quả tính toán chưa chính xác, hãy thử tính lại một lần nữa.';
+      } else if (q.r2Attempts === 2) {
+        // Strike 2: Formula hint
+        inputEl.className = 'calc-input wrong';
+        fbEl.className = 'feedback-box hint show';
+        fbEl.innerHTML = data.r2Hints.strike2;
+      } else {
+        // Strike 3+: Reveal answer in explanation, user MUST type manually to complete
+        inputEl.className = 'calc-input wrong';
+        fbEl.className = 'feedback-box hint show';
+        fbEl.innerHTML = data.r2Hints.strike3 + `<br><span style="color:var(--jade-dark); font-weight:700; display:inline-block; margin-top:6px;">👉 Hãy tự nhập kết quả <strong>${data.calcCorrect}</strong> vào ô bên trên và bấm "Kiểm tra" để hoàn thành câu này.</span>`;
+        inputEl.focus();
+        inputEl.select();
+      }
+    }
+
+    if (window.renderMathInElement) {
+      renderMathInElement(fbEl, {delimiters: [{left: '$', right: '$', display: false}]});
+    }
+  }
+
+  function completeQuestion(qNum) {
+    const cardEl = document.getElementById(`card-q${qNum}`);
+    cardEl.classList.add('completed');
+    cardEl.classList.remove('active-focus');
+    document.getElementById(`status-icon-q${qNum}`).textContent = '✅';
+
+    // Unlock next question
+    const nextQ = qNum + 1;
+    if (nextQ <= 4) {
+      const nextCard = document.getElementById(`card-q${nextQ}`);
+      if (nextCard) {
+        nextCard.classList.remove('locked');
+        nextCard.classList.add('active-focus');
+        document.getElementById(`status-icon-q${nextQ}`).textContent = '⏳';
+        nextCard.scrollIntoView({ behavior: 'smooth', block: 'center' });
+      }
+    }
+  }
+
+  // Handle Enter key inside inputs
+  [1, 2, 3, 4].forEach(qNum => {
+    const input = document.getElementById(`input-q${qNum}`);
+    if (input) {
+      input.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter') handleCalcSubmit(qNum);
+      });
+    }
+  });
+
+  /* =========================================================
+     13. NOTEBOOK MODAL CONTROLS
+     ========================================================= */
+  function openNotebook() {
+    const modal = document.getElementById('notebook-modal');
+    modal.classList.add('active');
+  }
+
+  function closeNotebook() {
+    const modal = document.getElementById('notebook-modal');
+    modal.classList.remove('active');
+  }
+
+  function closeNotebookOnOverlay(e) {
+    if (e.target.id === 'notebook-modal') {
+      closeNotebook();
+    }
+  }
+
+  /* =========================================================
+     14. RESTART MODULE
+     ========================================================= */
+  function restartAll() {
+    window.location.reload();
+  }
+</script>
+
+</body>
+</html>

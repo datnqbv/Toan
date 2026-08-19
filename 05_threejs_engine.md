@@ -546,6 +546,363 @@ function setThetaFromSlider(deg, hingeBaseX, inward, armLength, fixedAxisCoord) 
 
 ---
 
+## PHẦN 2.7 — ĐIỂM RÀNG BUỘC XOAY TRÊN CUNG TRÒN quanh 1 TRỤC ĐỨNG (bản lề dọc, cung quét MẶT PHẲNG NGANG)
+
+> **Thêm 08/2026** — PHẦN 2.6 ở trên mô hình bản lề NGANG (trục ngang,
+> VD chân tường trên nền), cung quét trên MẶT PHẲNG ĐỨNG, và công thức
+> `angleFromRawDrag` của 2.6 dùng `Math.max(0.2, rawPoint3D.y)` để ép dy
+> luôn dương — điều này giới hạn góc CHỈ ĐƯỢC trong khoảng gần (−90°,90°),
+> không đủ cho các ca cần bản lề ĐỨNG (trục dọc, VD cửa tủ quần áo, cần
+> cẩu tháp) với cung quét trên MẶT PHẲNG NGANG, cần góc mở tới ~170° hoặc
+> đủ 360°. ĐÂY LÀ PATTERN KHÁC, không phải chỉnh tham số của 2.6.
+>
+> ⚠️ **Sửa lại trích dẫn sai ở kịch bản Bài 23** (Module 1 Bước 1 — tủ
+> quần áo; Module 2 Nhóm 3 — cần cẩu tháp): cả 2 đã trích dẫn nhầm PHẦN 2.6
+> — phải dùng PHẦN 2.7 này mới đúng, vì bản lề của cả 2 ca đó đứng dọc, cung
+> quét ngang, không phải bản lề ngang cung quét đứng như 2.6.
+
+### 2.7.1 Nguyên lý: `atan2` KHÔNG ép dấu — cho phép quét gần hết vòng tròn
+
+```javascript
+// hingeBase: điểm chân bản lề (trên mặt đất/mặt ngang, VD chân cột)
+// armLength: bán kính cung tay cầm (VD chiều rộng cửa tủ, chiều dài cần
+//   cẩu)
+// fixedY: chiều cao cố định của bản lề (không đổi khi xoay — bản lề đứng
+//   dọc trục y, cung nằm ngang tại 1 độ cao fixedY)
+//
+// Bước 1 — TỪ VỊ TRÍ KÉO THÔ suy ra góc: dùng CẢ 2 thành phần ngang
+// (x, z), KHÔNG ép dấu như 2.6 — atan2 cho kết quả đầy đủ (−180°,180°]
+function angleFromRawDrag_Horizontal(rawPoint3D, hingeBase, thetaMinDeg, thetaMaxDeg) {
+  const dx = rawPoint3D.x - hingeBase.x;
+  const dz = rawPoint3D.z - hingeBase.z;
+  let theta = Math.atan2(dz, dx); // KHÔNG clamp dz như 2.6 clamp dy — đây
+                                    // là điểm khác biệt cốt lõi so với 2.6
+  const thetaMin = thetaMinDeg * Math.PI / 180;
+  const thetaMax = thetaMaxDeg * Math.PI / 180;
+  return Math.max(thetaMin, Math.min(thetaMax, theta)); // vẫn CLAMP theo
+                                    // khoảng cho phép — cửa tủ dùng
+                                    // [0°,170°], cần cẩu dùng [-180°,180°]
+                                    // (coi như không giới hạn thực tế)
+}
+
+// Bước 2 — TỪ GÓC suy ra vị trí trên cung (mặt phẳng NGANG, y cố định)
+function pointOnHingeArc_Horizontal(hingeBase, theta, armLength, fixedY) {
+  return new THREE.Vector3(
+    hingeBase.x + armLength * Math.cos(theta),
+    fixedY,
+    hingeBase.z + armLength * Math.sin(theta)
+  );
+}
+```
+
+> **Vì sao KHÔNG tái dùng thẳng `angleFromRawDrag`/`pointOnHingeArc` của
+> 2.6:** 2.6 gán y = f(theta) (biến đổi theo góc, dùng cho cung ĐỨNG); ở
+> đây y CỐ ĐỊNH (`fixedY`, không đổi theo theta) vì cung nằm NGANG — đổi
+> vai trò trục nào biến đổi/trục nào cố định, không chỉ đổi tên biến.
+
+### 2.7.2 Áp dụng cụ thể — 2 ca dùng khác THETA_MIN/MAX
+
+```javascript
+// Ca 1 — Cửa tủ quần áo (Bài 23 Module 1 Bước 1): giới hạn 0°-170°,
+// không cho mở quá (cửa chạm thân tủ)
+const doorTheta = angleFromRawDrag_Horizontal(rawDragPoint, hingeBase, 0, 170);
+
+// Ca 2 — Cần cẩu tháp (Bài 23 Module 2 Nhóm 3): xoay đủ vòng, không
+// chặn — dùng khoảng [-180, 180] (atan2 tự nhiên đã nằm trong khoảng này,
+// clamp ở đây chỉ mang tính hình thức, không thực sự giới hạn)
+const craneTheta = angleFromRawDrag_Horizontal(rawDragPoint, hingeBase, -180, 180);
+```
+
+⚠️ **Chưa verify bằng file HTML thật** — pattern mới, viết theo đúng tinh
+thần 2.6 nhưng đổi trục. Prototype nhỏ (1 thanh xoay quanh 1 điểm cố định
+trên mặt phẳng ngang, kéo full vòng) trước khi build chính thức Bài 23.
+
+---
+
+## PHẦN 2.8 — NÓN CÁC HƯỚNG VUÔNG GÓC VỚI 1 ĐƯỜNG CHO TRƯỚC (xoay tự do trên nón)
+
+> **Thêm 08/2026** — phục vụ Bài 23 Module 2 Nhóm 1 bước "bẫy" (cột đèn
+> nghiêng tự do nhưng luôn vuông góc với 1 sợi dây điện cho trước — nhắm
+> sai lầm D: "cùng vuông góc 1 đường thẳng chưa chắc song song"). Đây LÀ
+> pattern MỚI hoàn toàn (không phải biến thể của pattern kéo-thả nào đã
+> có) — nhưng KHÔNG viết code xoay mới, tái dùng đúng
+> `rotateLineAroundNormal` (PHẦN 4.14.1) làm phần xoay, chỉ thêm bước khởi
+> tạo điểm bắt đầu trên nón bằng `arbitraryPerpendicular`
+> (06_geometry_math.md PHẦN C.4).
+
+```javascript
+// fixedLineDir: hướng đường cho trước (VD dây điện) — vectơ ĐÃ NORMALIZE
+// pivot: điểm chân cột (gốc của nón)
+// coneRadius: độ dài đoạn biểu diễn hướng cột trên nón
+
+// Bước 1 — khởi tạo 1 điểm BẤT KỲ trên nón (chỉ cần 1 lần khi bắt đầu)
+const initialPerp = arbitraryPerpendicular(fixedLineDir); // 06 PHẦN C.4
+const initialConeTip = pivot.clone().add(initialPerp.clone().multiplyScalar(coneRadius));
+
+// Bước 2 — khi học sinh kéo, XOAY điểm này quanh TRỤC = fixedLineDir
+// (tái dùng nguyên hàm đã có, không viết lại)
+function updateConeDrag(thetaDeg) {
+  const { newP } = rotateLineAroundNormal(
+    initialConeTip, initialConeTip, /* pivotM= */ pivot, /* normal= */ fixedLineDir, thetaDeg
+  );
+  // newP luôn cách pivot đúng coneRadius và luôn vuông góc fixedLineDir
+  // với MỌI thetaDeg — đây chính là điều cần minh hoạ (nhắm sai lầm D)
+  cotDen2Mesh.position.copy(newP);
+}
+```
+
+> ⚠️ **Chưa verify bằng file HTML thật** — kết hợp 2 hàm đã có sẵn theo
+> cách MỚI (chưa từng dùng cùng nhau trong kịch bản trước đây). Verify
+> bằng script Node: kiểm tra `newP - pivot` luôn vuông góc `fixedLineDir`
+> (dot ≈ 0) ở nhiều giá trị `thetaDeg` khác nhau, trước khi build.
+
+---
+
+## PHẦN 2.9 — TỊNH TIẾN THEO QUỸ ĐẠO, GIỮ NGUYÊN HƯỚNG (không tự xoay theo vị trí)
+
+> **Thêm 08/2026** — phục vụ Bài 24 Module 2 Phần 4 (mô hình Trái Đất
+> quay quanh Mặt Trời, trục nghiêng giữ PHƯƠNG CỐ ĐỊNH trong không gian).
+> Đây LÀ pattern khác hẳn mọi pattern xoay-quanh-trục đã có (PHẦN 2.6,
+> 2.7, 4.14.1) — ở đó vật/đường XOAY THEO tham số góc; ở đây vật DI
+> CHUYỂN theo quỹ đạo nhưng HƯỚNG GẮN VỚI VẬT KHÔNG ĐỔI, dễ lẫn với
+> trực giác sai "vật di chuyển quanh 1 tâm thì phải tự quay theo".
+
+```javascript
+// center: tâm quỹ đạo (VD Mặt Trời), radius: bán kính quỹ đạo
+// phiDeg: vị trí góc trên quỹ đạo (0°-360°, tương ứng % năm đã qua)
+// Quỹ đạo nằm trong mặt phẳng NGANG (y không đổi = center.y)
+function pointOnOrbit(center, radius, phiDeg) {
+  const phi = phiDeg * Math.PI / 180;
+  return new THREE.Vector3(
+    center.x + radius * Math.cos(phi),
+    center.y,
+    center.z + radius * Math.sin(phi)
+  );
+}
+
+// axisDirFixed: hướng trục nghiêng — ĐẶT 1 LẦN DUY NHẤT khi khởi tạo,
+// KHÔNG được tính lại theo phiDeg — đây chính là điểm dễ code sai nhất
+const axisDirFixed = new THREE.Vector3(
+  Math.sin(23.5 * Math.PI / 180),
+  Math.cos(23.5 * Math.PI / 180),
+  0
+).normalize();
+
+// Cập nhật mỗi khi slider đổi vị trí quỹ đạo — CHỈ đổi position, KHÔNG
+// đụng vào hướng trục hiển thị (mesh trục con giữ nguyên rotation cố định
+// từ lúc khởi tạo, chỉ mesh THÂN Trái Đất mới di chuyển theo earthGroup)
+function updateEarthOrbitPosition(phiDeg) {
+  const pos = pointOnOrbit(sunCenter, orbitRadius, phiDeg);
+  earthGroup.position.copy(pos); // CHỈ set position
+  // KHÔNG gọi earthGroup.lookAt(...) hay bất kỳ hàm xoay nào theo phiDeg —
+  // đây là lỗi hay gặp nhất khi mới quen viết code quỹ đạo (nhầm với kiểu
+  // Mặt Trăng luôn quay 1 mặt về Trái Đất — khác bản chất với Trái Đất
+  // quanh Mặt Trời, trục KHÔNG tự động hướng theo tâm quỹ đạo)
+}
+```
+
+> ⚠️ **Bẫy code hay gặp (ghi chú riêng vì rất dễ nhầm):** nếu lỡ gọi
+> `earthGroup.lookAt(sunCenter)` hoặc bất kỳ hàm xoay-theo-vị-trí nào mỗi
+> khi cập nhật `phiDeg`, trục nghiêng SẼ BỊ XOAY THEO vị trí quỹ đạo —
+> cho ra kết quả SAI (góc trục-mặt phẳng quỹ đạo sẽ đổi theo `phiDeg`,
+> trái với vật lý thật). Đây chính là lỗi cần tránh khi build, vì code
+> quỹ đạo bằng Three.js theo bản năng thường "tiện tay" thêm `lookAt()`.
+
+⚠️ **Chưa verify bằng file HTML thật** — đã verify công thức bằng Node
+(`three` thật qua npm, xem log verify Bài 24 Module 2), góc trục-mặt
+phẳng quỹ đạo giữ đúng 66,5° ở cả 4 vị trí test. Prototype nhỏ (1 hình
+cầu tịnh tiến quanh 1 điểm, có 1 mũi tên chỉ hướng cố định gắn theo) trước
+khi build chính thức.
+
+---
+
+## PHẦN 2.10 — KHUNG XOAY LỒNG NHAU (GIMBAL), VẬT TRONG GIỮ HƯỚNG CỐ ĐỊNH
+
+> **Thêm 08/2026** — phục vụ Module mở rộng Bài 22-24, Tab 3 (con quay hồi
+> chuyển) — khung ngoài (gimbal) xoay tự do nhiều lớp, nhưng trục/vật bên
+> TRONG phải giữ đúng 1 hướng cố định trong không gian, KHÔNG xoay theo.
+>
+> Khác PHẦN 2.9 (tịnh tiến quỹ đạo, không xoay gì cả — object không có
+> parent xoay) — ở đây object CÓ NHIỀU LỚP PARENT ĐANG XOAY (outerRing →
+> middleRing → innerHolder), nên phải "trung hoà" (counter-rotate) lớp
+> trong cùng bằng đúng NGHỊCH ĐẢO tích các quaternion của lớp cha, không
+> thể chỉ "không làm gì" như PHẦN 2.9.
+
+```javascript
+// outerRing xoay quanh Y (do học sinh kéo), middleRing xoay quanh X
+// (lớp lồng thứ 2) — innerHolder chứa vật cần giữ hướng cố định
+// (mũi tên trục con quay)
+
+function computeInnerHolderQuaternion(outerAngleRad, middleAngleRad) {
+  const qOuter = new THREE.Quaternion().setFromEuler(new THREE.Euler(0, outerAngleRad, 0));
+  const qMiddle = new THREE.Quaternion().setFromEuler(new THREE.Euler(middleAngleRad, 0, 0));
+  // Nghịch đảo tích 2 quaternion cha — áp vào innerHolder để "trung hoà"
+  return qOuter.clone().multiply(qMiddle).invert();
+}
+
+// Cập nhật mỗi khi học sinh kéo xoay 1 trong 2 khung ngoài:
+function onGimbalDrag(outerAngleRad, middleAngleRad) {
+  outerRing.rotation.y = outerAngleRad;
+  middleRing.rotation.x = middleAngleRad;
+  innerHolder.quaternion.copy(
+    computeInnerHolderQuaternion(outerAngleRad, middleAngleRad)
+  );
+  // Kết quả: worldQuaternion của innerHolder = qOuter · qMiddle · (qOuter·qMiddle)⁻¹
+  // = Identity — mũi tên trục bên trong LUÔN giữ đúng hướng cục bộ đã đặt
+  // ban đầu, bất kể outerRing/middleRing xoay bao nhiêu.
+}
+```
+
+> **Verify đã thực hiện:** chạy qua 5 tổ hợp góc (outer, middle) khác nhau
+> bằng Node (`three` thật qua npm) — hướng thế giới (world direction) của
+> mũi tên trục giữ ĐÚNG 1 giá trị duy nhất ở mọi tổ hợp, xác nhận công
+> thức đúng. ⚠️ CHƯA verify bằng file HTML thật (chưa test tương tác kéo
+> tay thật + hiệu ứng hình ảnh) — prototype trước khi build.
+
+---
+
+## PHẦN 2.11 — OVERLAY 2D ĐỘC LẬP VỚI SCENE 3D (kiểu "màn hình thiết bị")
+
+> **Thêm 08/2026** — phục vụ Bài 24 Module 3 Domain 3 (màn hình radar mô
+> phỏng, vòng quét xoay 360° liên tục, chấm sáng báo hiệu khi phát hiện
+> máy bay). Đây KHÔNG phải vật thể trong scene Three.js (không có chiều
+> sâu, không cần camera 3D) — mà là 1 lớp HTML/CSS hoặc canvas 2D riêng,
+> ĐẶT ĐÈ lên khu vực scene 3D, hoạt động ĐỘC LẬP hoàn toàn với vòng lặp
+> render Three.js.
+
+```html
+<!-- Đặt cùng cấp với canvas Three.js, absolute position đè lên góc màn hình -->
+<div id="radar-overlay" style="position:absolute; width:160px; height:160px;
+     border-radius:50%; background:var(--ink); overflow:hidden;">
+  <div id="radar-sweep"></div> <!-- xoay bằng CSS animation, KHÔNG qua Three.js -->
+  <div id="radar-blip" style="display:none;"></div> <!-- chấm sáng, JS toggle hiển thị -->
+</div>
+```
+
+```css
+/* Vòng quét — CSS animation riêng, chu kỳ độc lập với requestAnimationFrame của scene 3D */
+#radar-sweep {
+  position: absolute; width: 50%; height: 2px; top: 50%; left: 50%;
+  background: linear-gradient(90deg, var(--jade), transparent);
+  transform-origin: 0 50%;
+  animation: radarSweep 2s linear infinite;
+}
+@keyframes radarSweep { from { transform: rotate(0deg); } to { transform: rotate(360deg); } }
+```
+
+```javascript
+// Đồng bộ LOGIC (không phải đồng bộ animation-frame) giữa scene 3D và
+// overlay 2D: khi vị trí máy bay trong scene 3D đạt 1 mốc đã định (VD
+// sau animation bay xong), TOGGLE hiển thị blip — không cần 2 hệ animation
+// chạy chung 1 vòng lặp, chỉ cần bắn 1 sự kiện tại đúng thời điểm.
+function onFlightAnimationComplete() {
+  document.getElementById('radar-blip').style.display = 'block';
+  document.getElementById('radar-blip').textContent = 'Khoảng cách: 8,3 km';
+}
+```
+
+> ⚠️ **Lưu ý cốt lõi:** KHÔNG cố gắng đồng bộ animation-frame-by-frame
+> giữa overlay 2D và scene 3D (VD không cần vòng quét radar phải "biết"
+> đúng vị trí máy bay trong từng khung hình) — chỉ cần đồng bộ ở các MỐC
+> SỰ KIỆN rời rạc (bắt đầu bay, kết thúc bay, phát hiện mục tiêu). Cố
+> đồng bộ chi tiết hơn mức cần thiết sẽ làm code phức tạp không cần thiết.
+
+⚠️ **Chưa verify bằng file HTML thật** — đây là kết hợp 2 công nghệ khác
+nhau (Three.js scene + CSS animation overlay), về mặt logic đơn giản
+nhưng cần test thật để chắc z-index/positioning không bị lệch trên các
+kích thước màn hình khác nhau, đặc biệt mobile.
+
+---
+
+## PHẦN 2.12 — DỰNG KINH TUYẾN / VĨ TUYẾN TRÊN HÌNH CẦU (dùng EllipseCurve)
+
+> **Thêm 08/2026** — phục vụ Lab Bài 25, cảnh "Trái Đất & Kinh tuyến"
+> (mô phỏng lại + làm rõ hơn Hình 7.57 SGK, xoay 3D tự do). Trái Đất là
+> hình CẦU, không có `faces`/`edges` dạng đỉnh rời rạc như SOLID_LIBRARY
+> — cần cách dựng đường tròn/nửa đường tròn lớn riêng, dùng
+> `THREE.EllipseCurve` (có sẵn trong core Three.js, không cần thêm thư
+> viện).
+
+### 2.12.1 Kinh tuyến — nửa đường tròn lớn từ cực Nam đến cực Bắc, tại 1 kinh độ cố định
+
+```javascript
+// radius: bán kính mô hình Trái Đất
+// longitudeDeg: kinh độ của kinh tuyến cần dựng (0° = kinh tuyến gốc)
+function createMeridianLine(radius, longitudeDeg, color, segments = 64) {
+  // EllipseCurve quét tự -90° đến 90° (tương đương cực Nam → cực Bắc),
+  // 2 bán kính bằng nhau (radius, radius) nên thực chất là ĐƯỜNG TRÒN,
+  // không phải ellipse thật — dùng EllipseCurve chỉ vì nó cho phép quét
+  // 1 CUNG (startAngle→endAngle) thay vì bắt buộc vẽ cả vòng như
+  // CircleGeometry.
+  const curve = new THREE.EllipseCurve(
+    0, 0, radius, radius,
+    -Math.PI / 2, Math.PI / 2, // từ cực Nam đến cực Bắc
+    false, 0
+  );
+  const points2D = curve.getPoints(segments);
+  const lambda = longitudeDeg * Math.PI / 180;
+  // Điểm 2D (x,y) của EllipseCurve → điểm 3D: x là "bán kính ngang" tại
+  // vĩ độ đó (chiếu theo đúng kinh độ lambda), y giữ nguyên làm trục cực
+  const points3D = points2D.map(p => new THREE.Vector3(
+    p.x * Math.cos(lambda),
+    p.y,
+    p.x * Math.sin(lambda)
+  ));
+  const geometry = new THREE.BufferGeometry().setFromPoints(points3D);
+  return new THREE.Line(geometry, new THREE.LineBasicMaterial({ color }));
+}
+```
+
+### 2.12.2 Vĩ tuyến — đường tròn đầy đủ tại 1 vĩ độ cố định (xích đạo là ca đặc biệt vĩ độ = 0°)
+
+```javascript
+function createLatitudeCircle(radius, latitudeDeg, color, segments = 64) {
+  const phi = latitudeDeg * Math.PI / 180;
+  const r = radius * Math.cos(phi); // bán kính đường tròn tại vĩ độ này
+                                      // — nhỏ dần khi ra gần 2 cực
+  const y = radius * Math.sin(phi); // độ cao dọc trục cực
+  const curve = new THREE.EllipseCurve(0, 0, r, r, 0, 2 * Math.PI, false, 0);
+  const points2D = curve.getPoints(segments);
+  const points3D = points2D.map(p => new THREE.Vector3(p.x, y, p.y));
+  const geometry = new THREE.BufferGeometry().setFromPoints(points3D);
+  return new THREE.Line(geometry, new THREE.LineBasicMaterial({ color }));
+}
+
+// Xích đạo = vĩ tuyến đặc biệt tại latitudeDeg = 0
+const equator = createLatitudeCircle(R, 0, 0x3CA57A);
+```
+
+### 2.12.3 Cập nhật kinh tuyến động khi kéo slider kinh độ
+
+```javascript
+// Kinh tuyến qua P cần đổi lại MỖI KHI slider kinh độ đổi — chi phí
+// thấp (chỉ 64 điểm), tạo lại đường mới và thay thế trong scene, KHÔNG
+// cần animation phức tạp hay giữ lại geometry cũ để "biến hình"
+let kinhTuyenP = null;
+function updateKinhTuyenP(longitudeDeg) {
+  if (kinhTuyenP) {
+    scene.remove(kinhTuyenP);
+    kinhTuyenP.geometry.dispose();
+    kinhTuyenP.material.dispose();
+  }
+  kinhTuyenP = createMeridianLine(R, longitudeDeg, 0xE8A24A);
+  scene.add(kinhTuyenP);
+}
+```
+
+> **Verify đã thực hiện (Node, `three` thật qua npm):**
+> - Điểm trên kinh tuyến gốc (0°) và kinh tuyến 45°, cùng tại xích đạo →
+>   góc đo được giữa 2 điểm = đúng 45,0000° (khớp tuyệt đối).
+> - Vĩ tuyến 30°: bán kính thực tế = R·cos(30°), độ cao = R·sin(30°) —
+>   cả 2 khớp đúng công thức lý thuyết.
+>
+> ⚠️ Đã verify công thức bằng Node, **CHƯA verify bằng file HTML thật**
+> (chưa test hiển thị/hiệu ứng ánh sáng lên các đường Line mảnh, và chưa
+> test tương tác slider thật trên trình duyệt) — prototype nhỏ trước khi
+> build chính thức vào Lab.
+
+---
+
 ## PHẦN 3 — LABEL: HTML OVERLAY vs SPRITE 3D
 
 > Đã test cả 2 cách trực tiếp. Kết luận: **dùng HTML overlay làm chuẩn**
@@ -1961,6 +2318,148 @@ rebuildFromVertices() {
 }
 ```
 
+## PHẦN 7.4-BIS — KÉO CẢ KHỐI (RIGID GROUP DRAG)
+
+> **Thêm 08/2026** — phục vụ Bài 22 (Hai đường thẳng vuông góc) Module 2
+> Tab 1b: 3 kim tự tháp thật đặt cạnh nhau, học sinh kéo dịch từng khối để
+> tự kiểm chứng góc không đổi qua phép tịnh tiến.
+>
+> Khác PHẦN 1 (kéo 1 điểm) và PHẦN 7.4 (kéo 1 ĐỈNH làm biến dạng khối) — ở
+> đây TOÀN BỘ khối (mesh + cạnh + label) di chuyển cùng nhau như 1 vật rắn,
+> hình dạng không đổi. Dùng khi có nhiều đối tượng cùng loại đặt cạnh nhau
+> và cho học sinh tự sắp xếp lại.
+>
+> ⚠️ **CHƯA VERIFY bằng file HTML thật** — pattern mới, viết theo đúng
+> nguyên lý đã có (billboard-plane PHẦN 1.2, ràng buộc 'floor' PHẦN 7.4)
+> nhưng ở cấp Group thay vì cấp điểm/đỉnh. Bắt buộc prototype nhỏ (3 khối
+> lập phương đơn giản, không phải kim tự tháp thật) trước khi build chính
+> thức — xem cảnh báo cuối mục.
+
+### 7.4-BIS.1 Cấu trúc — mỗi khối gói trong 1 THREE.Group
+
+```javascript
+function createDraggableSolidGroup(solidConfig, position, labelText) {
+  const group = new THREE.Group();
+  group.position.copy(position);
+  // ... build mesh khối + cạnh + label như PHẦN 7 bình thường, add vào group
+  group.userData.draggableRigid = true;
+  group.userData.label = labelText;
+  return group;
+}
+
+// Mảng RIÊNG — khác allDraggableHitMeshes (PHẦN 1, đó là hit-mesh cấp ĐIỂM)
+let draggableRigidGroups = [];
+```
+
+### 7.4-BIS.2 Drag-plane cố định = mặt đất (tái dùng nguyên lý 'floor' ở 7.4)
+
+> Khác billboard theo hướng camera (PHẦN 1.2, dùng cho kéo tự do trong
+> không gian) — ở đây BẮT BUỘC dùng mặt phẳng `y = groundY` cố định, vì
+> khối đang "đặt trên đất", chỉ tịnh tiến ngang.
+
+```javascript
+const groundPlane = new THREE.Plane(new THREE.Vector3(0, 1, 0), 0); // y = 0
+
+let rigidDragState = {
+  active: false,
+  group: null,
+  grabOffset: new THREE.Vector3() // lệch giữa điểm click và group.position —
+                                    // giữ nguyên khi kéo, tránh khối "nhảy"
+                                    // để tâm về đúng vị trí con trỏ
+};
+
+renderer.domElement.addEventListener('pointerdown', (event) => {
+  updateMouseNDC(event);
+  raycaster.setFromCamera(mouseNDC, camera);
+  // Raycast vào TOÀN BỘ mesh con của mọi group (khác PHẦN 1: ở đó raycast
+  // vào 1 hit-mesh nhỏ riêng của từng điểm)
+  const allMeshes = draggableRigidGroups.flatMap(g => g.children.filter(c => c.isMesh));
+  const hits = raycaster.intersectObjects(allMeshes);
+  if (hits.length > 0) {
+    const group = hits[0].object.parent; // mesh con → group cha
+    const hitPoint3D = new THREE.Vector3();
+    raycaster.ray.intersectPlane(groundPlane, hitPoint3D);
+    rigidDragState = {
+      active: true,
+      group,
+      grabOffset: group.position.clone().sub(hitPoint3D)
+    };
+    orbitControls.enabled = false; // BẮT BUỘC — giống PHẦN 1.2
+  }
+});
+
+renderer.domElement.addEventListener('pointermove', (event) => {
+  if (!rigidDragState.active) return;
+  updateMouseNDC(event);
+  raycaster.setFromCamera(mouseNDC, camera);
+  const hit3D = new THREE.Vector3();
+  if (!raycaster.ray.intersectPlane(groundPlane, hit3D)) return;
+  const target = hit3D.add(rigidDragState.grabOffset);
+  target.y = 0; // ép cứng — giảm bậc tự do, không cho nhấc lên/xuống
+  const snapped = snapToGrid(target, 20);
+  if (!wouldOverlap(snapped, rigidDragState.group, 15)) {
+    rigidDragState.group.position.copy(snapped);
+    syncGroupLabel(rigidDragState.group); // label HTML overlay đi theo group
+  }
+});
+
+renderer.domElement.addEventListener('pointerup', () => {
+  rigidDragState.active = false;
+  rigidDragState.group = null;
+  orbitControls.enabled = true;
+});
+
+// BẮT BUỘC theo checklist Bước 6 (04_design_toan_3d.md) — cancel an toàn
+renderer.domElement.addEventListener('pointercancel', () => {
+  rigidDragState.active = false;
+  rigidDragState.group = null;
+  orbitControls.enabled = true;
+});
+```
+
+### 7.4-BIS.3 Snap lưới + chống đè nhau
+
+```javascript
+function snapToGrid(pos, cellSize) {
+  return new THREE.Vector3(
+    Math.round(pos.x / cellSize) * cellSize,
+    0,
+    Math.round(pos.z / cellSize) * cellSize
+  );
+}
+
+// Nếu vị trí sau snap quá gần 1 group khác → GIỮ vị trí cũ (không snap đè)
+function wouldOverlap(candidatePos, movingGroup, minDist) {
+  return draggableRigidGroups.some(g =>
+    g !== movingGroup && g.position.distanceTo(candidatePos) < minDist
+  );
+}
+```
+
+### 7.4-BIS.4 Cleanup — bổ sung vào clearScene() đã có
+
+> KHÔNG viết `clearScene()` riêng — chỉ chèn thêm đoạn dispose Group này vào
+> hàm `clearScene()` gốc (04_design_toan_3d.md PHẦN 3.6), cùng cấp với các
+> mảng `activePoints`/`activeLines`/`activePlanes` đã có.
+
+```javascript
+draggableRigidGroups.forEach(g => {
+  g.traverse(obj => {
+    if (obj.isMesh) { obj.geometry.dispose(); obj.material.dispose(); }
+  });
+  scene.remove(g);
+});
+draggableRigidGroups = [];
+```
+
+> ⚠️ **Trước khi build Bài 22 Tab 1b:** prototype riêng bằng 3 khối lập
+> phương đơn giản (không phải kim tự tháp thật), kéo qua kéo lại nhiều lần,
+> kiểm tra không giật/không "nhảy" khi nhả chuột, snap không đè nhau — đúng
+> quy trình prototype-trước-khi-build đã áp dụng ở Phụ lục E
+> (`01_scenario_builder_3d_addendum.md`).
+
+---
+
 ### 7.6 Unified Point Pool — đỉnh gốc + điểm cạnh + điểm mặt cùng 1 hệ
 
 > Để "nối 2 điểm bất kỳ" (đỉnh gốc lẫn điểm tự thêm) hoạt động, mọi điểm
@@ -3030,3 +3529,49 @@ function buildCatalog(query) {
 > projectPointOntoPlane, distanceSkewLines, dihedralAngle, barycentricCoords,
 > rotateLineAroundNormal, và bộ tham số hoá mặt cong cho khối tròn xoay) giờ
 > có 1 nguồn duy nhất, không còn ghi chú "chưa viết".
+> **Cập nhật 08/2026 (v11.0):** thêm PHẦN 7.4-BIS — KÉO CẢ KHỐI (rigid group
+> drag), phục vụ Bài 22 Module 2 Tab 1b (3 kim tự tháp thật kéo dịch được).
+> Khác PHẦN 1 (kéo điểm) và PHẦN 7.4 (kéo đỉnh biến dạng khối) — ở đây kéo
+> nguyên 1 `THREE.Group` không đổi hình dạng, ràng buộc mặt đất `y=0`, có
+> snap lưới + chống đè nhau. ⚠️ **CHƯA VERIFY bằng file HTML thật** — pattern
+> mới viết dựa trên nguyên lý đã có (billboard-plane 1.2, ràng buộc 'floor'
+> 7.4) áp ở cấp Group; bắt buộc prototype nhỏ trước khi build chính thức,
+> theo đúng quy trình E (addendum).
+> **Cập nhật 08/2026 (v12.0):** thêm PHẦN 2.7 — XOAY QUANH BẢN LỀ ĐỨNG
+> (cung quét mặt phẳng ngang, dùng `atan2` không ép dấu) và PHẦN 2.8 —
+> NÓN CÁC HƯỚNG VUÔNG GÓC VỚI 1 ĐƯỜNG CHO TRƯỚC (kết hợp
+> `arbitraryPerpendicular` 06 PHẦN C.4 + `rotateLineAroundNormal` 4.14.1
+> đã có) — phục vụ Bài 23 (cửa tủ quần áo, cần cẩu tháp, cột đèn bẫy sai
+> lầm D). ⚠️ Sửa lại 1 lỗi trích dẫn: kịch bản Bài 23 ban đầu trích PHẦN
+> 2.6 cho cửa tủ/cần cẩu, nhưng 2.6 là bản lề NGANG/cung ĐỨNG (dùng
+> `Math.max(0.2,y)` ép góc trong khoảng ~±90°) — không đủ cho cửa tủ cần
+> mở tới 170° hay cần cẩu xoay đủ vòng. PHẦN 2.7 mới là bản lề ĐỨNG/cung
+> NGANG, dùng đúng cho 2 ca này. CẢ 2 PHẦN MỚI CHƯA VERIFY bằng file HTML
+> thật (đã verify công thức bằng Python) — bắt buộc prototype trước khi
+> build.
+> **Cập nhật 08/2026 (v13.0):** thêm PHẦN 2.9 — TỊNH TIẾN THEO QUỸ ĐẠO,
+> GIỮ NGUYÊN HƯỚNG (không tự xoay theo vị trí) — phục vụ Bài 24 Module 2
+> Phần 4 (Trái Đất quay quanh Mặt Trời, trục nghiêng giữ phương cố định).
+> Khác hẳn mọi pattern xoay-quanh-trục đã có (2.6, 2.7, 4.14.1) — ở đây
+> KHÔNG xoay vật theo tham số, chỉ tịnh tiến vị trí, hướng gắn với vật giữ
+> nguyên từ lúc khởi tạo. Đã verify công thức bằng Node (three thật qua
+> npm) — góc trục/mặt phẳng quỹ đạo giữ đúng 66,5° ở mọi vị trí test.
+> ⚠️ CHƯA verify bằng file HTML thật, và có 1 bẫy code hay gặp đã ghi chú
+> riêng (tránh gọi `lookAt()` nhầm làm trục tự xoay theo vị trí).
+> **Cập nhật 08/2026 (v14.0):** thêm PHẦN 2.10 — KHUNG XOAY LỒNG NHAU
+> (GIMBAL), dùng kỹ thuật counter-rotation (nghịch đảo tích quaternion cha)
+> để giữ hướng vật bên trong cố định dù khung ngoài xoay — phục vụ Module
+> mở rộng Tab 3 (con quay hồi chuyển). Đã verify công thức bằng Node (5 tổ
+> hợp góc, world direction luôn giữ nguyên). Và PHẦN 2.11 — OVERLAY 2D ĐỘC
+> LẬP VỚI SCENE 3D (màn hình radar dạng CSS/HTML riêng, chỉ đồng bộ ở mốc
+> sự kiện rời rạc, không đồng bộ animation-frame-by-frame) — phục vụ Bài
+> 24 Module 3 Domain 3. Cả 2 PHẦN MỚI CHƯA verify bằng file HTML thật.
+> **Cập nhật 08/2026 (v15.0):** thêm PHẦN 2.12 — DỰNG KINH TUYẾN/VĨ
+> TUYẾN TRÊN HÌNH CẦU dùng `THREE.EllipseCurve` (core, không cần thư
+> viện thêm) — phục vụ Lab Bài 25, cảnh "Trái Đất & Kinh tuyến". Gồm
+> `createMeridianLine` (nửa đường tròn lớn, cực Nam→cực Bắc, tại 1 kinh
+> độ) và `createLatitudeCircle` (đường tròn đầy đủ tại 1 vĩ độ, xích đạo
+> là ca đặc biệt vĩ độ=0°), cùng cách cập nhật động khi kéo slider kinh
+> độ. Đã verify bằng Node (three thật qua npm): góc giữa kinh tuyến
+> gốc/45° tại xích đạo = đúng 45,0000°; vĩ tuyến 30° khớp đúng bán kính
+> và độ cao lý thuyết. ⚠️ CHƯA verify bằng file HTML thật.

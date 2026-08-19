@@ -452,6 +452,64 @@ function dihedralAngle(plane1, plane2, intersect) {
 > "trên" mặt phẳng, kiểm tra `ox.dot(plane1.normal)` — nếu âm thì
 > `ox.negate()`. Áp dụng tương tự cho `oy`.
 
+### C.3 Góc giữa hai đường thẳng (cắt nhau hoặc chéo nhau)
+
+> **Thêm 08/2026** — phục vụ Bài 22 (Hai đường thẳng vuông góc), Module 2
+> Tab 1/Tab 2. PHẦN C trước đó chỉ có góc đường–mặt phẳng (C.1) và góc nhị
+> diện (C.2), chưa có hàm cho quan hệ đường–đường — bổ sung tại đây.
+
+```javascript
+// dir1, dir2: vectơ chỉ phương — hàm tự normalize, không yêu cầu truyền sẵn
+// đã normalize. Trả độ, LUÔN trong [0°, 90°] — đúng quy ước SGK.
+// Khác góc giữa 2 VECTƠ (có thể tới 180° nếu 2 vectơ ngược hướng) — đây
+// chính là sai lầm PPCT Bài 22 Module 1 nêu, nên hàm này BẮT BUỘC lấy trị
+// tuyệt đối ở tử số, không được bỏ qua Math.abs().
+function angleBetweenLines(dir1, dir2) {
+  const u = dir1.clone().normalize();
+  const v = dir2.clone().normalize();
+  const cosPhi = Math.abs(u.dot(v));
+  return Math.acos(Math.max(-1, Math.min(1, cosPhi))) * 180 / Math.PI;
+}
+
+// Tiện ích đi kèm — kiểm tra vuông góc trực tiếp
+function isPerpendicular(dir1, dir2, tolDeg = 0.01) {
+  return Math.abs(angleBetweenLines(dir1, dir2) - 90) < tolDeg;
+}
+```
+
+> **Verify bắt buộc trước khi build** (nguyên tắc E.11 — không tin "trông
+> hợp lý" khi chưa test): dùng chính 3 cặp SA–BD của 3 kim tự tháp Bài 22
+> làm test case, vì đã biết trước kết quả đúng = 90° (verify bằng numpy ở
+> vòng trao đổi trước, dot product = 0 cho cả 3 bộ số liệu thật). Verify
+> lại bằng script Node **cài `three` thật qua npm** — đúng cách đã làm cho
+> H.1–H.3, không dùng object `{x,y,z}` tự chế để tránh lệch API
+> `.clone()/.normalize()`.
+
+### C.4 Vectơ vuông góc tuỳ ý với 1 hướng cho trước (khởi tạo "nón vuông góc")
+
+> **Thêm 08/2026** — phục vụ Bài 23 Module 2 Nhóm 1 (cột đèn bẫy: xoay tự
+> do trong nón các hướng vuông góc với 1 đường cho trước). Cần 1 vectơ khởi
+> điểm nằm trên "nón" trước khi xoay quanh trục bằng
+> `rotateLineAroundNormal` (05_threejs_engine.md PHẦN 4.14.1).
+
+```javascript
+// Trả 1 vectơ ĐƠN VỊ vuông góc với dir (dir đã normalize hoặc chưa đều
+// được — hàm tự normalize). Không duy nhất (có vô số vectơ vuông góc với
+// 1 hướng cho trước) — chỉ cần 1 điểm khởi đầu hợp lệ trên "nón", sau đó
+// dùng rotateLineAroundNormal(..., dir, theta) để quét hết cả nón.
+function arbitraryPerpendicular(dir) {
+  const d = dir.clone().normalize();
+  // Chọn 1 trục phụ KHÔNG song song d để cross không suy biến — dùng
+  // (0,1,0) trừ khi d đã gần song song (0,1,0), lúc đó đổi sang (1,0,0)
+  const helper = Math.abs(d.y) < 0.99 ? new THREE.Vector3(0, 1, 0) : new THREE.Vector3(1, 0, 0);
+  return new THREE.Vector3().crossVectors(d, helper).normalize();
+}
+```
+
+> **Verify bắt buộc trước khi build:** kiểm tra `arbitraryPerpendicular(dir)
+> · dir ≈ 0` với vài `dir` khác nhau (kể cả `dir` gần trùng (0,1,0) để test
+> đúng nhánh helper phụ) bằng script Node cài `three` thật.
+
 ---
 
 ## PHẦN D — TOẠ ĐỘ BARYCENTRIC (điểm trong tam giác)
@@ -821,6 +879,8 @@ function buildParallelogramSum(A, B, C) {
 | `polygonArea` | prototype5_section_area_match.html (07/2026) | Trạm 4 game Đền thờ Euclid ("Kho tri thức") |
 | `angleLineToPlane` | test_c_angles.html | — |
 | `dihedralAngle` | test_c_angles.html | — |
+| `angleBetweenLines` (C.3) | mới 08/2026 — cần verify Node độc lập trước khi build | Bài 22 Module 2 Tab 1, Tab 2 |
+| `isPerpendicular` (C.3) | mới 08/2026 — cần verify Node độc lập trước khi build | Bài 22 Module 2 Tab 1, Tab 2 |
 | `barycentricCoords` | solid_library.html | — |
 | `rotateLineAroundNormal` | test_b_parallel.html | — |
 | `pointOnSphere/Cylinder/ConeSide` + nghịch | tổng quát hoá từ `calcSphereSurfPos` v.v. trong solid_library.html | — |
@@ -878,4 +938,10 @@ function buildParallelogramSum(A, B, C) {
 > thật), dựng đúng quy trình 2 bước SGK và đối chiếu đại số
 > `AF = AB+AC+AD`, cộng 3 case đối chứng (skew/parallel/cắt nhau trong mặt
 > phẳng nghiêng) — 6/6 pass.
+> **Cập nhật 08/2026 (v1.5):** thêm C.3 `angleBetweenLines` + `isPerpendicular`
+> (góc/vuông góc giữa 2 đường thẳng cắt nhau hoặc chéo nhau) — phục vụ Bài 22
+> "Hai đường thẳng vuông góc" Module 2. ⚠️ Chưa verify bằng script Node độc
+> lập tại thời điểm thêm — verify trước khi dùng trong build thật, dùng 3
+> cặp SA–BD của 3 kim tự tháp (Khufu/Khafre/Menkaure) làm test case đối chứng
+> (kết quả đúng đã biết trước = 90° từ numpy).
 > **Dùng cùng:** `05_threejs_engine.md` (pattern dựng mesh + tương tác)
