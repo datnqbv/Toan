@@ -1,0 +1,2052 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Bài 23: Quy tắc đếm — Module 3: Quy tắc nhân</title>
+
+  <!-- Google Fonts: Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap"
+    rel="stylesheet">
+
+  <!-- KaTeX for math rendering -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/tabler-icons.min.css">
+
+  <!-- Athena Context Metadata for LMS / AI Tutor -->
+  <script type="application/json" id="athena-context">
+  {
+    "module": "L10-C8-B23-M3",
+    "title": "Quy tắc nhân",
+    "subject": "Toán 10",
+    "structure": [
+      { "id": "m3_du_doan",        "type": "answered", "required": true },
+      { "id": "m3_ghep_cap",       "type": "explored", "required": true },
+      { "id": "m3_so_ki_hieu",     "type": "answered", "required": true },
+      { "id": "m3_so_hang_chuc",   "type": "answered", "required": true },
+      { "id": "m3_so_hang_donvi",  "type": "answered", "required": true },
+      { "id": "m3_may_mat_ma",     "type": "explored", "required": true },
+      { "id": "m3_dap_an_dung",    "type": "answered", "required": true },
+      { "id": "m3_mo_rong",        "type": "answered", "required": false }
+    ],
+    "progressTotal": 7,
+    "athenaGuidance": {
+      "m3_du_doan": "Nếu học sinh hỏi gợi ý, Athena chỉ hỏi ngược: 'Bạn thử nghĩ xem công việc này có mấy công đoạn?' — không nói trước đáp án 450.",
+      "m3_ghep_cap": "Athena chỉ nhắc: 'Mỗi kí hiệu có thể ghép với tất cả các mã số.' — không nói trước đây là quy tắc nhân.",
+      "m3_so_ki_hieu": "Xác nhận đúng/sai đơn giản, không cần gợi ý phức tạp (câu hỏi này không có bẫy).",
+      "m3_so_hang_chuc": "Gợi ý lần sai thứ 2 CHỈ dùng đúng câu: 'Bạn thử đọc lại đề: mã vụ án có yêu cầu gì đặc biệt về chữ số hàng chục không?' — không được nói thẳng đáp án 9 ở gợi ý này.",
+      "m3_so_hang_donvi": "Xác nhận đúng/sai đơn giản, không có bẫy.",
+      "m3_may_mat_ma": "Athena chỉ xác nhận học sinh đã quan sát xong, không giải thích thêm cho tới khi học sinh tự nói ra nhận xét hoặc sang Bước 5.",
+      "m3_dap_an_dung": "Gợi ý lần sai thứ 2 CHỈ dùng đúng câu: 'Bạn thử nhân lần lượt 3 số lựa chọn ở 3 công đoạn: kí hiệu, hàng chục, hàng đơn vị.' — không được nói thẳng đáp án 450 ở gợi ý này."
+    }
+  }
+  </script>
+
+  <style>
+    /* =========================================================
+       1. AIDUCATION DESIGN TOKENS (Jade · Cream · Sage · Accent)
+       ========================================================= */
+    :root {
+      /* Neutrals · Nền & Giấy */
+      --cream: #FAF7F0;
+      --cream-2: #F0EADD;
+      --cream-3: #E7DECC;
+      --paper-line: #E5DECF;
+      --paper-line-2: #D6CCB6;
+      --ink: #1A1A1A;
+      --ink-2: #514C44;
+      --ink-3: #7C756A;
+      --ink-faint: #ABA396;
+
+      /* Jade · Hành động chính */
+      --jade: #3CA57A;
+      --jade-deep: #2D8B6F;
+      --jade-dark: #14432F;
+      --jade-text: #1B5E48;
+      --jade-soft: #A9D0BE;
+      --jade-pale: #DCEAE1;
+
+      /* Sage · Phụ trợ */
+      --sage: #A8C9B8;
+      --sage-deep: #7CA792;
+      --sage-text: #46685A;
+      --sage-pale: #E1ECE4;
+
+      /* Accent · Điểm nhấn ấm */
+      --accent: #E8A24A;
+      --accent-deep: #CE8A33;
+      --accent-text: #8A551A;
+      --accent-pale: #F7E7CD;
+
+      /* Semantic · Phản hồi */
+      --correct: #2D8B6F;
+      --correct-bg: #DCEAE1;
+      --wrong: #C15F3C;
+      --wrong-bg: #F3E2D6;
+      --warning: #C58A2E;
+      --warning-bg: #F5E7CB;
+      --info: #4E7F92;
+      --info-bg: #DCE7EB;
+
+      /* Radii & Shadows */
+      --radius-sm: 6px;
+      --radius: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --shadow-sm: 0 2px 6px rgba(26, 26, 26, 0.05);
+      --shadow: 0 4px 14px rgba(45, 139, 111, 0.10);
+      --shadow-lg: 0 10px 25px rgba(20, 67, 47, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html {
+      -webkit-text-size-adjust: 100%;
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, -apple-system, sans-serif;
+      font-size: 15px;
+      line-height: 1.5;
+      color: var(--ink);
+      background: var(--cream);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* =========================================================
+       2. TOPBAR (RESPONSIVE NO-OVERFLOW)
+       ========================================================= */
+    .topbar {
+      background: #FFFFFF;
+      border-bottom: 1px solid var(--paper-line);
+      position: sticky;
+      top: 0;
+      z-index: 60;
+      padding: 0.5rem 1rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      box-shadow: var(--shadow-sm);
+      gap: 6px;
+    }
+
+    .topbar-brand {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      min-width: 0;
+      flex: 1;
+      overflow: hidden;
+    }
+
+    .badge-course {
+      background: var(--jade-pale);
+      color: var(--jade-dark);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 7px;
+      border-radius: 6px;
+      letter-spacing: 0.3px;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .topbar-title {
+      font-size: clamp(0.82rem, 2.5vw, 1.02rem);
+      font-weight: 800;
+      color: var(--jade-dark);
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      margin: 0;
+    }
+
+    .topbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      flex-shrink: 0;
+    }
+
+    .topbar-actions .btn {
+      padding: 5px 10px;
+      font-size: 0.8rem;
+      min-height: 34px;
+    }
+
+    /* =========================================================
+       3. APP CONTAINER
+       ========================================================= */
+    .app-container {
+      max-width: 1350px;
+      width: 100%;
+      margin: 0 auto;
+      padding: 0.75rem 1rem;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 0.75rem;
+    }
+
+    /* =========================================================
+       4. SCREEN 0: HOOK SCREEN
+       ========================================================= */
+    .hook-screen {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--paper-line);
+      box-shadow: var(--shadow-lg);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .hook-hero-wrap {
+      width: 100%;
+      height: 340px;
+      background: #14432F;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+
+    .hero-ai-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      display: block;
+    }
+
+    .hook-intro-body {
+      padding: 1.15rem 1.5rem 0.4rem;
+      background: #FFFFFF;
+    }
+
+    .hook-badge {
+      background: var(--jade-pale);
+      color: var(--jade-dark);
+      font-size: 0.74rem;
+      font-weight: 800;
+      padding: 3px 9px;
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+      margin-bottom: 0.35rem;
+    }
+
+    .hook-title {
+      font-size: clamp(1.15rem, 3vw, 1.55rem);
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.3;
+      margin-bottom: 0.25rem;
+    }
+
+    .hook-desc {
+      font-size: 0.9rem;
+      color: var(--ink-2);
+      max-width: 860px;
+      line-height: 1.45;
+    }
+
+    .hook-dialog-card {
+      padding: 1.1rem 1.5rem 1.35rem;
+      background: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 1.15rem;
+      flex-wrap: wrap;
+      border-top: 1px solid var(--paper-line);
+      margin-top: 0.5rem;
+    }
+
+    .hook-dialog-athena {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      flex: 1;
+      min-width: 280px;
+    }
+
+    .athena-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--jade) 0%, var(--jade-deep) 100%);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.25rem;
+      flex-shrink: 0;
+      box-shadow: 0 4px 10px rgba(45, 139, 111, 0.3);
+      animation: floatBreath 3s ease-in-out infinite;
+    }
+
+    @keyframes floatBreath {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-4px);
+      }
+    }
+
+    .athena-bubble {
+      background: var(--cream);
+      border: 1px solid var(--paper-line-2);
+      border-radius: 12px;
+      padding: 0.75rem 1rem;
+      font-size: 0.9rem;
+      color: var(--ink);
+    }
+
+    .athena-name {
+      font-weight: 800;
+      font-size: 0.75rem;
+      color: var(--jade-deep);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 2px;
+      display: flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    /* =========================================================
+       5. MAIN SIMULATION LAYOUT (65% CANVAS · 35% SIDEBAR)
+       ========================================================= */
+    .sim-layout {
+      display: grid;
+      grid-template-columns: 62% 38%;
+      gap: 1rem;
+      align-items: stretch;
+    }
+
+    /* --- Left Column: Canvas Card --- */
+    .canvas-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--paper-line);
+      box-shadow: var(--shadow-sm);
+      padding: 0.85rem 1rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+      position: relative;
+    }
+
+    .canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 0.4rem;
+      border-bottom: 1px solid var(--paper-line);
+    }
+
+    .canvas-title {
+      font-size: 0.9rem;
+      font-weight: 800;
+      color: var(--jade-dark);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .canvas-viewport {
+      width: 100%;
+      height: 480px;
+      background: #FAF8F2;
+      background-image: radial-gradient(#D6CCB6 1.2px, transparent 1.2px);
+      background-size: 18px 18px;
+      border: 1.5px dashed var(--paper-line-2);
+      border-radius: var(--radius-lg);
+      position: relative;
+      overflow-y: auto;
+      padding: 12px;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      user-select: none;
+    }
+
+    /* Canvas View 1: Overview Summary (Steps 1, 3, 6, 7) */
+    .view-overview-box {
+      width: 100%;
+      max-width: 520px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .overview-hero-mini {
+      width: 100%;
+      height: 140px;
+      border-radius: 10px;
+      overflow: hidden;
+      border: 1px solid var(--paper-line-2);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.06);
+    }
+
+    .overview-hero-mini img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center 40%;
+    }
+
+    .cipher-rule-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .cipher-rule-col {
+      background: #FFFFFF;
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: 10px;
+      padding: 8px 6px;
+      text-align: center;
+      box-shadow: 0 2px 6px rgba(81, 76, 68, 0.05);
+    }
+
+    .cipher-rule-title {
+      font-size: 0.74rem;
+      font-weight: 800;
+      color: var(--jade-dark);
+      margin-bottom: 3px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 4px;
+    }
+
+    .cipher-rule-val {
+      font-size: 0.78rem;
+      color: var(--ink-2);
+      font-weight: 600;
+    }
+
+    .cipher-sample-banner {
+      background: #FFFFFF;
+      border: 1.5px solid var(--jade-soft);
+      border-radius: var(--radius);
+      padding: 8px 12px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+    }
+
+    .sample-badge {
+      font-family: 'Courier New', monospace;
+      font-size: 1.25rem;
+      font-weight: 800;
+      color: var(--jade-dark);
+      background: var(--jade-pale);
+      padding: 3px 10px;
+      border-radius: 8px;
+      letter-spacing: 2px;
+    }
+
+    /* Canvas View 2: Mini Pairing Grid (Step 2) */
+    .mini-grid-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 12px;
+      width: 100%;
+      max-width: 520px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .pair-selection-tray {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      width: 100%;
+      background: #FFFFFF;
+      border: 1px solid var(--paper-line-2);
+      border-radius: var(--radius-lg);
+      padding: 10px 12px;
+      box-shadow: 0 2px 6px rgba(81, 76, 68, 0.05);
+    }
+
+    .pair-source-group {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .pair-source-label {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--jade-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .pair-btn-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .pair-btn {
+      width: 44px;
+      height: 44px;
+      border-radius: 8px;
+      background: var(--cream);
+      border: 1.5px solid var(--paper-line-2);
+      font-size: 1.1rem;
+      font-weight: 800;
+      color: var(--ink);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+      touch-action: manipulation;
+    }
+
+    .pair-btn:hover {
+      border-color: var(--jade-deep);
+      background: #FFFFFF;
+    }
+
+    .pair-btn.active {
+      background: var(--jade-pale);
+      border-color: var(--jade-deep);
+      color: var(--jade-dark);
+      box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.25);
+    }
+
+    .mini-matrix-board {
+      width: 100%;
+      background: #FFFFFF;
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: var(--radius-lg);
+      padding: 12px 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .matrix-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 8px;
+    }
+
+    .matrix-slot {
+      height: 52px;
+      background: var(--cream);
+      border: 1.5px dashed #C2B8A3;
+      border-radius: 8px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.9rem;
+      font-weight: 700;
+      color: var(--ink-3);
+      transition: all 0.2s ease;
+    }
+
+    .matrix-slot.paired {
+      background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+      border: 2px solid var(--jade-deep);
+      color: var(--jade-dark);
+      font-size: 1.15rem;
+      font-weight: 800;
+      animation: popIn 0.25s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    /* Canvas View 3 & 4: 3D Cipher Cylinder Machine (Steps 4 & 5) */
+    .cipher-machine-wrap {
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      gap: 14px;
+      width: 100%;
+      max-width: 520px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .cipher-cylinders-row {
+      display: flex;
+      justify-content: center;
+      gap: 12px;
+      width: 100%;
+    }
+
+    .cylinder-unit {
+      flex: 1;
+      max-width: 145px;
+      background: #FFFFFF;
+      border: 2px solid var(--paper-line-2);
+      border-radius: 14px;
+      padding: 10px 8px;
+      box-shadow: 0 4px 12px rgba(81, 76, 68, 0.08);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .cylinder-header {
+      font-size: 0.72rem;
+      font-weight: 800;
+      color: var(--jade-dark);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+      text-align: center;
+    }
+
+    .wheel-control-btn {
+      width: 100%;
+      max-width: 64px;
+      height: 36px;
+      border-radius: 6px;
+      background: var(--cream);
+      border: 1.5px solid var(--paper-line-2);
+      color: var(--ink-2);
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.1rem;
+      font-weight: 800;
+      transition: all 0.15s ease;
+      touch-action: manipulation;
+    }
+
+    .wheel-control-btn:hover {
+      background: var(--jade-pale);
+      border-color: var(--jade-deep);
+      color: var(--jade-dark);
+    }
+
+    .wheel-display-viewport {
+      width: 100%;
+      height: 72px;
+      background: linear-gradient(180deg, #2D3748 0%, #1A202C 50%, #2D3748 100%);
+      border-radius: 8px;
+      box-shadow: inset 0 2px 6px rgba(0, 0, 0, 0.5);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .wheel-value-text {
+      font-family: 'Courier New', monospace;
+      font-size: 2.3rem;
+      font-weight: 800;
+      color: #FFE082;
+      text-shadow: 0 0 10px rgba(255, 224, 130, 0.6);
+      transition: transform 0.15s ease;
+    }
+
+    .wheel-choices-badge {
+      background: var(--jade-pale);
+      border: 1px solid var(--jade-soft);
+      color: var(--jade-dark);
+      font-size: 0.72rem;
+      font-weight: 800;
+      padding: 3px 6px;
+      border-radius: 10px;
+      text-align: center;
+      white-space: nowrap;
+    }
+
+    .cipher-output-display {
+      width: 100%;
+      background: #143024;
+      border: 2px solid var(--jade-deep);
+      border-radius: var(--radius);
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      box-shadow: 0 3px 10px rgba(20, 67, 47, 0.2);
+    }
+
+    .output-label {
+      font-size: 0.8rem;
+      font-weight: 700;
+      color: #A9D0BE;
+      display: flex;
+      align-items: center;
+      gap: 5px;
+      text-transform: uppercase;
+    }
+
+    .output-code-screen {
+      font-family: 'Courier New', monospace;
+      font-size: 1.6rem;
+      font-weight: 800;
+      color: #FFE082;
+      letter-spacing: 3px;
+      text-shadow: 0 0 10px rgba(255, 224, 130, 0.7);
+    }
+
+    /* --- Right Column: Step Panel --- */
+    .step-panel-wrap {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--paper-line);
+      box-shadow: var(--shadow-sm);
+      padding: 1rem 1.15rem;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 0.75rem;
+      position: relative;
+    }
+
+    .step-badge {
+      font-size: 0.74rem;
+      font-weight: 800;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--jade-deep);
+    }
+
+    .step-title {
+      font-size: 1.05rem;
+      font-weight: 800;
+      color: var(--ink);
+      line-height: 1.35;
+    }
+
+    .step-athena-card {
+      background: var(--cream);
+      border: 1px solid var(--paper-line-2);
+      border-radius: var(--radius-lg);
+      padding: 0.75rem 0.95rem;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .step-athena-avatar {
+      width: 34px;
+      height: 34px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--jade) 0%, var(--jade-deep) 100%);
+      color: #FFFFFF;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.95rem;
+      flex-shrink: 0;
+    }
+
+    .step-athena-text {
+      font-size: 0.85rem;
+      color: var(--ink);
+      line-height: 1.45;
+    }
+
+    .form-group {
+      display: flex;
+      flex-direction: column;
+      gap: 5px;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .math-input {
+      height: 40px;
+      width: 95px;
+      border: 1.5px solid var(--paper-line-2);
+      border-radius: 8px;
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      font-size: 0.95rem;
+      font-weight: 700;
+      text-align: center;
+      color: var(--ink);
+      background: #FFFFFF;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .math-input:focus {
+      border-color: var(--jade-deep);
+      box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.15);
+    }
+
+    .math-input.error {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+      animation: shakeError 0.22s ease-in-out;
+    }
+
+    .math-input.success {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+    }
+
+    .quick-chips-wrap {
+      display: flex;
+      align-items: center;
+      gap: 4px;
+      flex-wrap: wrap;
+      margin-top: 2px;
+    }
+
+    .quick-chip-btn {
+      padding: 3px 8px;
+      border-radius: 10px;
+      font-size: 0.74rem;
+      font-weight: 700;
+      background: #FFFFFF;
+      color: var(--jade-dark);
+      border: 1.5px solid var(--jade-soft);
+      cursor: pointer;
+      outline: none;
+      touch-action: manipulation;
+      min-height: 30px;
+    }
+
+    .quick-chip-btn:hover {
+      background: var(--jade-deep);
+      color: #FFFFFF;
+    }
+
+    .info-box {
+      border-radius: var(--radius-sm);
+      padding: 0.65rem 0.85rem;
+      font-size: 0.82rem;
+      line-height: 1.4;
+      display: flex;
+      gap: 6px;
+      align-items: flex-start;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .info-box.error {
+      background: var(--wrong-bg);
+      border: 1px solid #E8A593;
+      color: #8C2F15;
+    }
+
+    .info-box.warning {
+      background: var(--warning-bg);
+      border: 1px solid #E6C587;
+      color: #7A510A;
+    }
+
+    .info-box.athena {
+      background: linear-gradient(135deg, #ECFDF5 0%, #D1FAE5 100%);
+      border: 1.5px solid #10B981;
+      color: #065F46;
+      font-weight: 600;
+    }
+
+    .btn {
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 0.84rem;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1.5px solid var(--paper-line-2);
+      background: #FFFFFF;
+      color: var(--ink-2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      outline: none;
+      min-height: 38px;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--jade-deep);
+      color: var(--jade-deep);
+      background: var(--cream);
+    }
+
+    .btn.btn-primary {
+      background: var(--jade-deep);
+      color: #FFFFFF;
+      border-color: var(--jade-deep);
+      box-shadow: 0 2px 6px rgba(45, 139, 111, 0.2);
+    }
+
+    .btn.btn-primary:hover:not(:disabled) {
+      background: var(--jade-dark);
+      border-color: var(--jade-dark);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      gap: 6px;
+      margin-top: 0.3rem;
+    }
+
+    /* Modal Overlay */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(20, 67, 47, 0.65);
+      backdrop-filter: blur(3px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 1rem;
+      opacity: 0;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.show {
+      display: flex;
+      opacity: 1;
+    }
+
+    .modal-box {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      max-width: 540px;
+      width: 100%;
+      max-height: 88vh;
+      box-shadow: var(--shadow-lg);
+      overflow-y: auto;
+      border: 1px solid var(--paper-line);
+      animation: popModal 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+    }
+
+    .modal-header {
+      background: linear-gradient(135deg, var(--jade-dark) 0%, var(--jade-deep) 100%);
+      color: #FFFFFF;
+      padding: 0.85rem 1.15rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 2;
+    }
+
+    .modal-title {
+      font-size: 0.95rem;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .modal-close {
+      background: transparent;
+      border: none;
+      color: #FFFFFF;
+      font-size: 1.2rem;
+      cursor: pointer;
+    }
+
+    .modal-body {
+      padding: 1.15rem;
+      font-size: 0.86rem;
+      color: var(--ink-2);
+      display: flex;
+      flex-direction: column;
+      gap: 0.65rem;
+    }
+
+    .katex-scroll-wrap {
+      overflow-x: auto;
+      -webkit-overflow-scrolling: touch;
+      padding: 2px 0;
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: translateY(4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+
+    @keyframes popIn {
+      0% {
+        transform: scale(0.85);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes popModal {
+      0% {
+        transform: scale(0.94);
+        opacity: 0;
+      }
+
+      100% {
+        transform: scale(1);
+        opacity: 1;
+      }
+    }
+
+    @keyframes shakeError {
+
+      0%,
+      100% {
+        transform: translateX(0);
+      }
+
+      20%,
+      60% {
+        transform: translateX(-4px);
+      }
+
+      40%,
+      80% {
+        transform: translateX(4px);
+      }
+    }
+
+    /* =========================================================
+       6. MOBILE RESPONSIVE OPTIMIZATIONS (≤992px & ≤600px)
+       ========================================================= */
+    @media (max-width: 992px) {
+      .app-container {
+        padding: 0.5rem 0.75rem;
+        gap: 0.6rem;
+      }
+
+      .sim-layout {
+        grid-template-columns: 1fr;
+        gap: 0.65rem;
+      }
+
+      .canvas-viewport {
+        height: 380px;
+      }
+
+      .hook-hero-wrap {
+        height: 260px;
+      }
+    }
+
+    @media (max-width: 600px) {
+      .topbar {
+        padding: 0.45rem 0.65rem;
+      }
+
+      .topbar-brand {
+        gap: 5px;
+      }
+
+      .badge-course {
+        font-size: 0.68rem;
+        padding: 2px 5px;
+      }
+
+      .topbar-title {
+        font-size: 0.85rem;
+      }
+
+      .topbar-actions .btn span {
+        display: none;
+      }
+
+      .hook-hero-wrap {
+        height: 200px;
+      }
+
+      .hook-intro-body {
+        padding: 0.85rem 0.85rem 0.2rem;
+      }
+
+      .hook-dialog-card {
+        padding: 0.85rem;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hook-dialog-athena {
+        min-width: unset;
+      }
+
+      .hook-dialog-card .btn-primary {
+        width: 100%;
+      }
+
+      /* Compact Canvas Viewport on Mobile */
+      .canvas-card {
+        padding: 0.65rem 0.75rem;
+      }
+
+      .canvas-viewport {
+        height: 320px;
+        padding: 6px;
+      }
+
+      .overview-hero-mini {
+        height: 100px;
+      }
+
+      .cipher-rule-cards {
+        gap: 4px;
+      }
+
+      .cipher-rule-col {
+        padding: 5px 2px;
+      }
+
+      .cipher-rule-title {
+        font-size: 0.66rem;
+      }
+
+      .cipher-rule-val {
+        font-size: 0.7rem;
+      }
+
+      .cylinder-unit {
+        max-width: 95px;
+        padding: 6px 3px;
+        gap: 4px;
+      }
+
+      .wheel-control-btn {
+        height: 30px;
+        font-size: 0.95rem;
+      }
+
+      .wheel-display-viewport {
+        height: 52px;
+      }
+
+      .wheel-value-text {
+        font-size: 1.75rem;
+      }
+
+      .wheel-choices-badge {
+        font-size: 0.64rem;
+        padding: 1px 3px;
+      }
+
+      .output-code-screen {
+        font-size: 1.25rem;
+        letter-spacing: 2px;
+      }
+
+      .step-panel-wrap {
+        padding: 0.85rem;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOP NAVIGATION BAR -->
+  <header class="topbar">
+    <div class="topbar-brand">
+      <span class="badge-course">Toán 10</span>
+    </div>
+    <div class="topbar-actions">
+      <button class="btn" id="btnNotebook" onclick="openNotebookModal()">
+        <i class="ti ti-book-2"></i> <span>Sổ tay</span>
+      </button>
+      <button class="btn" id="btnReset" onclick="resetToStep(1)" style="display: none;">
+        <i class="ti ti-refresh"></i> <span>Làm lại</span>
+      </button>
+    </div>
+  </header>
+
+  <!-- MAIN WORKSPACE CONTAINER -->
+  <main class="app-container">
+
+    <!-- STEP 0: HOOK SCREEN -->
+    <section class="hook-screen" id="hookScreen">
+      <div class="hook-hero-wrap">
+        <img src="https://lh3.googleusercontent.com/d/1ukcKv58XSTwkU-YOJ_oTeUfk2bxafJlo"
+          alt="Bàn làm việc thám tử giải mã mật mã vụ án" class="hero-ai-img">
+      </div>
+
+      <div class="hook-intro-body">
+        <span class="hook-badge"><i class="ti ti-sparkles"></i> Tình huống thám tử giải mã</span>
+        <h2 class="hook-title">Mật mã bí mật của đội điều tra & Quy tắc nhân</h2>
+        <p class="hook-desc">Khám phá cách tính số lượng phương án khi một công việc gồm nhiều công đoạn liên tiếp và
+          độc lập với nhau.</p>
+      </div>
+
+      <div class="hook-dialog-card">
+        <div class="hook-dialog-athena">
+          <div class="athena-avatar"><i class="ti ti-sparkles"></i></div>
+          <div class="athena-bubble">
+            <div class="athena-name"><i class="ti ti-sparkles"></i> Trợ lý Athena</div>
+            Đội điều tra dùng mật mã riêng để liên lạc bí mật: mỗi mật mã gồm <b>1 kí hiệu điều tra viên</b> (chữ cái)
+            ghép với <b>1 mã vụ án</b> gồm 2 chữ số. Bạn nghĩ có thể tạo ra bao nhiêu mật mã khác nhau?
+          </div>
+        </div>
+        <button class="btn btn-primary" onclick="startModuleStep1()" style="padding: 10px 20px; font-size: 0.9rem;">
+          <span>Bắt đầu giải mã</span> <i class="ti ti-arrow-right"></i>
+        </button>
+      </div>
+    </section>
+
+    <!-- STEPS 1 TO 7: INTERACTIVE SIMULATION LAYOUT -->
+    <section class="sim-layout" id="simLayout" style="display: none;">
+
+      <!-- LEFT COLUMN: INTERACTIVE CANVAS CARD -->
+      <div class="canvas-card">
+        <div class="canvas-header">
+          <div class="canvas-title" id="canvasTitle">
+            <i class="ti ti-file-text"></i> <span>CẤU TRÚC MẬT MÃ ĐIỀU TRA</span>
+          </div>
+        </div>
+
+        <div class="canvas-viewport" id="canvasViewport">
+
+          <!-- VIEW 1: OVERVIEW SUMMARY (Steps 1, 3, 6, 7) -->
+          <div class="view-overview-box" id="viewOverviewBox">
+            <div class="overview-hero-mini">
+              <img src="L10-C8-B23_Module 3 Anh Hook.png" alt="Thám tử giải mã">
+            </div>
+            <div class="cipher-rule-cards">
+              <div class="cipher-rule-col">
+                <div class="cipher-rule-title"><i class="ti ti-user-shield"></i> 1. KÍ HIỆU</div>
+                <div class="cipher-rule-val">5 chữ cái (A-E)</div>
+              </div>
+              <div class="cipher-rule-col">
+                <div class="cipher-rule-title"><i class="ti ti-number"></i> 2. HÀNG CHỤC</div>
+                <div class="cipher-rule-val">Khác 0 (1 đến 9)</div>
+              </div>
+              <div class="cipher-rule-col">
+                <div class="cipher-rule-title"><i class="ti ti-number-0"></i> 3. ĐƠN VỊ</div>
+                <div class="cipher-rule-val">0 đến 9 (10 số)</div>
+              </div>
+            </div>
+            <div class="cipher-sample-banner">
+              <span style="font-size: 0.8rem; font-weight: 700; color: var(--ink-2);">Ví dụ mật mã:</span>
+              <span class="sample-badge">K 2 7</span>
+            </div>
+          </div>
+
+          <!-- VIEW 2: MINI PAIRING GRID (Step 2) -->
+          <div class="mini-grid-wrap" id="viewMiniGrid">
+            <div class="pair-selection-tray">
+              <div class="pair-source-group">
+                <div class="pair-source-label">1. Kí hiệu:</div>
+                <div class="pair-btn-row">
+                  <button class="pair-btn" id="btnMiniA" onclick="selectMiniLetter('A')">A</button>
+                  <button class="pair-btn" id="btnMiniB" onclick="selectMiniLetter('B')">B</button>
+                </div>
+              </div>
+              <div style="color: var(--ink-faint); font-weight: 800; font-size: 1.2rem;">+</div>
+              <div class="pair-source-group">
+                <div class="pair-source-label">2. Mã số:</div>
+                <div class="pair-btn-row">
+                  <button class="pair-btn" id="btnMini1" onclick="selectMiniDigit('1')">1</button>
+                  <button class="pair-btn" id="btnMini2" onclick="selectMiniDigit('2')">2</button>
+                  <button class="pair-btn" id="btnMini3" onclick="selectMiniDigit('3')">3</button>
+                </div>
+              </div>
+            </div>
+
+            <div class="mini-matrix-board">
+              <div
+                style="font-size: 0.76rem; font-weight: 800; color: var(--jade-dark); margin-bottom: 6px; display: flex; justify-content: space-between;">
+                <span>ĐÃ GHÉP: <span id="miniPairCount">0</span>/6 CẶP</span>
+                <span id="miniPairHint" style="color: var(--jade-deep);"></span>
+              </div>
+              <div class="matrix-grid">
+                <div class="matrix-slot" id="slot_A1">A1</div>
+                <div class="matrix-slot" id="slot_A2">A2</div>
+                <div class="matrix-slot" id="slot_A3">A3</div>
+                <div class="matrix-slot" id="slot_B1">B1</div>
+                <div class="matrix-slot" id="slot_B2">B2</div>
+                <div class="matrix-slot" id="slot_B3">B3</div>
+              </div>
+            </div>
+          </div>
+
+          <!-- VIEW 3: 3D CIPHER CYLINDER MACHINE (Steps 4 & 5) -->
+          <div class="cipher-machine-wrap" id="viewCipherMachine">
+            <div class="cipher-cylinders-row">
+              <!-- Cylinder 1: Letter -->
+              <div class="cylinder-unit">
+                <div class="cylinder-header">1. KÍ HIỆU</div>
+                <button class="wheel-control-btn" onclick="rotateWheel(1, -1)">▲</button>
+                <div class="wheel-display-viewport">
+                  <div class="wheel-value-text" id="wheelVal1">C</div>
+                </div>
+                <button class="wheel-control-btn" onclick="rotateWheel(1, 1)">▼</button>
+                <div class="wheel-choices-badge">5 lựa chọn</div>
+              </div>
+
+              <!-- Cylinder 2: Tens Digit -->
+              <div class="cylinder-unit">
+                <div class="cylinder-header">2. HÀNG CHỤC</div>
+                <button class="wheel-control-btn" onclick="rotateWheel(2, -1)">▲</button>
+                <div class="wheel-display-viewport">
+                  <div class="wheel-value-text" id="wheelVal2">4</div>
+                </div>
+                <button class="wheel-control-btn" onclick="rotateWheel(2, 1)">▼</button>
+                <div class="wheel-choices-badge">9 lựa chọn</div>
+              </div>
+
+              <!-- Cylinder 3: Units Digit -->
+              <div class="cylinder-unit">
+                <div class="cylinder-header">3. ĐƠN VỊ</div>
+                <button class="wheel-control-btn" onclick="rotateWheel(3, -1)">▲</button>
+                <div class="wheel-display-viewport">
+                  <div class="wheel-value-text" id="wheelVal3">7</div>
+                </div>
+                <button class="wheel-control-btn" onclick="rotateWheel(3, 1)">▼</button>
+                <div class="wheel-choices-badge">10 lựa chọn</div>
+              </div>
+            </div>
+
+            <!-- Real-Time Code Screen -->
+            <div class="cipher-output-display">
+              <div class="output-label"><i class="ti ti-scan"></i> MÃ GHÉP:</div>
+              <div class="output-code-screen" id="outputCodeDisplay">C - 4 7</div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+
+      <!-- RIGHT COLUMN: STEP PANEL (DYNAMIC SINGLE STEP VIEW) -->
+      <div class="step-panel-wrap" id="stepPanelWrap">
+        <!-- Rendered dynamically by renderSidebar() -->
+      </div>
+
+    </section>
+
+  </main>
+
+  <!-- KNOWLEDGE NOTEBOOK MODAL -->
+  <div class="modal-overlay" id="notebookModal" onclick="closeNotebookModal(event)">
+    <div class="modal-box" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-book-2"></i> Sổ tay kiến thức: Quy tắc nhân</div>
+        <button class="modal-close" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body">
+        <div
+          style="background: var(--jade-pale); border-left: 4px solid var(--jade-deep); padding: 9px 12px; border-radius: 6px;">
+          <h4 style="color: var(--jade-dark); font-weight: 800; margin-bottom: 4px;">📐 ĐỊNH NGHĨA QUY TẮC NHÂN</h4>
+          <p style="font-size: 0.85rem; color: var(--ink);">
+            Nếu một công việc phải hoàn thành qua <b>nhiều công đoạn liên tiếp</b> nhau:
+            <br>• Công đoạn 1 có $m_1$ cách thực hiện,
+            <br>• Với mỗi cách của công đoạn 1, công đoạn 2 (độc lập) có $m_2$ cách thực hiện,
+            <br>$\implies$ Toàn bộ công việc có $N = m_1 \times m_2$ cách thực hiện.
+          </p>
+        </div>
+
+        <div
+          style="background: var(--warning-bg); border-left: 4px solid var(--warning); padding: 9px 12px; border-radius: 6px;">
+          <h4 style="color: #7A510A; font-weight: 800; margin-bottom: 4px;">⚠️ PHÂN BIỆT QUY TẮC CỘNG VÀ NHÂN</h4>
+          <p style="font-size: 0.85rem; color: var(--ink-2);">
+            • <b>Quy tắc cộng ("HOẶC"):</b> Các phương án tách biệt, làm xong 1 phương án là xong luôn công việc.
+            <br>• <b>Quy tắc nhân ("VÀ"):</b> Các công đoạn liên tiếp, phải làm xong tất cả các công đoạn mới hoàn thành
+            công việc.
+            <br>• <b>Lưu ý điều kiện đặc biệt:</b> Luôn kiểm tra chữ số đầu tiên (hàng cao nhất) có bị ràng buộc khác 0
+            hay không!
+          </p>
+        </div>
+
+        <div style="background: #FFFFFF; border: 1px solid var(--paper-line-2); padding: 9px 12px; border-radius: 6px;">
+          <h4 style="color: var(--jade-dark); font-weight: 800; margin-bottom: 4px;">💡 CÔNG THỨC MẬT MÃ BÀI HỌC</h4>
+          <div class="katex-scroll-wrap">
+            <p style="font-size: 0.85rem; color: var(--ink); margin: 0;">
+              $$N = 5 \text{ (kí hiệu)} \times 9 \text{ (hàng chục)} \times 10 \text{ (hàng đơn vị)} = 450 \text{ mật
+              mã}$$
+            </p>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC ENGINE -->
+  <script>
+    // =========================================================
+    // 1. DATA MODEL & APPLICATION STATE
+    // =========================================================
+    const state = {
+      currentStep: 0,
+      predictedTotal: null,
+      selectedMiniLetter: null,
+      selectedMiniDigit: null,
+      pairedCount: 0,
+      pairedMap: {},
+
+      // Cipher cylinder wheels state
+      wheelLetters: ['A', 'B', 'C', 'D', 'E'],
+      wheelTens: ['1', '2', '3', '4', '5', '6', '7', '8', '9'],
+      wheelUnits: ['0', '1', '2', '3', '4', '5', '6', '7', '8', '9'],
+      idxLetter: 2, // 'C'
+      idxTens: 3,   // '4'
+      idxUnits: 7,  // '7'
+
+      // Step attempts counters
+      step3TensAttempts: 0,
+      step5Attempts: 0,
+      step7Attempts: 0,
+      isLmsComplete: false
+    };
+
+    // =========================================================
+    // 2. LMS AIDUCATION INTEGRATION API
+    // =========================================================
+    function LMS() {
+      if (window.AiducationLMS) return window.AiducationLMS;
+      return {
+        progress: (done, total) => console.log(`[LMS Progress] ${done}/${total}`),
+        event: (evt, data) => console.log(`[LMS Event: ${evt}]`, data),
+        complete: () => console.log(`[LMS COMPLETE 🎉]`),
+        resize: (obj) => { }
+      };
+    }
+
+    function reportHeight() {
+      const h = document.documentElement.scrollHeight;
+      LMS().resize({ height: h });
+    }
+    window.addEventListener('load', reportHeight);
+    if (typeof ResizeObserver !== 'undefined') {
+      const ro = new ResizeObserver(() => {
+        clearTimeout(window._rz);
+        window._rz = setTimeout(reportHeight, 100);
+      });
+      ro.observe(document.body);
+    }
+
+    // =========================================================
+    // 3. STEP CONTROLLER & SIDEBAR RENDERER
+    // =========================================================
+    function startModuleStep1() {
+      document.getElementById('hookScreen').style.display = 'none';
+      document.getElementById('simLayout').style.display = 'grid';
+      document.getElementById('btnReset').style.display = 'inline-flex';
+      goToStep(1);
+    }
+
+    function goToStep(step) {
+      state.currentStep = step;
+      updateLMSProgress();
+
+      // Switch Canvas View
+      const vOverview = document.getElementById('viewOverviewBox');
+      const vMini = document.getElementById('viewMiniGrid');
+      const vMachine = document.getElementById('viewCipherMachine');
+      const title = document.getElementById('canvasTitle');
+
+      if (step === 2) {
+        vOverview.style.display = 'none';
+        vMini.style.display = 'flex';
+        vMachine.style.display = 'none';
+        title.innerHTML = `<i class="ti ti-grid-dots"></i> <span>BẢNG GHÉP NỐI THU NHỎ (2 KÍ HIỆU × 3 MÃ SỐ)</span>`;
+      } else if (step === 4 || step === 5) {
+        vOverview.style.display = 'none';
+        vMini.style.display = 'none';
+        vMachine.style.display = 'flex';
+        title.innerHTML = `<i class="ti ti-lock-code"></i> <span>MÁY TẠO MẬT MÃ 3 VÒNG XOAY</span>`;
+        updateCipherScreen();
+      } else {
+        vOverview.style.display = 'flex';
+        vMini.style.display = 'none';
+        vMachine.style.display = 'none';
+        title.innerHTML = `<i class="ti ti-file-text"></i> <span>CẤU TRÚC MẬT MÃ ĐIỀU TRA</span>`;
+      }
+
+      renderSidebar();
+
+      // Render KaTeX in sidebar
+      if (window.renderMathInElement) {
+        renderMathInElement(document.getElementById('stepPanelWrap'), {
+          delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }]
+        });
+      }
+    }
+
+    function updateLMSProgress() {
+      const totalSteps = 7;
+      const done = Math.min(totalSteps, Math.max(0, state.currentStep - 1));
+      LMS().progress(done, totalSteps);
+    }
+
+    function resetToStep(step = 1) {
+      state.step3TensAttempts = 0;
+      state.step5Attempts = 0;
+      state.step7Attempts = 0;
+      state.pairedCount = 0;
+      state.pairedMap = {};
+      document.querySelectorAll('.matrix-slot').forEach(el => el.className = 'matrix-slot');
+      const counter = document.getElementById('miniPairCount');
+      if (counter) counter.textContent = '0';
+      goToStep(step);
+    }
+
+    // =========================================================
+    // 4. SIDEBAR RENDERER (Clean, robust, mobile-perfect)
+    // =========================================================
+    function renderSidebar() {
+      const panel = document.getElementById('stepPanelWrap');
+
+      // --- STEP 1: GUESS ---
+      if (state.currentStep === 1) {
+        panel.innerHTML = `
+          <div>
+            <span class="step-badge">BƯỚC 1 / 7</span>
+            <h3 class="step-title">Dự đoán tổng số mật mã</h3>
+          </div>
+
+          <div class="step-athena-card">
+            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-text">
+              Nhìn vào 3 công đoạn bên trái (5 kí hiệu, hàng chục khác 0, hàng đơn vị 0-9). Bạn hãy thử đoán xem có thể tạo ra bao nhiêu mật mã khác nhau nhé.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 0.82rem; font-weight: 700; color: var(--ink-2);">Dự đoán của bạn:</label>
+            <div class="input-row">
+              <input type="text" class="math-input" id="inGuess" placeholder="Số mã..." inputmode="numeric" autofocus>
+              <button class="btn btn-primary" onclick="submitStep1()"><span>Kiểm tra</span> <i class="ti ti-arrow-right"></i></button>
+            </div>
+            <div class="quick-chips-wrap">
+              <span style="font-size: 0.74rem; font-weight: 700; color: var(--ink-3);">Gợi ý:</span>
+              <button class="quick-chip-btn" onclick="insertChip('inGuess', '24')">24</button>
+              <button class="quick-chip-btn" onclick="insertChip('inGuess', '100')">100</button>
+              <button class="quick-chip-btn" onclick="insertChip('inGuess', '450')">450</button>
+              <button class="quick-chip-btn" onclick="insertChip('inGuess', '500')">500</button>
+            </div>
+            <div id="step1Error"></div>
+          </div>
+
+          <div class="btn-row"><div></div></div>
+        `;
+      }
+
+      // --- STEP 2: MINI PAIRING ---
+      else if (state.currentStep === 2) {
+        panel.innerHTML = `
+          <div>
+            <span class="step-badge">BƯỚC 2 / 7</span>
+            <h3 class="step-title">Bài toán thu nhỏ (Ghép cặp)</h3>
+          </div>
+
+          <div class="step-athena-card">
+            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-text">
+              Bạn dự đoán là <b>${state.predictedTotal} mật mã</b>. Mình chưa nói đúng sai vội — hãy thử ghép đủ <b>6 cặp</b> từ 2 kí hiệu (A, B) và 3 mã số (1, 2, 3) trên bảng bên trái nhé.
+            </div>
+          </div>
+
+          <div id="step2Feedback">
+            ${state.pairedCount === 6 ? `
+              <div class="info-box athena">
+                <i class="ti ti-circle-check"></i>
+                <div><b>Rất tốt!</b> Bạn vừa ghép được 6 cặp từ 2 kí hiệu và 3 mã số: $2 \\times 3 = 6$ (nhân chứ không cộng $2+3=5$).</div>
+              </div>
+            ` : `<div style="font-size: 0.82rem; color: var(--ink-2);">💡 <i>Chạm 1 Kí hiệu rồi chạm 1 Mã số để ghép thành cặp.</i></div>`}
+          </div>
+
+          <div class="btn-row">
+            <button class="btn" onclick="goToStep(1)"><i class="ti ti-arrow-left"></i> <span>Quay lại</span></button>
+            <button class="btn btn-primary" id="btnStep2Next" onclick="goToStep(3)" ${state.pairedCount === 6 ? '' : 'disabled'}>
+              <span>Tiếp tục</span> <i class="ti ti-arrow-right"></i>
+            </button>
+          </div>
+        `;
+      }
+
+      // --- STEP 3: CONFIRM 3 STAGES ---
+      else if (state.currentStep === 3) {
+        panel.innerHTML = `
+          <div>
+            <span class="step-badge">BƯỚC 3 / 7</span>
+            <h3 class="step-title">Xác nhận số lựa chọn 3 công đoạn</h3>
+          </div>
+
+          <div class="step-athena-card">
+            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-text">
+              Bây giờ quay lại bài toán thật. Bạn hãy nhập số lựa chọn ở từng công đoạn nhé:
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 0.78rem; font-weight: 700; color: var(--ink-2);">1. Kí hiệu điều tra viên (A, B, C, D, E):</label>
+            <div class="input-row">
+              <input type="text" class="math-input" id="inStep3_Letter" placeholder="Số..." inputmode="numeric">
+              <span id="iconStep3_1"></span>
+            </div>
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.78rem; font-weight: 700; color: var(--ink-2);">2. Chữ số hàng chục (khác 0):</label>
+            <div class="input-row">
+              <input type="text" class="math-input" id="inStep3_Tens" placeholder="Số..." inputmode="numeric">
+              <span id="iconStep3_2"></span>
+            </div>
+            <div id="step3TensFeedback"></div>
+          </div>
+          <div class="form-group">
+            <label style="font-size: 0.78rem; font-weight: 700; color: var(--ink-2);">3. Chữ số hàng đơn vị (0 đến 9):</label>
+            <div class="input-row">
+              <input type="text" class="math-input" id="inStep3_Units" placeholder="Số..." inputmode="numeric">
+              <span id="iconStep3_3"></span>
+            </div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn" onclick="goToStep(2)"><i class="ti ti-arrow-left"></i> <span>Quay lại</span></button>
+            <button class="btn btn-primary" onclick="submitStep3()"><span>Xác nhận</span> <i class="ti ti-check"></i></button>
+          </div>
+        `;
+      }
+
+      // --- STEP 4: CIPHER MACHINE EXPLORATION ---
+      else if (state.currentStep === 4) {
+        panel.innerHTML = `
+          <div>
+            <span class="step-badge">BƯỚC 4 / 7</span>
+            <h3 class="step-title">Khám phá tính độc lập</h3>
+          </div>
+
+          <div class="step-athena-card">
+            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-text">
+              Bạn hãy thử bấm mũi tên xoay khối <b>Kí hiệu</b> qua vài giá trị khác nhau, rồi quan sát xem số lựa chọn ở 2 khối còn lại có thay đổi không nhé.
+            </div>
+          </div>
+
+          <div style="background: var(--cream); border: 1px solid var(--paper-line-2); border-radius: 8px; padding: 8px 10px; font-size: 0.82rem; color: var(--ink-2);">
+            💡 <b>Nhận xét:</b> Dù bạn đổi kí hiệu sang bất kỳ chữ nào, chữ số hàng chục vẫn luôn có <b>9 cách</b> và hàng đơn vị vẫn luôn có <b>10 cách</b>.
+          </div>
+
+          <div class="btn-row">
+            <button class="btn" onclick="goToStep(3)"><i class="ti ti-arrow-left"></i> <span>Quay lại</span></button>
+            <button class="btn btn-primary" onclick="goToStep(5)">
+              <span>Tính tổng mật mã</span> <i class="ti ti-arrow-right"></i>
+            </button>
+          </div>
+        `;
+      }
+
+      // --- STEP 5: FINAL RESOLUTION ---
+      else if (state.currentStep === 5) {
+        panel.innerHTML = `
+          <div>
+            <span class="step-badge">BƯỚC 5 / 7</span>
+            <h3 class="step-title">Tính tổng bằng Quy tắc nhân</h3>
+          </div>
+
+          <div class="step-athena-card">
+            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-text">
+              Nhân 3 số lựa chọn ở từng công đoạn ($5 \\times 9 \\times 10$) để tính tổng số mật mã có thể tạo ra nhé.
+            </div>
+          </div>
+
+          <div class="form-group">
+            <label style="font-size: 0.82rem; font-weight: 700; color: var(--ink-2);">Tổng số mật mã:</label>
+            <div class="input-row">
+              <input type="text" class="math-input" id="inFinalAnswer" placeholder="Tổng số..." inputmode="numeric" autofocus>
+              <button class="btn btn-primary" onclick="submitStep5()"><span>Kiểm tra</span> <i class="ti ti-check"></i></button>
+            </div>
+            <div class="quick-chips-wrap">
+              <span style="font-size: 0.74rem; font-weight: 700; color: var(--ink-3);">Điền nhanh:</span>
+              <button class="quick-chip-btn" onclick="insertChip('inFinalAnswer', '450')">450</button>
+              <button class="quick-chip-btn" onclick="insertChip('inFinalAnswer', '500')">500</button>
+            </div>
+            <div id="step5Feedback"></div>
+          </div>
+
+          <div class="btn-row" id="step5NavRow">
+            <button class="btn" onclick="goToStep(4)"><i class="ti ti-arrow-left"></i> <span>Xem máy mật mã</span></button>
+          </div>
+        `;
+      }
+
+      // --- STEP 6: GENERALIZATION ---
+      else if (state.currentStep === 6) {
+        panel.innerHTML = `
+          <div>
+            <span class="step-badge" style="color: var(--jade-dark);">TỔNG KẾT BÀI HỌC</span>
+            <h3 class="step-title">Khái quát hoá & Đối chiếu</h3>
+          </div>
+
+          <div class="step-athena-card">
+            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-text">
+              Đây chính là <b>Quy tắc nhân</b>: Nếu công việc gồm nhiều công đoạn liên tiếp, mỗi công đoạn độc lập với công đoạn trước, số cách thực hiện toàn bộ công việc bằng tích số cách của từng công đoạn.
+            </div>
+          </div>
+
+          <div style="background: var(--jade-pale); border: 1.5px solid var(--jade-soft); border-radius: var(--radius); padding: 8px 10px; font-size: 0.82rem;">
+            <div style="font-weight: 800; color: var(--jade-dark); margin-bottom: 2px;">⚖️ PHÂN BIỆT CỘNG VÀ NHÂN:</div>
+            • <b>Quy tắc cộng (Module 1):</b> Quan hệ <i>"HOẶC"</i> giữa 2 phương án tách biệt $\to$ Cộng.<br>
+            • <b>Quy tắc nhân (Module 3):</b> Quan hệ <i>"VÀ"</i> giữa các công đoạn liên tiếp, độc lập $\to$ Nhân.
+          </div>
+
+          <div class="btn-row">
+            <button class="btn" onclick="openNotebookModal()"><i class="ti ti-book-2"></i> <span>Mở sổ tay</span></button>
+            <button class="btn btn-primary" onclick="goToStep(7)"><span>Luyện tập mở rộng</span> <i class="ti ti-arrow-right"></i></button>
+          </div>
+        `;
+      }
+
+      // --- STEP 7: EXTENSION ---
+      else if (state.currentStep === 7) {
+        panel.innerHTML = `
+          <div>
+            <span class="step-badge" style="color: var(--accent-deep);">LUYỆN TẬP MỞ RỘNG (TUỲ CHỌN)</span>
+            <h3 class="step-title">Mật mã 2 chữ cái + 1 chữ số</h3>
+          </div>
+
+          <div class="step-athena-card">
+            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-text">
+              <b>Tình huống:</b> Một mật mã mới gồm <b>2 chữ cái tiếng Anh</b> (26 chữ cái, không giới hạn) + <b>1 chữ số bất kỳ</b> (0-9). Hỏi có bao nhiêu mật mã?
+            </div>
+          </div>
+
+          <div class="form-group">
+            <div class="input-row">
+              <input type="text" class="math-input" id="inStep7" placeholder="Số mã..." inputmode="numeric">
+              <button class="btn btn-primary" onclick="submitStep7()"><span>Kiểm tra</span> <i class="ti ti-check"></i></button>
+            </div>
+            <div id="step7Feedback"></div>
+          </div>
+
+          <div class="btn-row">
+            <button class="btn" onclick="goToStep(6)"><i class="ti ti-arrow-left"></i> <span>Xem lại</span></button>
+            <button class="btn btn-primary" onclick="finishModule()"><i class="ti ti-trophy"></i> <span>Hoàn thành 🎉</span></button>
+          </div>
+        `;
+      }
+    }
+
+    // =========================================================
+    // 5. INTERACTION ACTIONS
+    // =========================================================
+    function submitStep1() {
+      const input = document.getElementById('inGuess');
+      const val = parseInt(input.value.trim());
+      const err = document.getElementById('step1Error');
+
+      if (isNaN(val) || val <= 0) {
+        input.classList.add('error');
+        err.innerHTML = `<div class="info-box error" style="margin-top: 6px;"><i class="ti ti-alert-triangle"></i> Vui lòng nhập một số nguyên dương.</div>`;
+        return;
+      }
+
+      state.predictedTotal = val;
+      LMS().event('answered', { id: 'm3_du_doan', value: val });
+      goToStep(2);
+    }
+
+    function selectMiniLetter(char) {
+      state.selectedMiniLetter = char;
+      const bA = document.getElementById('btnMiniA');
+      const bB = document.getElementById('btnMiniB');
+      if (bA) bA.classList.toggle('active', char === 'A');
+      if (bB) bB.classList.toggle('active', char === 'B');
+      checkAndExecutePair();
+    }
+
+    function selectMiniDigit(num) {
+      state.selectedMiniDigit = num;
+      const b1 = document.getElementById('btnMini1');
+      const b2 = document.getElementById('btnMini2');
+      const b3 = document.getElementById('btnMini3');
+      if (b1) b1.classList.toggle('active', num === '1');
+      if (b2) b2.classList.toggle('active', num === '2');
+      if (b3) b3.classList.toggle('active', num === '3');
+      checkAndExecutePair();
+    }
+
+    function checkAndExecutePair() {
+      if (state.selectedMiniLetter && state.selectedMiniDigit) {
+        const pair = `${state.selectedMiniLetter}${state.selectedMiniDigit}`;
+        const slot = document.getElementById(`slot_${pair}`);
+
+        if (slot && !state.pairedMap[pair]) {
+          state.pairedMap[pair] = true;
+          state.pairedCount++;
+          slot.classList.add('paired');
+          const counter = document.getElementById('miniPairCount');
+          if (counter) counter.textContent = state.pairedCount;
+
+          if (navigator.vibrate) navigator.vibrate(40);
+
+          if (state.pairedCount === 6) {
+            const hint = document.getElementById('miniPairHint');
+            if (hint) hint.textContent = '🎉 Đã ghép đủ 6 cặp!';
+            const btnNext = document.getElementById('btnStep2Next');
+            if (btnNext) btnNext.disabled = false;
+            const fb = document.getElementById('step2Feedback');
+            if (fb) {
+              fb.innerHTML = `
+                <div class="info-box athena" style="margin-top: 6px;">
+                  <i class="ti ti-circle-check"></i>
+                  <div><b>Rất tốt!</b> Bạn vừa ghép được 6 cặp từ 2 kí hiệu và 3 mã số: $2 \\times 3 = 6$ (nhân chứ không cộng $2+3=5$).</div>
+                </div>
+              `;
+              if (window.renderMathInElement) {
+                renderMathInElement(fb, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }] });
+              }
+            }
+            LMS().event('explored', { id: 'm3_ghep_cap', trial: 6 });
+          }
+        }
+
+        setTimeout(() => {
+          state.selectedMiniLetter = null;
+          state.selectedMiniDigit = null;
+          document.querySelectorAll('.pair-btn').forEach(b => b.classList.remove('active'));
+        }, 180);
+      }
+    }
+
+    function submitStep3() {
+      const inLetter = document.getElementById('inStep3_Letter');
+      const inTens = document.getElementById('inStep3_Tens');
+      const inUnits = document.getElementById('inStep3_Units');
+
+      const valLetter = parseInt(inLetter.value.trim());
+      const valTens = parseInt(inTens.value.trim());
+      const valUnits = parseInt(inUnits.value.trim());
+
+      let allPassed = true;
+
+      if (valLetter === 5) {
+        inLetter.className = 'math-input success';
+        document.getElementById('iconStep3_1').innerHTML = `<i class="ti ti-check" style="color: var(--correct); font-weight: 800;"></i>`;
+        LMS().event('answered', { id: 'm3_so_ki_hieu', correct: true });
+      } else {
+        inLetter.className = 'math-input error';
+        allPassed = false;
+      }
+
+      const tensFb = document.getElementById('step3TensFeedback');
+      if (valTens === 9) {
+        inTens.className = 'math-input success';
+        document.getElementById('iconStep3_2').innerHTML = `<i class="ti ti-check" style="color: var(--correct); font-weight: 800;"></i>`;
+        tensFb.innerHTML = '';
+        LMS().event('answered', { id: 'm3_so_hang_chuc', tries: state.step3TensAttempts + 1, correct: true });
+      } else {
+        state.step3TensAttempts++;
+        inTens.className = 'math-input error';
+        allPassed = false;
+        LMS().event('answered', { id: 'm3_so_hang_chuc', tries: state.step3TensAttempts, correct: false });
+
+        if (state.step3TensAttempts === 1) {
+          tensFb.innerHTML = `<div class="info-box error" style="margin-top: 4px;"><i class="ti ti-alert-circle"></i> Chưa chính xác. Bạn hãy kiểm tra lại điều kiện chữ số hàng chục nhé.</div>`;
+        } else if (state.step3TensAttempts === 2) {
+          tensFb.innerHTML = `<div class="info-box warning" style="margin-top: 4px;"><i class="ti ti-bulb"></i> <b>Gợi ý Athena:</b> Bạn thử đọc lại đề: mã vụ án có yêu cầu gì đặc biệt về chữ số hàng chục không?</div>`;
+        } else {
+          tensFb.innerHTML = `<div class="info-box athena" style="margin-top: 4px;"><i class="ti ti-help"></i> <b>Đáp án đúng là 9:</b> Chữ số hàng chục không được là 0 (vì 0 ở đầu không hợp lệ), nên chỉ có 9 lựa chọn: 1 đến 9.</div>`;
+        }
+      }
+
+      if (valUnits === 10) {
+        inUnits.className = 'math-input success';
+        document.getElementById('iconStep3_3').innerHTML = `<i class="ti ti-check" style="color: var(--correct); font-weight: 800;"></i>`;
+        LMS().event('answered', { id: 'm3_so_hang_donvi', correct: true });
+      } else {
+        inUnits.className = 'math-input error';
+        allPassed = false;
+      }
+
+      if (allPassed) {
+        setTimeout(() => goToStep(4), 400);
+      }
+    }
+
+    function rotateWheel(wheelNum, dir) {
+      if (wheelNum === 1) {
+        state.idxLetter = (state.idxLetter + dir + state.wheelLetters.length) % state.wheelLetters.length;
+        const el = document.getElementById('wheelVal1');
+        if (el) el.textContent = state.wheelLetters[state.idxLetter];
+        LMS().event('explored', { id: 'm3_may_mat_ma', action: 'rotate_letter', val: state.wheelLetters[state.idxLetter] });
+      } else if (wheelNum === 2) {
+        state.idxTens = (state.idxTens + dir + state.wheelTens.length) % state.wheelTens.length;
+        const el = document.getElementById('wheelVal2');
+        if (el) el.textContent = state.wheelTens[state.idxTens];
+      } else if (wheelNum === 3) {
+        state.idxUnits = (state.idxUnits + dir + state.wheelUnits.length) % state.wheelUnits.length;
+        const el = document.getElementById('wheelVal3');
+        if (el) el.textContent = state.wheelUnits[state.idxUnits];
+      }
+      updateCipherScreen();
+    }
+
+    function updateCipherScreen() {
+      const code = `${state.wheelLetters[state.idxLetter]} - ${state.wheelTens[state.idxTens]} ${state.wheelUnits[state.idxUnits]}`;
+      const screen = document.getElementById('outputCodeDisplay');
+      if (screen) screen.textContent = code;
+    }
+
+    function submitStep5() {
+      const input = document.getElementById('inFinalAnswer');
+      const val = parseInt(input.value.trim());
+      const fb = document.getElementById('step5Feedback');
+
+      if (isNaN(val)) {
+        input.classList.add('error');
+        return;
+      }
+
+      if (val === 450) {
+        input.className = 'math-input success';
+        fb.innerHTML = `
+          <div class="info-box athena" style="margin-top: 6px;">
+            <i class="ti ti-circle-check"></i>
+            <div><b>Chính xác!</b> Khi các công đoạn nối tiếp nhau và không phụ thuộc lẫn nhau, số cách thực hiện toàn bộ công việc bằng tích số cách của từng công đoạn: $5 \\times 9 \\times 10 = 450$ mật mã.</div>
+          </div>
+        `;
+        document.getElementById('step5NavRow').innerHTML = `
+          <div></div>
+          <button class="btn btn-primary" onclick="goToStep(6)"><span>Xem tổng kết bài học</span> <i class="ti ti-arrow-right"></i></button>
+        `;
+        state.isLmsComplete = true;
+        LMS().event('answered', { id: 'm3_dap_an_dung', tries: state.step5Attempts + 1, correct: true });
+        LMS().complete();
+      } else {
+        state.step5Attempts++;
+        input.className = 'math-input error';
+        LMS().event('answered', { id: 'm3_dap_an_dung', tries: state.step5Attempts, correct: false });
+
+        if (state.step5Attempts === 1) {
+          fb.innerHTML = `<div class="info-box error" style="margin-top: 6px;"><i class="ti ti-alert-circle"></i> Chưa chính xác. Bạn hãy nhân số lựa chọn ở 3 công đoạn lại nhé.</div>`;
+        } else if (state.step5Attempts === 2) {
+          fb.innerHTML = `<div class="info-box warning" style="margin-top: 6px;"><i class="ti ti-bulb"></i> <b>Gợi ý Athena:</b> Bạn thử nhân lần lượt 3 số lựa chọn ở 3 công đoạn: kí hiệu, hàng chục, hàng đơn vị.</div>`;
+        } else {
+          fb.innerHTML = `<div class="info-box athena" style="margin-top: 6px;"><i class="ti ti-help"></i> <b>Đáp án đúng là 450:</b> $5 \\times 9 \\times 10 = 450$. Vì đây là 3 công đoạn liên tiếp và độc lập nhau, ta nhân các số lựa chọn lại.</div>`;
+          document.getElementById('step5NavRow').innerHTML = `
+            <div></div>
+            <button class="btn btn-primary" onclick="goToStep(6)"><span>Xem tổng kết bài học</span> <i class="ti ti-arrow-right"></i></button>
+          `;
+        }
+      }
+
+      if (window.renderMathInElement) {
+        renderMathInElement(fb, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }] });
+      }
+    }
+
+    function submitStep7() {
+      const input = document.getElementById('inStep7');
+      const val = parseInt(input.value.trim());
+      const fb = document.getElementById('step7Feedback');
+
+      if (isNaN(val)) return;
+
+      if (val === 6760) {
+        input.className = 'math-input success';
+        fb.innerHTML = `
+          <div class="info-box athena" style="margin-top: 6px;">
+            <i class="ti ti-circle-check"></i>
+            <div><b>Rất xuất sắc!</b> Áp dụng quy tắc nhân: $26 \\times 26 \\times 10 = 6\\,760$ mật mã. Bạn đã thành thạo quy tắc nhân!</div>
+          </div>
+        `;
+        LMS().event('answered', { id: 'm3_mo_rong', correct: true, required: false });
+      } else {
+        input.className = 'math-input error';
+        state.step7Attempts++;
+        fb.innerHTML = `<div class="info-box error" style="margin-top: 6px;"><i class="ti ti-alert-triangle"></i> Gợi ý: Chữ cái 1 ($26$) $\\times$ Chữ cái 2 ($26$) $\\times$ Chữ số ($10$) $= 6\\,760$.</div>`;
+      }
+
+      if (window.renderMathInElement) {
+        renderMathInElement(fb, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }] });
+      }
+    }
+
+    function finishModule() {
+      LMS().complete();
+      alert("🎉 CHÚC MỪNG! Bạn đã hoàn thành xuất sắc Module 3: Quy tắc nhân!");
+    }
+
+    function insertChip(inputId, val) {
+      const input = document.getElementById(inputId);
+      if (input) {
+        input.value = val;
+        input.focus();
+        input.classList.remove('error');
+      }
+    }
+
+    // =========================================================
+    // 6. NOTEBOOK MODAL & KEYBOARD SHORTCUTS
+    // =========================================================
+    function openNotebookModal() {
+      document.getElementById('notebookModal').classList.add('show');
+    }
+    function closeNotebookModal(e) {
+      document.getElementById('notebookModal').classList.remove('show');
+    }
+
+    document.addEventListener('keydown', (e) => {
+      if (e.key === 'Enter') {
+        const active = document.activeElement;
+        if (active && active.tagName === 'INPUT') {
+          e.preventDefault();
+          if (active.id === 'inGuess') submitStep1();
+          else if (active.id.startsWith('inStep3')) submitStep3();
+          else if (active.id === 'inFinalAnswer') submitStep5();
+          else if (active.id === 'inStep7') submitStep7();
+        }
+      }
+    });
+  </script>
+</body>
+
+</html>
