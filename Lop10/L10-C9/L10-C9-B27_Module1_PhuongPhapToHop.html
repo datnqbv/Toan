@@ -1,0 +1,1682 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 1: Tính xác suất bằng phương pháp tổ hợp — Bài 27 Toán 10</title>
+
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for beautiful math formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+          onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <style>
+    /* =========================================================
+       1. DESIGN TOKENS (JADE & CREAM PALETTE - 02_design_toan_final.md)
+       ========================================================= */
+    :root {
+      --bg: #FAF8F5;            /* Nền trang Cream ấm */
+      --paper: #FFFFFF;         /* Nền card trắng */
+      --paper-subtle: #F7F5F0;  /* Nền khối con nhạt */
+      --paper-line: #E8E4DC;    /* Viền nhẹ */
+      
+      --jade-deep: #14432F;     /* Xanh đậm thương hiệu */
+      --jade-dark: #1E5C45;     /* Xanh ngọc đậm */
+      --jade: #2D8B6F;          /* Xanh ngọc chính */
+      --jade-light: #E6F4EE;    /* Xanh ngọc nhạt */
+      --sage: #4A7C59;          /* Xanh lá xô thơm */
+      --sage-pale: #EBF3ED;     /* Nền sage nhẹ */
+      
+      --accent: #D97736;        /* Cam đất nhấn */
+      --accent-light: #FDF2E9;  /* Cam nhạt */
+      --accent-dark: #B25822;   /* Cam đậm */
+      
+      --ink: #1F2937;           /* Chữ chính */
+      --ink-2: #4B5563;         /* Chữ phụ */
+      --ink-3: #9CA3AF;         /* Chữ mờ / placeholder */
+      
+      --correct: #16A34A;       /* Đúng */
+      --correct-bg: #DCFCE7;
+      --wrong: #DC2626;         /* Sai */
+      --wrong-bg: #FEE2E2;
+      --warning: #D97706;       /* Cảnh báo / gợi ý */
+      --warning-bg: #FEF3C7;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
+      --shadow-lg: 0 10px 25px rgba(20,67,47,0.1);
+
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+    }
+
+    /* =========================================================
+       2. BASE & RESET
+       ========================================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      padding: 24px 16px 80px 16px;
+      -webkit-font-smoothing: antialiased;
+      font-size: 18px;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    /* =========================================================
+       3. INTRO HEADER & PROGRESS BAR
+       ========================================================= */
+    .intro-text {
+      background: var(--paper);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-xl);
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .badge-topic {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--jade-light);
+      color: var(--jade-dark);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .intro-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .intro-desc {
+      font-size: 16px;
+      color: var(--ink-2);
+      margin-bottom: 18px;
+    }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--paper-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      border: 1px solid var(--paper-line);
+    }
+
+    .progress-info {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-2);
+    }
+
+    .progress-bar-bg {
+      flex: 1;
+      max-width: 320px;
+      height: 8px;
+      background: #E5E7EB;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--jade) 0%, var(--correct) 100%);
+      border-radius: var(--radius-full);
+      transition: width 0.35s ease;
+    }
+
+    /* =========================================================
+       4. CARDS & SECTIONS
+       ========================================================= */
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--jade-dark);
+      margin: 28px 0 16px 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .flow-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    .step-card {
+      background: var(--paper);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-xl);
+      padding: 24px 28px;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-normal);
+    }
+
+    .step-card.completed {
+      border-color: var(--correct);
+      background: linear-gradient(180deg, var(--paper) 0%, var(--jade-light) 300%);
+    }
+
+    .step-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 12px;
+    }
+
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--paper-subtle);
+      color: var(--ink-2);
+      border: 1px solid var(--paper-line);
+    }
+
+    .step-card.completed .step-badge {
+      background: var(--correct-bg);
+      color: var(--correct);
+      border-color: var(--correct);
+    }
+
+    .step-status {
+      font-size: 18px;
+    }
+
+    .step-prompt {
+      font-size: 16px;
+      color: var(--ink);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .step-prompt strong {
+      color: var(--jade-dark);
+    }
+
+    /* =========================================================
+       5. INTERACTIVE CANVAS (STEP 1: 9 NAME CARDS GRID)
+       ========================================================= */
+    .club-sim-wrap {
+      display: grid;
+      grid-template-columns: 1.4fr 1fr;
+      gap: 20px;
+      background: var(--paper-subtle);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      margin-bottom: 16px;
+    }
+
+    .grid-cards {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 10px;
+    }
+
+    .member-card {
+      background: var(--paper);
+      border: 2px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      padding: 12px 8px;
+      text-align: center;
+      cursor: pointer;
+      user-select: none;
+      transition: all var(--transition-fast);
+      position: relative;
+      min-height: 64px;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+    }
+
+    .member-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .member-card.it-card {
+      border-left: 5px solid var(--jade);
+    }
+
+    .member-card.physics-card {
+      border-left: 5px solid var(--accent);
+    }
+
+    .member-card .m-name {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--ink);
+      line-height: 1.2;
+    }
+
+    .member-card .m-skill {
+      font-size: 12px;
+      font-weight: 600;
+      margin-top: 4px;
+    }
+
+    .member-card.it-card .m-skill {
+      color: var(--jade-dark);
+    }
+
+    .member-card.physics-card .m-skill {
+      color: var(--accent-dark);
+    }
+
+    .member-card.selected {
+      border-color: var(--jade-deep);
+      background: var(--jade-light);
+      box-shadow: 0 0 0 2px var(--jade);
+    }
+
+    .member-card.selected::after {
+      content: '✓';
+      position: absolute;
+      top: 3px;
+      right: 6px;
+      font-size: 13px;
+      font-weight: 900;
+      color: var(--jade-deep);
+    }
+
+    .member-card.dimmed {
+      opacity: 0.45;
+    }
+
+    /* Sim Sidebar */
+    .sim-sidebar {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      background: var(--paper);
+      border-radius: var(--radius-md);
+      padding: 16px;
+      border: 1px solid var(--paper-line);
+    }
+
+    .counter-display {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--ink);
+      margin-bottom: 8px;
+    }
+
+    .counter-display span {
+      color: var(--jade-dark);
+      font-size: 19px;
+      font-family: 'JetBrains Mono', monospace;
+    }
+
+    .selected-list-box {
+      font-size: 13.5px;
+      color: var(--ink-2);
+      min-height: 60px;
+      margin-bottom: 12px;
+      background: var(--paper-subtle);
+      border-radius: var(--radius-sm);
+      padding: 8px 10px;
+      border: 1px dashed var(--paper-line);
+      line-height: 1.5;
+    }
+
+    .btn-sim-reset {
+      background: var(--paper-subtle);
+      border: 1.5px solid var(--paper-line);
+      color: var(--ink-2);
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      width: 100%;
+    }
+
+    .btn-sim-reset:hover {
+      background: #E5E7EB;
+      color: var(--ink);
+    }
+
+    /* Discovery Question Box */
+    .discovery-box {
+      background: #FFFDF8;
+      border: 1.5px dashed var(--accent);
+      border-radius: var(--radius-lg);
+      padding: 16px 20px;
+      margin-top: 14px;
+      animation: fadeIn 0.3s ease;
+      display: none;
+    }
+
+    .discovery-box.show {
+      display: block;
+    }
+
+    /* =========================================================
+       6. BUTTONS & INPUT CONTROLS
+       ========================================================= */
+    .btn-options-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 10px;
+      margin-top: 10px;
+    }
+
+    .btn-opt {
+      background: var(--paper);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      padding: 9px 18px;
+      font-family: inherit;
+      font-size: 14.5px;
+      font-weight: 600;
+      color: var(--ink-2);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      min-height: 44px;
+    }
+
+    .btn-opt:hover:not(:disabled) {
+      border-color: var(--jade);
+      color: var(--jade-dark);
+      background: var(--jade-light);
+    }
+
+    .btn-opt.selected {
+      background: var(--jade-dark);
+      color: #FFF;
+      border-color: var(--jade-dark);
+    }
+
+    .btn-opt.wrong-opt {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+      border-color: var(--wrong);
+    }
+
+    .q-action-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+      margin-top: 12px;
+    }
+
+    .q-input {
+      flex: 1;
+      width: 100%;
+      min-width: 140px;
+      max-width: 260px;
+      box-sizing: border-box;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--paper);
+      border: 2px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      padding: 9px 14px;
+      text-align: center;
+      outline: none;
+      transition: var(--transition-fast);
+      min-height: 44px;
+    }
+
+    .q-input:focus {
+      border-color: var(--jade);
+      box-shadow: 0 0 0 3px var(--jade-light);
+    }
+
+    .q-input.correct {
+      background: var(--correct-bg);
+      border-color: var(--correct);
+      color: var(--jade-dark);
+    }
+
+    .q-input.wrong {
+      background: var(--wrong-bg);
+      border-color: var(--wrong);
+      color: var(--wrong);
+    }
+
+    .btn-q-submit {
+      background: var(--jade);
+      color: #FFF;
+      border: none;
+      padding: 10px 22px;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      box-shadow: var(--shadow-sm);
+      white-space: nowrap;
+      min-height: 44px;
+    }
+
+    .btn-q-submit:hover:not(:disabled) {
+      background: var(--jade-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-q-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* 2-Column Counters Layout for Step 4 */
+    .counters-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-top: 14px;
+    }
+
+    .counter-box {
+      background: var(--paper-subtle);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+    }
+
+    .counter-box.done {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+    }
+
+    .counter-title {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      margin-bottom: 6px;
+    }
+
+    .counter-desc {
+      font-size: 14px;
+      color: var(--ink-2);
+      margin-bottom: 10px;
+    }
+
+    /* Feedback Box */
+    .feedback-box {
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: 14.5px;
+      margin-top: 12px;
+      display: none;
+      animation: fadeIn 0.25s ease;
+      line-height: 1.5;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback-box.show {
+      display: block;
+    }
+
+    .feedback-box.hint {
+      background: var(--warning-bg);
+      color: var(--accent-dark);
+      border: 1px solid var(--accent);
+    }
+
+    .feedback-box.success {
+      background: var(--correct-bg);
+      color: var(--jade-dark);
+      border: 1px solid var(--correct);
+    }
+
+    .feedback-box.wrong {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+      border: 1px solid var(--wrong);
+    }
+
+    /* Shake Animation */
+    .shake-anim {
+      animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translateX(-3px); }
+      20%, 80% { transform: translateX(4px); }
+      30%, 50%, 70% { transform: translateX(-6px); }
+      40%, 60% { transform: translateX(6px); }
+    }
+
+    /* =========================================================
+       7. KNOWLEDGE BASE & ATHENA SUMMARY CARD
+       ========================================================= */
+    .summary-card {
+      background: linear-gradient(135deg, var(--jade-dark) 0%, #1c523d 100%);
+      color: #FFF;
+      border-radius: var(--radius-xl);
+      padding: 30px;
+      margin-top: 28px;
+      box-shadow: var(--shadow-lg);
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .summary-card.active {
+      display: block;
+    }
+
+    .summary-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+    }
+
+    .athena-avatar {
+      width: 72px;
+      height: 72px;
+      flex-shrink: 0;
+      background: #FFF;
+      border-radius: var(--radius-full);
+      padding: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: var(--radius-full);
+    }
+
+    .summary-text h3 {
+      font-size: 21px;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 8px;
+    }
+
+    .summary-text p {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .rule-highlight-box {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.25);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      font-size: 14.5px;
+      line-height: 1.6;
+      margin: 12px 0 16px 0;
+    }
+
+    .btn-restart-all {
+      background: var(--accent);
+      color: #FFF;
+      border: none;
+      padding: 9px 20px;
+      border-radius: var(--radius-full);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-restart-all:hover {
+      background: #e68544;
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       8. RESPONSIVE (MOBILE OPTIMIZATION)
+       ========================================================= */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px 10px 60px 10px;
+        font-size: 16px;
+      }
+
+      .intro-text, .step-card {
+        padding: 18px 16px;
+      }
+
+      .club-sim-wrap {
+        grid-template-columns: 1fr;
+      }
+
+      .counters-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .q-action-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .q-input {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .btn-q-submit {
+        width: 100%;
+      }
+
+      .summary-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- INTRO HEADER -->
+  <header class="intro-text">
+    <div class="badge-topic">🎲 Bài 27 · Xác suất cổ điển · Toán 10</div>
+    <h1 class="intro-title">Module 1: Tính xác suất bằng phương pháp tổ hợp</h1>
+    <p class="intro-desc">
+      Khám phá kỹ thuật sử dụng <strong>Tổ hợp ($C_n^k$)</strong> để tính số phần tử không gian mẫu $n(\Omega)$, số kết quả thuận lợi $n(E)$ và phối hợp <strong>Quy tắc nhân</strong> để tính xác suất các biến cố phức hợp.
+    </p>
+
+    <div class="progress-wrap">
+      <div class="progress-info">
+        Tiến độ: <span id="progress-text" style="color:var(--jade-dark); font-weight:800;">0/7</span> bước hoàn thành
+      </div>
+      <div class="progress-bar-bg">
+        <div id="progress-bar" class="progress-bar-fill"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- MAIN FLOW: 4 DISCOVERY STEPS -->
+  <div class="section-title">
+    <span>🔬</span> Phần I: Hình thành phương pháp qua bài toán thực tế
+  </div>
+
+  <main class="flow-list">
+
+    <!-- BƯỚC 1: THỬ LIỆT KÊ TAY (TỰ THẤY BẾ TẮC) -->
+    <article class="step-card" id="card-step1">
+      <div class="step-header">
+        <div class="step-badge">Bước 1 · Thử liệt kê tay</div>
+        <div class="step-status" id="status-step1">⏳</div>
+      </div>
+      <p class="step-prompt">
+        <strong>Bối cảnh:</strong> CLB Nghiên cứu khoa học có <strong>9 thành viên</strong> gồm <strong>5 bạn giỏi Tin học</strong> (màu xanh) và <strong>4 bạn giỏi Vật lý</strong> (màu cam). Nhà trường cần chọn ngẫu nhiên <strong>5 bạn</strong> đại diện dự thi KHKT cấp tỉnh.
+        <br>👉 <em>Hãy thử click chọn 5 bạn bên dưới để tạo 1 cách chọn:</em>
+      </p>
+
+      <!-- Simulation Canvas Grid -->
+      <div class="club-sim-wrap">
+        <div class="grid-cards" id="membersGrid">
+          <!-- 5 IT Members -->
+          <div class="member-card it-card" onclick="toggleMember(1, 'it', this)">
+            <div class="m-name">Bạn 1</div>
+            <div class="m-skill">💻 Tin học</div>
+          </div>
+          <div class="member-card it-card" onclick="toggleMember(2, 'it', this)">
+            <div class="m-name">Bạn 2</div>
+            <div class="m-skill">💻 Tin học</div>
+          </div>
+          <div class="member-card it-card" onclick="toggleMember(3, 'it', this)">
+            <div class="m-name">Bạn 3</div>
+            <div class="m-skill">💻 Tin học</div>
+          </div>
+          <div class="member-card it-card" onclick="toggleMember(4, 'it', this)">
+            <div class="m-name">Bạn 4</div>
+            <div class="m-skill">💻 Tin học</div>
+          </div>
+          <div class="member-card it-card" onclick="toggleMember(5, 'it', this)">
+            <div class="m-name">Bạn 5</div>
+            <div class="m-skill">💻 Tin học</div>
+          </div>
+          <!-- 4 Physics Members -->
+          <div class="member-card physics-card" onclick="toggleMember(6, 'phy', this)">
+            <div class="m-name">Bạn 6</div>
+            <div class="m-skill">⚛️ Vật lý</div>
+          </div>
+          <div class="member-card physics-card" onclick="toggleMember(7, 'phy', this)">
+            <div class="m-name">Bạn 7</div>
+            <div class="m-skill">⚛️ Vật lý</div>
+          </div>
+          <div class="member-card physics-card" onclick="toggleMember(8, 'phy', this)">
+            <div class="m-name">Bạn 8</div>
+            <div class="m-skill">⚛️ Vật lý</div>
+          </div>
+          <div class="member-card physics-card" onclick="toggleMember(9, 'phy', this)">
+            <div class="m-name">Bạn 9</div>
+            <div class="m-skill">⚛️ Vật lý</div>
+          </div>
+        </div>
+
+        <div class="sim-sidebar">
+          <div>
+            <div class="counter-display">Đã chọn: <span id="selectedCount">0</span>/5 bạn</div>
+            <div class="selected-list-box" id="selectedListBox">Chưa chọn bạn nào.</div>
+          </div>
+          <button class="btn-sim-reset" onclick="resetSelection()">🔄 Tạo cách chọn mới</button>
+        </div>
+      </div>
+
+      <!-- Athena Discovery Prompt -->
+      <div class="discovery-box" id="discoveryBox">
+        <div style="font-size:15px; font-weight:800; color:var(--accent-dark); margin-bottom:6px;">
+          💬 Câu hỏi suy ngẫm từ Athena:
+        </div>
+        <p style="font-size:14.5px; color:var(--ink); margin-bottom:10px;">
+          "Bạn thấy việc liệt kê thủ công từng nhóm 5 bạn có quá nhiều và dễ sót không? Ở Bài 24, ta đã học công cụ toán học nào để <strong>đếm nhanh số cách chọn ra một nhóm</strong> mà không cần liệt kê tay?"
+        </p>
+        <div class="btn-options-row">
+          <button class="btn-opt" onclick="submitStep1Tool('tohop', this)">Tổ hợp ($C_n^k$)</button>
+          <button class="btn-opt" onclick="submitStep1Tool('hoanvi', this)">Hoán vị ($P_n$)</button>
+          <button class="btn-opt" onclick="submitStep1Tool('chinhhop', this)">Chỉnh hợp ($A_n^k$)</button>
+        </div>
+        <div class="feedback-box" id="feedback-step1"></div>
+      </div>
+    </article>
+
+    <!-- BƯỚC 2: XÁC ĐỊNH KHÔNG GIAN MẪU N(Ω) -->
+    <article class="step-card" id="card-step2" style="display:none;">
+      <div class="step-header">
+        <div class="step-badge">Bước 2 · Xác định không gian mẫu $n(\Omega)$</div>
+        <div class="step-status" id="status-step2">⏳</div>
+      </div>
+      <p class="step-prompt">
+        Khi chọn 5 bạn đại diện đi thi, <strong>5 bạn được chọn có bị phân vai trò/vị trí khác nhau không</strong> (như ai là đội trưởng, đội phó), hay chỉ đơn thuần là một nhóm 5 người?
+      </p>
+
+      <div class="btn-options-row">
+        <button class="btn-opt" onclick="chooseStep2Role('no', this)">Không phân biệt vai trò (Chỉ chọn nhóm)</button>
+        <button class="btn-opt" onclick="chooseStep2Role('yes', this)">Có phân biệt vai trò</button>
+      </div>
+      <div class="feedback-box" id="feedback-step2-role"></div>
+
+      <div id="step2-calc-wrap" style="display:none; margin-top:16px; background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+        <div style="font-size:14.5px; font-weight:700; color:var(--ink-2); margin-bottom:8px;">
+          Chọn 5 bạn từ 9 bạn không phân vai trò $\implies n(\Omega) = C_9^5$. Hãy tính kết quả:
+        </div>
+        <div class="q-action-row">
+          <label for="input-step2" style="font-size:15px; font-weight:700;">$n(\Omega) = $</label>
+          <input type="text" inputmode="numeric" id="input-step2" class="q-input" placeholder="Nhập kết quả..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-step2" onclick="submitStep2Omega()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-step2-calc"></div>
+      </div>
+    </article>
+
+    <!-- BƯỚC 3: BIẾN CỐ F: CẢ 5 BẠN ĐỀU GIỎI TIN HỌC -->
+    <article class="step-card" id="card-step3" style="display:none;">
+      <div class="step-header">
+        <div class="step-badge">Bước 3 · Biến cố F: Cả 5 bạn đều giỏi Tin học</div>
+        <div class="step-status" id="status-step3">⏳</div>
+      </div>
+      <p class="step-prompt">
+        Xét biến cố $F$: <em>"Cả 5 bạn được chọn đều giỏi Tin học"</em>.
+        <br>Trong CLB chỉ có đúng <strong>5 bạn giỏi Tin học</strong>. Vậy có bao nhiêu cách chọn 5 bạn đều giỏi Tin học?
+      </p>
+
+      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+        <div class="q-action-row">
+          <label for="input-step3" style="font-size:15px; font-weight:700;">Số kết quả thuận lợi $n(F) = $</label>
+          <input type="text" inputmode="numeric" id="input-step3" class="q-input" placeholder="Nhập số cách..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-step3" onclick="submitStep3F()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-step3"></div>
+      </div>
+    </article>
+
+    <!-- BƯỚC 4: BIẾN CỐ D: 3 TIN HỌC VÀ 2 VẬT LÝ (NHIỀU ĐIỀU KIỆN) -->
+    <article class="step-card" id="card-step4" style="display:none;">
+      <div class="step-header">
+        <div class="step-badge">Bước 4 · Biến cố D: 3 Tin học và 2 Vật lý</div>
+        <div class="step-status" id="status-step4">⏳</div>
+      </div>
+      <p class="step-prompt">
+        Xét biến cố $D$: <em>"Trong 5 bạn được chọn có 3 bạn giỏi Tin học và 2 bạn giỏi Vật lý"</em>.
+        <br>Để lập nhóm này, ta thực hiện <strong>2 công đoạn nối tiếp</strong>:
+      </p>
+
+      <div class="counters-grid">
+        <!-- Part 1: Chọn 3 Tin học -->
+        <div class="counter-box" id="step4-box-p1">
+          <div>
+            <div class="counter-title">💻 Công đoạn 1: Chọn 3 bạn Tin học</div>
+            <div class="counter-desc">Chọn 3 bạn từ 5 bạn giỏi Tin học ($C_5^3$):</div>
+          </div>
+          <div>
+            <div class="q-action-row">
+              <input type="text" inputmode="numeric" id="input-step4-p1" class="q-input" style="max-width:130px;" placeholder="Số cách..." autocomplete="off">
+              <button class="btn-q-submit" id="btn-step4-p1" onclick="submitStep4P1()">Kiểm tra</button>
+            </div>
+            <div class="feedback-box" id="feedback-step4-p1"></div>
+          </div>
+        </div>
+
+        <!-- Part 2: Chọn 2 Vật lý -->
+        <div class="counter-box" id="step4-box-p2">
+          <div>
+            <div class="counter-title">⚛️ Công đoạn 2: Chọn 2 bạn Vật lý</div>
+            <div class="counter-desc">Chọn 2 bạn từ 4 bạn giỏi Vật lý ($C_4^2$):</div>
+          </div>
+          <div>
+            <div class="q-action-row">
+              <input type="text" inputmode="numeric" id="input-step4-p2" class="q-input" style="max-width:130px;" placeholder="Số cách..." autocomplete="off">
+              <button class="btn-q-submit" id="btn-step4-p2" onclick="submitStep4P2()">Kiểm tra</button>
+            </div>
+            <div class="feedback-box" id="feedback-step4-p2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Combine Step 4 -->
+      <div id="step4-combine" style="display:none; margin-top:16px; background:#FFFDF8; border:1.5px dashed var(--accent); padding:16px 18px; border-radius:var(--radius-lg);">
+        <div style="font-size:15px; font-weight:800; color:var(--accent-dark); margin-bottom:8px;">
+          🔗 Ghép 2 công đoạn lại để tính $n(D)$:
+        </div>
+        <div style="font-size:14px; color:var(--ink-2); margin-bottom:10px;">
+          Để hoàn thành nhóm 5 người gồm cả 3 Tin học VÀ 2 Vật lý, ta dùng quy tắc nào?
+        </div>
+        <div class="btn-options-row">
+          <button class="btn-opt" onclick="chooseStep4Rule('mul', this)">Quy tắc Nhân ($\times$)</button>
+          <button class="btn-opt" onclick="chooseStep4Rule('add', this)">Quy tắc Cộng ($+$)</button>
+        </div>
+        <div class="q-action-row" id="step4-final-row" style="display:none; margin-top:12px;">
+          <label for="input-step4-final" style="font-size:15px; font-weight:700;">$n(D) = 10 \times 6 = $</label>
+          <input type="text" inputmode="numeric" id="input-step4-final" class="q-input" placeholder="Nhập kết quả..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-step4-final" onclick="submitStep4Final()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-step4-final"></div>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- PHẦN II: LUYỆN TẬP TỔNG HỢP 3 BÀI -->
+  <div class="section-title">
+    <span>✍️</span> Phần II: Bài tập luyện tập áp dụng phương pháp tổ hợp
+  </div>
+
+  <div class="flow-list">
+
+    <!-- BÀI TẬP 1 -->
+    <article class="step-card" id="card-bt1">
+      <div class="step-header">
+        <div class="step-badge">Bài tập 1 · CLB Văn nghệ</div>
+        <div class="step-status" id="status-bt1">⏳</div>
+      </div>
+      <p class="step-prompt">
+        CLB Văn nghệ có <strong>14 thành viên</strong>: gồm <strong>8 bạn giỏi vẽ</strong> và <strong>6 bạn giỏi nhạc</strong>. Chọn ngẫu nhiên <strong>6 bạn</strong> vào ban tổ chức.
+        <br>Tính số kết quả thuận lợi $n(E)$ để <strong>số bạn giỏi vẽ bằng số bạn giỏi nhạc</strong> (tức chọn 3 bạn vẽ và 3 bạn nhạc):
+      </p>
+      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+        <div class="q-action-row">
+          <label for="input-bt1" style="font-size:15px; font-weight:700;">$n(E) = C_8^3 \times C_6^3 = $</label>
+          <input type="text" inputmode="numeric" id="input-bt1" class="q-input" placeholder="Nhập số kết quả..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-bt1" onclick="submitBT1()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-bt1"></div>
+      </div>
+    </article>
+
+    <!-- BÀI TẬP 2 -->
+    <article class="step-card" id="card-bt2">
+      <div class="step-header">
+        <div class="step-badge">Bài tập 2 · Đội tuyển Toán</div>
+        <div class="step-status" id="status-bt2">⏳</div>
+      </div>
+      <p class="step-prompt">
+        Đội tuyển Toán của trường có <strong>12 học sinh</strong>: gồm <strong>7 em lớp 10</strong> và <strong>5 em lớp 11</strong>. Chọn ngẫu nhiên <strong>4 em</strong> đi thi giao lưu.
+        <br>Tính số kết quả thuận lợi $n(E)$ để <strong>cả 4 em được chọn đều học lớp 10</strong> ($C_7^4$):
+      </p>
+      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+        <div class="q-action-row">
+          <label for="input-bt2" style="font-size:15px; font-weight:700;">$n(E) = C_7^4 = $</label>
+          <input type="text" inputmode="numeric" id="input-bt2" class="q-input" placeholder="Nhập số kết quả..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-bt2" onclick="submitBT2()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-bt2"></div>
+      </div>
+    </article>
+
+    <!-- BÀI TẬP 3 -->
+    <article class="step-card" id="card-bt3">
+      <div class="step-header">
+        <div class="step-badge">Bài tập 3 · Phối hợp 2 khối lớp</div>
+        <div class="step-status" id="status-bt3">⏳</div>
+      </div>
+      <p class="step-prompt">
+        Vẫn đội tuyển Toán gồm 12 em (7 em lớp 10, 5 em lớp 11), chọn ngẫu nhiên 4 em.
+        <br>Tính số kết quả thuận lợi $n(E)$ để trong 4 em có <strong>đúng 2 em lớp 10 và 2 em lớp 11</strong> ($C_7^2 \times C_5^2$):
+      </p>
+      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+        <div class="q-action-row">
+          <label for="input-bt3" style="font-size:15px; font-weight:700;">$n(E) = C_7^2 \times C_5^2 = $</label>
+          <input type="text" inputmode="numeric" id="input-bt3" class="q-input" placeholder="Nhập số kết quả..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-bt3" onclick="submitBT3()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-bt3"></div>
+      </div>
+    </article>
+
+  </div>
+
+  <!-- ATHENA SUMMARY & RECAP -->
+  <section class="summary-card" id="final-summary">
+    <div class="summary-content">
+      <!-- Mascot Athena Avatar WebP -->
+      <div class="athena-avatar">
+        <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot" loading="lazy">
+      </div>
+      <div class="summary-text">
+        <h3>🎉 Xuất sắc! Bạn đã làm chủ Module 1 Chương IX</h3>
+        <p>
+          "Chúc mừng bạn đã làm chủ kỹ thuật dùng <strong>Tổ hợp</strong> để tính xác suất cổ điển! Hãy luôn ghi nhớ quy tắc cốt lõi:"
+        </p>
+        <div class="rule-highlight-box">
+          • <strong>Không phân biệt thứ tự/vai trò:</strong> Luôn dùng <strong>Tổ hợp ($C_n^k$)</strong> để tính $n(\Omega)$ và $n(E)$.<br>
+          • <strong>Biến cố nhiều điều kiện độc lập:</strong> Tính riêng số cách từng phần rồi <strong>Nhân lại</strong> theo Quy tắc nhân.<br>
+          • <strong>Công thức xác suất cổ điển:</strong> $P(E) = \frac{n(E)}{n(\Omega)}$.
+        </div>
+        <button class="btn-restart-all" onclick="restartModule()">
+          🔄 Làm lại toàn bộ Module 1
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ATHENA CONTEXT JSON FOR LMS / AI ORCHESTRATION -->
+<script type="application/json" id="athena-context">
+{
+  "context": {
+    "grade": 10,
+    "chapter": 9,
+    "lesson": 27,
+    "module": 1,
+    "topic": "phuong_phap_to_hop",
+    "title": "Tính xác suất bằng phương pháp tổ hợp"
+  },
+  "structure": [
+    { "id": "m1_thu_liet_ke", "type": "explored", "required": true, "title": "Bước 1: Thử liệt kê tay" },
+    { "id": "m1_xac_dinh_omega", "type": "answered", "required": true, "title": "Bước 2: Xác định n(Ω)" },
+    { "id": "m1_bien_co_f", "type": "answered", "required": true, "title": "Bước 3: Biến cố F" },
+    { "id": "m1_bien_co_d", "type": "answered", "required": true, "title": "Bước 4: Biến cố D" },
+    { "id": "m1_bt1", "type": "answered", "required": true, "title": "Bài tập 1: CLB Văn nghệ" },
+    { "id": "m1_bt2", "type": "answered", "required": true, "title": "Bài tập 2: Đội tuyển Toán" },
+    { "id": "m1_bt3", "type": "answered", "required": true, "title": "Bài tập 3: Phối hợp 2 khối" }
+  ],
+  "pedagogy": {
+    "total_progress": 7,
+    "strike_rule": "3 strikes: strike 1 shake & hint retry, strike 2 show formula hint, strike 3 show answer & explanation requiring manual typing"
+  }
+}
+</script>
+
+<script>
+  /* =========================================================
+     9. JAVASCRIPT STATE MANAGEMENT & PEDAGOGY LOGIC
+     ========================================================= */
+
+  const state = {
+    selectedMembers: [], // List of member IDs
+    simTries: 0,
+    steps: {
+      m1_thu_liet_ke: false,
+      m1_xac_dinh_omega: false,
+      m1_bien_co_f: false,
+      m1_bien_co_d: false,
+      m1_bt1: false,
+      m1_bt2: false,
+      m1_bt3: false
+    },
+    attempts: {
+      step1: 0,
+      step2_omega: 0,
+      step3: 0,
+      step4_p1: 0, step4_p2: 0, step4_final: 0,
+      bt1: 0,
+      bt2: 0,
+      bt3: 0
+    },
+    totalSteps: 7,
+    completedSteps: 0
+  };
+
+  // KaTeX Helper with explicit delimiters
+  function renderKatex(el) {
+    if (typeof renderMathInElement === 'function') {
+      renderMathInElement(el || document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  /* =========================================================
+     BƯỚC 1: INTERACTIVE CARD SELECTION & DISCOVERY
+     ========================================================= */
+  function toggleMember(id, skill, cardEl) {
+    const idx = state.selectedMembers.indexOf(id);
+
+    if (idx > -1) {
+      // Remove
+      state.selectedMembers.splice(idx, 1);
+      cardEl.classList.remove('selected');
+    } else {
+      // Add if under 5
+      if (state.selectedMembers.length >= 5) {
+        return;
+      }
+      state.selectedMembers.push(id);
+      cardEl.classList.add('selected');
+    }
+
+    updateSimUI();
+  }
+
+  function updateSimUI() {
+    const count = state.selectedMembers.length;
+    document.getElementById('selectedCount').textContent = count;
+
+    const cards = document.querySelectorAll('.member-card');
+    cards.forEach(c => {
+      if (count >= 5 && !c.classList.contains('selected')) {
+        c.classList.add('dimmed');
+      } else {
+        c.classList.remove('dimmed');
+      }
+    });
+
+    const listBox = document.getElementById('selectedListBox');
+    if (count === 0) {
+      listBox.textContent = 'Chưa chọn bạn nào.';
+    } else {
+      const names = state.selectedMembers.map(id => `Bạn ${id} (${id <= 5 ? 'Tin' : 'Lý'})`);
+      listBox.innerHTML = `<strong>Nhóm đã chọn:</strong> ${names.join(', ')}`;
+    }
+
+    if (count === 5) {
+      state.simTries++;
+      document.getElementById('discoveryBox').classList.add('show');
+      renderKatex(document.getElementById('discoveryBox'));
+    }
+  }
+
+  function resetSelection() {
+    state.selectedMembers = [];
+    document.querySelectorAll('.member-card').forEach(c => {
+      c.classList.remove('selected', 'dimmed');
+    });
+    updateSimUI();
+  }
+
+  function submitStep1Tool(tool, btnEl) {
+    if (state.steps.m1_thu_liet_ke) return;
+    const parent = btnEl.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected', 'wrong-opt'));
+    const fb = document.getElementById('feedback-step1');
+
+    if (tool === 'tohop') {
+      state.steps.m1_thu_liet_ke = true;
+      btnEl.classList.add('selected');
+      document.getElementById('card-step1').classList.add('completed');
+      document.getElementById('status-step1').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> Chọn ra 1 nhóm $k$ người từ $n$ người không phân biệt thứ tự/vai trò là bài toán <strong>Tổ hợp ($C_n^k$)</strong>.';
+      renderKatex(fb);
+
+      document.getElementById('card-step2').style.display = 'block';
+      renderKatex(document.getElementById('card-step2'));
+      updateOverallProgress('m1_thu_liet_ke');
+    } else {
+      state.attempts.step1++;
+      btnEl.classList.add('wrong-opt');
+      fb.className = 'feedback-box hint show';
+      if (tool === 'hoanvi') {
+        fb.innerHTML = '❌ <strong>Chưa đúng!</strong> Hoán vị dùng khi xếp <em>tất cả</em> 9 người vào 9 vị trí có thứ tự. Ở đây ta chỉ chọn ra 1 nhóm 5 người.';
+      } else {
+        fb.innerHTML = '❌ <strong>Chưa đúng!</strong> Chỉnh hợp chỉ dùng khi các người được chọn có <em>vai trò hoặc vị trí khác nhau</em>. Ở đây chỉ chọn ra 1 nhóm đại diện bình đẳng.';
+      }
+    }
+  }
+
+  /* =========================================================
+     BƯỚC 2: ROLE SELECTION & N(Ω) CALCULATION
+     ========================================================= */
+  function chooseStep2Role(choice, btnEl) {
+    const parent = btnEl.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected', 'wrong-opt'));
+    const fb = document.getElementById('feedback-step2-role');
+
+    if (choice === 'no') {
+      btnEl.classList.add('selected');
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '✅ <strong>Đúng:</strong> 5 bạn chỉ là thành viên của đoàn dự thi, không có sự phân biệt thứ tự/vai trò.';
+      document.getElementById('step2-calc-wrap').style.display = 'block';
+      renderKatex(document.getElementById('step2-calc-wrap'));
+    } else {
+      btnEl.classList.add('wrong-opt');
+      fb.className = 'feedback-box hint show';
+      fb.innerHTML = '💡 <strong>Gợi ý:</strong> Đề bài chỉ yêu cầu chọn 5 bạn đại diện, không phân công ai là trưởng đoàn hay thứ tự gì cả!';
+    }
+  }
+
+  function submitStep2Omega() {
+    if (state.steps.m1_xac_dinh_omega) return;
+    const inp = document.getElementById('input-step2');
+    const fb = document.getElementById('feedback-step2-calc');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 126) {
+      state.steps.m1_xac_dinh_omega = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-step2').disabled = true;
+      document.getElementById('card-step2').classList.add('completed');
+      document.getElementById('status-step2').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> Số phần tử không gian mẫu $n(\\Omega) = C_9^5 = \\frac{9!}{4! \\cdot 5!} = \\mathbf{126}$.';
+      renderKatex(fb);
+
+      document.getElementById('card-step3').style.display = 'block';
+      renderKatex(document.getElementById('card-step3'));
+      updateOverallProgress('m1_xac_dinh_omega');
+    } else {
+      state.attempts.step2_omega++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.step2_omega === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy tính lại $C_9^5$ bằng máy tính cầm tay.';
+      } else if (state.attempts.step2_omega === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Bấm trên máy tính: <strong>9 $\\to$ SHIFT $\\to \\div$ (nCr) $\\to$ 5 $\\to =$</strong>.';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 126</strong> ($C_9^5 = \\mathbf{126}$).<br><em>👉 Hãy tự gõ số <strong>126</strong> vào ô kết quả và bấm "Kiểm tra" để tiếp tục nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  /* =========================================================
+     BƯỚC 3: BIẾN CỐ F
+     ========================================================= */
+  function submitStep3F() {
+    if (state.steps.m1_bien_co_f) return;
+    const inp = document.getElementById('input-step3');
+    const fb = document.getElementById('feedback-step3');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 1) {
+      state.steps.m1_bien_co_f = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-step3').disabled = true;
+      document.getElementById('card-step3').classList.add('completed');
+      document.getElementById('status-step3').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> Chọn cả 5 bạn từ đúng 5 bạn giỏi Tin $\\implies n(F) = C_5^5 = \\mathbf{1}$.<br>Xác suất biến cố là: $P(F) = \\frac{n(F)}{n(\\Omega)} = \\mathbf{\\frac{1}{126}}$.';
+      renderKatex(fb);
+
+      document.getElementById('card-step4').style.display = 'block';
+      renderKatex(document.getElementById('card-step4'));
+      updateOverallProgress('m1_bien_co_f');
+    } else {
+      state.attempts.step3++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.step3 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Trong CLB có bao nhiêu bạn giỏi Tin học và ta cần chọn ra mấy bạn?';
+      } else if (state.attempts.step3 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Có 5 bạn giỏi Tin học, chọn cả 5 bạn $\\implies C_5^5 = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 1</strong> ($C_5^5 = 1$).<br><em>👉 Hãy tự gõ số <strong>1</strong> vào ô kết quả và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  /* =========================================================
+     BƯỚC 4: BIẾN CỐ D (3 TIN HỌC + 2 VẬT LÝ)
+     ========================================================= */
+  function submitStep4P1() {
+    const inp = document.getElementById('input-step4-p1');
+    const fb = document.getElementById('feedback-step4-p1');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 10) {
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-step4-p1').disabled = true;
+      document.getElementById('step4-box-p1').classList.add('done');
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '✅ <strong>Đúng:</strong> $C_5^3 = 10$ cách.';
+      renderKatex(fb);
+      checkStep4Ready();
+    } else {
+      state.attempts.step4_p1++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.step4_p1 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy tính lại $C_5^3$.';
+      } else if (state.attempts.step4_p1 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> $C_5^3 = \\frac{5 \\times 4 \\times 3}{3 \\times 2 \\times 1} = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 10</strong> ($C_5^3 = 10$).<br><em>👉 Hãy tự gõ số <strong>10</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function submitStep4P2() {
+    const inp = document.getElementById('input-step4-p2');
+    const fb = document.getElementById('feedback-step4-p2');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 6) {
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-step4-p2').disabled = true;
+      document.getElementById('step4-box-p2').classList.add('done');
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '✅ <strong>Đúng:</strong> $C_4^2 = 6$ cách.';
+      renderKatex(fb);
+      checkStep4Ready();
+    } else {
+      state.attempts.step4_p2++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.step4_p2 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy tính lại $C_4^2$.';
+      } else if (state.attempts.step4_p2 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> $C_4^2 = \\frac{4 \\times 3}{2} = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 6</strong> ($C_4^2 = 6$).<br><em>👉 Hãy tự gõ số <strong>6</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function checkStep4Ready() {
+    const p1Done = document.getElementById('step4-box-p1').classList.contains('done');
+    const p2Done = document.getElementById('step4-box-p2').classList.contains('done');
+    if (p1Done && p2Done) {
+      document.getElementById('step4-combine').style.display = 'block';
+      renderKatex(document.getElementById('step4-combine'));
+    }
+  }
+
+  function chooseStep4Rule(rule, btnEl) {
+    const parent = btnEl.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected', 'wrong-opt'));
+    const fb = document.getElementById('feedback-step4-final');
+
+    if (rule === 'mul') {
+      btnEl.classList.add('selected');
+      document.getElementById('step4-final-row').style.display = 'flex';
+      fb.className = 'feedback-box';
+      fb.innerHTML = '';
+    } else {
+      btnEl.classList.add('wrong-opt');
+      fb.className = 'feedback-box hint show';
+      fb.innerHTML = '💡 <strong>Gợi ý:</strong> Chọn 3 bạn Tin học và chọn 2 bạn Vật lý là 2 công đoạn nối tiếp cùng cấu thành nhóm 5 bạn $\\implies$ dùng <strong>Quy tắc Nhân</strong>.';
+      renderKatex(fb);
+    }
+  }
+
+  function submitStep4Final() {
+    if (state.steps.m1_bien_co_d) return;
+    const inp = document.getElementById('input-step4-final');
+    const fb = document.getElementById('feedback-step4-final');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 60) {
+      state.steps.m1_bien_co_d = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-step4-final').disabled = true;
+      document.getElementById('card-step4').classList.add('completed');
+      document.getElementById('status-step4').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> $n(D) = 10 \\times 6 = \\mathbf{60}$.<br>Xác suất của biến cố: $P(D) = \\frac{60}{126} = \\mathbf{\\frac{10}{21}}$.';
+      renderKatex(fb);
+      updateOverallProgress('m1_bien_co_d');
+    } else {
+      state.attempts.step4_final++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.step4_final === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy nhân kết quả 2 công đoạn lại: $10 \\times 6 = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 60</strong> ($10 \\times 6 = \\mathbf{60}$).<br><em>👉 Hãy tự gõ số <strong>60</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  /* =========================================================
+     BÀI TẬP LUYỆN TẬP 1, 2, 3
+     ========================================================= */
+  function submitBT1() {
+    if (state.steps.m1_bt1) return;
+    const inp = document.getElementById('input-bt1');
+    const fb = document.getElementById('feedback-bt1');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 1120) {
+      state.steps.m1_bt1 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-bt1').disabled = true;
+      document.getElementById('card-bt1').classList.add('completed');
+      document.getElementById('status-bt1').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> $n(E) = C_8^3 \\times C_6^3 = 56 \\times 20 = \\mathbf{1120}$.<br>Với $n(\\Omega) = C_{14}^6 = 3003 \\implies P(E) = \\frac{1120}{3003} = \\mathbf{\\frac{160}{429}} \\approx 0{,}373$.';
+      renderKatex(fb);
+      updateOverallProgress('m1_bt1');
+    } else {
+      state.attempts.bt1++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.bt1 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy tính $C_8^3$ và $C_6^3$ rồi nhân lại.';
+      } else if (state.attempts.bt1 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> $C_8^3 = 56$, $C_6^3 = 20 \\implies n(E) = 56 \\times 20 = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 1120</strong> ($56 \\times 20 = \\mathbf{1120}$).<br><em>👉 Hãy tự gõ số <strong>1120</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function submitBT2() {
+    if (state.steps.m1_bt2) return;
+    const inp = document.getElementById('input-bt2');
+    const fb = document.getElementById('feedback-bt2');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 35) {
+      state.steps.m1_bt2 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-bt2').disabled = true;
+      document.getElementById('card-bt2').classList.add('completed');
+      document.getElementById('status-bt2').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> $n(E) = C_7^4 = \\mathbf{35}$.<br>Với $n(\\Omega) = C_{12}^4 = 495 \\implies P(E) = \\frac{35}{495} = \\mathbf{\\frac{7}{99}}$.';
+      renderKatex(fb);
+      updateOverallProgress('m1_bt2');
+    } else {
+      state.attempts.bt2++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.bt2 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy tính lại tổ hợp $C_7^4$.';
+      } else if (state.attempts.bt2 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> $C_7^4 = \\frac{7 \\times 6 \\times 5 \\times 4}{4 \\times 3 \\times 2 \\times 1} = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 35</strong> ($C_7^4 = \\mathbf{35}$).<br><em>👉 Hãy tự gõ số <strong>35</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function submitBT3() {
+    if (state.steps.m1_bt3) return;
+    const inp = document.getElementById('input-bt3');
+    const fb = document.getElementById('feedback-bt3');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 210) {
+      state.steps.m1_bt3 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-bt3').disabled = true;
+      document.getElementById('card-bt3').classList.add('completed');
+      document.getElementById('status-bt3').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> $n(E) = C_7^2 \\times C_5^2 = 21 \\times 10 = \\mathbf{210}$.<br>Với $n(\\Omega) = 495 \\implies P(E) = \\frac{210}{495} = \\mathbf{\\frac{14}{33}}$.';
+      renderKatex(fb);
+      updateOverallProgress('m1_bt3');
+    } else {
+      state.attempts.bt3++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.bt3 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy tính $C_7^2$ và $C_5^2$ rồi nhân lại.';
+      } else if (state.attempts.bt3 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> $C_7^2 = 21$, $C_5^2 = 10 \\implies n(E) = 21 \\times 10 = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 210</strong> ($21 \\times 10 = \\mathbf{210}$).<br><em>👉 Hãy tự gõ số <strong>210</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  /* =========================================================
+     PROGRESS & LMS REPORT
+     ========================================================= */
+  function updateOverallProgress(itemId) {
+    let count = 0;
+    Object.keys(state.steps).forEach(k => {
+      if (state.steps[k]) count++;
+    });
+    state.completedSteps = count;
+
+    const pct = Math.round((count / state.totalSteps) * 100);
+    document.getElementById('progress-text').textContent = `${count}/${state.totalSteps}`;
+    document.getElementById('progress-bar').style.width = `${pct}%`;
+
+    // Report to LMS
+    if (typeof LMS === 'function') {
+      try {
+        LMS().reportProgress(itemId, true);
+        LMS().reportState('module1_b27', state);
+      } catch (e) {
+        console.warn('LMS error:', e);
+      }
+    }
+
+    if (count === state.totalSteps) {
+      const summary = document.getElementById('final-summary');
+      summary.classList.add('active');
+      renderKatex(summary);
+      setTimeout(() => {
+        summary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 200);
+    }
+  }
+
+  function restartModule() {
+    window.location.reload();
+  }
+
+  // Auto-resize for LMS iframe
+  window.addEventListener('load', () => {
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(() => {
+        const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+        if (window.parent && window.parent.postMessage) {
+          window.parent.postMessage({ type: 'setHeight', height: height }, '*');
+        }
+      });
+      ro.observe(document.body);
+    }
+  });
+</script>
+
+</body>
+</html>
