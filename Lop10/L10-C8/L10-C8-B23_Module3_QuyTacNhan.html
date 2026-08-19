@@ -1998,11 +1998,30 @@
             <div><b>Rất xuất sắc!</b> Áp dụng quy tắc nhân: $26 \\times 26 \\times 10 = 6\\,760$ mật mã. Bạn đã thành thạo quy tắc nhân!</div>
           </div>
         `;
-        LMS().event('answered', { id: 'm3_mo_rong', correct: true, required: false });
+        LMS().event('answered', { id: 'm3_mo_rong', tries: state.step7Attempts + 1, correct: true, required: false });
       } else {
-        input.className = 'math-input error';
         state.step7Attempts++;
-        fb.innerHTML = `<div class="info-box error" style="margin-top: 6px;"><i class="ti ti-alert-triangle"></i> Gợi ý: Chữ cái 1 ($26$) $\\times$ Chữ cái 2 ($26$) $\\times$ Chữ số ($10$) $= 6\\,760$.</div>`;
+        input.className = 'math-input error';
+
+        if (state.step7Attempts === 1) {
+          fb.innerHTML = `
+            <div class="info-box error" style="margin-top: 6px;">
+              <i class="ti ti-alert-circle"></i> Chưa chính xác. Bạn hãy nhân số lựa chọn ở 3 công đoạn lại nhé.
+            </div>
+          `;
+        } else if (state.step7Attempts === 2) {
+          fb.innerHTML = `
+            <div class="info-box warning" style="margin-top: 6px;">
+              <i class="ti ti-bulb"></i> <b>Gợi ý:</b> Chữ cái 1 ($26$ cách) $\\times$ Chữ cái 2 ($26$ cách) $\\times$ Chữ số ($10$ cách).
+            </div>
+          `;
+        } else {
+          fb.innerHTML = `
+            <div class="info-box athena" style="margin-top: 6px;">
+              <i class="ti ti-help"></i> <b>Đáp án đúng là 6.760:</b> $26 \\times 26 \\times 10 = 6\\,760$ mật mã.
+            </div>
+          `;
+        }
       }
 
       if (window.renderMathInElement) {

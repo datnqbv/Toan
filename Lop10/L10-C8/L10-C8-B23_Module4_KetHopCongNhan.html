@@ -1230,6 +1230,25 @@
   <!-- JAVASCRIPT LOGIC ENGINE -->
   <script>
     // =========================================================
+    // 0. KATEX ROBUST RENDER HELPER
+    // =========================================================
+    function renderMath(target = document.body) {
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(target, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {
+          console.warn('[KaTeX Render]', e);
+        }
+      }
+    }
+
+    // =========================================================
     // 1. STATE MANAGEMENT
     // =========================================================
     const state = {
@@ -1240,6 +1259,8 @@
       youthAttempts: 0,
       combCompleted: false,
       combAttempts: 0,
+      combTotalAttempts: 0,
+      extAttempts: 0,
       isLmsComplete: false
     };
 
@@ -1260,7 +1281,10 @@
       const h = document.documentElement.scrollHeight;
       LMS().resize({ height: h });
     }
-    window.addEventListener('load', reportHeight);
+    window.addEventListener('load', () => {
+      reportHeight();
+      renderMath(document.body);
+    });
     if (typeof ResizeObserver !== 'undefined') {
       const ro = new ResizeObserver(() => {
         clearTimeout(window._rz);
@@ -1274,8 +1298,10 @@
     // =========================================================
     function startModuleStep1() {
       document.getElementById('hookScreen').style.display = 'none';
-      document.getElementById('simWorkspace').style.display = 'flex';
+      const sim = document.getElementById('simWorkspace');
+      sim.style.display = 'flex';
       document.getElementById('btnReset').style.display = 'inline-flex';
+      renderMath(sim);
       LMS().progress(0, 4);
     }
 
@@ -1341,10 +1367,7 @@
             </div>
           `;
         }
-
-        if (window.renderMathInElement) {
-          renderMathInElement(fb, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }] });
-        }
+        renderMath(fb);
       } else {
         btnMul.className = 'rule-btn selected-correct';
         btnPlus.className = 'rule-btn';
@@ -1392,10 +1415,7 @@
             </div>
           `;
         }
-
-        if (window.renderMathInElement) {
-          renderMathInElement(fb, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }] });
-        }
+        renderMath(fb);
       } else {
         btnMul.className = 'rule-btn selected-correct';
         btnPlus.className = 'rule-btn';
@@ -1453,10 +1473,7 @@
           inputWrap.style.display = 'block';
           document.getElementById('inFinalTotal').focus();
         }
-
-        if (window.renderMathInElement) {
-          renderMathInElement(fb, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }] });
-        }
+        renderMath(fb);
       } else {
         btnPlus.className = 'rule-btn selected-correct';
         btnMul.className = 'rule-btn';
@@ -1468,10 +1485,7 @@
         `;
         inputWrap.style.display = 'block';
         document.getElementById('inFinalTotal').focus();
-
-        if (window.renderMathInElement) {
-          renderMathInElement(fb, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }] });
-        }
+        renderMath(fb);
       }
     }
 
@@ -1494,30 +1508,50 @@
             <div><b>Xuất sắc!</b> Tổng số mã toàn giải là $32 + 30 = 62$ mã dự thi!</div>
           </div>
         `;
+        renderMath(fb);
 
         state.combCompleted = true;
         state.isLmsComplete = true;
-        LMS().event('answered', { id: 'm4_ket_hop', tries: state.combAttempts + 1, correct: true });
+        LMS().event('answered', { id: 'm4_ket_hop', tries: state.combTotalAttempts + 1, correct: true });
         LMS().progress(4, 4);
         LMS().complete();
 
         // Show Summary
         const sumCard = document.getElementById('cardSummary');
         sumCard.style.display = 'flex';
+        renderMath(sumCard);
         sumCard.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-
-        if (window.renderMathInElement) {
-          renderMathInElement(sumCard, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }] });
-        }
       } else {
-        input.classList.add('error');
-        fb.innerHTML = `<div class="info-box error" style="margin-top: 6px;"><i class="ti ti-alert-triangle"></i> Hãy cộng $32 + 30 = 62$ nhé.</div>`;
+        state.combTotalAttempts++;
+        input.className = 'math-input error';
+
+        if (state.combTotalAttempts === 1) {
+          fb.innerHTML = `
+            <div class="info-box error" style="margin-top: 6px;">
+              <i class="ti ti-alert-circle"></i> Chưa chính xác. Bạn hãy cộng số mã của 2 hạng tuổi lại nhé.
+            </div>
+          `;
+        } else if (state.combTotalAttempts === 2) {
+          fb.innerHTML = `
+            <div class="info-box warning" style="margin-top: 6px;">
+              <i class="ti ti-bulb"></i> <b>Gợi ý:</b> Lấy số mã Nhi đồng ($32$) cộng với số mã Thiếu niên ($30$).
+            </div>
+          `;
+        } else {
+          fb.innerHTML = `
+            <div class="info-box athena" style="margin-top: 6px;">
+              <i class="ti ti-help"></i> <b>Đáp án đúng là 62:</b> $32 + 30 = 62$ mã dự thi.
+            </div>
+          `;
+        }
+        renderMath(fb);
       }
     }
 
     function showExtension() {
       const ext = document.getElementById('cardExtension');
       ext.style.display = 'flex';
+      renderMath(ext);
       ext.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
     }
 
@@ -1536,15 +1570,32 @@
             <div><b>Chính xác!</b> Khung sáng: $3 \\times 2 = 6$, Khung tối: $4 \\times 2 = 8$. Tổng $= 6 + 8 = 14$ loại vé!</div>
           </div>
         `;
-        LMS().event('answered', { id: 'm4_mo_rong', correct: true, required: false });
+        LMS().event('answered', { id: 'm4_mo_rong', tries: state.extAttempts + 1, correct: true, required: false });
       } else {
-        input.classList.add('error');
-        fb.innerHTML = `<div class="info-box error" style="margin-top: 6px;"><i class="ti ti-alert-triangle"></i> Gợi ý: $(3 \\times 2) + (4 \\times 2) = 6 + 8 = 14$.</div>`;
-      }
+        state.extAttempts++;
+        input.className = 'math-input error';
 
-      if (window.renderMathInElement) {
-        renderMathInElement(fb, { delimiters: [{ left: '$$', right: '$$', display: true }, { left: '$', right: '$', display: false }] });
+        if (state.extAttempts === 1) {
+          fb.innerHTML = `
+            <div class="info-box error" style="margin-top: 6px;">
+              <i class="ti ti-alert-circle"></i> Chưa chính xác. Bạn hãy tính số vé ở từng khung giờ rồi cộng lại nhé.
+            </div>
+          `;
+        } else if (state.extAttempts === 2) {
+          fb.innerHTML = `
+            <div class="info-box warning" style="margin-top: 6px;">
+              <i class="ti ti-bulb"></i> <b>Gợi ý:</b> Tính số vé khung sáng ($3 \\times 2$) rồi cộng với số vé khung tối ($4 \\times 2$).
+            </div>
+          `;
+        } else {
+          fb.innerHTML = `
+            <div class="info-box athena" style="margin-top: 6px;">
+              <i class="ti ti-help"></i> <b>Đáp án đúng là 14:</b> $(3 \\times 2) + (4 \\times 2) = 6 + 8 = 14$ loại vé.
+            </div>
+          `;
+        }
       }
+      renderMath(fb);
     }
 
     function finishModule() {
@@ -1560,7 +1611,9 @@
     // 4. NOTEBOOK MODAL & KEYBOARD
     // =========================================================
     function openNotebookModal() {
-      document.getElementById('notebookModal').classList.add('show');
+      const modal = document.getElementById('notebookModal');
+      modal.classList.add('show');
+      renderMath(modal);
     }
     function closeNotebookModal(e) {
       document.getElementById('notebookModal').classList.remove('show');

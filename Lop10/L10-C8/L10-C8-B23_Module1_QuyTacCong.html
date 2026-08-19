@@ -1804,15 +1804,30 @@
             <div><b>Rất tốt!</b> Áp dụng đúng công thức: $10 + 9 - 3 = 16$ học sinh. Bạn đã thành thạo Quy tắc cộng!</div>
           </div>
         `;
-        getLMS().event('answered', { id: 'm1_mo_rong', correct: true, required: false });
+        getLMS().event('answered', { id: 'm1_mo_rong', tries: state.step7Attempts + 1, correct: true, required: false });
       } else {
-        input.classList.add('error');
         state.step7Attempts++;
-        fbBox.innerHTML = `
-          <div class="info-box error" style="margin-top: 8px;">
-            <i class="ti ti-alert-triangle"></i> Hãy nhớ trừ đi 3 bạn tham gia cả hai CLB: $\\text{Tổng} = 10 + 9 - 3 = 16$.
-          </div>
-        `;
+        input.classList.add('error');
+
+        if (state.step7Attempts === 1) {
+          fbBox.innerHTML = `
+            <div class="info-box error" style="margin-top: 8px;">
+              <i class="ti ti-alert-circle"></i> Chưa chính xác. Bạn hãy kiểm tra lại phép tính tổng nhé.
+            </div>
+          `;
+        } else if (state.step7Attempts === 2) {
+          fbBox.innerHTML = `
+            <div class="info-box warning" style="margin-top: 8px;">
+              <i class="ti ti-bulb"></i> <b>Gợi ý:</b> Hãy lấy số bạn thích bóng đá ($10$) + bóng rổ ($9$) rồi trừ đi phần giao nhau (3 bạn thích cả hai).
+            </div>
+          `;
+        } else {
+          fbBox.innerHTML = `
+            <div class="info-box athena" style="margin-top: 8px;">
+              <i class="ti ti-help"></i> <b>Đáp án đúng là 16:</b> $10 + 9 - 3 = 16$ học sinh.
+            </div>
+          `;
+        }
       }
 
       if (window.renderMathInElement) {

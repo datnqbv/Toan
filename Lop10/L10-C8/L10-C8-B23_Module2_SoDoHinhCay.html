@@ -2528,15 +2528,30 @@
             <div><b>Rất tốt!</b> Áp dụng đúng sơ đồ cây: $2 \\times 2 = 4$ loại bánh. Bạn đã nắm vững Sơ đồ hình cây!</div>
           </div>
         `;
-        LMS().event('answered', { id: 'm2_mo_rong', correct: true, required: false });
+        LMS().event('answered', { id: 'm2_mo_rong', tries: state.step7Attempts + 1, correct: true, required: false });
       } else {
-        input.classList.add('error');
         state.step7Attempts++;
-        fbBox.innerHTML = `
-          <div class="info-box error" style="margin-top: 8px;">
-            <i class="ti ti-alert-triangle"></i> Hãy nhớ nhân số lựa chọn từng công đoạn: $2 \\text{ (đế)} \\times 2 \\text{ (nhân)} = 4$.
-          </div>
-        `;
+        input.classList.add('error');
+
+        if (state.step7Attempts === 1) {
+          fbBox.innerHTML = `
+            <div class="info-box error" style="margin-top: 8px;">
+              <i class="ti ti-alert-circle"></i> Chưa chính xác. Bạn hãy đếm hoặc nhân số lựa chọn của 2 công đoạn nhé.
+            </div>
+          `;
+        } else if (state.step7Attempts === 2) {
+          fbBox.innerHTML = `
+            <div class="info-box warning" style="margin-top: 8px;">
+              <i class="ti ti-bulb"></i> <b>Gợi ý:</b> Mỗi loại đế bánh ($2$ loại) có thể kết hợp với bao nhiêu loại nhân ($2$ loại)?
+            </div>
+          `;
+        } else {
+          fbBox.innerHTML = `
+            <div class="info-box athena" style="margin-top: 8px;">
+              <i class="ti ti-help"></i> <b>Đáp án đúng là 4:</b> $2 \\text{ (đế)} \\times 2 \\text{ (nhân)} = 4$ loại bánh.
+            </div>
+          `;
+        }
       }
 
       if (window.renderMathInElement) {
