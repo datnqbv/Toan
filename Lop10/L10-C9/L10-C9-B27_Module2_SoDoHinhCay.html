@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="vi">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -8,44 +9,65 @@
   <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+  <link
+    href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@500;700;800&display=swap"
+    rel="stylesheet">
 
   <!-- KaTeX for beautiful math formulas -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
-          onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
 
   <style>
     /* =========================================================
        1. DESIGN TOKENS (JADE & CREAM PALETTE - 02_design_toan_final.md)
        ========================================================= */
     :root {
-      --bg: #FAF8F5;            /* Nền trang Cream ấm */
-      --paper: #FFFFFF;         /* Nền card trắng */
-      --paper-subtle: #F7F5F0;  /* Nền khối con nhạt */
-      --paper-line: #E8E4DC;    /* Viền nhẹ */
-      
-      --jade-deep: #14432F;     /* Xanh đậm thương hiệu */
-      --jade-dark: #1E5C45;     /* Xanh ngọc đậm */
-      --jade: #2D8B6F;          /* Xanh ngọc chính */
-      --jade-light: #E6F4EE;    /* Xanh ngọc nhạt */
-      --sage: #4A7C59;          /* Xanh lá xô thơm */
-      --sage-pale: #EBF3ED;     /* Nền sage nhẹ */
-      
-      --accent: #D97736;        /* Cam đất nhấn */
-      --accent-light: #FDF2E9;  /* Cam nhạt */
-      --accent-dark: #B25822;   /* Cam đậm */
-      
-      --ink: #1F2937;           /* Chữ chính */
-      --ink-2: #4B5563;         /* Chữ phụ */
-      --ink-3: #9CA3AF;         /* Chữ mờ / placeholder */
-      
-      --correct: #16A34A;       /* Đúng */
+      --bg: #FAF8F5;
+      /* Nền trang Cream ấm */
+      --paper: #FFFFFF;
+      /* Nền card trắng */
+      --paper-subtle: #F7F5F0;
+      /* Nền khối con nhạt */
+      --paper-line: #E8E4DC;
+      /* Viền nhẹ */
+
+      --jade-deep: #14432F;
+      /* Xanh đậm thương hiệu */
+      --jade-dark: #1E5C45;
+      /* Xanh ngọc đậm */
+      --jade: #2D8B6F;
+      /* Xanh ngọc chính */
+      --jade-light: #E6F4EE;
+      /* Xanh ngọc nhạt */
+      --sage: #4A7C59;
+      /* Xanh lá xô thơm */
+      --sage-pale: #EBF3ED;
+      /* Nền sage nhẹ */
+
+      --accent: #D97736;
+      /* Cam đất nhấn */
+      --accent-light: #FDF2E9;
+      /* Cam nhạt */
+      --accent-dark: #B25822;
+      /* Cam đậm */
+
+      --ink: #1F2937;
+      /* Chữ chính */
+      --ink-2: #4B5563;
+      /* Chữ phụ */
+      --ink-3: #9CA3AF;
+      /* Chữ mờ / placeholder */
+
+      --correct: #16A34A;
+      /* Đúng */
       --correct-bg: #DCFCE7;
-      --wrong: #DC2626;         /* Sai */
+      --wrong: #DC2626;
+      /* Sai */
       --wrong-bg: #FEE2E2;
-      --warning: #D97706;       /* Cảnh báo / gợi ý */
+      --warning: #D97706;
+      /* Cảnh báo / gợi ý */
       --warning-bg: #FEF3C7;
 
       --radius-sm: 6px;
@@ -54,9 +76,9 @@
       --radius-xl: 20px;
       --radius-full: 9999px;
 
-      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
-      --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
-      --shadow-lg: 0 10px 25px rgba(20,67,47,0.1);
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 12px rgba(0, 0, 0, 0.07);
+      --shadow-lg: 0 10px 25px rgba(20, 67, 47, 0.1);
 
       --transition-fast: 0.15s ease;
       --transition-normal: 0.25s ease;
@@ -65,7 +87,9 @@
     /* =========================================================
        2. BASE & RESET
        ========================================================= */
-    *, *::before, *::after {
+    *,
+    *::before,
+    *::after {
       box-sizing: border-box;
       margin: 0;
       padding: 0;
@@ -221,13 +245,25 @@
       font-size: 13px;
       font-weight: 700;
       color: #FFF;
-      box-shadow: 0 1px 3px rgba(0,0,0,0.15);
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.15);
     }
 
-    .t-red { background: #EF4444; }
-    .t-blue { background: #3B82F6; }
-    .t-yellow { background: #EAB308; color: #1F2937; }
-    .t-purple { background: #A855F7; }
+    .t-red {
+      background: #EF4444;
+    }
+
+    .t-blue {
+      background: #3B82F6;
+    }
+
+    .t-yellow {
+      background: #EAB308;
+      color: #1F2937;
+    }
+
+    .t-purple {
+      background: #A855F7;
+    }
 
     /* =========================================================
        5. STEP CARDS & FLOW LIST
@@ -322,13 +358,13 @@
 
     .tree-level-head {
       display: grid;
-      grid-template-columns: 100px 1fr 1.5fr 2fr;
+      grid-template-columns: 90px repeat(3, 1fr);
       font-size: 13px;
       font-weight: 800;
       color: var(--ink-2);
       text-transform: uppercase;
       letter-spacing: 0.5px;
-      margin-bottom: 14px;
+      margin-bottom: 12px;
       padding-bottom: 8px;
       border-bottom: 2px dashed var(--paper-line);
       text-align: center;
@@ -337,13 +373,13 @@
     .tree-branches-wrap {
       display: flex;
       flex-direction: column;
-      gap: 14px;
+      gap: 12px;
     }
 
     .t1-branch {
       background: #FFF;
       border: 1.5px solid var(--paper-line);
-      border-radius: var(--radius-md);
+      border-radius: var(--radius-lg);
       padding: 12px 14px;
       display: flex;
       align-items: center;
@@ -353,7 +389,7 @@
     .t1-node {
       min-width: 80px;
       text-align: center;
-      padding: 8px;
+      padding: 8px 6px;
       border-radius: var(--radius-sm);
       font-weight: 800;
       font-size: 14px;
@@ -370,7 +406,7 @@
     .t2-group {
       background: var(--paper-subtle);
       border: 1px solid var(--paper-line);
-      border-radius: var(--radius-sm);
+      border-radius: var(--radius-md);
       padding: 8px;
       display: flex;
       flex-direction: column;
@@ -378,11 +414,11 @@
     }
 
     .t2-node-label {
-      font-size: 13px;
+      font-size: 12.5px;
       font-weight: 700;
       text-align: center;
       border-radius: 4px;
-      padding: 3px;
+      padding: 4px;
       color: #FFF;
     }
 
@@ -394,16 +430,20 @@
 
     .leaf-btn {
       flex: 1;
-      padding: 6px 2px;
+      padding: 8px 2px;
       border: 1.5px solid var(--paper-line);
       background: #FFF;
-      border-radius: 4px;
+      border-radius: var(--radius-sm);
       font-size: 11.5px;
       font-weight: 700;
       cursor: pointer;
       text-align: center;
       transition: all var(--transition-fast);
       user-select: none;
+      min-height: 40px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .leaf-btn:hover {
@@ -416,6 +456,7 @@
       border-color: var(--accent);
       color: var(--accent-dark);
       box-shadow: 0 0 0 2px var(--accent);
+      font-weight: 800;
     }
 
     .leaf-btn.marked::after {
@@ -545,8 +586,15 @@
     }
 
     @keyframes fadeIn {
-      from { opacity: 0; transform: translateY(-4px); }
-      to { opacity: 1; transform: translateY(0); }
+      from {
+        opacity: 0;
+        transform: translateY(-4px);
+      }
+
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
     }
 
     .feedback-box.show {
@@ -577,10 +625,27 @@
     }
 
     @keyframes shake {
-      10%, 90% { transform: translateX(-3px); }
-      20%, 80% { transform: translateX(4px); }
-      30%, 50%, 70% { transform: translateX(-6px); }
-      40%, 60% { transform: translateX(6px); }
+
+      10%,
+      90% {
+        transform: translateX(-3px);
+      }
+
+      20%,
+      80% {
+        transform: translateX(4px);
+      }
+
+      30%,
+      50%,
+      70% {
+        transform: translateX(-6px);
+      }
+
+      40%,
+      60% {
+        transform: translateX(6px);
+      }
     }
 
     /* =========================================================
@@ -673,7 +738,7 @@
     }
 
     /* =========================================================
-       8. RESPONSIVE (MOBILE OPTIMIZATION)
+       8. RESPONSIVE (MOBILE OPTIMIZATION - KHỚP MODULE 1)
        ========================================================= */
     @media (max-width: 768px) {
       body {
@@ -682,7 +747,12 @@
       }
 
       .intro-text, .step-card, .boxes-hook-card {
-        padding: 18px 16px;
+        padding: 18px 14px;
+        border-radius: var(--radius-lg);
+      }
+
+      .intro-title {
+        font-size: 20px;
       }
 
       .boxes-display-grid {
@@ -711,277 +781,298 @@
     }
   </style>
 </head>
+
 <body>
 
-<div class="container">
+  <div class="container">
 
-  <!-- INTRO HEADER -->
-  <header class="intro-text">
-    <div class="badge-topic">🎲 Bài 27 · Xác suất cổ điển · Toán 10</div>
-    <h1 class="intro-title">Module 2: Tính xác suất bằng sơ đồ hình cây</h1>
-    <p class="intro-desc">
-      Vận dụng <strong>Sơ đồ hình cây</strong> để mô tả trực quan và đầy đủ không gian mẫu $n(\Omega)$ của các phép thử nhiều công đoạn, đếm số lá thoả mãn biến cố $n(E)$ và tính xác suất $P(E) = \frac{n(E)}{n(\Omega)}$.
-    </p>
-
-    <div class="progress-wrap">
-      <div class="progress-info">
-        Tiến độ: <span id="progress-text" style="color:var(--jade-dark); font-weight:800;">0/7</span> bước hoàn thành
-      </div>
-      <div class="progress-bar-bg">
-        <div id="progress-bar" class="progress-bar-fill"></div>
-      </div>
-    </div>
-  </header>
-
-  <!-- HOOK MỞ ĐẦU: 3 HỘP THĂM HỘI CHỢ -->
-  <section class="boxes-hook-card">
-    <div class="boxes-hook-title">
-      <span>🎪</span> Bối cảnh bài toán: Gian hàng bốc thăm hội chợ
-    </div>
-    <p style="font-size:15px; color:var(--ink-2); margin-bottom:14px;">
-      Một gian hàng hội chợ có 3 hộp đựng các phiếu thăm màu sắc. Người chơi rút ngẫu nhiên 1 thăm từ mỗi hộp:
-    </p>
-    <div class="boxes-display-grid">
-      <div class="box-item">
-        <div class="box-name">📦 Hộp I (4 màu)</div>
-        <div class="tickets-wrap">
-          <span class="ticket-badge t-red">Đỏ</span>
-          <span class="ticket-badge t-blue">Xanh</span>
-          <span class="ticket-badge t-yellow">Vàng</span>
-          <span class="ticket-badge t-purple">Tím</span>
-        </div>
-      </div>
-      <div class="box-item">
-        <div class="box-name">📦 Hộp II (3 màu)</div>
-        <div class="tickets-wrap">
-          <span class="ticket-badge t-red">Đỏ</span>
-          <span class="ticket-badge t-yellow">Vàng</span>
-          <span class="ticket-badge t-purple">Tím</span>
-        </div>
-      </div>
-      <div class="box-item">
-        <div class="box-name">📦 Hộp III (2 màu)</div>
-        <div class="tickets-wrap">
-          <span class="ticket-badge t-blue">Xanh</span>
-          <span class="ticket-badge t-purple">Tím</span>
-        </div>
-      </div>
-    </div>
-    <div style="margin-top:14px; font-size:15px; font-weight:700; color:var(--jade-deep);">
-      🎯 Yêu cầu: Tính xác suất để trong 3 thăm rút ra có ĐÚNG 1 thăm màu tím.
-    </div>
-  </section>
-
-  <!-- PHẦN I: 4 BƯỚC HÌNH THÀNH PHƯƠNG PHÁP -->
-  <div class="section-title">
-    <span>🌿</span> Phần I: Hình thành phương pháp tính xác suất bằng sơ đồ cây
-  </div>
-
-  <main class="flow-list">
-
-    <!-- BƯỚC 1: NHẬN DIỆN VẤN ĐỀ -->
-    <article class="step-card" id="card-step1">
-      <div class="step-header">
-        <div class="step-badge">Bước 1 · Nhận diện công cụ mô hình hoá</div>
-        <div class="step-status" id="status-step1">⏳</div>
-      </div>
-      <p class="step-prompt">
-        Phép thử rút thăm gồm <strong>3 công đoạn liên tiếp</strong> (Hộp I $\to$ Hộp II $\to$ Hộp III).
-        <br>Ở Bài 23, chúng ta đã học công cụ trực quan nào giúp liệt kê <strong>đầy đủ, có hệ thống, không trùng, không sót</strong> các kết quả của phép thử nhiều công đoạn?
+    <!-- INTRO HEADER -->
+    <header class="intro-text">
+      <div class="badge-topic">🎲 Bài 27 · Xác suất cổ điển · Toán 10</div>
+      <h1 class="intro-title">Module 2: Tính xác suất bằng sơ đồ hình cây</h1>
+      <p class="intro-desc">
+        Vận dụng <strong>Sơ đồ hình cây</strong> để mô tả trực quan và đầy đủ không gian mẫu $n(\Omega)$ của các phép
+        thử nhiều công đoạn, đếm số lá thoả mãn biến cố $n(E)$ và tính xác suất $P(E) = \frac{n(E)}{n(\Omega)}$.
       </p>
 
-      <div class="btn-options-row">
-        <button class="btn-opt" onclick="submitStep1Tool('tree', this)">Sơ đồ hình cây</button>
-        <button class="btn-opt" onclick="submitStep1Tool('random', this)">Liệt kê tay ngẫu nhiên</button>
-        <button class="btn-opt" onclick="submitStep1Tool('table1', this)">Bảng 1 chiều</button>
+      <div class="progress-wrap">
+        <div class="progress-info">
+          Tiến độ: <span id="progress-text" style="color:var(--jade-dark); font-weight:800;">0/7</span> bước hoàn thành
+        </div>
+        <div class="progress-bar-bg">
+          <div id="progress-bar" class="progress-bar-fill"></div>
+        </div>
       </div>
-      <div class="feedback-box" id="feedback-step1"></div>
-    </article>
+    </header>
 
-    <!-- BƯỚC 2: XÂY CÂY MÔ TẢ KHÔNG GIAN MẪU N(Ω) -->
-    <article class="step-card" id="card-step2" style="display:none;">
-      <div class="step-header">
-        <div class="step-badge">Bước 2 · Dựng cây xác định Không gian mẫu $n(\Omega)$</div>
-        <div class="step-status" id="status-step2">⏳</div>
+    <!-- HOOK MỞ ĐẦU: 3 HỘP THĂM HỘI CHỢ -->
+    <section class="boxes-hook-card">
+      <div class="boxes-hook-title">
+        <span>🎪</span> Bối cảnh bài toán: Gian hàng bốc thăm hội chợ
       </div>
-      <p class="step-prompt">
-        Sơ đồ hình cây dưới đây biểu diễn toàn bộ kết quả của phép thử rút 3 thăm:
-        <br>• Tầng 1: 4 màu Hộp I $\to$ Tầng 2: 3 màu Hộp II $\to$ Tầng 3: 2 màu Hộp III.
+      <p style="font-size:15px; color:var(--ink-2); margin-bottom:14px;">
+        Một gian hàng hội chợ có 3 hộp đựng các phiếu thăm màu sắc. Người chơi rút ngẫu nhiên 1 thăm từ mỗi hộp:
       </p>
-
-      <!-- Interactive Tree Display -->
-      <div class="tree-scroll-container">
-        <div class="tree-wrapper">
-          <div class="tree-level-head">
-            <div>Gốc</div>
-            <div>Tầng 1 (Hộp I)</div>
-            <div>Tầng 2 (Hộp II)</div>
-            <div>Tầng 3 (24 Lá cây kết quả)</div>
+      <div class="boxes-display-grid">
+        <div class="box-item">
+          <div class="box-name">📦 Hộp I (4 màu)</div>
+          <div class="tickets-wrap">
+            <span class="ticket-badge t-red">Đỏ</span>
+            <span class="ticket-badge t-blue">Xanh</span>
+            <span class="ticket-badge t-yellow">Vàng</span>
+            <span class="ticket-badge t-purple">Tím</span>
           </div>
-
-          <div class="tree-branches-wrap" id="treeBranchesWrap">
-            <!-- Dynamic Tree Nodes Rendered via JS -->
+        </div>
+        <div class="box-item">
+          <div class="box-name">📦 Hộp II (3 màu)</div>
+          <div class="tickets-wrap">
+            <span class="ticket-badge t-red">Đỏ</span>
+            <span class="ticket-badge t-yellow">Vàng</span>
+            <span class="ticket-badge t-purple">Tím</span>
+          </div>
+        </div>
+        <div class="box-item">
+          <div class="box-name">📦 Hộp III (2 màu)</div>
+          <div class="tickets-wrap">
+            <span class="ticket-badge t-blue">Xanh</span>
+            <span class="ticket-badge t-purple">Tím</span>
           </div>
         </div>
       </div>
+      <div style="margin-top:14px; font-size:15px; font-weight:700; color:var(--jade-deep);">
+        🎯 Yêu cầu: Tính xác suất để trong 3 thăm rút ra có ĐÚNG 1 thăm màu tím.
+      </div>
+    </section>
 
-      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
-        <div style="font-size:14.5px; font-weight:700; color:var(--ink-2); margin-bottom:8px;">
-          Số phần tử không gian mẫu $n(\Omega)$ bằng tổng số lá ở tầng cuối: $4 \times 3 \times 2 = ?$
+    <!-- PHẦN I: 4 BƯỚC HÌNH THÀNH PHƯƠNG PHÁP -->
+    <div class="section-title">
+      <span>🌿</span> Phần I: Hình thành phương pháp tính xác suất bằng sơ đồ cây
+    </div>
+
+    <main class="flow-list">
+
+      <!-- BƯỚC 1: NHẬN DIỆN VẤN ĐỀ -->
+      <article class="step-card" id="card-step1">
+        <div class="step-header">
+          <div class="step-badge">Bước 1 · Nhận diện công cụ mô hình hoá</div>
+          <div class="step-status" id="status-step1">⏳</div>
         </div>
-        <div class="q-action-row">
-          <label for="input-step2" style="font-size:15px; font-weight:700;">$n(\Omega) = $</label>
-          <input type="text" inputmode="numeric" id="input-step2" class="q-input" placeholder="Nhập tổng số lá..." autocomplete="off">
-          <button class="btn-q-submit" id="btn-step2" onclick="submitStep2Omega()">Kiểm tra</button>
-        </div>
-        <div class="feedback-box" id="feedback-step2"></div>
-      </div>
-    </article>
-
-    <!-- BƯỚC 3: ĐẾM LÁ THOẢ BIẾN CỐ K -->
-    <article class="step-card" id="card-step3" style="display:none;">
-      <div class="step-header">
-        <div class="step-badge">Bước 3 · Đếm số lá thoả biến cố K</div>
-        <div class="step-status" id="status-step3">⏳</div>
-      </div>
-      <p class="step-prompt">
-        Xét biến cố $K$: <em>"Rút được ĐÚNG 1 thăm màu tím"</em>.
-        <br>👉 <strong>Hãy click trực tiếp vào các lá cây (ở sơ đồ bên trên) có đúng 1 màu tím</strong> để đánh dấu (lá được đánh dấu sẽ sáng viền vàng cam ⭐):
-      </p>
-
-      <div style="background:#FFFDF8; border:1.5px dashed var(--accent); padding:16px 18px; border-radius:var(--radius-lg);">
-        <div style="font-size:14.5px; color:var(--ink); margin-bottom:8px;">
-          Số lá bạn đang đánh dấu: <strong id="userMarkedCount" style="color:var(--accent-dark); font-size:18px;">0</strong> / 24 lá.
-        </div>
-        <div class="q-action-row">
-          <label for="input-step3" style="font-size:15px; font-weight:700;">Số lá thoả biến cố $n(K) = $</label>
-          <input type="text" inputmode="numeric" id="input-step3" class="q-input" placeholder="Nhập số lá..." autocomplete="off">
-          <button class="btn-q-submit" id="btn-step3" onclick="submitStep3K()">Kiểm tra</button>
-        </div>
-        <div class="feedback-box" id="feedback-step3"></div>
-      </div>
-    </article>
-
-    <!-- BƯỚC 4: TÍNH XÁC SUẤT VÀ KHÁI QUÁT HOÁ -->
-    <article class="step-card" id="card-step4" style="display:none;">
-      <div class="step-header">
-        <div class="step-badge">Bước 4 · Tính xác suất $P(K)$ & Khái quát hoá</div>
-        <div class="step-status" id="status-step4">⏳</div>
-      </div>
-      <p class="step-prompt">
-        Với số kết quả thuận lợi $n(K) = 11$ và số phần tử không gian mẫu $n(\Omega) = 24$.
-        <br>Xác suất để rút được đúng 1 thăm màu tím là bao nhiêu?
-      </p>
-
-      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
-        <div class="q-action-row">
-          <label for="input-step4" style="font-size:15px; font-weight:700;">$P(K) = \frac{n(K)}{n(\Omega)} = $</label>
-          <input type="text" id="input-step4" class="q-input" placeholder="Nhập phân số (vd 11/24)..." autocomplete="off">
-          <button class="btn-q-submit" id="btn-step4" onclick="submitStep4Prob()">Kiểm tra</button>
-        </div>
-        <div class="feedback-box" id="feedback-step4"></div>
-      </div>
-    </article>
-
-  </main>
-
-  <!-- PHẦN II: LUYỆN TẬP 3 BÀI TẬP ĐỘC LẬP -->
-  <div class="section-title">
-    <span>✍️</span> Phần II: Bài tập luyện tập tính xác suất bằng sơ đồ cây
-  </div>
-
-  <div class="flow-list">
-
-    <!-- BÀI TẬP 1 -->
-    <article class="step-card" id="card-bt1">
-      <div class="step-header">
-        <div class="step-badge">Bài tập 1 · Máy bán nước tự động</div>
-        <div class="step-status" id="status-bt1">⏳</div>
-      </div>
-      <p class="step-prompt">
-        Máy bán nước tự động có 2 cần gạt: cần 1 chọn <strong>cỡ ly</strong> (<em>Nhỏ, Vừa, Lớn</em>) và cần 2 chọn <strong>vị nước</strong> (<em>Cam, Chanh, Dâu, Việt quất</em>).
-        <br>Tính xác suất nhận được một ly <strong>cỡ LỚN VÀ có vị CAM hoặc CHANH</strong> ($n(\Omega) = 3 \times 4 = 12$):
-      </p>
-      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
-        <div class="q-action-row">
-          <label for="input-bt1" style="font-size:15px; font-weight:700;">Số kết quả thuận lợi $n(E) = $</label>
-          <input type="text" inputmode="numeric" id="input-bt1" class="q-input" placeholder="Nhập số kết quả..." autocomplete="off">
-          <button class="btn-q-submit" id="btn-bt1" onclick="submitBT1()">Kiểm tra</button>
-        </div>
-        <div class="feedback-box" id="feedback-bt1"></div>
-      </div>
-    </article>
-
-    <!-- BÀI TẬP 2 -->
-    <article class="step-card" id="card-bt2">
-      <div class="step-header">
-        <div class="step-badge">Bài tập 2 · Tung đồng xu 3 lần</div>
-        <div class="step-status" id="status-bt2">⏳</div>
-      </div>
-      <p class="step-prompt">
-        Tung liên tiếp một đồng xu cân đối <strong>3 lần</strong> (mỗi lần có 2 kết quả: Sấp $S$ hoặc Ngửa $N$).
-        <br>Tính số kết quả thuận lợi $n(E)$ để có <strong>ĐÚNG 2 lần xuất hiện mặt Sấp</strong> (trong tổng $n(\Omega) = 2^3 = 8$ lá cây):
-      </p>
-      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
-        <div class="q-action-row">
-          <label for="input-bt2" style="font-size:15px; font-weight:700;">$n(E) = $</label>
-          <input type="text" inputmode="numeric" id="input-bt2" class="q-input" placeholder="Nhập số kết quả..." autocomplete="off">
-          <button class="btn-q-submit" id="btn-bt2" onclick="submitBT2()">Kiểm tra</button>
-        </div>
-        <div class="feedback-box" id="feedback-bt2"></div>
-      </div>
-    </article>
-
-    <!-- BÀI TẬP 3 -->
-    <article class="step-card" id="card-bt3">
-      <div class="step-header">
-        <div class="step-badge">Bài tập 3 · Gieo xúc xắc 2 lần</div>
-        <div class="step-status" id="status-bt3">⏳</div>
-      </div>
-      <p class="step-prompt">
-        Gieo một con xúc xắc 6 mặt cân đối <strong>2 lần liên tiếp</strong> ($n(\Omega) = 6 \times 6 = 36$).
-        <br>Tính số kết quả thuận lợi $n(E)$ để <strong>tổng số chấm xuất hiện ở 2 lần gieo bằng 8</strong>:
-      </p>
-      <div style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
-        <div class="q-action-row">
-          <label for="input-bt3" style="font-size:15px; font-weight:700;">$n(E) = $</label>
-          <input type="text" inputmode="numeric" id="input-bt3" class="q-input" placeholder="Nhập số kết quả..." autocomplete="off">
-          <button class="btn-q-submit" id="btn-bt3" onclick="submitBT3()">Kiểm tra</button>
-        </div>
-        <div class="feedback-box" id="feedback-bt3"></div>
-      </div>
-    </article>
-
-  </div>
-
-  <!-- ATHENA SUMMARY -->
-  <section class="summary-card" id="final-summary">
-    <div class="summary-content">
-      <!-- Mascot Athena WebP Avatar -->
-      <div class="athena-avatar">
-        <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot" loading="lazy">
-      </div>
-      <div class="summary-text">
-        <h3>🎉 Xuất sắc! Bạn đã làm chủ Module 2: Sơ đồ hình cây</h3>
-        <p>
-          "Sơ đồ hình cây là chiếc chìa khóa vạn năng giúp bạn mô tả trọn vẹn không gian mẫu của các bài toán nhiều công đoạn mà không sợ thiếu sót hay lặp lại!"
+        <p class="step-prompt">
+          Phép thử rút thăm gồm <strong>3 công đoạn liên tiếp</strong> (Hộp I $\to$ Hộp II $\to$ Hộp III).
+          <br>Ở Bài 23, chúng ta đã học công cụ trực quan nào giúp liệt kê <strong>đầy đủ, có hệ thống, không trùng,
+            không sót</strong> các kết quả của phép thử nhiều công đoạn?
         </p>
-        <div class="rule-highlight-box">
-          • <strong>Tổng số lá ở tầng cuối:</strong> $n(\Omega) = \text{Tích số lựa chọn các công đoạn}$.<br>
-          • <strong>Số lá thoả mãn điều kiện:</strong> $n(E) = \text{Số lá được đánh dấu}$.<br>
-          • <strong>Xác suất cổ điển:</strong> $P(E) = \frac{n(E)}{n(\Omega)}$.
+
+        <div class="btn-options-row">
+          <button class="btn-opt" onclick="submitStep1Tool('tree', this)">Sơ đồ hình cây</button>
+          <button class="btn-opt" onclick="submitStep1Tool('random', this)">Liệt kê tay ngẫu nhiên</button>
+          <button class="btn-opt" onclick="submitStep1Tool('table1', this)">Bảng 1 chiều</button>
         </div>
-        <button class="btn-restart-all" onclick="restartModule()">
-          🔄 Làm lại toàn bộ Module 2
-        </button>
-      </div>
+        <div class="feedback-box" id="feedback-step1"></div>
+      </article>
+
+      <!-- BƯỚC 2: XÂY CÂY MÔ TẢ KHÔNG GIAN MẪU N(Ω) -->
+      <article class="step-card" id="card-step2" style="display:none;">
+        <div class="step-header">
+          <div class="step-badge">Bước 2 · Dựng cây xác định Không gian mẫu $n(\Omega)$</div>
+          <div class="step-status" id="status-step2">⏳</div>
+        </div>
+        <p class="step-prompt">
+          Sơ đồ hình cây dưới đây biểu diễn toàn bộ kết quả của phép thử rút 3 thăm:
+          <br>• Tầng 1: 4 màu Hộp I $\to$ Tầng 2: 3 màu Hộp II $\to$ Tầng 3: 2 màu Hộp III.
+        </p>
+
+        <!-- Interactive Tree Display -->
+        <div class="tree-scroll-container">
+          <div class="tree-wrapper">
+            <div class="tree-level-head">
+              <div>Gốc</div>
+              <div>Tầng 1 (Hộp I)</div>
+              <div>Tầng 2 (Hộp II)</div>
+              <div>Tầng 3 (24 Lá cây kết quả)</div>
+            </div>
+
+            <div class="tree-branches-wrap" id="treeBranchesWrap">
+              <!-- Dynamic Tree Nodes Rendered via JS -->
+            </div>
+          </div>
+        </div>
+
+        <div
+          style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+          <div style="font-size:14.5px; font-weight:700; color:var(--ink-2); margin-bottom:8px;">
+            Số phần tử không gian mẫu $n(\Omega)$ bằng tổng số lá ở tầng cuối: $4 \times 3 \times 2 = ?$
+          </div>
+          <div class="q-action-row">
+            <label for="input-step2" style="font-size:15px; font-weight:700;">$n(\Omega) = $</label>
+            <input type="text" inputmode="numeric" id="input-step2" class="q-input" placeholder="Nhập tổng số lá..."
+              autocomplete="off">
+            <button class="btn-q-submit" id="btn-step2" onclick="submitStep2Omega()">Kiểm tra</button>
+          </div>
+          <div class="feedback-box" id="feedback-step2"></div>
+        </div>
+      </article>
+
+      <!-- BƯỚC 3: ĐẾM LÁ THOẢ BIẾN CỐ K -->
+      <article class="step-card" id="card-step3" style="display:none;">
+        <div class="step-header">
+          <div class="step-badge">Bước 3 · Đếm số lá thoả biến cố K</div>
+          <div class="step-status" id="status-step3">⏳</div>
+        </div>
+        <p class="step-prompt">
+          Xét biến cố $K$: <em>"Rút được ĐÚNG 1 thăm màu tím"</em>.
+          <br>👉 <strong>Hãy click trực tiếp vào các lá cây (ở sơ đồ bên trên) có đúng 1 màu tím</strong> để đánh dấu
+          (lá được đánh dấu sẽ sáng viền vàng cam ⭐):
+        </p>
+
+        <div
+          style="background:#FFFDF8; border:1.5px dashed var(--accent); padding:16px 18px; border-radius:var(--radius-lg);">
+          <div style="font-size:14.5px; color:var(--ink); margin-bottom:8px;">
+            Số lá bạn đang đánh dấu: <strong id="userMarkedCount"
+              style="color:var(--accent-dark); font-size:18px;">0</strong> / 24 lá.
+          </div>
+          <div class="q-action-row">
+            <label for="input-step3" style="font-size:15px; font-weight:700;">Số lá thoả biến cố $n(K) = $</label>
+            <input type="text" inputmode="numeric" id="input-step3" class="q-input" placeholder="Nhập số lá..."
+              autocomplete="off">
+            <button class="btn-q-submit" id="btn-step3" onclick="submitStep3K()">Kiểm tra</button>
+          </div>
+          <div class="feedback-box" id="feedback-step3"></div>
+        </div>
+      </article>
+
+      <!-- BƯỚC 4: TÍNH XÁC SUẤT VÀ KHÁI QUÁT HOÁ -->
+      <article class="step-card" id="card-step4" style="display:none;">
+        <div class="step-header">
+          <div class="step-badge">Bước 4 · Tính xác suất $P(K)$ & Khái quát hoá</div>
+          <div class="step-status" id="status-step4">⏳</div>
+        </div>
+        <p class="step-prompt">
+          Với số kết quả thuận lợi $n(K) = 11$ và số phần tử không gian mẫu $n(\Omega) = 24$.
+          <br>Xác suất để rút được đúng 1 thăm màu tím là bao nhiêu?
+        </p>
+
+        <div
+          style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+          <div class="q-action-row">
+            <label for="input-step4" style="font-size:15px; font-weight:700;">$P(K) = \frac{n(K)}{n(\Omega)} = $</label>
+            <input type="text" id="input-step4" class="q-input" placeholder="Nhập phân số (vd 11/24)..."
+              autocomplete="off">
+            <button class="btn-q-submit" id="btn-step4" onclick="submitStep4Prob()">Kiểm tra</button>
+          </div>
+          <div class="feedback-box" id="feedback-step4"></div>
+        </div>
+      </article>
+
+    </main>
+
+    <!-- PHẦN II: LUYỆN TẬP 3 BÀI TẬP ĐỘC LẬP -->
+    <div class="section-title">
+      <span>✍️</span> Phần II: Bài tập luyện tập tính xác suất bằng sơ đồ cây
     </div>
-  </section>
 
-</div>
+    <div class="flow-list">
 
-<!-- ATHENA CONTEXT JSON FOR LMS / AI ORCHESTRATION -->
-<script type="application/json" id="athena-context">
+      <!-- BÀI TẬP 1 -->
+      <article class="step-card" id="card-bt1">
+        <div class="step-header">
+          <div class="step-badge">Bài tập 1 · Máy bán nước tự động</div>
+          <div class="step-status" id="status-bt1">⏳</div>
+        </div>
+        <p class="step-prompt">
+          Máy bán nước tự động có 2 cần gạt: cần 1 chọn <strong>cỡ ly</strong> (<em>Nhỏ, Vừa, Lớn</em>) và cần 2 chọn
+          <strong>vị nước</strong> (<em>Cam, Chanh, Dâu, Việt quất</em>).
+          <br>Tính xác suất nhận được một ly <strong>cỡ LỚN VÀ có vị CAM hoặc CHANH</strong> ($n(\Omega) = 3 \times 4 =
+          12$):
+        </p>
+        <div
+          style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+          <div class="q-action-row">
+            <label for="input-bt1" style="font-size:15px; font-weight:700;">Số kết quả thuận lợi $n(E) = $</label>
+            <input type="text" inputmode="numeric" id="input-bt1" class="q-input" placeholder="Nhập số kết quả..."
+              autocomplete="off">
+            <button class="btn-q-submit" id="btn-bt1" onclick="submitBT1()">Kiểm tra</button>
+          </div>
+          <div class="feedback-box" id="feedback-bt1"></div>
+        </div>
+      </article>
+
+      <!-- BÀI TẬP 2 -->
+      <article class="step-card" id="card-bt2">
+        <div class="step-header">
+          <div class="step-badge">Bài tập 2 · Tung đồng xu 3 lần</div>
+          <div class="step-status" id="status-bt2">⏳</div>
+        </div>
+        <p class="step-prompt">
+          Tung liên tiếp một đồng xu cân đối <strong>3 lần</strong> (mỗi lần có 2 kết quả: Sấp $S$ hoặc Ngửa $N$).
+          <br>Tính số kết quả thuận lợi $n(E)$ để có <strong>ĐÚNG 2 lần xuất hiện mặt Sấp</strong> (trong tổng
+          $n(\Omega) = 2^3 = 8$ lá cây):
+        </p>
+        <div
+          style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+          <div class="q-action-row">
+            <label for="input-bt2" style="font-size:15px; font-weight:700;">$n(E) = $</label>
+            <input type="text" inputmode="numeric" id="input-bt2" class="q-input" placeholder="Nhập số kết quả..."
+              autocomplete="off">
+            <button class="btn-q-submit" id="btn-bt2" onclick="submitBT2()">Kiểm tra</button>
+          </div>
+          <div class="feedback-box" id="feedback-bt2"></div>
+        </div>
+      </article>
+
+      <!-- BÀI TẬP 3 -->
+      <article class="step-card" id="card-bt3">
+        <div class="step-header">
+          <div class="step-badge">Bài tập 3 · Gieo xúc xắc 2 lần</div>
+          <div class="step-status" id="status-bt3">⏳</div>
+        </div>
+        <p class="step-prompt">
+          Gieo một con xúc xắc 6 mặt cân đối <strong>2 lần liên tiếp</strong> ($n(\Omega) = 6 \times 6 = 36$).
+          <br>Tính số kết quả thuận lợi $n(E)$ để <strong>tổng số chấm xuất hiện ở 2 lần gieo bằng 8</strong>:
+        </p>
+        <div
+          style="background:var(--paper-subtle); padding:16px 18px; border-radius:var(--radius-lg); border:1px solid var(--paper-line);">
+          <div class="q-action-row">
+            <label for="input-bt3" style="font-size:15px; font-weight:700;">$n(E) = $</label>
+            <input type="text" inputmode="numeric" id="input-bt3" class="q-input" placeholder="Nhập số kết quả..."
+              autocomplete="off">
+            <button class="btn-q-submit" id="btn-bt3" onclick="submitBT3()">Kiểm tra</button>
+          </div>
+          <div class="feedback-box" id="feedback-bt3"></div>
+        </div>
+      </article>
+
+    </div>
+
+    <!-- ATHENA SUMMARY -->
+    <section class="summary-card" id="final-summary">
+      <div class="summary-content">
+        <!-- Mascot Athena WebP Avatar -->
+        <div class="athena-avatar">
+          <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot" loading="lazy">
+        </div>
+        <div class="summary-text">
+          <h3>🎉 Xuất sắc! Bạn đã làm chủ Module 2: Sơ đồ hình cây</h3>
+          <p>
+            "Sơ đồ hình cây là chiếc chìa khóa vạn năng giúp bạn mô tả trọn vẹn không gian mẫu của các bài toán nhiều
+            công đoạn mà không sợ thiếu sót hay lặp lại!"
+          </p>
+          <div class="rule-highlight-box">
+            • <strong>Tổng số lá ở tầng cuối:</strong> $n(\Omega) = \text{Tích số lựa chọn các công đoạn}$.<br>
+            • <strong>Số lá thoả mãn điều kiện:</strong> $n(E) = \text{Số lá được đánh dấu}$.<br>
+            • <strong>Xác suất cổ điển:</strong> $P(E) = \frac{n(E)}{n(\Omega)}$.
+          </div>
+          <button class="btn-restart-all" onclick="restartModule()">
+            🔄 Làm lại toàn bộ Module 2
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- ATHENA CONTEXT JSON FOR LMS / AI ORCHESTRATION -->
+  <script type="application/json" id="athena-context">
 {
   "context": {
     "grade": 10,
@@ -1007,510 +1098,511 @@
 }
 </script>
 
-<script>
-  /* =========================================================
-     9. JAVASCRIPT STATE MANAGEMENT & PEDAGOGY LOGIC
-     ========================================================= */
+  <script>
+    /* =========================================================
+       9. JAVASCRIPT STATE MANAGEMENT & PEDAGOGY LOGIC
+       ========================================================= */
 
-  const treeData = [
-    {
-      t1: { code: 'D', label: 'Đỏ', cls: 't-red' },
-      t2s: [
-        { code: 'D', label: 'Đỏ', cls: 't-red', leaves: [{ code: 'X', label: 'Xanh', purples: 0 }, { code: 'T', label: 'Tím', purples: 1 }] },
-        { code: 'V', label: 'Vàng', cls: 't-yellow', leaves: [{ code: 'X', label: 'Xanh', purples: 0 }, { code: 'T', label: 'Tím', purples: 1 }] },
-        { code: 'T', label: 'Tím', cls: 't-purple', leaves: [{ code: 'X', label: 'Xanh', purples: 1 }, { code: 'T', label: 'Tím', purples: 2 }] }
-      ]
-    },
-    {
-      t1: { code: 'X', label: 'Xanh', cls: 't-blue' },
-      t2s: [
-        { code: 'D', label: 'Đỏ', cls: 't-red', leaves: [{ code: 'X', label: 'Xanh', purples: 0 }, { code: 'T', label: 'Tím', purples: 1 }] },
-        { code: 'V', label: 'Vàng', cls: 't-yellow', leaves: [{ code: 'X', label: 'Xanh', purples: 0 }, { code: 'T', label: 'Tím', purples: 1 }] },
-        { code: 'T', label: 'Tím', cls: 't-purple', leaves: [{ code: 'X', label: 'Xanh', purples: 1 }, { code: 'T', label: 'Tím', purples: 2 }] }
-      ]
-    },
-    {
-      t1: { code: 'V', label: 'Vàng', cls: 't-yellow' },
-      t2s: [
-        { code: 'D', label: 'Đỏ', cls: 't-red', leaves: [{ code: 'X', label: 'Xanh', purples: 0 }, { code: 'T', label: 'Tím', purples: 1 }] },
-        { code: 'V', label: 'Vàng', cls: 't-yellow', leaves: [{ code: 'X', label: 'Xanh', purples: 0 }, { code: 'T', label: 'Tím', purples: 1 }] },
-        { code: 'T', label: 'Tím', cls: 't-purple', leaves: [{ code: 'X', label: 'Xanh', purples: 1 }, { code: 'T', label: 'Tím', purples: 2 }] }
-      ]
-    },
-    {
-      t1: { code: 'T', label: 'Tím', cls: 't-purple' },
-      t2s: [
-        { code: 'D', label: 'Đỏ', cls: 't-red', leaves: [{ code: 'X', label: 'Xanh', purples: 1 }, { code: 'T', label: 'Tím', purples: 2 }] },
-        { code: 'V', label: 'Vàng', cls: 't-yellow', leaves: [{ code: 'X', label: 'Xanh', purples: 1 }, { code: 'T', label: 'Tím', purples: 2 }] },
-        { code: 'T', label: 'Tím', cls: 't-purple', leaves: [{ code: 'X', label: 'Xanh', purples: 2 }, { code: 'T', label: 'Tím', purples: 3 }] }
-      ]
+    const treeData = [
+      {
+        t1: { code: 'D', label: 'Đỏ', cls: 't-red' },
+        t2s: [
+          { code: 'D', label: 'Đỏ', cls: 't-red', leaves: [{ code: 'X', label: 'Xanh', purples: 0 }, { code: 'T', label: 'Tím', purples: 1 }] },
+          { code: 'V', label: 'Vàng', cls: 't-yellow', leaves: [{ code: 'X', label: 'Xanh', purples: 0 }, { code: 'T', label: 'Tím', purples: 1 }] },
+          { code: 'T', label: 'Tím', cls: 't-purple', leaves: [{ code: 'X', label: 'Xanh', purples: 1 }, { code: 'T', label: 'Tím', purples: 2 }] }
+        ]
+      },
+      {
+        t1: { code: 'X', label: 'Xanh', cls: 't-blue' },
+        t2s: [
+          { code: 'D', label: 'Đỏ', cls: 't-red', leaves: [{ code: 'X', label: 'Xanh', purples: 0 }, { code: 'T', label: 'Tím', purples: 1 }] },
+          { code: 'V', label: 'Vàng', cls: 't-yellow', leaves: [{ code: 'X', label: 'Xanh', purples: 0 }, { code: 'T', label: 'Tím', purples: 1 }] },
+          { code: 'T', label: 'Tím', cls: 't-purple', leaves: [{ code: 'X', label: 'Xanh', purples: 1 }, { code: 'T', label: 'Tím', purples: 2 }] }
+        ]
+      },
+      {
+        t1: { code: 'V', label: 'Vàng', cls: 't-yellow' },
+        t2s: [
+          { code: 'D', label: 'Đỏ', cls: 't-red', leaves: [{ code: 'X', label: 'Xanh', purples: 0 }, { code: 'T', label: 'Tím', purples: 1 }] },
+          { code: 'V', label: 'Vàng', cls: 't-yellow', leaves: [{ code: 'X', label: 'Xanh', purples: 0 }, { code: 'T', label: 'Tím', purples: 1 }] },
+          { code: 'T', label: 'Tím', cls: 't-purple', leaves: [{ code: 'X', label: 'Xanh', purples: 1 }, { code: 'T', label: 'Tím', purples: 2 }] }
+        ]
+      },
+      {
+        t1: { code: 'T', label: 'Tím', cls: 't-purple' },
+        t2s: [
+          { code: 'D', label: 'Đỏ', cls: 't-red', leaves: [{ code: 'X', label: 'Xanh', purples: 1 }, { code: 'T', label: 'Tím', purples: 2 }] },
+          { code: 'V', label: 'Vàng', cls: 't-yellow', leaves: [{ code: 'X', label: 'Xanh', purples: 1 }, { code: 'T', label: 'Tím', purples: 2 }] },
+          { code: 'T', label: 'Tím', cls: 't-purple', leaves: [{ code: 'X', label: 'Xanh', purples: 2 }, { code: 'T', label: 'Tím', purples: 3 }] }
+        ]
+      }
+    ];
+
+    const state = {
+      userMarkedLeaves: new Set(),
+      steps: {
+        m2_nhan_dien: false,
+        m2_xay_cay: false,
+        m2_dem_la_k: false,
+        m2_tinh_xs_k: false,
+        m2_bt1: false,
+        m2_bt2: false,
+        m2_bt3: false
+      },
+      attempts: {
+        step1: 0,
+        step2: 0,
+        step3: 0,
+        step4: 0,
+        bt1: 0,
+        bt2: 0,
+        bt3: 0
+      },
+      totalSteps: 7,
+      completedSteps: 0
+    };
+
+    // KaTeX Helper with explicit delimiters
+    function renderKatex(el) {
+      if (typeof renderMathInElement === 'function') {
+        renderMathInElement(el || document.body, {
+          delimiters: [
+            { left: '$$', right: '$$', display: true },
+            { left: '$', right: '$', display: false }
+          ],
+          throwOnError: false
+        });
+      }
     }
-  ];
 
-  const state = {
-    userMarkedLeaves: new Set(),
-    steps: {
-      m2_nhan_dien: false,
-      m2_xay_cay: false,
-      m2_dem_la_k: false,
-      m2_tinh_xs_k: false,
-      m2_bt1: false,
-      m2_bt2: false,
-      m2_bt3: false
-    },
-    attempts: {
-      step1: 0,
-      step2: 0,
-      step3: 0,
-      step4: 0,
-      bt1: 0,
-      bt2: 0,
-      bt3: 0
-    },
-    totalSteps: 7,
-    completedSteps: 0
-  };
+    // Render Interactive Tree Nodes
+    function initTree() {
+      const wrap = document.getElementById('treeBranchesWrap');
+      wrap.innerHTML = '';
 
-  // KaTeX Helper with explicit delimiters
-  function renderKatex(el) {
-    if (typeof renderMathInElement === 'function') {
-      renderMathInElement(el || document.body, {
-        delimiters: [
-          { left: '$$', right: '$$', display: true },
-          { left: '$', right: '$', display: false }
-        ],
-        throwOnError: false
-      });
-    }
-  }
+      treeData.forEach((b1, idx1) => {
+        const branchEl = document.createElement('div');
+        branchEl.className = 't1-branch';
 
-  // Render Interactive Tree Nodes
-  function initTree() {
-    const wrap = document.getElementById('treeBranchesWrap');
-    wrap.innerHTML = '';
+        const t1Node = document.createElement('div');
+        t1Node.className = `t1-node ${b1.t1.cls}`;
+        t1Node.textContent = b1.t1.label;
+        branchEl.appendChild(t1Node);
 
-    treeData.forEach((b1, idx1) => {
-      const branchEl = document.createElement('div');
-      branchEl.className = 't1-branch';
+        const t2sWrap = document.createElement('div');
+        t2sWrap.className = 't2-subbranches';
 
-      const t1Node = document.createElement('div');
-      t1Node.className = `t1-node ${b1.t1.cls}`;
-      t1Node.textContent = b1.t1.label;
-      branchEl.appendChild(t1Node);
+        b1.t2s.forEach((b2, idx2) => {
+          const t2Group = document.createElement('div');
+          t2Group.className = 't2-group';
 
-      const t2sWrap = document.createElement('div');
-      t2sWrap.className = 't2-subbranches';
+          const t2Label = document.createElement('div');
+          t2Label.className = `t2-node-label ${b2.cls}`;
+          t2Label.textContent = b2.label;
+          t2Group.appendChild(t2Label);
 
-      b1.t2s.forEach((b2, idx2) => {
-        const t2Group = document.createElement('div');
-        t2Group.className = 't2-group';
+          const t3Leaves = document.createElement('div');
+          t3Leaves.className = 't3-leaves-row';
 
-        const t2Label = document.createElement('div');
-        t2Label.className = `t2-node-label ${b2.cls}`;
-        t2Label.textContent = b2.label;
-        t2Group.appendChild(t2Label);
+          b2.leaves.forEach((l, idx3) => {
+            const leafKey = `${b1.t1.code}-${b2.code}-${l.code}`;
+            const leafBtn = document.createElement('button');
+            leafBtn.className = 'leaf-btn';
+            leafBtn.dataset.key = leafKey;
+            leafBtn.dataset.purples = l.purples;
+            leafBtn.textContent = `${b1.t1.code}-${b2.code}-${l.code}`;
+            leafBtn.onclick = () => toggleLeafMark(leafBtn, leafKey);
 
-        const t3Leaves = document.createElement('div');
-        t3Leaves.className = 't3-leaves-row';
+            t3Leaves.appendChild(leafBtn);
+          });
 
-        b2.leaves.forEach((l, idx3) => {
-          const leafKey = `${b1.t1.code}-${b2.code}-${l.code}`;
-          const leafBtn = document.createElement('button');
-          leafBtn.className = 'leaf-btn';
-          leafBtn.dataset.key = leafKey;
-          leafBtn.dataset.purples = l.purples;
-          leafBtn.textContent = `${b1.t1.code}-${b2.code}-${l.code}`;
-          leafBtn.onclick = () => toggleLeafMark(leafBtn, leafKey);
-
-          t3Leaves.appendChild(leafBtn);
+          t2Group.appendChild(t3Leaves);
+          t2sWrap.appendChild(t2Group);
         });
 
-        t2Group.appendChild(t3Leaves);
-        t2sWrap.appendChild(t2Group);
+        branchEl.appendChild(t2sWrap);
+        wrap.appendChild(branchEl);
       });
-
-      branchEl.appendChild(t2sWrap);
-      wrap.appendChild(branchEl);
-    });
-  }
-
-  function toggleLeafMark(btnEl, leafKey) {
-    if (state.userMarkedLeaves.has(leafKey)) {
-      state.userMarkedLeaves.delete(leafKey);
-      btnEl.classList.remove('marked');
-    } else {
-      state.userMarkedLeaves.add(leafKey);
-      btnEl.classList.add('marked');
-    }
-    document.getElementById('userMarkedCount').textContent = state.userMarkedLeaves.size;
-  }
-
-  /* =========================================================
-     BƯỚC 1: NHẬN DIỆN CÔNG CỤ
-     ========================================================= */
-  function submitStep1Tool(tool, btnEl) {
-    if (state.steps.m2_nhan_dien) return;
-    const parent = btnEl.parentElement;
-    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected', 'wrong-opt'));
-    const fb = document.getElementById('feedback-step1');
-
-    if (tool === 'tree') {
-      state.steps.m2_nhan_dien = true;
-      btnEl.classList.add('selected');
-      document.getElementById('card-step1').classList.add('completed');
-      document.getElementById('status-step1').textContent = '✅';
-
-      fb.className = 'feedback-box success show';
-      fb.innerHTML = '🎉 <strong>Chính xác!</strong> Với phép thử gồm 3 công đoạn nối tiếp, <strong>Sơ đồ hình cây</strong> là công cụ trực quan và hiệu quả nhất để liệt kê trọn vẹn không gian mẫu.';
-      renderKatex(fb);
-
-      document.getElementById('card-step2').style.display = 'block';
-      initTree();
-      renderKatex(document.getElementById('card-step2'));
-      updateOverallProgress('m2_nhan_dien');
-    } else {
-      state.attempts.step1++;
-      btnEl.classList.add('wrong-opt');
-      fb.className = 'feedback-box hint show';
-      fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy nhớ lại công cụ phân nhánh từng tầng đã học ở Bài 23 (Quy tắc đếm).';
-    }
-  }
-
-  /* =========================================================
-     BƯỚC 2: XÁC ĐỊNH N(Ω)
-     ========================================================= */
-  function submitStep2Omega() {
-    if (state.steps.m2_xay_cay) return;
-    const inp = document.getElementById('input-step2');
-    const fb = document.getElementById('feedback-step2');
-    const val = parseInt(inp.value.trim(), 10);
-
-    if (isNaN(val)) {
-      inp.classList.add('shake-anim');
-      setTimeout(() => inp.classList.remove('shake-anim'), 400);
-      fb.className = 'feedback-box wrong show';
-      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
-      return;
     }
 
-    if (val === 24) {
-      state.steps.m2_xay_cay = true;
-      inp.disabled = true;
-      inp.classList.remove('wrong');
-      inp.classList.add('correct');
-      document.getElementById('btn-step2').disabled = true;
-      document.getElementById('card-step2').classList.add('completed');
-      document.getElementById('status-step2').textContent = '✅';
-
-      fb.className = 'feedback-box success show';
-      fb.innerHTML = '🎉 <strong>Chính xác!</strong> Cây có $4 \\times 3 \\times 2 = \\mathbf{24}$ lá $\\implies n(\\Omega) = 24$.';
-      renderKatex(fb);
-
-      document.getElementById('card-step3').style.display = 'block';
-      renderKatex(document.getElementById('card-step3'));
-      updateOverallProgress('m2_xay_cay');
-    } else {
-      state.attempts.step2++;
-      inp.classList.add('wrong', 'shake-anim');
-      setTimeout(() => inp.classList.remove('shake-anim'), 400);
-
-      fb.className = 'feedback-box hint show';
-      if (state.attempts.step2 === 1) {
-        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy nhân số nhánh ở mỗi tầng lại.';
-      } else if (state.attempts.step2 === 2) {
-        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Tầng 1 có 4 nhánh, tầng 2 có 3 nhánh, tầng 3 có 2 nhánh $\\implies 4 \\times 3 \\times 2 = ?$';
+    function toggleLeafMark(btnEl, leafKey) {
+      if (state.userMarkedLeaves.has(leafKey)) {
+        state.userMarkedLeaves.delete(leafKey);
+        btnEl.classList.remove('marked');
       } else {
-        fb.innerHTML = '📘 <strong>Đáp án đúng là: 24</strong> ($4 \\times 3 \\times 2 = \\mathbf{24}$).<br><em>👉 Hãy tự gõ số <strong>24</strong> vào ô kết quả và bấm "Kiểm tra" nhé!</em>';
-        inp.focus();
-        inp.select();
+        state.userMarkedLeaves.add(leafKey);
+        btnEl.classList.add('marked');
       }
-      renderKatex(fb);
-    }
-  }
-
-  /* =========================================================
-     BƯỚC 3: ĐẾM LÁ THOẢ K (ĐÚNG 1 TÍM)
-     ========================================================= */
-  function submitStep3K() {
-    if (state.steps.m2_dem_la_k) return;
-    const inp = document.getElementById('input-step3');
-    const fb = document.getElementById('feedback-step3');
-    const val = parseInt(inp.value.trim(), 10);
-
-    if (isNaN(val)) {
-      inp.classList.add('shake-anim');
-      setTimeout(() => inp.classList.remove('shake-anim'), 400);
-      fb.className = 'feedback-box wrong show';
-      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
-      return;
+      document.getElementById('userMarkedCount').textContent = state.userMarkedLeaves.size;
     }
 
-    if (val === 11) {
-      state.steps.m2_dem_la_k = true;
-      inp.disabled = true;
-      inp.classList.remove('wrong');
-      inp.classList.add('correct');
-      document.getElementById('btn-step3').disabled = true;
-      document.getElementById('card-step3').classList.add('completed');
-      document.getElementById('status-step3').textContent = '✅';
+    /* =========================================================
+       BƯỚC 1: NHẬN DIỆN CÔNG CỤ
+       ========================================================= */
+    function submitStep1Tool(tool, btnEl) {
+      if (state.steps.m2_nhan_dien) return;
+      const parent = btnEl.parentElement;
+      parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected', 'wrong-opt'));
+      const fb = document.getElementById('feedback-step1');
 
-      fb.className = 'feedback-box success show';
-      fb.innerHTML = '🎉 <strong>Chính xác!</strong> Có đúng <strong>11 lá cây</strong> chứa đúng 1 thăm màu tím $\\implies n(K) = 11$.';
-      renderKatex(fb);
+      if (tool === 'tree') {
+        state.steps.m2_nhan_dien = true;
+        btnEl.classList.add('selected');
+        document.getElementById('card-step1').classList.add('completed');
+        document.getElementById('status-step1').textContent = '✅';
 
-      document.getElementById('card-step4').style.display = 'block';
-      renderKatex(document.getElementById('card-step4'));
-      updateOverallProgress('m2_dem_la_k');
-    } else {
-      state.attempts.step3++;
-      inp.classList.add('wrong', 'shake-anim');
-      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+        fb.className = 'feedback-box success show';
+        fb.innerHTML = '🎉 <strong>Chính xác!</strong> Với phép thử gồm 3 công đoạn nối tiếp, <strong>Sơ đồ hình cây</strong> là công cụ trực quan và hiệu quả nhất để liệt kê trọn vẹn không gian mẫu.';
+        renderKatex(fb);
 
-      fb.className = 'feedback-box hint show';
-      if (state.attempts.step3 === 1) {
-        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy rà soát lại các lá cây: mỗi lá chỉ được có đúng 1 chữ cái T (Tím).';
-      } else if (state.attempts.step3 === 2) {
-        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Chia các trường hợp: Tím ở Hộp I (không tím ở II, III), Tím ở Hộp II (không tím ở I, III), hoặc Tím ở Hộp III (không tím ở I, II).';
+        document.getElementById('card-step2').style.display = 'block';
+        initTree();
+        renderKatex(document.getElementById('card-step2'));
+        updateOverallProgress('m2_nhan_dien');
       } else {
-        fb.innerHTML = '📘 <strong>Đáp án đúng là: 11</strong> lá thoả mãn.<br><em>👉 Hãy tự gõ số <strong>11</strong> vào ô kết quả và bấm "Kiểm tra" nhé!</em>';
-        inp.focus();
-        inp.select();
+        state.attempts.step1++;
+        btnEl.classList.add('wrong-opt');
+        fb.className = 'feedback-box hint show';
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy nhớ lại công cụ phân nhánh từng tầng đã học ở Bài 23 (Quy tắc đếm).';
       }
-      renderKatex(fb);
     }
-  }
 
-  /* =========================================================
-     BƯỚC 4: TÍNH P(K)
-     ========================================================= */
-  function submitStep4Prob() {
-    if (state.steps.m2_tinh_xs_k) return;
-    const inp = document.getElementById('input-step4');
-    const fb = document.getElementById('feedback-step4');
-    const val = inp.value.trim();
+    /* =========================================================
+       BƯỚC 2: XÁC ĐỊNH N(Ω)
+       ========================================================= */
+    function submitStep2Omega() {
+      if (state.steps.m2_xay_cay) return;
+      const inp = document.getElementById('input-step2');
+      const fb = document.getElementById('feedback-step2');
+      const val = parseInt(inp.value.trim(), 10);
 
-    if (val === '11/24' || val === '11 / 24' || Math.abs(parseFloat(val) - (11/24)) < 0.005) {
-      state.steps.m2_tinh_xs_k = true;
-      inp.disabled = true;
-      inp.classList.remove('wrong');
-      inp.classList.add('correct');
-      document.getElementById('btn-step4').disabled = true;
-      document.getElementById('card-step4').classList.add('completed');
-      document.getElementById('status-step4').textContent = '✅';
+      if (isNaN(val)) {
+        inp.classList.add('shake-anim');
+        setTimeout(() => inp.classList.remove('shake-anim'), 400);
+        fb.className = 'feedback-box wrong show';
+        fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+        return;
+      }
 
-      fb.className = 'feedback-box success show';
-      fb.innerHTML = '🎉 <strong>Chính xác!</strong> $P(K) = \\frac{n(K)}{n(\\Omega)} = \\mathbf{\\frac{11}{24}}$.';
-      renderKatex(fb);
-      updateOverallProgress('m2_tinh_xs_k');
-    } else {
-      state.attempts.step4++;
-      inp.classList.add('wrong', 'shake-anim');
-      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      if (val === 24) {
+        state.steps.m2_xay_cay = true;
+        inp.disabled = true;
+        inp.classList.remove('wrong');
+        inp.classList.add('correct');
+        document.getElementById('btn-step2').disabled = true;
+        document.getElementById('card-step2').classList.add('completed');
+        document.getElementById('status-step2').textContent = '✅';
 
-      fb.className = 'feedback-box hint show';
-      if (state.attempts.step4 === 1) {
-        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy lấy $n(K)$ chia cho $n(\\Omega)$.';
+        fb.className = 'feedback-box success show';
+        fb.innerHTML = '🎉 <strong>Chính xác!</strong> Cây có $4 \\times 3 \\times 2 = \\mathbf{24}$ lá $\\implies n(\\Omega) = 24$.';
+        renderKatex(fb);
+
+        document.getElementById('card-step3').style.display = 'block';
+        renderKatex(document.getElementById('card-step3'));
+        updateOverallProgress('m2_xay_cay');
       } else {
-        fb.innerHTML = '📘 <strong>Đáp án đúng là: 11/24</strong> ($P(K) = \\frac{11}{24}$).<br><em>👉 Hãy tự gõ <strong>11/24</strong> vào ô kết quả và bấm "Kiểm tra" nhé!</em>';
-        inp.focus();
-        inp.select();
-      }
-      renderKatex(fb);
-    }
-  }
+        state.attempts.step2++;
+        inp.classList.add('wrong', 'shake-anim');
+        setTimeout(() => inp.classList.remove('shake-anim'), 400);
 
-  /* =========================================================
-     BÀI TẬP LUYỆN TẬP 1, 2, 3
-     ========================================================= */
-  function submitBT1() {
-    if (state.steps.m2_bt1) return;
-    const inp = document.getElementById('input-bt1');
-    const fb = document.getElementById('feedback-bt1');
-    const val = parseInt(inp.value.trim(), 10);
-
-    if (isNaN(val)) {
-      inp.classList.add('shake-anim');
-      setTimeout(() => inp.classList.remove('shake-anim'), 400);
-      fb.className = 'feedback-box wrong show';
-      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
-      return;
-    }
-
-    if (val === 2) {
-      state.steps.m2_bt1 = true;
-      inp.disabled = true;
-      inp.classList.remove('wrong');
-      inp.classList.add('correct');
-      document.getElementById('btn-bt1').disabled = true;
-      document.getElementById('card-bt1').classList.add('completed');
-      document.getElementById('status-bt1').textContent = '✅';
-
-      fb.className = 'feedback-box success show';
-      fb.innerHTML = '🎉 <strong>Chính xác!</strong> Có 2 kết quả thoả mãn: (Lớn, Cam) và (Lớn, Chanh) $\\implies n(E) = \\mathbf{2}$.<br>Xác suất: $P(E) = \\frac{2}{12} = \\mathbf{\\frac{1}{6}}$.';
-      renderKatex(fb);
-      updateOverallProgress('m2_bt1');
-    } else {
-      state.attempts.bt1++;
-      inp.classList.add('wrong', 'shake-anim');
-      setTimeout(() => inp.classList.remove('shake-anim'), 400);
-
-      fb.className = 'feedback-box hint show';
-      if (state.attempts.bt1 === 1) {
-        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Có mấy lá cây bắt đầu bằng "Lớn" và kết thúc bằng "Cam" hoặc "Chanh"?';
-      } else if (state.attempts.bt1 === 2) {
-        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Chỉ có 2 nhánh: (Lớn-Cam) và (Lớn-Chanh) $\\implies n(E) = ?$';
-      } else {
-        fb.innerHTML = '📘 <strong>Đáp án đúng là: 2</strong> ($n(E) = 2, P = \\frac{2}{12} = \\frac{1}{6}$).<br><em>👉 Hãy tự gõ số <strong>2</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
-        inp.focus();
-        inp.select();
-      }
-      renderKatex(fb);
-    }
-  }
-
-  function submitBT2() {
-    if (state.steps.m2_bt2) return;
-    const inp = document.getElementById('input-bt2');
-    const fb = document.getElementById('feedback-bt2');
-    const val = parseInt(inp.value.trim(), 10);
-
-    if (isNaN(val)) {
-      inp.classList.add('shake-anim');
-      setTimeout(() => inp.classList.remove('shake-anim'), 400);
-      fb.className = 'feedback-box wrong show';
-      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
-      return;
-    }
-
-    if (val === 3) {
-      state.steps.m2_bt2 = true;
-      inp.disabled = true;
-      inp.classList.remove('wrong');
-      inp.classList.add('correct');
-      document.getElementById('btn-bt2').disabled = true;
-      document.getElementById('card-bt2').classList.add('completed');
-      document.getElementById('status-bt2').textContent = '✅';
-
-      fb.className = 'feedback-box success show';
-      fb.innerHTML = '🎉 <strong>Chính xác!</strong> Có 3 lá thoả mãn: $\\{SSN, SNS, NSS\\} \\implies n(E) = \\mathbf{3}$.<br>Xác suất: $P = \\mathbf{\\frac{3}{8}}$.';
-      renderKatex(fb);
-      updateOverallProgress('m2_bt2');
-    } else {
-      state.attempts.bt2++;
-      inp.classList.add('wrong', 'shake-anim');
-      setTimeout(() => inp.classList.remove('shake-anim'), 400);
-
-      fb.className = 'feedback-box hint show';
-      if (state.attempts.bt2 === 1) {
-        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy đếm các nhánh có đúng 2 chữ S trong chuỗi 3 chữ cái.';
-      } else if (state.attempts.bt2 === 2) {
-        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Các nhánh thoả mãn gồm: SSN, SNS, NSS $\\implies n(E) = ?$';
-      } else {
-        fb.innerHTML = '📘 <strong>Đáp án đúng là: 3</strong> ($n(E) = 3, P = \\frac{3}{8}$).<br><em>👉 Hãy tự gõ số <strong>3</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
-        inp.focus();
-        inp.select();
-      }
-      renderKatex(fb);
-    }
-  }
-
-  function submitBT3() {
-    if (state.steps.m2_bt3) return;
-    const inp = document.getElementById('input-bt3');
-    const fb = document.getElementById('feedback-bt3');
-    const val = parseInt(inp.value.trim(), 10);
-
-    if (isNaN(val)) {
-      inp.classList.add('shake-anim');
-      setTimeout(() => inp.classList.remove('shake-anim'), 400);
-      fb.className = 'feedback-box wrong show';
-      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
-      return;
-    }
-
-    if (val === 5) {
-      state.steps.m2_bt3 = true;
-      inp.disabled = true;
-      inp.classList.remove('wrong');
-      inp.classList.add('correct');
-      document.getElementById('btn-bt3').disabled = true;
-      document.getElementById('card-bt3').classList.add('completed');
-      document.getElementById('status-bt3').textContent = '✅';
-
-      fb.className = 'feedback-box success show';
-      fb.innerHTML = '🎉 <strong>Chính xác!</strong> Có 5 cặp thoả mãn: $(2,6), (3,5), (4,4), (5,3), (6,2) \\implies n(E) = \\mathbf{5}$.<br>Xác suất: $P = \\mathbf{\\frac{5}{36}}$.';
-      renderKatex(fb);
-      updateOverallProgress('m2_bt3');
-    } else {
-      state.attempts.bt3++;
-      inp.classList.add('wrong', 'shake-anim');
-      setTimeout(() => inp.classList.remove('shake-anim'), 400);
-
-      fb.className = 'feedback-box hint show';
-      if (state.attempts.bt3 === 1) {
-        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy liệt kê các cặp $(a, b)$ với $a, b \\in \\{1..6\\}$ sao cho $a + b = 8$.';
-      } else if (state.attempts.bt3 === 2) {
-        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Các cặp gồm: $(2,6), (3,5), (4,4), (5,3), (6,2) \\implies n(E) = ?$';
-      } else {
-        fb.innerHTML = '📘 <strong>Đáp án đúng là: 5</strong> ($n(E) = 5, P = \\frac{5}{36}$).<br><em>👉 Hãy tự gõ số <strong>5</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
-        inp.focus();
-        inp.select();
-      }
-      renderKatex(fb);
-    }
-  }
-
-  /* =========================================================
-     PROGRESS & LMS REPORT
-     ========================================================= */
-  function updateOverallProgress(itemId) {
-    let count = 0;
-    Object.keys(state.steps).forEach(k => {
-      if (state.steps[k]) count++;
-    });
-    state.completedSteps = count;
-
-    const pct = Math.round((count / state.totalSteps) * 100);
-    document.getElementById('progress-text').textContent = `${count}/${state.totalSteps}`;
-    document.getElementById('progress-bar').style.width = `${pct}%`;
-
-    // Report to LMS
-    if (typeof LMS === 'function') {
-      try {
-        LMS().reportProgress(itemId, true);
-        LMS().reportState('module2_b27', state);
-      } catch (e) {
-        console.warn('LMS error:', e);
-      }
-    }
-
-    if (count === state.totalSteps) {
-      const summary = document.getElementById('final-summary');
-      summary.classList.add('active');
-      renderKatex(summary);
-      setTimeout(() => {
-        summary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
-      }, 200);
-    }
-  }
-
-  function restartModule() {
-    window.location.reload();
-  }
-
-  // Auto-resize for LMS iframe
-  window.addEventListener('load', () => {
-    if (window.ResizeObserver) {
-      const ro = new ResizeObserver(() => {
-        const height = document.documentElement.scrollHeight || document.body.scrollHeight;
-        if (window.parent && window.parent.postMessage) {
-          window.parent.postMessage({ type: 'setHeight', height: height }, '*');
+        fb.className = 'feedback-box hint show';
+        if (state.attempts.step2 === 1) {
+          fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy nhân số nhánh ở mỗi tầng lại.';
+        } else if (state.attempts.step2 === 2) {
+          fb.innerHTML = '💡 <strong>Gợi ý:</strong> Tầng 1 có 4 nhánh, tầng 2 có 3 nhánh, tầng 3 có 2 nhánh $\\implies 4 \\times 3 \\times 2 = ?$';
+        } else {
+          fb.innerHTML = '📘 <strong>Đáp án đúng là: 24</strong> ($4 \\times 3 \\times 2 = \\mathbf{24}$).<br><em>👉 Hãy tự gõ số <strong>24</strong> vào ô kết quả và bấm "Kiểm tra" nhé!</em>';
+          inp.focus();
+          inp.select();
         }
-      });
-      ro.observe(document.body);
+        renderKatex(fb);
+      }
     }
-  });
-</script>
+
+    /* =========================================================
+       BƯỚC 3: ĐẾM LÁ THOẢ K (ĐÚNG 1 TÍM)
+       ========================================================= */
+    function submitStep3K() {
+      if (state.steps.m2_dem_la_k) return;
+      const inp = document.getElementById('input-step3');
+      const fb = document.getElementById('feedback-step3');
+      const val = parseInt(inp.value.trim(), 10);
+
+      if (isNaN(val)) {
+        inp.classList.add('shake-anim');
+        setTimeout(() => inp.classList.remove('shake-anim'), 400);
+        fb.className = 'feedback-box wrong show';
+        fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+        return;
+      }
+
+      if (val === 11) {
+        state.steps.m2_dem_la_k = true;
+        inp.disabled = true;
+        inp.classList.remove('wrong');
+        inp.classList.add('correct');
+        document.getElementById('btn-step3').disabled = true;
+        document.getElementById('card-step3').classList.add('completed');
+        document.getElementById('status-step3').textContent = '✅';
+
+        fb.className = 'feedback-box success show';
+        fb.innerHTML = '🎉 <strong>Chính xác!</strong> Có đúng <strong>11 lá cây</strong> chứa đúng 1 thăm màu tím $\\implies n(K) = 11$.';
+        renderKatex(fb);
+
+        document.getElementById('card-step4').style.display = 'block';
+        renderKatex(document.getElementById('card-step4'));
+        updateOverallProgress('m2_dem_la_k');
+      } else {
+        state.attempts.step3++;
+        inp.classList.add('wrong', 'shake-anim');
+        setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+        fb.className = 'feedback-box hint show';
+        if (state.attempts.step3 === 1) {
+          fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy rà soát lại các lá cây: mỗi lá chỉ được có đúng 1 chữ cái T (Tím).';
+        } else if (state.attempts.step3 === 2) {
+          fb.innerHTML = '💡 <strong>Gợi ý:</strong> Chia các trường hợp: Tím ở Hộp I (không tím ở II, III), Tím ở Hộp II (không tím ở I, III), hoặc Tím ở Hộp III (không tím ở I, II).';
+        } else {
+          fb.innerHTML = '📘 <strong>Đáp án đúng là: 11</strong> lá thoả mãn.<br><em>👉 Hãy tự gõ số <strong>11</strong> vào ô kết quả và bấm "Kiểm tra" nhé!</em>';
+          inp.focus();
+          inp.select();
+        }
+        renderKatex(fb);
+      }
+    }
+
+    /* =========================================================
+       BƯỚC 4: TÍNH P(K)
+       ========================================================= */
+    function submitStep4Prob() {
+      if (state.steps.m2_tinh_xs_k) return;
+      const inp = document.getElementById('input-step4');
+      const fb = document.getElementById('feedback-step4');
+      const val = inp.value.trim();
+
+      if (val === '11/24' || val === '11 / 24' || Math.abs(parseFloat(val) - (11 / 24)) < 0.005) {
+        state.steps.m2_tinh_xs_k = true;
+        inp.disabled = true;
+        inp.classList.remove('wrong');
+        inp.classList.add('correct');
+        document.getElementById('btn-step4').disabled = true;
+        document.getElementById('card-step4').classList.add('completed');
+        document.getElementById('status-step4').textContent = '✅';
+
+        fb.className = 'feedback-box success show';
+        fb.innerHTML = '🎉 <strong>Chính xác!</strong> $P(K) = \\frac{n(K)}{n(\\Omega)} = \\mathbf{\\frac{11}{24}}$.';
+        renderKatex(fb);
+        updateOverallProgress('m2_tinh_xs_k');
+      } else {
+        state.attempts.step4++;
+        inp.classList.add('wrong', 'shake-anim');
+        setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+        fb.className = 'feedback-box hint show';
+        if (state.attempts.step4 === 1) {
+          fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy lấy $n(K)$ chia cho $n(\\Omega)$.';
+        } else {
+          fb.innerHTML = '📘 <strong>Đáp án đúng là: 11/24</strong> ($P(K) = \\frac{11}{24}$).<br><em>👉 Hãy tự gõ <strong>11/24</strong> vào ô kết quả và bấm "Kiểm tra" nhé!</em>';
+          inp.focus();
+          inp.select();
+        }
+        renderKatex(fb);
+      }
+    }
+
+    /* =========================================================
+       BÀI TẬP LUYỆN TẬP 1, 2, 3
+       ========================================================= */
+    function submitBT1() {
+      if (state.steps.m2_bt1) return;
+      const inp = document.getElementById('input-bt1');
+      const fb = document.getElementById('feedback-bt1');
+      const val = parseInt(inp.value.trim(), 10);
+
+      if (isNaN(val)) {
+        inp.classList.add('shake-anim');
+        setTimeout(() => inp.classList.remove('shake-anim'), 400);
+        fb.className = 'feedback-box wrong show';
+        fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+        return;
+      }
+
+      if (val === 2) {
+        state.steps.m2_bt1 = true;
+        inp.disabled = true;
+        inp.classList.remove('wrong');
+        inp.classList.add('correct');
+        document.getElementById('btn-bt1').disabled = true;
+        document.getElementById('card-bt1').classList.add('completed');
+        document.getElementById('status-bt1').textContent = '✅';
+
+        fb.className = 'feedback-box success show';
+        fb.innerHTML = '🎉 <strong>Chính xác!</strong> Có 2 kết quả thoả mãn: (Lớn, Cam) và (Lớn, Chanh) $\\implies n(E) = \\mathbf{2}$.<br>Xác suất: $P(E) = \\frac{2}{12} = \\mathbf{\\frac{1}{6}}$.';
+        renderKatex(fb);
+        updateOverallProgress('m2_bt1');
+      } else {
+        state.attempts.bt1++;
+        inp.classList.add('wrong', 'shake-anim');
+        setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+        fb.className = 'feedback-box hint show';
+        if (state.attempts.bt1 === 1) {
+          fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Có mấy lá cây bắt đầu bằng "Lớn" và kết thúc bằng "Cam" hoặc "Chanh"?';
+        } else if (state.attempts.bt1 === 2) {
+          fb.innerHTML = '💡 <strong>Gợi ý:</strong> Chỉ có 2 nhánh: (Lớn-Cam) và (Lớn-Chanh) $\\implies n(E) = ?$';
+        } else {
+          fb.innerHTML = '📘 <strong>Đáp án đúng là: 2</strong> ($n(E) = 2, P = \\frac{2}{12} = \\frac{1}{6}$).<br><em>👉 Hãy tự gõ số <strong>2</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+          inp.focus();
+          inp.select();
+        }
+        renderKatex(fb);
+      }
+    }
+
+    function submitBT2() {
+      if (state.steps.m2_bt2) return;
+      const inp = document.getElementById('input-bt2');
+      const fb = document.getElementById('feedback-bt2');
+      const val = parseInt(inp.value.trim(), 10);
+
+      if (isNaN(val)) {
+        inp.classList.add('shake-anim');
+        setTimeout(() => inp.classList.remove('shake-anim'), 400);
+        fb.className = 'feedback-box wrong show';
+        fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+        return;
+      }
+
+      if (val === 3) {
+        state.steps.m2_bt2 = true;
+        inp.disabled = true;
+        inp.classList.remove('wrong');
+        inp.classList.add('correct');
+        document.getElementById('btn-bt2').disabled = true;
+        document.getElementById('card-bt2').classList.add('completed');
+        document.getElementById('status-bt2').textContent = '✅';
+
+        fb.className = 'feedback-box success show';
+        fb.innerHTML = '🎉 <strong>Chính xác!</strong> Có 3 lá thoả mãn: $\\{SSN, SNS, NSS\\} \\implies n(E) = \\mathbf{3}$.<br>Xác suất: $P = \\mathbf{\\frac{3}{8}}$.';
+        renderKatex(fb);
+        updateOverallProgress('m2_bt2');
+      } else {
+        state.attempts.bt2++;
+        inp.classList.add('wrong', 'shake-anim');
+        setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+        fb.className = 'feedback-box hint show';
+        if (state.attempts.bt2 === 1) {
+          fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy đếm các nhánh có đúng 2 chữ S trong chuỗi 3 chữ cái.';
+        } else if (state.attempts.bt2 === 2) {
+          fb.innerHTML = '💡 <strong>Gợi ý:</strong> Các nhánh thoả mãn gồm: SSN, SNS, NSS $\\implies n(E) = ?$';
+        } else {
+          fb.innerHTML = '📘 <strong>Đáp án đúng là: 3</strong> ($n(E) = 3, P = \\frac{3}{8}$).<br><em>👉 Hãy tự gõ số <strong>3</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+          inp.focus();
+          inp.select();
+        }
+        renderKatex(fb);
+      }
+    }
+
+    function submitBT3() {
+      if (state.steps.m2_bt3) return;
+      const inp = document.getElementById('input-bt3');
+      const fb = document.getElementById('feedback-bt3');
+      const val = parseInt(inp.value.trim(), 10);
+
+      if (isNaN(val)) {
+        inp.classList.add('shake-anim');
+        setTimeout(() => inp.classList.remove('shake-anim'), 400);
+        fb.className = 'feedback-box wrong show';
+        fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+        return;
+      }
+
+      if (val === 5) {
+        state.steps.m2_bt3 = true;
+        inp.disabled = true;
+        inp.classList.remove('wrong');
+        inp.classList.add('correct');
+        document.getElementById('btn-bt3').disabled = true;
+        document.getElementById('card-bt3').classList.add('completed');
+        document.getElementById('status-bt3').textContent = '✅';
+
+        fb.className = 'feedback-box success show';
+        fb.innerHTML = '🎉 <strong>Chính xác!</strong> Có 5 cặp thoả mãn: $(2,6), (3,5), (4,4), (5,3), (6,2) \\implies n(E) = \\mathbf{5}$.<br>Xác suất: $P = \\mathbf{\\frac{5}{36}}$.';
+        renderKatex(fb);
+        updateOverallProgress('m2_bt3');
+      } else {
+        state.attempts.bt3++;
+        inp.classList.add('wrong', 'shake-anim');
+        setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+        fb.className = 'feedback-box hint show';
+        if (state.attempts.bt3 === 1) {
+          fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy liệt kê các cặp $(a, b)$ với $a, b \\in \\{1..6\\}$ sao cho $a + b = 8$.';
+        } else if (state.attempts.bt3 === 2) {
+          fb.innerHTML = '💡 <strong>Gợi ý:</strong> Các cặp gồm: $(2,6), (3,5), (4,4), (5,3), (6,2) \\implies n(E) = ?$';
+        } else {
+          fb.innerHTML = '📘 <strong>Đáp án đúng là: 5</strong> ($n(E) = 5, P = \\frac{5}{36}$).<br><em>👉 Hãy tự gõ số <strong>5</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+          inp.focus();
+          inp.select();
+        }
+        renderKatex(fb);
+      }
+    }
+
+    /* =========================================================
+       PROGRESS & LMS REPORT
+       ========================================================= */
+    function updateOverallProgress(itemId) {
+      let count = 0;
+      Object.keys(state.steps).forEach(k => {
+        if (state.steps[k]) count++;
+      });
+      state.completedSteps = count;
+
+      const pct = Math.round((count / state.totalSteps) * 100);
+      document.getElementById('progress-text').textContent = `${count}/${state.totalSteps}`;
+      document.getElementById('progress-bar').style.width = `${pct}%`;
+
+      // Report to LMS
+      if (typeof LMS === 'function') {
+        try {
+          LMS().reportProgress(itemId, true);
+          LMS().reportState('module2_b27', state);
+        } catch (e) {
+          console.warn('LMS error:', e);
+        }
+      }
+
+      if (count === state.totalSteps) {
+        const summary = document.getElementById('final-summary');
+        summary.classList.add('active');
+        renderKatex(summary);
+        setTimeout(() => {
+          summary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+        }, 200);
+      }
+    }
+
+    function restartModule() {
+      window.location.reload();
+    }
+
+    // Auto-resize for LMS iframe
+    window.addEventListener('load', () => {
+      if (window.ResizeObserver) {
+        const ro = new ResizeObserver(() => {
+          const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+          if (window.parent && window.parent.postMessage) {
+            window.parent.postMessage({ type: 'setHeight', height: height }, '*');
+          }
+        });
+        ro.observe(document.body);
+      }
+    });
+  </script>
 
 </body>
+
 </html>
