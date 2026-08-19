@@ -298,24 +298,29 @@
       width: 44px;
       height: 44px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--jade) 0%, var(--jade-deep) 100%);
-      color: #FFFFFF;
+      background: #FFFFFF;
+      border: 1.5px solid var(--jade-soft);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.3rem;
       flex-shrink: 0;
+      overflow: hidden;
+      padding: 2px;
       box-shadow: 0 4px 10px rgba(45, 139, 111, 0.3);
       animation: floatBreath 3s ease-in-out infinite;
     }
 
-    @keyframes floatBreath {
+    .athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+    }
 
-      0%,
-      100% {
+    @keyframes floatBreath {
+      0%, 100% {
         transform: translateY(0);
       }
-
       50% {
         transform: translateY(-4px);
       }
@@ -875,16 +880,26 @@
     }
 
     .step-athena-avatar {
-      width: 36px;
-      height: 36px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--jade) 0%, var(--jade-deep) 100%);
-      color: #FFFFFF;
+      background: #FFFFFF;
+      border: 1.5px solid var(--jade-soft);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1rem;
       flex-shrink: 0;
+      overflow: hidden;
+      padding: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step-athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      display: block;
     }
 
     .step-athena-text {
@@ -1306,10 +1321,70 @@
         width: 100%;
       }
 
-      /* Compact Canvas Viewport for Mobile */
+      /* Topbar Mobile */
+      .topbar {
+        padding: 0.4rem 0.6rem;
+      }
+
+      .topbar-brand {
+        gap: 6px;
+      }
+
+      .badge-course {
+        font-size: 0.68rem;
+        padding: 2px 6px;
+      }
+
+      .topbar-title {
+        font-size: 0.76rem;
+        white-space: normal;
+        line-height: 1.25;
+      }
+
+      /* Compact Canvas Viewport & Menu Preview for Mobile */
       .canvas-viewport {
-        height: 410px;
+        height: auto;
+        min-height: 380px;
+        overflow: visible;
         padding: 6px 2px;
+      }
+
+      .menu-preview-header {
+        height: 145px;
+      }
+
+      .menu-preview-body {
+        padding: 0.65rem 0.75rem;
+      }
+
+      .menu-preview-body h4 {
+        font-size: 0.82rem !important;
+        text-align: center;
+        margin-bottom: 6px !important;
+      }
+
+      .menu-columns {
+        grid-template-columns: repeat(3, 1fr);
+        gap: 4px;
+      }
+
+      .menu-col {
+        padding: 6px 4px;
+        border-radius: 6px;
+      }
+
+      .menu-col-title {
+        font-size: 0.68rem;
+        margin-bottom: 3px;
+        justify-content: center;
+        white-space: nowrap;
+      }
+
+      .menu-col-item {
+        font-size: 0.7rem;
+        padding: 1.5px 0;
+        white-space: nowrap;
+        justify-content: center;
       }
 
       .tree-card {
@@ -1408,9 +1483,24 @@
       }
 
       .step-athena-avatar {
-        width: 32px;
-        height: 32px;
-        font-size: 0.9rem;
+        width: 36px;
+        height: 36px;
+        border-radius: 50%;
+        background: #FFFFFF;
+        border: 1.5px solid var(--jade-soft);
+        padding: 2px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+
+      .step-athena-avatar img {
+        width: 100%;
+        height: 100%;
+        object-fit: contain;
+        border-radius: 50%;
       }
 
       .step-athena-text {
@@ -1485,7 +1575,7 @@
 
       <div class="hook-dialog-card">
         <div class="hook-dialog-athena">
-          <div class="athena-avatar"><i class="ti ti-sparkles"></i></div>
+          <div class="athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
           <div class="athena-bubble">
             <div class="athena-name"><i class="ti ti-sparkles"></i> Trợ lý Athena</div>
             Quán trà sữa gần trường có <b>2 size</b> (M, L), <b>3 vị trà</b> (Trà đen, Matcha, Sữa tươi), và <b>2 loại
@@ -1523,7 +1613,7 @@
           <!-- VIEW A: MENU CARD PREVIEW (AI Realistic Banner) -->
           <div class="menu-preview-box" id="menuPreviewBox">
             <div class="menu-preview-header">
-              <img src="teashop_hero.jpg" alt="Menu Quán Trà Sữa" class="menu-preview-ai-img">
+              <img src="https://lh3.googleusercontent.com/d/1tKhmo5E5Bp06sumfYo8m1TAEPRBR6jL0" alt="Menu Quán Trà Sữa" class="menu-preview-ai-img">
             </div>
             <div class="menu-preview-body">
               <h4 style="font-size: 0.92rem; font-weight: 800; color: var(--jade-dark); margin-bottom: 4px;">
@@ -2165,7 +2255,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Nhìn vào menu bên trái: Quán có <b>2 size</b>, <b>3 vị trà</b> và <b>2 loại topping</b>. Bạn hãy thử đoán xem quán có thể pha ra tất cả bao nhiêu ly trà sữa khác nhau nhé.
             </div>
@@ -2200,7 +2290,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Bạn dự đoán là <b>${state.predictedTotal} ly</b>. Mình chưa nói đúng hay sai vội — nếu liệt kê hết bằng tay từng ly, bạn có chắc không bị sót hay viết trùng cách nào không?
             </div>
@@ -2231,7 +2321,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Bạn có thể <b>kéo thả trực tiếp</b> các chip bên dưới vào ô trên cây (hoặc <b>click chọn</b> rồi chạm ô): từ <b>Tầng 1 (Size)</b> $\\to$ <b>Tầng 2 (Vị)</b> $\\to$ <b>Tầng 3 (Topping)</b> nhé.
             </div>
@@ -2259,7 +2349,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Mỗi nhánh tận cùng (Topping ở Tầng 3) là <b>1 ly trà sữa hoàn chỉnh</b>. Hãy nhấn nút <b>Đếm lá cây</b> để hệ thống highlight và đếm giúp bạn nhé.
             </div>
@@ -2290,7 +2380,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Bạn vừa đếm được <b>${state.leafCount} lá cây</b> trên sơ đồ. So với dự đoán ban đầu là <b>${state.predictedTotal}</b>, hai số này có khớp nhau không? Bạn hãy nhập lại đáp án đúng nhé.
             </div>
@@ -2325,7 +2415,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Sơ đồ hình cây là cách vẽ ra tất cả các lựa chọn theo từng công đoạn, để <b>không bỏ sót</b> và <b>không đếm trùng</b>. Số lá cây chính là số cách thực hiện toàn bộ công việc.
             </div>
@@ -2359,7 +2449,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Nếu muốn thử áp dụng ngay, bạn có thể làm thêm 1 tình huống nữa — hoặc bấm Hoàn thành để kết thúc module nhé.
             </div>

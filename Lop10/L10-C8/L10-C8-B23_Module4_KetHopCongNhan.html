@@ -283,18 +283,27 @@
     }
 
     .athena-avatar {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--jade) 0%, var(--jade-deep) 100%);
-      color: #FFFFFF;
+      background: #FFFFFF;
+      border: 1.5px solid var(--jade-soft);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.25rem;
       flex-shrink: 0;
+      overflow: hidden;
+      padding: 2px;
       box-shadow: 0 4px 10px rgba(45, 139, 111, 0.3);
       animation: floatBreath 3s ease-in-out infinite;
+    }
+
+    .athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      display: block;
     }
 
     @keyframes floatBreath {
@@ -869,13 +878,47 @@
     /* =========================================================
        6. MOBILE RESPONSIVE (≤767px)
        ========================================================= */
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
     @media (max-width: 767px) {
+      html, body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
       .topbar {
-        padding: 0.45rem 0.65rem;
+        padding: 0.4rem 0.5rem;
+      }
+
+      .badge-course {
+        font-size: 0.68rem;
+        padding: 2px 5px;
+      }
+
+      .topbar-title {
+        font-size: 0.76rem;
+        white-space: normal;
+        line-height: 1.2;
+      }
+
+      .topbar-actions .btn {
+        padding: 4px 7px;
+        min-height: 32px;
+        font-size: 0.74rem;
+        border-radius: 6px;
       }
 
       .topbar-actions .btn span {
         display: none;
+      }
+
+      .app-container {
+        padding: 0.5rem 0.35rem 1.5rem;
+        max-width: 100vw;
+        overflow-x: hidden;
       }
 
       .hook-hero-wrap {
@@ -901,6 +944,7 @@
       }
 
       .guess-card {
+        padding: 0.85rem 0.75rem;
         flex-direction: column;
         align-items: stretch;
       }
@@ -918,6 +962,10 @@
       .booths-row {
         grid-template-columns: 1fr;
         gap: 0.75rem;
+      }
+
+      .booth-card {
+        padding: 0.85rem 0.75rem;
       }
 
       .steps-3-grid {
@@ -973,7 +1021,7 @@
 
       <div class="hook-dialog-card">
         <div class="hook-dialog-athena">
-          <div class="athena-avatar"><i class="ti ti-sparkles"></i></div>
+          <div class="athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
           <div class="athena-bubble">
             <div class="athena-name"><i class="ti ti-sparkles"></i> Trợ lý Athena</div>
             Giải cờ vua học đường in mã dự thi cho VĐV: <b>Hạng Nhi đồng</b> dùng mã gồm 1 chữ cái đội (4 đội A-D) ghép với 1 số báo danh (1 đến 8). <b>Hạng Thiếu niên</b> dùng 1 chữ cái đội (5 đội A-E) ghép với 1 số báo danh (1 đến 6). Bạn nghĩ toàn giải có thể in được bao nhiêu mã khác nhau?
@@ -991,7 +1039,7 @@
       <!-- SECTION 1: GUESS CARD (Step 1) -->
       <div class="guess-card" id="cardGuess">
         <div class="guess-info">
-          <div class="athena-avatar" style="width: 34px; height: 34px; font-size: 1rem;"><i class="ti ti-sparkles"></i></div>
+          <div class="athena-avatar" style="width: 36px; height: 36px;"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
           <div style="font-size: 0.88rem; color: var(--ink);">
             <b>Bước 1 / 4:</b> Bạn hãy đoán xem toàn giải có thể in được tất cả bao nhiêu mã dự thi khác nhau?
           </div>

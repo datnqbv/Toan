@@ -266,17 +266,26 @@
     }
 
     .athena-avatar {
-      width: 48px;
-      height: 48px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--jade) 0%, var(--jade-deep) 100%);
-      color: #FFFFFF;
+      background: #FFFFFF;
+      border: 1.5px solid var(--jade-soft);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.4rem;
       flex-shrink: 0;
-      box-shadow: 0 4px 10px rgba(45, 139, 111, 0.3);
+      overflow: hidden;
+      padding: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      display: block;
     }
 
     .athena-bubble {
@@ -656,16 +665,26 @@
     }
 
     .step-athena-avatar {
-      width: 38px;
-      height: 38px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--jade) 0%, var(--jade-deep) 100%);
-      color: #FFFFFF;
+      background: #FFFFFF;
+      border: 1.5px solid var(--jade-soft);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.1rem;
       flex-shrink: 0;
+      overflow: hidden;
+      padding: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step-athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      display: block;
     }
 
     .step-athena-text {
@@ -983,6 +1002,15 @@
     /* =========================================================
        7. MOBILE RESPONSIVE TWEAKS (≤768px & ≤480px)
        ========================================================= */
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     @media (max-width: 900px) {
       .sim-layout {
         grid-template-columns: 1fr;
@@ -997,50 +1025,192 @@
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
+      html, body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
       .topbar {
-        padding: 0.5rem 0.75rem;
+        padding: 0.4rem 0.5rem;
+      }
+
+      .topbar-brand {
+        gap: 5px;
+        flex: 1;
+        min-width: 0;
+      }
+
+      .badge-course {
+        font-size: 0.68rem;
+        padding: 2px 5px;
+        white-space: nowrap;
+        flex-shrink: 0;
+      }
+
+      .topbar-title {
+        font-size: 0.76rem;
+        white-space: normal;
+        line-height: 1.2;
+      }
+
+      .topbar-actions {
+        gap: 4px;
+        flex-shrink: 0;
+      }
+
+      .topbar-actions .btn {
+        padding: 4px 7px;
+        min-height: 32px;
+        font-size: 0.74rem;
+        border-radius: 6px;
+      }
+
+      .topbar-actions .btn span {
+        display: none;
       }
 
       .app-container {
-        padding: 0.6rem 0.5rem;
+        padding: 0.5rem 0.35rem;
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
+
+      .sim-layout {
+        display: flex;
+        flex-direction: column;
+        gap: 0.65rem;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .classroom-card {
+        padding: 0.65rem 0.4rem;
+        border-radius: var(--radius-lg);
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .classroom-header {
+        gap: 6px;
+        padding-bottom: 0.45rem;
+      }
+
+      .classroom-title {
+        font-size: 0.88rem;
+      }
+
+      .legend-bar {
+        gap: 4px;
+      }
+
+      .legend-chip {
+        font-size: 0.68rem;
+        padding: 2px 6px;
+      }
+
+      .grid-container {
+        padding: 0.5rem 0.25rem;
+        border-radius: var(--radius-md);
+        width: 100%;
+      }
+
+      .blackboard-mock {
+        font-size: 0.68rem;
+        padding: 3px 6px;
+        margin-bottom: 0.5rem;
+        text-align: center;
+        white-space: normal;
+        line-height: 1.25;
+        max-width: 100%;
       }
 
       .desk-grid {
-        gap: 6px;
+        gap: 3px;
+        width: 100%;
+        max-width: 100%;
       }
 
       .desk-cell {
-        border-radius: 6px;
-        padding: 2px;
+        aspect-ratio: 1.2;
+        min-height: 36px;
+        border-radius: 4px;
+        padding: 2px 1px;
+      }
+
+      .desk-badge-wrap {
+        gap: 1.5px;
       }
 
       .tag-item {
-        width: 17px;
-        height: 17px;
-        font-size: 9px;
+        width: 14px;
+        height: 14px;
+        font-size: 8px;
+        border-radius: 3px;
+      }
+
+      .check-marker {
+        width: 12px;
+        height: 12px;
+        font-size: 8px;
+        top: 1px;
+        left: 1px;
       }
 
       .hook-hero-wrap {
-        height: 240px;
+        height: 220px;
       }
 
       .hook-hero-overlay {
-        padding: 1rem;
+        padding: 0.85rem;
       }
 
       .hook-title {
-        font-size: 1.15rem;
+        font-size: 1.1rem;
       }
 
       .hook-dialog-card {
-        padding: 1rem;
+        padding: 0.85rem;
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .hook-dialog-card .btn-primary {
+        width: 100%;
+      }
+
+      .step-panel {
+        padding: 0.85rem 0.65rem;
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .step-title {
+        font-size: 0.95rem;
+      }
+
+      .step-athena-card {
+        padding: 0.65rem 0.75rem;
+      }
+
+      .step-athena-avatar {
+        width: 34px;
+        height: 34px;
+      }
+
+      .step-athena-text {
+        font-size: 0.8rem;
+      }
+
+      .math-input {
+        width: 80px;
+        height: 38px;
       }
 
       .btn {
-        min-height: 40px;
-        padding: 8px 12px;
-        font-size: 0.82rem;
+        min-height: 38px;
+        padding: 7px 12px;
+        font-size: 0.8rem;
       }
     }
   </style>
@@ -1082,7 +1252,7 @@
       </div>
       <div class="hook-dialog-card">
         <div class="hook-dialog-athena">
-          <div class="athena-avatar"><i class="ti ti-robot"></i></div>
+          <div class="athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
           <div class="athena-bubble">
             <div class="athena-name"><i class="ti ti-sparkles"></i> Trợ lý Athena</div>
             Đây là lớp 10A — chuẩn bị cho lễ ra mắt CLB, nhà trường cần in thẻ đại biểu cho các bạn tham gia ít nhất 1
@@ -1412,7 +1582,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-robot"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Bạn hãy click vào từng bàn có <b>nhãn xanh lá</b> — kể cả những bàn có <b>cả 2 màu</b> — để đếm số bạn tham gia CLB Cờ vua. Đếm xong thì nhấn Xác nhận nhé.
             </div>
@@ -1444,7 +1614,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-robot"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Tốt lắm! Giờ bạn đếm tiếp những bàn có <b>nhãn cam</b> — kể cả những bàn có <b>cả 2 màu</b> — để ra số bạn tham gia CLB Âm nhạc.
             </div>
@@ -1475,7 +1645,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-robot"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Bạn vừa đếm được <b>14 bàn Cờ vua</b> và <b>12 bàn Âm nhạc</b>. Theo bạn, tổng cộng có bao nhiêu bạn tham gia <b>ÍT NHẤT 1 trong 2 CLB</b>? Nhập số và nhấn Kiểm tra.
             </div>
@@ -1512,7 +1682,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-robot"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Sơ đồ vừa nhấp nháy vàng ở một số ô đặc biệt. Bạn hãy click <b>ĐÚNG 1 LẦN</b> vào mỗi bàn có nhãn (bất kỳ màu nào) để đếm lại tổng số bạn có nhãn trên toàn bộ lớp.
             </div>
@@ -1543,7 +1713,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-robot"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Bạn vừa đếm lại được <b>21 bàn có nhãn</b>. So với dự đoán ban đầu là <b>${state.predictedTotal || 26}</b>, hai số này có khớp nhau không? Bạn hãy nhập lại đáp án đúng nhé.
             </div>
@@ -1578,7 +1748,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-robot"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Từ bài toán lớp học vừa rồi, mình rút ra được: nếu một công việc có thể thực hiện theo 1 trong 2 phương án hoàn toàn tách biệt nhau (không trùng), số cách thực hiện bằng tổng số cách của từng phương án — đây gọi là <b>Quy tắc cộng</b>. Nhưng nếu 2 phương án có phần chung, như 2 CLB có bạn tham gia cả hai, bạn phải <b>trừ đi phần chung đó</b> trước khi cộng.
             </div>
@@ -1610,7 +1780,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-robot"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Nếu muốn thử áp dụng ngay, bạn có thể làm thêm 1 tình huống nữa — hoặc bấm Hoàn thành để qua phần tiếp theo.
             </div>

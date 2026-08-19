@@ -294,27 +294,33 @@
     }
 
     .athena-avatar {
-      width: 42px;
-      height: 42px;
+      width: 44px;
+      height: 44px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--jade) 0%, var(--jade-deep) 100%);
-      color: #FFFFFF;
+      background: #FFFFFF;
+      border: 1.5px solid var(--jade-soft);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 1.25rem;
       flex-shrink: 0;
+      overflow: hidden;
+      padding: 2px;
       box-shadow: 0 4px 10px rgba(45, 139, 111, 0.3);
       animation: floatBreath 3s ease-in-out infinite;
     }
 
-    @keyframes floatBreath {
+    .athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      display: block;
+    }
 
-      0%,
-      100% {
+    @keyframes floatBreath {
+      0%, 100% {
         transform: translateY(0);
       }
-
       50% {
         transform: translateY(-4px);
       }
@@ -758,16 +764,26 @@
     }
 
     .step-athena-avatar {
-      width: 34px;
-      height: 34px;
+      width: 40px;
+      height: 40px;
       border-radius: 50%;
-      background: linear-gradient(135deg, var(--jade) 0%, var(--jade-deep) 100%);
-      color: #FFFFFF;
+      background: #FFFFFF;
+      border: 1.5px solid var(--jade-soft);
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.95rem;
       flex-shrink: 0;
+      overflow: hidden;
+      padding: 2px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .step-athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      display: block;
     }
 
     .step-athena-text {
@@ -1058,6 +1074,15 @@
     /* =========================================================
        6. MOBILE RESPONSIVE OPTIMIZATIONS (≤992px & ≤600px)
        ========================================================= */
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    * {
+      box-sizing: border-box;
+    }
+
     @media (max-width: 992px) {
       .app-container {
         padding: 0.5rem 0.75rem;
@@ -1078,13 +1103,20 @@
       }
     }
 
-    @media (max-width: 600px) {
+    @media (max-width: 768px) {
+      html, body {
+        overflow-x: hidden;
+        max-width: 100vw;
+      }
+
       .topbar {
-        padding: 0.45rem 0.65rem;
+        padding: 0.4rem 0.5rem;
       }
 
       .topbar-brand {
         gap: 5px;
+        flex: 1;
+        min-width: 0;
       }
 
       .badge-course {
@@ -1093,11 +1125,41 @@
       }
 
       .topbar-title {
-        font-size: 0.85rem;
+        font-size: 0.76rem;
+        white-space: normal;
+        line-height: 1.2;
+      }
+
+      .topbar-actions {
+        gap: 4px;
+        flex-shrink: 0;
+      }
+
+      .topbar-actions .btn {
+        padding: 4px 7px;
+        min-height: 32px;
+        font-size: 0.74rem;
+        border-radius: 6px;
       }
 
       .topbar-actions .btn span {
         display: none;
+      }
+
+      .app-container {
+        padding: 0.5rem 0.35rem;
+        max-width: 100vw;
+        overflow-x: hidden;
+      }
+
+      .canvas-card {
+        padding: 0.65rem 0.5rem;
+      }
+
+      .canvas-viewport {
+        height: auto;
+        min-height: 320px;
+        padding: 6px 3px;
       }
 
       .hook-hero-wrap {
@@ -1122,14 +1184,17 @@
         width: 100%;
       }
 
-      /* Compact Canvas Viewport on Mobile */
-      .canvas-card {
-        padding: 0.65rem 0.75rem;
+      .step-panel-wrap {
+        padding: 0.75rem 0.65rem;
       }
 
-      .canvas-viewport {
-        height: 320px;
-        padding: 6px;
+      .step-athena-avatar {
+        width: 36px;
+        height: 36px;
+      }
+
+      .step-athena-text {
+        font-size: 0.82rem;
       }
 
       .overview-hero-mini {
@@ -1180,10 +1245,6 @@
         font-size: 1.25rem;
         letter-spacing: 2px;
       }
-
-      .step-panel-wrap {
-        padding: 0.85rem;
-      }
     }
   </style>
 </head>
@@ -1224,7 +1285,7 @@
 
       <div class="hook-dialog-card">
         <div class="hook-dialog-athena">
-          <div class="athena-avatar"><i class="ti ti-sparkles"></i></div>
+          <div class="athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
           <div class="athena-bubble">
             <div class="athena-name"><i class="ti ti-sparkles"></i> Trợ lý Athena</div>
             Đội điều tra dùng mật mã riêng để liên lạc bí mật: mỗi mật mã gồm <b>1 kí hiệu điều tra viên</b> (chữ cái)
@@ -1548,7 +1609,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Nhìn vào 3 công đoạn bên trái (5 kí hiệu, hàng chục khác 0, hàng đơn vị 0-9). Bạn hãy thử đoán xem có thể tạo ra bao nhiêu mật mã khác nhau nhé.
             </div>
@@ -1583,7 +1644,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Bạn dự đoán là <b>${state.predictedTotal} mật mã</b>. Mình chưa nói đúng sai vội — hãy thử ghép đủ <b>6 cặp</b> từ 2 kí hiệu (A, B) và 3 mã số (1, 2, 3) trên bảng bên trái nhé.
             </div>
@@ -1616,7 +1677,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Bây giờ quay lại bài toán thật. Bạn hãy nhập số lựa chọn ở từng công đoạn nhé:
             </div>
@@ -1661,7 +1722,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Bạn hãy thử bấm mũi tên xoay khối <b>Kí hiệu</b> qua vài giá trị khác nhau, rồi quan sát xem số lựa chọn ở 2 khối còn lại có thay đổi không nhé.
             </div>
@@ -1689,7 +1750,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Nhân 3 số lựa chọn ở từng công đoạn ($5 \\times 9 \\times 10$) để tính tổng số mật mã có thể tạo ra nhé.
             </div>
@@ -1724,7 +1785,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               Đây chính là <b>Quy tắc nhân</b>: Nếu công việc gồm nhiều công đoạn liên tiếp, mỗi công đoạn độc lập với công đoạn trước, số cách thực hiện toàn bộ công việc bằng tích số cách của từng công đoạn.
             </div>
@@ -1752,7 +1813,7 @@
           </div>
 
           <div class="step-athena-card">
-            <div class="step-athena-avatar"><i class="ti ti-sparkles"></i></div>
+            <div class="step-athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
             <div class="step-athena-text">
               <b>Tình huống:</b> Một mật mã mới gồm <b>2 chữ cái tiếng Anh</b> (26 chữ cái, không giới hạn) + <b>1 chữ số bất kỳ</b> (0-9). Hỏi có bao nhiêu mật mã?
             </div>
