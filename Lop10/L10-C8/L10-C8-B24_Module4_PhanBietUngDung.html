@@ -655,13 +655,24 @@
     }
 
     .athena-avatar {
-      width: 68px;
-      height: 68px;
+      width: 72px;
+      height: 72px;
       flex-shrink: 0;
       background: #FFF;
       border-radius: var(--radius-full);
-      padding: 6px;
+      padding: 4px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: var(--radius-full);
     }
 
     .summary-text h3 {
@@ -1181,24 +1192,9 @@
   <!-- ATHENA FINAL SUMMARY -->
   <section class="summary-card" id="final-summary">
     <div class="summary-content">
-      <!-- Athena Mascot SVG -->
+      <!-- Athena Mascot WebP -->
       <div class="athena-avatar">
-        <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg" style="width:100%; height:100%;">
-          <circle cx="50" cy="50" r="45" fill="#E6F4EE"/>
-          <ellipse cx="50" cy="55" rx="30" ry="32" fill="#2D8B6F"/>
-          <ellipse cx="50" cy="58" rx="22" ry="24" fill="#FAF8F5"/>
-          <circle cx="38" cy="42" r="12" fill="#FFFFFF" stroke="#14432F" stroke-width="2.5"/>
-          <circle cx="62" cy="42" r="12" fill="#FFFFFF" stroke="#14432F" stroke-width="2.5"/>
-          <circle cx="40" cy="42" r="6" fill="#14432F"/>
-          <circle cx="60" cy="42" r="6" fill="#14432F"/>
-          <circle cx="42" cy="40" r="2" fill="#FFFFFF"/>
-          <circle cx="62" cy="40" r="2" fill="#FFFFFF"/>
-          <polygon points="50,48 45,56 55,56" fill="#D97736"/>
-          <polygon points="50,18 22,28 50,38 78,28" fill="#14432F"/>
-          <rect x="36" y="28" width="28" height="8" fill="#14432F"/>
-          <circle cx="50" cy="28" r="3" fill="#D97736"/>
-          <path d="M72,30 L76,46" stroke="#D97736" stroke-width="2.5" stroke-linecap="round"/>
-        </svg>
+        <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot" loading="lazy">
       </div>
       <div class="summary-text">
         <h3>🎉 Xuất sắc! Bạn đã làm chủ Module 4 & Hoàn thành Bài 24</h3>

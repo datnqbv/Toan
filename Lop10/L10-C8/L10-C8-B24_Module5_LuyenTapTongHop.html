@@ -1,0 +1,1920 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Module 5: Luyện tập tổng hợp — Bài 24 Toán 10</title>
+
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for beautiful math formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+          onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <style>
+    /* =========================================================
+       1. DESIGN TOKENS (JADE & CREAM PALETTE - 02_design_toan_final.md)
+       ========================================================= */
+    :root {
+      --bg: #FAF8F5;            /* Nền trang Cream ấm */
+      --paper: #FFFFFF;         /* Nền card trắng */
+      --paper-subtle: #F7F5F0;  /* Nền khối con nhạt */
+      --paper-line: #E8E4DC;    /* Viền nhẹ */
+      
+      --jade-deep: #14432F;     /* Xanh đậm thương hiệu */
+      --jade-dark: #1E5C45;     /* Xanh ngọc đậm */
+      --jade: #2D8B6F;          /* Xanh ngọc chính */
+      --jade-light: #E6F4EE;    /* Xanh ngọc nhạt */
+      --sage: #4A7C59;          /* Xanh lá xô thơm */
+      --sage-pale: #EBF3ED;     /* Nền sage nhẹ */
+      
+      --accent: #D97736;        /* Cam đất nhấn */
+      --accent-light: #FDF2E9;  /* Cam nhạt */
+      --accent-dark: #B25822;   /* Cam đậm */
+      
+      --ink: #1F2937;           /* Chữ chính */
+      --ink-2: #4B5563;         /* Chữ phụ */
+      --ink-3: #9CA3AF;         /* Chữ mờ / placeholder */
+      
+      --correct: #16A34A;       /* Đúng */
+      --correct-bg: #DCFCE7;
+      --wrong: #DC2626;         /* Sai */
+      --wrong-bg: #FEE2E2;
+      --warning: #D97706;       /* Cảnh báo / gợi ý */
+      --warning-bg: #FEF3C7;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
+      --shadow-lg: 0 10px 25px rgba(20,67,47,0.1);
+
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+    }
+
+    /* =========================================================
+       2. BASE & RESET
+       ========================================================= */
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      padding: 24px 16px 80px 16px;
+      -webkit-font-smoothing: antialiased;
+      font-size: 18px;
+    }
+
+    .container {
+      max-width: 880px;
+      margin: 0 auto;
+    }
+
+    /* =========================================================
+       3. INTRO TEXT & TOP PROGRESS BAR
+       ========================================================= */
+    .intro-text {
+      background: var(--paper);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-xl);
+      padding: 24px 28px;
+      margin-bottom: 20px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .badge-topic {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--jade-light);
+      color: var(--jade-dark);
+      font-size: 14px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      margin-bottom: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    .intro-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      margin-bottom: 8px;
+      line-height: 1.3;
+    }
+
+    .intro-desc {
+      font-size: 16px;
+      color: var(--ink-2);
+      margin-bottom: 18px;
+    }
+
+    .progress-wrap {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--paper-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 16px;
+      border: 1px solid var(--paper-line);
+    }
+
+    .progress-info {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--ink-2);
+    }
+
+    .progress-bar-bg {
+      flex: 1;
+      max-width: 320px;
+      height: 8px;
+      background: #E5E7EB;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--jade) 0%, var(--correct) 100%);
+      border-radius: var(--radius-full);
+      transition: width 0.35s ease;
+    }
+
+    /* =========================================================
+       4. KNOWLEDGE BASE & SUMMARY DRAWER
+       ========================================================= */
+    .kb-toggle-wrap {
+      margin-bottom: 24px;
+    }
+
+    .btn-kb-toggle {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: var(--paper);
+      border: 1.5px solid var(--jade);
+      color: var(--jade-dark);
+      padding: 10px 20px;
+      border-radius: var(--radius-full);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      box-shadow: var(--shadow-sm);
+      transition: var(--transition-fast);
+    }
+
+    .btn-kb-toggle:hover {
+      background: var(--jade-light);
+      transform: translateY(-1px);
+    }
+
+    .kb-panel {
+      background: var(--paper);
+      border: 2px solid var(--jade);
+      border-radius: var(--radius-xl);
+      padding: 20px 24px;
+      margin-top: 12px;
+      box-shadow: var(--shadow-md);
+      display: none;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .kb-panel.show {
+      display: block;
+    }
+
+    .kb-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      margin-bottom: 12px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .kb-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 14px;
+    }
+
+    .kb-box {
+      background: var(--paper-subtle);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      border: 1px solid var(--paper-line);
+      font-size: 14px;
+      line-height: 1.55;
+    }
+
+    .kb-box-title {
+      font-size: 14px;
+      font-weight: 800;
+      color: var(--accent-dark);
+      margin-bottom: 6px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+
+    /* =========================================================
+       5. 5 PRACTICE QUESTIONS (STACKED LIST)
+       ========================================================= */
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--jade-dark);
+      margin-bottom: 16px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .practice-list {
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+      margin-bottom: 28px;
+    }
+
+    .q-card {
+      background: var(--paper);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-xl);
+      padding: 24px 28px;
+      box-shadow: var(--shadow-sm);
+      transition: all var(--transition-normal);
+    }
+
+    .q-card.completed {
+      border-color: var(--correct);
+      background: linear-gradient(180deg, var(--paper) 0%, var(--jade-light) 300%);
+    }
+
+    .q-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
+    .q-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      background: var(--paper-subtle);
+      color: var(--ink-2);
+      border: 1px solid var(--paper-line);
+    }
+
+    .q-card.completed .q-badge {
+      background: var(--correct-bg);
+      color: var(--correct);
+      border-color: var(--correct);
+    }
+
+    .q-status {
+      font-size: 18px;
+    }
+
+    .q-prompt {
+      font-size: 16px;
+      color: var(--ink);
+      margin-bottom: 16px;
+      line-height: 1.6;
+    }
+
+    .q-prompt strong {
+      color: var(--jade-dark);
+    }
+
+    /* 2-Column Counters Layout for Compound questions (Câu 2, 3, 5) */
+    .counters-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+
+    .counter-box {
+      background: var(--paper-subtle);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      transition: border-color var(--transition-fast);
+    }
+
+    .counter-box.done {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+    }
+
+    .counter-title {
+      font-size: 14.5px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      margin-bottom: 6px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .counter-desc {
+      font-size: 14px;
+      color: var(--ink-2);
+      margin-bottom: 12px;
+      line-height: 1.45;
+    }
+
+    .counter-input-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .counter-input {
+      flex: 1;
+      width: 100%;
+      min-width: 100px;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 17px;
+      font-weight: 700;
+      text-align: center;
+      padding: 8px 12px;
+      border: 2px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      outline: none;
+      background: #FFF;
+    }
+
+    .counter-input:focus {
+      border-color: var(--jade);
+    }
+
+    .counter-input.correct {
+      background: var(--correct-bg);
+      border-color: var(--correct);
+      color: var(--jade-dark);
+    }
+
+    /* Combine Section */
+    .combine-section {
+      background: #FFFDF8;
+      border: 1.5px dashed var(--accent);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .combine-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--accent-dark);
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-options-row {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 12px;
+    }
+
+    .btn-opt {
+      background: var(--paper);
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      padding: 8px 16px;
+      font-family: inherit;
+      font-size: 14px;
+      font-weight: 600;
+      color: var(--ink-2);
+      cursor: pointer;
+      transition: var(--transition-fast);
+      min-height: 40px;
+    }
+
+    .btn-opt:hover:not(:disabled) {
+      border-color: var(--jade);
+      color: var(--jade-dark);
+      background: var(--jade-light);
+    }
+
+    .btn-opt.selected {
+      background: var(--jade-dark);
+      color: #FFF;
+      border-color: var(--jade-dark);
+    }
+
+    .btn-opt.wrong-opt {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+      border-color: var(--wrong);
+    }
+
+    .q-action-row {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .q-input {
+      flex: 1;
+      width: 100%;
+      min-width: 140px;
+      max-width: 240px;
+      box-sizing: border-box;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--ink);
+      background: var(--paper);
+      border: 2px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      padding: 9px 14px;
+      text-align: center;
+      outline: none;
+      transition: var(--transition-fast);
+      min-height: 44px;
+    }
+
+    .q-input:focus {
+      border-color: var(--jade);
+      box-shadow: 0 0 0 3px var(--jade-light);
+    }
+
+    .q-input.correct {
+      background: var(--correct-bg);
+      border-color: var(--correct);
+      color: var(--jade-dark);
+    }
+
+    .q-input.wrong {
+      background: var(--wrong-bg);
+      border-color: var(--wrong);
+      color: var(--wrong);
+    }
+
+    .btn-q-submit {
+      background: var(--jade);
+      color: #FFF;
+      border: none;
+      padding: 10px 22px;
+      border-radius: var(--radius-md);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      box-shadow: var(--shadow-sm);
+      white-space: nowrap;
+      min-height: 44px;
+    }
+
+    .btn-q-submit:hover:not(:disabled) {
+      background: var(--jade-dark);
+      transform: translateY(-1px);
+    }
+
+    .btn-q-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* Feedback Box */
+    .feedback-box {
+      border-radius: var(--radius-md);
+      padding: 12px 16px;
+      font-size: 14px;
+      margin-top: 12px;
+      display: none;
+      animation: fadeIn 0.25s ease;
+      line-height: 1.5;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(-4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .feedback-box.show {
+      display: block;
+    }
+
+    .feedback-box.hint {
+      background: var(--warning-bg);
+      color: var(--accent-dark);
+      border: 1px solid var(--accent);
+    }
+
+    .feedback-box.success {
+      background: var(--correct-bg);
+      color: var(--jade-dark);
+      border: 1px solid var(--correct);
+    }
+
+    .feedback-box.wrong {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+      border: 1px solid var(--wrong);
+    }
+
+    /* Shake Animation */
+    .shake-anim {
+      animation: shake 0.4s cubic-bezier(0.36, 0.07, 0.19, 0.97) both;
+    }
+
+    @keyframes shake {
+      10%, 90% { transform: translateX(-3px); }
+      20%, 80% { transform: translateX(4px); }
+      30%, 50%, 70% { transform: translateX(-6px); }
+      40%, 60% { transform: translateX(6px); }
+    }
+
+    /* =========================================================
+       6. QUESTION 4 STEP-BY-STEP (BLOCK BINDING TECHNIQUE)
+       ========================================================= */
+    .binding-step {
+      background: var(--paper-subtle);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      margin-bottom: 12px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .binding-step.active {
+      border-color: var(--jade);
+      background: var(--paper);
+    }
+
+    .binding-step.done {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+    }
+
+    .binding-step-head {
+      font-size: 15px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      margin-bottom: 6px;
+    }
+
+    /* =========================================================
+       7. ATHENA FINAL SUMMARY CARD
+       ========================================================= */
+    .summary-card {
+      background: linear-gradient(135deg, var(--jade-dark) 0%, #1c523d 100%);
+      color: #FFF;
+      border-radius: var(--radius-xl);
+      padding: 30px;
+      margin-top: 24px;
+      box-shadow: var(--shadow-lg);
+      display: none;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .summary-card.active {
+      display: block;
+    }
+
+    .summary-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 22px;
+    }
+
+    .athena-avatar {
+      width: 72px;
+      height: 72px;
+      flex-shrink: 0;
+      background: #FFF;
+      border-radius: var(--radius-full);
+      padding: 4px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: var(--radius-full);
+    }
+
+    .summary-text h3 {
+      font-size: 21px;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .summary-text p {
+      font-size: 16px;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.6;
+      margin-bottom: 14px;
+    }
+
+    .btn-restart-all {
+      background: var(--accent);
+      color: #FFF;
+      border: none;
+      padding: 9px 20px;
+      border-radius: var(--radius-full);
+      font-size: 15px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: var(--transition-fast);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-restart-all:hover {
+      background: #e68544;
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       8. RESPONSIVE (MOBILE OPTIMIZATION)
+       ========================================================= */
+    @media (max-width: 768px) {
+      body {
+        padding: 12px 10px 60px 10px;
+        font-size: 16px;
+      }
+
+      .intro-text, .q-card {
+        padding: 18px 16px;
+      }
+
+      .kb-grid, .counters-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .q-action-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .q-input {
+        width: 100%;
+        max-width: 100%;
+      }
+
+      .btn-q-submit {
+        width: 100%;
+      }
+
+      .summary-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+      }
+    }
+  </style>
+</head>
+<body>
+
+<div class="container">
+
+  <!-- INTRO HEADER -->
+  <header class="intro-text">
+    <div class="badge-topic">🎯 Bài 24 · Hoán vị, Chỉnh hợp & Tổ hợp · Toán 10</div>
+    <h1 class="intro-title">Module 5: Luyện tập tổng hợp</h1>
+    <p class="intro-desc">
+      Vận dụng phối hợp linh hoạt Hoán vị, Chỉnh hợp, Tổ hợp cùng Quy tắc cộng & Quy tắc nhân để chinh phục 5 bài toán thực tế đa tầng.
+    </p>
+
+    <div class="progress-wrap">
+      <div class="progress-info">
+        Tiến độ: <span id="progress-text" style="color:var(--jade-dark); font-weight:800;">0/11</span> bước hoàn thành
+      </div>
+      <div class="progress-bar-bg">
+        <div id="progress-bar" class="progress-bar-fill"></div>
+      </div>
+    </div>
+  </header>
+
+  <!-- KNOWLEDGE BASE DRAWER -->
+  <div class="kb-toggle-wrap">
+    <button class="btn-kb-toggle" onclick="toggleKnowledgeBase()">
+      <span>📖</span> Sổ tay kiến thức & Kỹ thuật phối hợp
+    </button>
+    <div class="kb-panel" id="kbPanel">
+      <div class="kb-title">
+        <span>⚡</span> Tóm tắt các công cụ & Kỹ thuật đếm (Bài 24)
+      </div>
+      <div class="kb-grid">
+        <div class="kb-box">
+          <div class="kb-box-title">1. Ba công cụ đếm cơ bản</div>
+          • <strong>Hoán vị:</strong> $P_n = n!$ (xếp tất cả $n$, có thứ tự).<br>
+          • <strong>Chỉnh hợp:</strong> $A_n^k = \frac{n!}{(n-k)!}$ (chọn 1 phần, có vai trò/thứ tự).<br>
+          • <strong>Tổ hợp:</strong> $C_n^k = \frac{n!}{(n-k)!k!}$ (chọn 1 phần, không phân vai trò).
+        </div>
+        <div class="kb-box">
+          <div class="kb-box-title">2. Kỹ thuật phối hợp & Nâng cao</div>
+          • <strong>Quy tắc nhân:</strong> Các công đoạn nối tiếp, độc lập $\to (\times)$.<br>
+          • <strong>Quy tắc cộng:</strong> Các phương án rời rạc, tách biệt $\to (+)$.<br>
+          • <strong>Kỹ thuật buộc khối:</strong> Coi các phần tử phải cạnh nhau là 1 khối $\to$ Hoán vị khối và các phần tử còn lại $\to$ Nhân hoán vị nội khối.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- 5 PRACTICE QUESTIONS -->
+  <div class="section-title">
+    <span>📝</span> Năm bài toán luyện tập phối hợp
+  </div>
+
+  <main class="practice-list">
+
+    <!-- CÂU 1: LẬP SỐ TỰ NHIÊN (CHỈNH HỢP THUẦN) -->
+    <article class="q-card" id="card-q1">
+      <div class="q-header">
+        <div class="q-badge">Câu 1 · Lập số tự nhiên</div>
+        <div class="q-status" id="status-q1">⏳</div>
+      </div>
+      <p class="q-prompt">
+        Từ tập hợp gồm <strong>7 chữ số $\{1, 3, 5, 6, 7, 8, 9\}$</strong>, có thể lập được bao nhiêu số tự nhiên gồm <strong>4 chữ số khác nhau</strong>?
+      </p>
+      <div style="background:var(--paper-subtle); border-radius:var(--radius-lg); padding:16px 20px; border:1px solid var(--paper-line);">
+        <div class="q-action-row">
+          <label for="input-q1" style="font-size:15px; font-weight:700; color:var(--ink-2);">Tổng số lượng số lập được:</label>
+          <input type="text" inputmode="numeric" id="input-q1" class="q-input" placeholder="Nhập số..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-q1" onclick="submitQ1()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-q1"></div>
+      </div>
+    </article>
+
+    <!-- CÂU 2: CA TRỰC CUỐI TUẦN (CHỌN CÓ VAI TRÒ × CHỌN KHÔNG VAI TRÒ) -->
+    <article class="q-card" id="card-q2">
+      <div class="q-header">
+        <div class="q-badge">Câu 2 · Ca trực cuối tuần</div>
+        <div class="q-status" id="status-q2">⏳</div>
+      </div>
+      <p class="q-prompt">
+        Một cửa hàng tiện lợi cần chọn <strong>3 nhân viên trực ca</strong> từ đội ngũ gồm <strong>8 nhân viên</strong>: gồm <strong>1 ca trưởng</strong> chịu trách nhiệm chính và <strong>2 nhân viên phụ</strong> (không phân biệt vai trò giữa 2 người phụ). Hỏi có bao nhiêu cách phân công?
+      </p>
+
+      <!-- 2 Counters Grid -->
+      <div class="counters-grid">
+        <!-- Part 1: Ca trưởng -->
+        <div class="counter-box" id="q2-box-p1">
+          <div>
+            <div class="counter-title">📌 Công đoạn 1: Chọn 1 ca trưởng</div>
+            <div class="counter-desc">Chọn 1 người làm ca trưởng từ 8 nhân viên:</div>
+          </div>
+          <div>
+            <div class="counter-input-row">
+              <input type="text" inputmode="numeric" id="input-q2-p1" class="counter-input" placeholder="Số cách..." autocomplete="off">
+              <button class="btn-q-submit" id="btn-q2-p1" onclick="submitQ2P1()">Kiểm tra</button>
+            </div>
+            <div class="feedback-box" id="feedback-q2-p1"></div>
+          </div>
+        </div>
+
+        <!-- Part 2: 2 Nhân viên phụ -->
+        <div class="counter-box" id="q2-box-p2">
+          <div>
+            <div class="counter-title">📌 Công đoạn 2: Chọn 2 nhân viên phụ</div>
+            <div class="counter-desc">Chọn 2 phụ (không thứ tự) từ 7 nhân viên còn lại:</div>
+          </div>
+          <div>
+            <div class="counter-input-row">
+              <input type="text" inputmode="numeric" id="input-q2-p2" class="counter-input" placeholder="Số cách..." autocomplete="off">
+              <button class="btn-q-submit" id="btn-q2-p2" onclick="submitQ2P2()">Kiểm tra</button>
+            </div>
+            <div class="feedback-box" id="feedback-q2-p2"></div>
+          </div>
+        </div>
+      </div>
+
+      <!-- Combine Step -->
+      <div class="combine-section" id="q2-combine" style="display:none;">
+        <div class="combine-title">🔗 Ghép 2 công đoạn lại:</div>
+        <div style="font-size:14px; color:var(--ink-2); margin-bottom:8px;">Chọn quy tắc để kết hợp số cách chọn ca trưởng và 2 nhân viên phụ:</div>
+        <div class="btn-options-row">
+          <button class="btn-opt" onclick="chooseQ2Rule('mul', this)">Quy tắc Nhân ($\times$)</button>
+          <button class="btn-opt" onclick="chooseQ2Rule('add', this)">Quy tắc Cộng ($+$)</button>
+        </div>
+        <div class="q-action-row" id="q2-final-row" style="display:none;">
+          <label for="input-q2-final" style="font-size:15px; font-weight:700; color:var(--ink-2);">Tổng số cách phân công:</label>
+          <input type="text" inputmode="numeric" id="input-q2-final" class="q-input" placeholder="Nhập kết quả cuối..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-q2-final" onclick="submitQ2Final()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-q2-final"></div>
+      </div>
+    </article>
+
+    <!-- CÂU 3: BAN NHẠC (TỔ HỢP × TỔ HỢP) -->
+    <article class="q-card" id="card-q3">
+      <div class="q-header">
+        <div class="q-badge">Câu 3 · Thành lập ban nhạc</div>
+        <div class="q-status" id="status-q3">⏳</div>
+      </div>
+      <p class="q-prompt">
+        Câu lạc bộ âm nhạc cần chọn <strong>4 bạn</strong> thành lập một nhóm biểu diễn: gồm <strong>2 bạn chơi nhạc cụ dây</strong> (chọn từ 6 bạn) và <strong>2 bạn chơi nhạc cụ hơi</strong> (chọn từ 5 bạn). Hỏi có bao nhiêu cách chọn ban nhạc?
+      </p>
+
+      <div class="counters-grid">
+        <!-- Part 1: Nhạc cụ dây -->
+        <div class="counter-box" id="q3-box-p1">
+          <div>
+            <div class="counter-title">🎻 Công đoạn 1: Chọn 2 bạn chơi dây</div>
+            <div class="counter-desc">Chọn 2 bạn từ 6 bạn (không phân vai trò):</div>
+          </div>
+          <div>
+            <div class="counter-input-row">
+              <input type="text" inputmode="numeric" id="input-q3-p1" class="counter-input" placeholder="Số cách..." autocomplete="off">
+              <button class="btn-q-submit" id="btn-q3-p1" onclick="submitQ3P1()">Kiểm tra</button>
+            </div>
+            <div class="feedback-box" id="feedback-q3-p1"></div>
+          </div>
+        </div>
+
+        <!-- Part 2: Nhạc cụ hơi -->
+        <div class="counter-box" id="q3-box-p2">
+          <div>
+            <div class="counter-title">🎺 Công đoạn 2: Chọn 2 bạn chơi hơi</div>
+            <div class="counter-desc">Chọn 2 bạn từ 5 bạn (không phân vai trò):</div>
+          </div>
+          <div>
+            <div class="counter-input-row">
+              <input type="text" inputmode="numeric" id="input-q3-p2" class="counter-input" placeholder="Số cách..." autocomplete="off">
+              <button class="btn-q-submit" id="btn-q3-p2" onclick="submitQ3P2()">Kiểm tra</button>
+            </div>
+            <div class="feedback-box" id="feedback-q3-p2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="combine-section" id="q3-combine" style="display:none;">
+        <div class="combine-title">🔗 Ghép 2 nhóm nhạc cụ:</div>
+        <div style="font-size:14px; color:var(--ink-2); margin-bottom:8px;">Chọn quy tắc để kết hợp 2 nhóm nhạc cụ:</div>
+        <div class="btn-options-row">
+          <button class="btn-opt" onclick="chooseQ3Rule('mul', this)">Quy tắc Nhân ($\times$)</button>
+          <button class="btn-opt" onclick="chooseQ3Rule('add', this)">Quy tắc Cộng ($+$)</button>
+        </div>
+        <div class="q-action-row" id="q3-final-row" style="display:none;">
+          <label for="input-q3-final" style="font-size:15px; font-weight:700; color:var(--ink-2);">Tổng số cách chọn ban nhạc:</label>
+          <input type="text" inputmode="numeric" id="input-q3-final" class="q-input" placeholder="Nhập kết quả cuối..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-q3-final" onclick="submitQ3Final()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-q3-final"></div>
+      </div>
+    </article>
+
+    <!-- CÂU 4: XẾP SÁCH (KỸ THUẬT BUỘC KHỐI) -->
+    <article class="q-card" id="card-q4">
+      <div class="q-header">
+        <div class="q-badge">Câu 4 · Kỹ thuật buộc khối</div>
+        <div class="q-status" id="status-q4">⏳</div>
+      </div>
+      <p class="q-prompt">
+        Có <strong>6 cuốn sách khác nhau</strong> cần xếp thành một hàng ngang trên giá sách, trong đó có <strong>2 cuốn từ điển bắt buộc phải luôn đứng cạnh nhau</strong>. Hỏi có bao nhiêu cách xếp sách?
+      </p>
+
+      <!-- Step-by-Step Block Binding Flow -->
+      <div style="margin-top:14px;">
+
+        <!-- Step 1: Đếm số đơn vị -->
+        <div class="binding-step active" id="q4-step-1">
+          <div class="binding-step-head">Bước 1: Buộc 2 cuốn từ điển thành 1 khối duy nhất</div>
+          <div style="font-size:14.5px; color:var(--ink); margin-bottom:8px;">
+            Khi coi 2 cuốn từ điển như 1 khối dính liền, cùng với 4 cuốn sách còn lại, ta cần xếp tất cả bao nhiêu <strong>"đơn vị"</strong>?
+          </div>
+          <div class="q-action-row">
+            <input type="text" inputmode="numeric" id="input-q4-s1" class="q-input" style="max-width:160px;" placeholder="Số đơn vị..." autocomplete="off">
+            <button class="btn-q-submit" onclick="submitQ4S1()">Kiểm tra</button>
+          </div>
+          <div class="feedback-box" id="feedback-q4-s1"></div>
+        </div>
+
+        <!-- Step 2: Xếp 5 đơn vị -->
+        <div class="binding-step" id="q4-step-2" style="display:none;">
+          <div class="binding-step-head">Bước 2: Xếp 5 đơn vị đó thành 1 hàng ngang</div>
+          <div style="font-size:14.5px; color:var(--ink); margin-bottom:8px;">
+            Số cách hoán vị 5 đơn vị là $P_5 = 5! = ?$
+          </div>
+          <div class="q-action-row">
+            <input type="text" inputmode="numeric" id="input-q4-s2" class="q-input" style="max-width:160px;" placeholder="Số cách..." autocomplete="off">
+            <button class="btn-q-submit" onclick="submitQ4S2()">Kiểm tra</button>
+          </div>
+          <div class="feedback-box" id="feedback-q4-s2"></div>
+        </div>
+
+        <!-- Step 3: Đổi chỗ trong khối -->
+        <div class="binding-step" id="q4-step-3" style="display:none;">
+          <div class="binding-step-head">Bước 3: Hoán vị nội bộ trong khối 2 cuốn từ điển</div>
+          <div style="font-size:14.5px; color:var(--ink); margin-bottom:8px;">
+            Hai cuốn từ điển có thể đổi chỗ cho nhau bên trong khối theo mấy cách?
+          </div>
+          <div class="q-action-row">
+            <input type="text" inputmode="numeric" id="input-q4-s3" class="q-input" style="max-width:160px;" placeholder="Số cách..." autocomplete="off">
+            <button class="btn-q-submit" onclick="submitQ4S3()">Kiểm tra</button>
+          </div>
+          <div class="feedback-box" id="feedback-q4-s3"></div>
+        </div>
+
+        <!-- Step 4: Kết quả cuối cùng -->
+        <div class="binding-step" id="q4-step-4" style="display:none;">
+          <div class="binding-step-head">Bước 4: Tính tổng số cách xếp thoả mãn</div>
+          <div style="font-size:14.5px; color:var(--ink); margin-bottom:8px;">
+            Nhân số cách xếp 5 đơn vị (120) với số cách đổi chỗ trong khối (2): $120 \times 2 = ?$
+          </div>
+          <div class="q-action-row">
+            <input type="text" inputmode="numeric" id="input-q4-final" class="q-input" placeholder="Nhập kết quả cuối..." autocomplete="off">
+            <button class="btn-q-submit" id="btn-q4-final" onclick="submitQ4Final()">Kiểm tra kết quả</button>
+          </div>
+          <div class="feedback-box" id="feedback-q4-final"></div>
+        </div>
+
+      </div>
+    </article>
+
+    <!-- CÂU 5: BAN CÁN SỰ & BAN THI ĐUA (CHỈNH HỢP × TỔ HỢP) -->
+    <article class="q-card" id="card-q5">
+      <div class="q-header">
+        <div class="q-badge">Câu 5 · Ban cán sự & Ban thi đua</div>
+        <div class="q-status" id="status-q5">⏳</div>
+      </div>
+      <p class="q-prompt">
+        Từ một lớp gồm <strong>20 học sinh</strong>, giáo viên cần chọn ra <strong>3 bạn làm ban cán sự</strong> giữ 3 chức vụ khác nhau (Lớp trưởng, Lớp phó, Bí thư); sau đó chọn tiếp <strong>2 bạn làm ban thi đua</strong> (không phân biệt vai trò) từ <strong>17 bạn còn lại</strong>. Hỏi có bao nhiêu cách chọn?
+      </p>
+
+      <div class="counters-grid">
+        <!-- Part 1: Ban cán sự -->
+        <div class="counter-box" id="q5-box-p1">
+          <div>
+            <div class="counter-title">👑 Công đoạn 1: Chọn 3 bạn ban cán sự</div>
+            <div class="counter-desc">Chọn 3 bạn có vai trò khác nhau từ 20 bạn:</div>
+          </div>
+          <div>
+            <div class="counter-input-row">
+              <input type="text" inputmode="numeric" id="input-q5-p1" class="counter-input" placeholder="Số cách..." autocomplete="off">
+              <button class="btn-q-submit" id="btn-q5-p1" onclick="submitQ5P1()">Kiểm tra</button>
+            </div>
+            <div class="feedback-box" id="feedback-q5-p1"></div>
+          </div>
+        </div>
+
+        <!-- Part 2: Ban thi đua -->
+        <div class="counter-box" id="q5-box-p2">
+          <div>
+            <div class="counter-title">🎯 Công đoạn 2: Chọn 2 bạn ban thi đua</div>
+            <div class="counter-desc">Chọn 2 bạn (không vai trò) từ 17 bạn còn lại:</div>
+          </div>
+          <div>
+            <div class="counter-input-row">
+              <input type="text" inputmode="numeric" id="input-q5-p2" class="counter-input" placeholder="Số cách..." autocomplete="off">
+              <button class="btn-q-submit" id="btn-q5-p2" onclick="submitQ5P2()">Kiểm tra</button>
+            </div>
+            <div class="feedback-box" id="feedback-q5-p2"></div>
+          </div>
+        </div>
+      </div>
+
+      <div class="combine-section" id="q5-combine" style="display:none;">
+        <div class="combine-title">🔗 Ghép 2 ban lại:</div>
+        <div style="font-size:14px; color:var(--ink-2); margin-bottom:8px;">Chọn quy tắc để kết hợp số cách chọn 2 ban:</div>
+        <div class="btn-options-row">
+          <button class="btn-opt" onclick="chooseQ5Rule('mul', this)">Quy tắc Nhân ($\times$)</button>
+          <button class="btn-opt" onclick="chooseQ5Rule('add', this)">Quy tắc Cộng ($+$)</button>
+        </div>
+        <div class="q-action-row" id="q5-final-row" style="display:none;">
+          <label for="input-q5-final" style="font-size:15px; font-weight:700; color:var(--ink-2);">Tổng số cách chọn cả 2 ban:</label>
+          <input type="text" inputmode="numeric" id="input-q5-final" class="q-input" placeholder="Nhập kết quả cuối..." autocomplete="off">
+          <button class="btn-q-submit" id="btn-q5-final" onclick="submitQ5Final()">Kiểm tra</button>
+        </div>
+        <div class="feedback-box" id="feedback-q5-final"></div>
+      </div>
+    </article>
+
+  </main>
+
+  <!-- ATHENA FINAL SUMMARY -->
+  <section class="summary-card" id="final-summary">
+    <div class="summary-content">
+      <!-- Athena Mascot WebP -->
+      <div class="athena-avatar">
+        <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot" loading="lazy">
+      </div>
+      <div class="summary-text">
+        <h3>🎉 Xuất sắc! Bạn đã hoàn thành toàn bộ Bài 24</h3>
+        <p>
+          "Chúc mừng bạn đã làm chủ trọn vẹn 3 công cụ đếm: <strong>Hoán vị</strong> (xếp tất cả), <strong>Chỉnh hợp</strong> (chọn và xếp thứ tự một phần), <strong>Tổ hợp</strong> (chỉ chọn nhóm không thứ tự) cùng 2 kỹ thuật nâng cao: <strong>Kỹ thuật phần bù</strong> (khi có điều kiện cấm) và <strong>Kỹ thuật buộc khối</strong> (khi có điều kiện phải cạnh nhau)!"
+        </p>
+        <button class="btn-restart-all" onclick="restartModule()">
+          🔄 Làm lại toàn bộ Module 5
+        </button>
+      </div>
+    </div>
+  </section>
+
+</div>
+
+<!-- ATHENA CONTEXT JSON FOR LMS / AI ORCHESTRATION -->
+<script type="application/json" id="athena-context">
+{
+  "context": {
+    "grade": 10,
+    "chapter": 8,
+    "lesson": 24,
+    "module": 5,
+    "topic": "luyen_tap_tong_hop",
+    "title": "Luyện tập tổng hợp Hoán vị - Chỉnh hợp - Tổ hợp"
+  },
+  "structure": [
+    { "id": "m5_cau1", "type": "answered", "required": true, "title": "Câu 1: Lập số tự nhiên" },
+    { "id": "m5_cau2_p1", "type": "answered", "required": true, "title": "Câu 2 (P1): Chọn ca trưởng" },
+    { "id": "m5_cau2_p2", "type": "answered", "required": true, "title": "Câu 2 (P2): Chọn 2 phụ" },
+    { "id": "m5_cau2_kethop", "type": "answered", "required": true, "title": "Câu 2: Kết hợp" },
+    { "id": "m5_cau3_p1", "type": "answered", "required": true, "title": "Câu 3 (P1): Nhạc cụ dây" },
+    { "id": "m5_cau3_p2", "type": "answered", "required": true, "title": "Câu 3 (P2): Nhạc cụ hơi" },
+    { "id": "m5_cau3_kethop", "type": "answered", "required": true, "title": "Câu 3: Kết hợp" },
+    { "id": "m5_cau4", "type": "answered", "required": true, "title": "Câu 4: Xếp sách buộc khối" },
+    { "id": "m5_cau5_p1", "type": "answered", "required": true, "title": "Câu 5 (P1): Ban cán sự" },
+    { "id": "m5_cau5_p2", "type": "answered", "required": true, "title": "Câu 5 (P2): Ban thi đua" },
+    { "id": "m5_cau5_kethop", "type": "answered", "required": true, "title": "Câu 5: Kết hợp" }
+  ],
+  "pedagogy": {
+    "total_progress": 11,
+    "strike_rule": "3 strikes show explanation & answer but require manual input typing"
+  }
+}
+</script>
+
+<script>
+  /* =========================================================
+     9. JAVASCRIPT STATE MANAGEMENT & PEDAGOGY LOGIC
+     ========================================================= */
+
+  const state = {
+    steps: {
+      m5_cau1: false,
+      m5_cau2_p1: false,
+      m5_cau2_p2: false,
+      m5_cau2_kethop: false,
+      m5_cau3_p1: false,
+      m5_cau3_p2: false,
+      m5_cau3_kethop: false,
+      m5_cau4: false,
+      m5_cau5_p1: false,
+      m5_cau5_p2: false,
+      m5_cau5_kethop: false
+    },
+    attempts: {
+      q1: 0,
+      q2_p1: 0, q2_p2: 0, q2_final: 0,
+      q3_p1: 0, q3_p2: 0, q3_final: 0,
+      q4_s1: 0, q4_s2: 0, q4_s3: 0, q4_final: 0,
+      q5_p1: 0, q5_p2: 0, q5_final: 0
+    },
+    totalSteps: 11,
+    completedSteps: 0
+  };
+
+  // KaTeX Helper with explicit delimiters
+  function renderKatex(el) {
+    if (typeof renderMathInElement === 'function') {
+      renderMathInElement(el || document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
+  // Toggle Knowledge Base Drawer
+  function toggleKnowledgeBase() {
+    const panel = document.getElementById('kbPanel');
+    panel.classList.toggle('show');
+    if (panel.classList.contains('show')) {
+      renderKatex(panel);
+    }
+  }
+
+  /* =========================================================
+     CÂU 1 LOGIC
+     ========================================================= */
+  function submitQ1() {
+    if (state.steps.m5_cau1) return;
+    const inp = document.getElementById('input-q1');
+    const fb = document.getElementById('feedback-q1');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số nguyên kết quả.';
+      return;
+    }
+
+    if (val === 840) {
+      state.steps.m5_cau1 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-q1').disabled = true;
+      document.getElementById('card-q1').classList.add('completed');
+      document.getElementById('status-q1').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> Chọn 4 chữ số trong 7 chữ số và xếp vào 4 hàng $\\implies A_7^4 = \\frac{7!}{3!} = \\mathbf{840}$ số.';
+      renderKatex(fb);
+      updateOverallProgress('m5_cau1');
+    } else {
+      state.attempts.q1++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q1 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Kết quả chưa đúng, hãy thử kiểm tra và tính lại.';
+      } else if (state.attempts.q1 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Chọn 4 chữ số trong 7 chữ số có phân biệt thứ tự hàng là Chỉnh hợp $\\implies$ Áp dụng công thức $A_7^4 = \\frac{7!}{(7-4)!} = \\frac{7!}{3!}$.';
+      } else {
+        // Strike 3+
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 840</strong><br>Lời giải: $A_7^4 = 7 \\times 6 \\times 5 \\times 4 = \\mathbf{840}$.<br><em>👉 Hãy tự gõ số <strong>840</strong> vào ô kết quả và bấm "Kiểm tra" để hoàn thành nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  document.getElementById('input-q1').addEventListener('keydown', (e) => {
+    if (e.key === 'Enter') submitQ1();
+  });
+
+  /* =========================================================
+     CÂU 2 LOGIC
+     ========================================================= */
+  function submitQ2P1() {
+    if (state.steps.m5_cau2_p1) return;
+    const inp = document.getElementById('input-q2-p1');
+    const fb = document.getElementById('feedback-q2-p1');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 8) {
+      state.steps.m5_cau2_p1 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-q2-p1').disabled = true;
+      document.getElementById('q2-box-p1').classList.add('done');
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '✅ <strong>Đúng:</strong> Có 8 cách chọn 1 ca trưởng.';
+      renderKatex(fb);
+      checkQ2ReadyToCombine();
+      updateOverallProgress('m5_cau2_p1');
+    } else {
+      state.attempts.q2_p1++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q2_p1 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy suy nghĩ lại.';
+      } else if (state.attempts.q2_p1 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Có tất cả 8 nhân viên, cần chọn ra đúng 1 người làm ca trưởng.';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 8</strong><br><em>👉 Hãy tự gõ số <strong>8</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function submitQ2P2() {
+    if (state.steps.m5_cau2_p2) return;
+    const inp = document.getElementById('input-q2-p2');
+    const fb = document.getElementById('feedback-q2-p2');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 21) {
+      state.steps.m5_cau2_p2 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-q2-p2').disabled = true;
+      document.getElementById('q2-box-p2').classList.add('done');
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '✅ <strong>Đúng:</strong> $C_7^2 = \\frac{7!}{5! \\cdot 2!} = 21$ cách chọn 2 phụ.';
+      renderKatex(fb);
+      checkQ2ReadyToCombine();
+      updateOverallProgress('m5_cau2_p2');
+    } else {
+      state.attempts.q2_p2++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q2_p2 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy tính lại số cách chọn 2 người từ những người còn lại.';
+      } else if (state.attempts.q2_p2 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Sau khi chọn 1 ca trưởng, còn 7 người. Chọn 2 phụ không vai trò $\\implies C_7^2 = \\frac{7!}{5! \\times 2!} = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 21</strong> ($C_7^2 = \\frac{7 \\times 6}{2} = 21$).<br><em>👉 Hãy tự gõ số <strong>21</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function checkQ2ReadyToCombine() {
+    if (state.steps.m5_cau2_p1 && state.steps.m5_cau2_p2) {
+      document.getElementById('q2-combine').style.display = 'block';
+      renderKatex(document.getElementById('q2-combine'));
+    }
+  }
+
+  function chooseQ2Rule(rule, btnEl) {
+    const parent = btnEl.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected', 'wrong-opt'));
+    const fb = document.getElementById('feedback-q2-final');
+
+    if (rule === 'mul') {
+      btnEl.classList.add('selected');
+      document.getElementById('q2-final-row').style.display = 'flex';
+      fb.className = 'feedback-box';
+      fb.innerHTML = '';
+    } else {
+      btnEl.classList.add('wrong-opt');
+      fb.className = 'feedback-box hint show';
+      fb.innerHTML = '💡 <strong>Gợi ý:</strong> Chọn ca trưởng và chọn 2 phụ là 2 công đoạn nối tiếp nhau để hoàn thành ca trực, không phải 2 phương án tách biệt $\\implies$ dùng <strong>Quy tắc Nhân</strong>.';
+      renderKatex(fb);
+    }
+  }
+
+  function submitQ2Final() {
+    if (state.steps.m5_cau2_kethop) return;
+    const inp = document.getElementById('input-q2-final');
+    const fb = document.getElementById('feedback-q2-final');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 168) {
+      state.steps.m5_cau2_kethop = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-q2-final').disabled = true;
+      document.getElementById('card-q2').classList.add('completed');
+      document.getElementById('status-q2').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> $8 \\times 21 = \\mathbf{168}$ cách phân công.';
+      renderKatex(fb);
+      updateOverallProgress('m5_cau2_kethop');
+    } else {
+      state.attempts.q2_final++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q2_final === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy nhân kết quả 2 công đoạn lại.';
+      } else if (state.attempts.q2_final === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Lấy 8 (ca trưởng) nhân với 21 (2 phụ): $8 \\times 21 = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 168</strong> ($8 \\times 21 = \\mathbf{168}$).<br><em>👉 Hãy tự gõ số <strong>168</strong> vào ô kết quả và bấm "Kiểm tra" để hoàn thành nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  /* =========================================================
+     CÂU 3 LOGIC
+     ========================================================= */
+  function submitQ3P1() {
+    if (state.steps.m5_cau3_p1) return;
+    const inp = document.getElementById('input-q3-p1');
+    const fb = document.getElementById('feedback-q3-p1');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 15) {
+      state.steps.m5_cau3_p1 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-q3-p1').disabled = true;
+      document.getElementById('q3-box-p1').classList.add('done');
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '✅ <strong>Đúng:</strong> $C_6^2 = \\frac{6!}{4! \\cdot 2!} = 15$ cách chọn 2 bạn chơi dây.';
+      renderKatex(fb);
+      checkQ3ReadyToCombine();
+      updateOverallProgress('m5_cau3_p1');
+    } else {
+      state.attempts.q3_p1++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q3_p1 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy tính lại số cách chọn 2 bạn trong 6 bạn.';
+      } else if (state.attempts.q3_p1 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Chọn 2 bạn trong 6 bạn chơi dây không phân vai trò $\\implies C_6^2 = \\frac{6 \\times 5}{2} = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 15</strong> ($C_6^2 = \\mathbf{15}$).<br><em>👉 Hãy tự gõ số <strong>15</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function submitQ3P2() {
+    if (state.steps.m5_cau3_p2) return;
+    const inp = document.getElementById('input-q3-p2');
+    const fb = document.getElementById('feedback-q3-p2');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 10) {
+      state.steps.m5_cau3_p2 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-q3-p2').disabled = true;
+      document.getElementById('q3-box-p2').classList.add('done');
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '✅ <strong>Đúng:</strong> $C_5^2 = \\frac{5!}{3! \\cdot 2!} = 10$ cách chọn 2 bạn chơi hơi.';
+      renderKatex(fb);
+      checkQ3ReadyToCombine();
+      updateOverallProgress('m5_cau3_p2');
+    } else {
+      state.attempts.q3_p2++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q3_p2 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy tính lại số cách chọn 2 bạn trong 5 bạn.';
+      } else if (state.attempts.q3_p2 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Chọn 2 bạn trong 5 bạn chơi hơi không phân vai trò $\\implies C_5^2 = \\frac{5 \\times 4}{2} = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 10</strong> ($C_5^2 = \\mathbf{10}$).<br><em>👉 Hãy tự gõ số <strong>10</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function checkQ3ReadyToCombine() {
+    if (state.steps.m5_cau3_p1 && state.steps.m5_cau3_p2) {
+      document.getElementById('q3-combine').style.display = 'block';
+      renderKatex(document.getElementById('q3-combine'));
+    }
+  }
+
+  function chooseQ3Rule(rule, btnEl) {
+    const parent = btnEl.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected', 'wrong-opt'));
+    const fb = document.getElementById('feedback-q3-final');
+
+    if (rule === 'mul') {
+      btnEl.classList.add('selected');
+      document.getElementById('q3-final-row').style.display = 'flex';
+      fb.className = 'feedback-box';
+      fb.innerHTML = '';
+    } else {
+      btnEl.classList.add('wrong-opt');
+      fb.className = 'feedback-box hint show';
+      fb.innerHTML = '💡 <strong>Gợi ý:</strong> Ban nhạc cần cả nhóm dây và nhóm hơi $\\implies$ 2 công đoạn nối tiếp, dùng <strong>Quy tắc Nhân</strong>.';
+      renderKatex(fb);
+    }
+  }
+
+  function submitQ3Final() {
+    if (state.steps.m5_cau3_kethop) return;
+    const inp = document.getElementById('input-q3-final');
+    const fb = document.getElementById('feedback-q3-final');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 150) {
+      state.steps.m5_cau3_kethop = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-q3-final').disabled = true;
+      document.getElementById('card-q3').classList.add('completed');
+      document.getElementById('status-q3').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> $15 \\times 10 = \\mathbf{150}$ cách chọn ban nhạc.';
+      renderKatex(fb);
+      updateOverallProgress('m5_cau3_kethop');
+    } else {
+      state.attempts.q3_final++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q3_final === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy nhân kết quả 2 nhóm nhạc cụ lại.';
+      } else if (state.attempts.q3_final === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Nhân 15 (nhóm dây) với 10 (nhóm hơi): $15 \\times 10 = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 150</strong> ($15 \\times 10 = \\mathbf{150}$).<br><em>👉 Hãy tự gõ số <strong>150</strong> vào ô kết quả và bấm "Kiểm tra" để hoàn thành nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  /* =========================================================
+     CÂU 4 LOGIC (BUỘC KHỐI)
+     ========================================================= */
+  function submitQ4S1() {
+    const inp = document.getElementById('input-q4-s1');
+    const fb = document.getElementById('feedback-q4-s1');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 5) {
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('q4-step-1').classList.add('done');
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '✅ <strong>Đúng:</strong> 1 khối từ điển + 4 cuốn sách = <strong>5 đơn vị</strong>.';
+      renderKatex(fb);
+      document.getElementById('q4-step-2').style.display = 'block';
+      renderKatex(document.getElementById('q4-step-2'));
+    } else {
+      state.attempts.q4_s1++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q4_s1 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy đếm lại tổng số đơn vị sau khi buộc 2 cuốn từ điển lại.';
+      } else if (state.attempts.q4_s1 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Coi 2 cuốn từ điển là 1 đơn vị. Cộng với 4 cuốn sách còn lại $\\implies 1 + 4 = ?$ đơn vị.';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 5</strong> (1 khối từ điển + 4 cuốn sách = 5 đơn vị).<br><em>👉 Hãy tự gõ số <strong>5</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function submitQ4S2() {
+    const inp = document.getElementById('input-q4-s2');
+    const fb = document.getElementById('feedback-q4-s2');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 120) {
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('q4-step-2').classList.add('done');
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '✅ <strong>Đúng:</strong> $5! = 120$ cách xếp 5 đơn vị.';
+      renderKatex(fb);
+      document.getElementById('q4-step-3').style.display = 'block';
+      renderKatex(document.getElementById('q4-step-3'));
+    } else {
+      state.attempts.q4_s2++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q4_s2 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy tính lại giai thừa $5!$.';
+      } else if (state.attempts.q4_s2 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> $5! = 5 \\times 4 \\times 3 \\times 2 \\times 1 = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 120</strong> ($5! = \\mathbf{120}$).<br><em>👉 Hãy tự gõ số <strong>120</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function submitQ4S3() {
+    const inp = document.getElementById('input-q4-s3');
+    const fb = document.getElementById('feedback-q4-s3');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 2) {
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('q4-step-3').classList.add('done');
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '✅ <strong>Đúng:</strong> $2! = 2$ cách đổi chỗ trong khối.';
+      renderKatex(fb);
+      document.getElementById('q4-step-4').style.display = 'block';
+      renderKatex(document.getElementById('q4-step-4'));
+    } else {
+      state.attempts.q4_s3++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q4_s3 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Có bao nhiêu cách xếp 2 cuốn từ điển bên trong khối?';
+      } else if (state.attempts.q4_s3 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Hoán vị của 2 phần tử là $2! = 2 \\times 1 = ?$ cách.';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 2</strong> ($2! = \\mathbf{2}$).<br><em>👉 Hãy tự gõ số <strong>2</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function submitQ4Final() {
+    if (state.steps.m5_cau4) return;
+    const inp = document.getElementById('input-q4-final');
+    const fb = document.getElementById('feedback-q4-final');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 240) {
+      state.steps.m5_cau4 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-q4-final').disabled = true;
+      document.getElementById('card-q4').classList.add('completed');
+      document.getElementById('status-q4').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> Số cách xếp = $5! \\times 2! = 120 \\times 2 = \\mathbf{240}$ cách.';
+      renderKatex(fb);
+      updateOverallProgress('m5_cau4');
+    } else {
+      state.attempts.q4_final++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q4_final === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy nhân số cách xếp 5 đơn vị với số cách đổi chỗ trong khối.';
+      } else if (state.attempts.q4_final === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Lấy 120 nhân với 2: $120 \\times 2 = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 240</strong> ($120 \\times 2 = \\mathbf{240}$).<br><em>👉 Hãy tự gõ số <strong>240</strong> vào ô kết quả và bấm "Kiểm tra" để hoàn thành nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  /* =========================================================
+     CÂU 5 LOGIC
+     ========================================================= */
+  function submitQ5P1() {
+    if (state.steps.m5_cau5_p1) return;
+    const inp = document.getElementById('input-q5-p1');
+    const fb = document.getElementById('feedback-q5-p1');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 6840) {
+      state.steps.m5_cau5_p1 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-q5-p1').disabled = true;
+      document.getElementById('q5-box-p1').classList.add('done');
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '✅ <strong>Đúng:</strong> $A_{20}^3 = \\frac{20!}{17!} = 6840$ cách chọn ban cán sự.';
+      renderKatex(fb);
+      checkQ5ReadyToCombine();
+      updateOverallProgress('m5_cau5_p1');
+    } else {
+      state.attempts.q5_p1++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q5_p1 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy tính lại số cách chọn 3 bạn có vai trò trong 20 bạn.';
+      } else if (state.attempts.q5_p1 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Chọn 3 bạn có phân vai trò (Lớp trưởng, Lớp phó, Bí thư) từ 20 bạn $\\implies A_{20}^3 = 20 \\times 19 \\times 18 = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 6840</strong> ($A_{20}^3 = \\mathbf{6840}$).<br><em>👉 Hãy tự gõ số <strong>6840</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function submitQ5P2() {
+    if (state.steps.m5_cau5_p2) return;
+    const inp = document.getElementById('input-q5-p2');
+    const fb = document.getElementById('feedback-q5-p2');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 136) {
+      state.steps.m5_cau5_p2 = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-q5-p2').disabled = true;
+      document.getElementById('q5-box-p2').classList.add('done');
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '✅ <strong>Đúng:</strong> $C_{17}^2 = \\frac{17!}{15! \\cdot 2!} = 136$ cách chọn ban thi đua.';
+      renderKatex(fb);
+      checkQ5ReadyToCombine();
+      updateOverallProgress('m5_cau5_p2');
+    } else {
+      state.attempts.q5_p2++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q5_p2 === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy tính lại số cách chọn 2 bạn từ 17 bạn còn lại.';
+      } else if (state.attempts.q5_p2 === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Chọn 2 bạn không vai trò từ 17 bạn còn lại $\\implies C_{17}^2 = \\frac{17 \\times 16}{2} = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 136</strong> ($C_{17}^2 = \\mathbf{136}$).<br><em>👉 Hãy tự gõ số <strong>136</strong> vào ô và bấm "Kiểm tra" nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  function checkQ5ReadyToCombine() {
+    if (state.steps.m5_cau5_p1 && state.steps.m5_cau5_p2) {
+      document.getElementById('q5-combine').style.display = 'block';
+      renderKatex(document.getElementById('q5-combine'));
+    }
+  }
+
+  function chooseQ5Rule(rule, btnEl) {
+    const parent = btnEl.parentElement;
+    parent.querySelectorAll('.btn-opt').forEach(b => b.classList.remove('selected', 'wrong-opt'));
+    const fb = document.getElementById('feedback-q5-final');
+
+    if (rule === 'mul') {
+      btnEl.classList.add('selected');
+      document.getElementById('q5-final-row').style.display = 'flex';
+      fb.className = 'feedback-box';
+      fb.innerHTML = '';
+    } else {
+      btnEl.classList.add('wrong-opt');
+      fb.className = 'feedback-box hint show';
+      fb.innerHTML = '💡 <strong>Gợi ý:</strong> Chọn ban cán sự rồi chọn tiếp ban thi đua $\\implies$ 2 công đoạn nối tiếp, dùng <strong>Quy tắc Nhân</strong>.';
+      renderKatex(fb);
+    }
+  }
+
+  function submitQ5Final() {
+    if (state.steps.m5_cau5_kethop) return;
+    const inp = document.getElementById('input-q5-final');
+    const fb = document.getElementById('feedback-q5-final');
+    const val = parseInt(inp.value.trim(), 10);
+
+    if (isNaN(val)) {
+      inp.classList.add('shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+      fb.className = 'feedback-box wrong show';
+      fb.innerHTML = '⚠️ Vui lòng nhập một số.';
+      return;
+    }
+
+    if (val === 930240) {
+      state.steps.m5_cau5_kethop = true;
+      inp.disabled = true;
+      inp.classList.remove('wrong');
+      inp.classList.add('correct');
+      document.getElementById('btn-q5-final').disabled = true;
+      document.getElementById('card-q5').classList.add('completed');
+      document.getElementById('status-q5').textContent = '✅';
+
+      fb.className = 'feedback-box success show';
+      fb.innerHTML = '🎉 <strong>Chính xác!</strong> $6840 \\times 136 = \\mathbf{930\\,240}$ cách chọn.';
+      renderKatex(fb);
+      updateOverallProgress('m5_cau5_kethop');
+    } else {
+      state.attempts.q5_final++;
+      inp.classList.add('wrong', 'shake-anim');
+      setTimeout(() => inp.classList.remove('shake-anim'), 400);
+
+      fb.className = 'feedback-box hint show';
+      if (state.attempts.q5_final === 1) {
+        fb.innerHTML = '❌ <strong>Chưa chính xác!</strong> Hãy nhân kết quả 2 ban lại.';
+      } else if (state.attempts.q5_final === 2) {
+        fb.innerHTML = '💡 <strong>Gợi ý:</strong> Lấy 6840 nhân với 136: $6840 \\times 136 = ?$';
+      } else {
+        fb.innerHTML = '📘 <strong>Đáp án đúng là: 930 240</strong> ($6840 \\times 136 = \\mathbf{930\\,240}$).<br><em>👉 Hãy tự gõ số <strong>930240</strong> vào ô kết quả và bấm "Kiểm tra" để hoàn thành nhé!</em>';
+        inp.focus();
+        inp.select();
+      }
+      renderKatex(fb);
+    }
+  }
+
+  /* =========================================================
+     PROGRESS & LMS REPORT
+     ========================================================= */
+  function updateOverallProgress(itemId) {
+    let count = 0;
+    Object.keys(state.steps).forEach(k => {
+      if (state.steps[k]) count++;
+    });
+    state.completedSteps = count;
+
+    const pct = Math.round((count / state.totalSteps) * 100);
+    document.getElementById('progress-text').textContent = `${count}/${state.totalSteps}`;
+    document.getElementById('progress-bar').style.width = `${pct}%`;
+
+    // Report to LMS
+    if (typeof LMS === 'function') {
+      try {
+        LMS().reportProgress(itemId, true);
+        LMS().reportState('module5_luyentap', state);
+      } catch (e) {
+        console.warn('LMS error:', e);
+      }
+    }
+
+    if (count === state.totalSteps) {
+      const summary = document.getElementById('final-summary');
+      summary.classList.add('active');
+      renderKatex(summary);
+      setTimeout(() => {
+        summary.scrollIntoView({ behavior: 'smooth', block: 'nearest' });
+      }, 200);
+    }
+  }
+
+  function restartModule() {
+    window.location.reload();
+  }
+
+  // Auto-resize for LMS iframe
+  window.addEventListener('load', () => {
+    if (window.ResizeObserver) {
+      const ro = new ResizeObserver(() => {
+        const height = document.documentElement.scrollHeight || document.body.scrollHeight;
+        if (window.parent && window.parent.postMessage) {
+          window.parent.postMessage({ type: 'setHeight', height: height }, '*');
+        }
+      });
+      ro.observe(document.body);
+    }
+  });
+</script>
+
+</body>
+</html>
