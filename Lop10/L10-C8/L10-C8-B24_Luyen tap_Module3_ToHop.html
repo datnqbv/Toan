@@ -1309,6 +1309,19 @@
       .replace(/=/g, '');
   }
 
+  // KaTeX Helper with explicit delimiters for dynamic content
+  function renderKatex(el) {
+    if (typeof renderMathInElement === 'function') {
+      renderMathInElement(el || document.body, {
+        delimiters: [
+          { left: '$$', right: '$$', display: true },
+          { left: '$', right: '$', display: false }
+        ],
+        throwOnError: false
+      });
+    }
+  }
+
   // Symbol Pad Insertion
   function insertToken(tok) {
     const input = document.getElementById('calc-screen');
@@ -1417,7 +1430,7 @@
 
       fb.className = 'feedback-box success show';
       fb.innerHTML = '<strong>Chính xác!</strong> Bạn đã hoàn thành đúng trình tự bấm phím: <code>10 SHIFT nCr 4 =</code> $\\to$ Kết quả máy tính trả về: $C_{10}^4 = 210$.';
-      renderMathInElement(fb);
+      renderKatex(fb);
       
       updateOverallProgress('m3_may_tinh');
     } else {
@@ -1432,7 +1445,7 @@
       } else {
         fb.innerHTML = '<strong>Gợi ý:</strong> Bạn có thể dùng trực tiếp các phím hỗ trợ bên trên để chèn đúng cụm: <code>10</code> $\\to$ <code>SHIFT</code> $\\to$ <code>nCr</code> $\\to$ <code>4</code> $\\to$ <code>=</code>.';
       }
-      renderMathInElement(fb);
+      renderKatex(fb);
     }
   }
 
@@ -1473,7 +1486,7 @@
       } else if (qNum === 4) {
         fb.innerHTML = '<strong>Chính xác!</strong> $C_9^4 = \\frac{9!}{5! \\cdot 4!} = 126$. Chọn 4 bông hoa trong 9 bông để cắm chung 1 bình hoa.';
       }
-      renderMathInElement(fb);
+      renderKatex(fb);
 
       updateOverallProgress(`m3_cau${qNum}`);
     } else {
@@ -1499,7 +1512,7 @@
 
         fb.innerHTML = `<strong>Đáp án đúng là: ${q.correctVal}</strong><br>${expl}<br><em>👉 Hãy tự gõ số <strong>${q.correctVal}</strong> vào ô kết quả và bấm "Kiểm tra" để hoàn thành nhé!</em>`;
       }
-      renderMathInElement(fb);
+      renderKatex(fb);
     }
   }
 
