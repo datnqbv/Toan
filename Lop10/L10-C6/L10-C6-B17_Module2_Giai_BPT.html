@@ -1,0 +1,1905 @@
+<!DOCTYPE html>
+<html lang="vi">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Bài 17: Dấu của tam thức bậc hai — Module 2: Giải bất phương trình bậc hai</title>
+
+  <!-- Google Fonts: Be Vietnam Pro -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for Math Formatting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+    onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
+
+  <!-- Athena Context Metadata for LMS / AI Tutor -->
+  <script type="application/json" id="athena-context">
+  {
+    "module": "L10-C6-B17-M2",
+    "title": "Giải bất phương trình bậc hai",
+    "subject": "Toán 10",
+    "structure": [
+      { "id": "m2_a1_thiet_lap_bpt", "type": "answered", "required": true },
+      { "id": "m2_a2_tinh_delta_nghiem", "type": "answered", "required": true },
+      { "id": "m2_a3_xet_dau_thuc_te", "type": "answered", "required": true },
+      { "id": "m2_b1_tinh_delta_b", "type": "answered", "required": true },
+      { "id": "m2_b2_bang_xet_dau_b", "type": "answered", "required": true },
+      { "id": "m2_b3_ket_luan_tap_nghiem_b", "type": "answered", "required": true }
+    ],
+    "progressTotal": 6,
+    "athenaGuidance": {
+      "m2_a1_thiet_lap_bpt": "Độ cao vòm là y = 5,5 - 0,05x², xe cao 4,2m. Để không chạm trần hầm thì độ cao vòm phải lớn hơn hoặc bằng chiều cao xe.",
+      "m2_a2_tinh_delta_nghiem": "Khi nhân/chia cả 2 vế của bất phương trình với số âm (-20), nhớ đổi chiều bất phương trình thành x² - 26 ≤ 0.",
+      "m2_a3_xet_dau_thuc_te": "Tam thức x² - 26 có hệ số a = 1 > 0, cần lấy ≤ 0 (trái dấu a) nên lấy khoảng TRONG [-√26; √26]. Đối chiếu thực tế: khoảng cách cách tim hầm không quá 5,1m mỗi bên.",
+      "m2_b3_ket_luan_tap_nghiem_b": "Luôn đối chiếu đúng dấu của đề bài yêu cầu với bảng xét dấu, không chọn theo cảm tính trong/ngoài."
+    }
+  }
+  </script>
+
+  <style>
+    /* =========================================================================
+       1. DESIGN SYSTEM TOKENS (Jade & Cream Theme)
+       ========================================================================= */
+    :root {
+      /* Jade & Cream System Tokens */
+      --jade-dark: #14432F;
+      --jade-deep: #2D8B6F;
+      --cream: #FAF7F0;
+      --paper-line: #cbd5e1;
+
+      /* Aliases for backwards compatibility */
+      --navy: var(--jade-dark);
+      --teal: var(--jade-deep);
+      --bg: var(--cream);
+      --surface: #ffffff;
+      --border: var(--paper-line);
+      --text: #0f172a;
+      --text-2: #334155;
+      --sub: #64748b;
+
+      --correct: #16a34a;
+      --correct-bg: #f0fdf4;
+      --wrong: #dc2626;
+      --wrong-bg: #fef2f2;
+      --warning: #d97706;
+      --warning-bg: #fffbeb;
+      --info: #2563eb;
+      --info-bg: #eff6ff;
+
+      --canvas-bg: #0F172A;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      height: 100%;
+      max-height: 100vh;
+      overflow: hidden;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      background-color: var(--bg);
+      color: var(--text);
+      line-height: 1.5;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* =========================================================
+       2. TOPBAR STICKY CONTAINER (HEADER + TABS)
+       ========================================================= */
+    .top-header-wrapper {
+      position: sticky;
+      top: 0;
+      z-index: 100;
+      background: #ffffff;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+    }
+
+    header {
+      background: linear-gradient(135deg, var(--navy) 0%, var(--teal) 100%);
+      color: #ffffff;
+      padding: 8px 16px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .header-title-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+      flex: 1;
+    }
+
+    .header-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255, 255, 255, 0.18);
+      padding: 3px 8px;
+      border-radius: 20px;
+      font-size: 11px;
+      font-weight: 700;
+      letter-spacing: 0.3px;
+      text-transform: uppercase;
+      white-space: nowrap;
+      flex-shrink: 0;
+    }
+
+    .header-title {
+      font-size: 13.5px;
+      font-weight: 700;
+      margin: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+
+    .header-actions {
+      display: flex;
+      gap: 6px;
+      flex-shrink: 0;
+    }
+
+    .btn-header {
+      background: rgba(255, 255, 255, 0.2);
+      color: #ffffff;
+      border: 1px solid rgba(255, 255, 255, 0.3);
+      padding: 4px 10px;
+      border-radius: 6px;
+      font-size: 11.5px;
+      font-weight: 600;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      transition: all 0.2s ease;
+    }
+
+    .btn-header:hover {
+      background: rgba(255, 255, 255, 0.3);
+    }
+
+    /* SUB-NAVBAR TABS (SEGMENTED CONTROL) */
+    .sub-nav {
+      background: #ffffff;
+      border-bottom: 1px solid var(--border);
+      padding: 6px 14px;
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 8px;
+      align-items: center;
+    }
+
+    .sub-nav-btn {
+      padding: 8px 12px;
+      border-radius: 8px;
+      border: 1px solid var(--border);
+      background: var(--bg);
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text-2);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      white-space: nowrap;
+      transition: all 0.2s ease;
+      text-align: center;
+    }
+
+    .sub-nav-btn:hover {
+      border-color: var(--teal);
+      color: var(--teal);
+      background: #ffffff;
+    }
+
+    .sub-nav-btn.active {
+      background: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
+      box-shadow: 0 2px 6px rgba(45, 139, 111, 0.25);
+    }
+
+    /* MAIN APP BODY */
+    .app-body {
+      display: none;
+    }
+
+    .app-body.active-tab {
+      display: grid;
+      grid-template-columns: 58% 42%;
+      flex: 1;
+      width: 100%;
+      height: calc(100vh - 86px);
+      max-height: calc(100vh - 86px);
+      overflow: hidden;
+    }
+
+    /* LEFT VIEWPORT / CANVAS CONTAINER */
+    .viewport-container {
+      background: #ffffff;
+      border-right: 1px solid var(--border);
+      display: flex;
+      flex-direction: column;
+      position: relative;
+      height: 100%;
+      overflow: hidden;
+    }
+
+    .canvas-wrapper {
+      flex: 1;
+      position: relative;
+      width: 100%;
+      height: 100%;
+      background: var(--canvas-bg);
+      overflow: hidden;
+    }
+
+    canvas {
+      display: block;
+      width: 100%;
+      height: 100%;
+    }
+
+    /* CANVAS BOTTOM CONTROLS */
+    .canvas-controls-bar {
+      background: #ffffff;
+      border-top: 1px solid var(--border);
+      padding: 10px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      z-index: 10;
+    }
+
+    .truck-slider-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 12.5px;
+      font-weight: 700;
+      color: var(--text);
+      flex-wrap: wrap;
+      gap: 4px;
+    }
+
+    .truck-val-badge {
+      font-family: 'Courier New', monospace;
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--teal);
+      background: #f8fafc;
+      padding: 3px 8px;
+      border-radius: 6px;
+      border: 1px solid var(--border);
+    }
+
+    .custom-range {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: #cbd5e1;
+      outline: none;
+      -webkit-appearance: none;
+      appearance: none;
+    }
+
+    .custom-range::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 18px;
+      height: 18px;
+      border-radius: 50%;
+      background: var(--teal);
+      border: 2px solid #ffffff;
+      cursor: pointer;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.25);
+    }
+
+    /* RIGHT SIDEBAR INTERACTIVE PANEL */
+    .sidebar {
+      background: var(--bg);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      height: 100%;
+    }
+
+    .sidebar-content {
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    /* CARDS */
+    .card {
+      background: #ffffff;
+      border-radius: 12px;
+      border: 1px solid var(--border);
+      padding: 14px;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.04);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .card-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    /* ATHENA MASCOT CARD */
+    .athena-card {
+      background: #f0fdf4;
+      border: 1px solid #bbf7d0;
+      border-radius: 10px;
+      padding: 10px 12px;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+    }
+
+    .athena-avatar {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: #ffffff;
+      border: 1.5px solid var(--teal);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      overflow: hidden;
+      padding: 2px;
+      box-shadow: 0 2px 6px rgba(45, 139, 111, 0.2);
+    }
+
+    .athena-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: 50%;
+      display: block;
+    }
+
+    .athena-text {
+      font-size: 13px;
+      color: var(--text);
+      line-height: 1.45;
+    }
+
+    /* OPTIONS & CHOICES */
+    .options-grid {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .option-btn {
+      padding: 10px 12px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 600;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      color: var(--text);
+      cursor: pointer;
+      text-align: left;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      transition: all 0.2s ease;
+      touch-action: manipulation;
+    }
+
+    .option-btn:hover:not(:disabled) {
+      border-color: var(--teal);
+      background: #f8fafc;
+    }
+
+    .input-row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .math-input {
+      height: 38px;
+      width: 110px;
+      border: 1.5px solid var(--border);
+      border-radius: 6px;
+      font-family: 'Be Vietnam Pro', system-ui, sans-serif;
+      font-size: 14px;
+      font-weight: 700;
+      text-align: center;
+      color: var(--text);
+      background: #ffffff;
+      outline: none;
+      transition: all 0.2s;
+    }
+
+    .math-input:focus {
+      border-color: var(--teal);
+      box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.15);
+    }
+
+    .math-input.error {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+    }
+
+    .math-input.success {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+    }
+
+    /* BUTTONS */
+    .btn {
+      padding: 7px 14px;
+      border-radius: 6px;
+      font-size: 12.5px;
+      font-weight: 700;
+      cursor: pointer;
+      transition: all 0.2s ease;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      color: var(--text-2);
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 5px;
+      outline: none;
+      min-height: 36px;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .btn:hover:not(:disabled) {
+      border-color: var(--teal);
+      color: var(--teal);
+    }
+
+    .btn-primary {
+      background: var(--teal);
+      color: #ffffff;
+      border-color: var(--teal);
+      box-shadow: 0 2px 6px rgba(45, 139, 111, 0.25);
+    }
+
+    .btn-primary:hover:not(:disabled) {
+      background: var(--navy);
+      border-color: var(--navy);
+    }
+
+    .btn:disabled {
+      opacity: 0.45;
+      cursor: not-allowed;
+    }
+
+    .btn-row {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 8px;
+      margin-top: 4px;
+    }
+
+    /* 3-TIER FEEDBACK INFO BOX */
+    .info-box {
+      border-radius: 8px;
+      padding: 8px 12px;
+      font-size: 12.5px;
+      line-height: 1.45;
+      display: flex;
+      gap: 8px;
+      align-items: flex-start;
+    }
+
+    .info-box.error {
+      background: var(--wrong-bg);
+      border: 1px solid #fca5a5;
+      color: #991b1b;
+    }
+
+    .info-box.warning {
+      background: var(--warning-bg);
+      border: 1px solid #fde68a;
+      color: #92400e;
+    }
+
+    .info-box.athena {
+      background: #ecfdf5;
+      border: 1.5px solid #10b981;
+      color: #065f46;
+      font-weight: 600;
+    }
+
+    /* SIGN TABLE */
+    .sign-table-wrap {
+      width: 100%;
+      background: #ffffff;
+      border: 1px solid var(--border);
+      border-radius: 8px;
+      overflow-x: auto;
+      padding: 4px;
+    }
+
+    .sign-table {
+      width: 100%;
+      border-collapse: collapse;
+      text-align: center;
+      font-size: 12.5px;
+    }
+
+    .sign-table th,
+    .sign-table td {
+      padding: 6px 8px;
+      border: 1px solid var(--border);
+    }
+
+    .sign-table th {
+      background: #f8fafc;
+      color: var(--navy);
+      font-weight: 700;
+    }
+
+    .sign-slot-btn {
+      width: 30px;
+      height: 28px;
+      border-radius: 4px;
+      border: 1px solid var(--border);
+      background: #ffffff;
+      font-size: 14px;
+      font-weight: 800;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      transition: all 0.15s ease;
+    }
+
+    .sign-slot-btn.is-plus {
+      background: var(--correct-bg);
+      color: var(--correct);
+      border-color: var(--correct);
+    }
+
+    .sign-slot-btn.is-minus {
+      background: var(--wrong-bg);
+      color: var(--wrong);
+      border-color: var(--wrong);
+    }
+
+    /* SECTION B PRACTICE STEP CARDS */
+    .b-step-item {
+      border: 1px solid var(--border);
+      border-radius: 10px;
+      padding: 12px;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .b-step-item.active {
+      border-color: var(--teal);
+      box-shadow: 0 2px 8px rgba(45, 139, 111, 0.15);
+    }
+
+    .b-step-item.locked {
+      opacity: 0.55;
+      pointer-events: none;
+      background: #f8fafc;
+    }
+
+    /* STEP BADGES */
+    .step-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+      padding: 2px 8px;
+      border-radius: 12px;
+      background: rgba(45, 139, 111, 0.15);
+      color: var(--teal);
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      width: fit-content;
+    }
+
+    /* MODALS */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 100;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity 0.25s ease;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #ffffff;
+      border-radius: 16px;
+      max-width: 600px;
+      width: 92%;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1);
+      transform: translateY(20px);
+      transition: transform 0.25s ease;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-bottom: 14px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid var(--border);
+    }
+
+    .modal-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--navy);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      font-size: 20px;
+      color: var(--sub);
+      cursor: pointer;
+    }
+
+    /* =========================================================================
+       2. RESPONSIVE MOBILE & TABLET LAYOUT (max-width: 992px)
+       ========================================================================= */
+    @media (max-width: 992px) {
+      body {
+        min-height: 100vh;
+        overflow-y: auto;
+      }
+
+      header {
+        padding: 6px 10px;
+        flex-wrap: wrap;
+        gap: 6px;
+      }
+
+      .header-title-group {
+        gap: 6px;
+      }
+
+      .header-badge {
+        font-size: 10px;
+        padding: 2px 6px;
+      }
+
+      .header-title {
+        font-size: 12px;
+      }
+
+      .btn-header {
+        padding: 4px 7px;
+        font-size: 11px;
+      }
+
+      .btn-header span {
+        display: none;
+      }
+
+      .sub-nav {
+        padding: 5px 8px;
+        gap: 6px;
+      }
+
+      .sub-nav-btn {
+        padding: 6px 4px;
+        font-size: 11.5px;
+      }
+
+      .app-body {
+        display: none !important;
+      }
+
+      .app-body.active-tab {
+        display: flex !important;
+        flex-direction: column !important;
+        grid-template-columns: 1fr !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .viewport-container {
+        width: 100% !important;
+        position: relative !important;
+        top: auto !important;
+        z-index: 10 !important;
+        height: auto !important;
+        min-height: 220px !important;
+        aspect-ratio: 16 / 10;
+        border-right: none !important;
+        border-bottom: 1px solid var(--border) !important;
+      }
+
+      .canvas-controls-bar {
+        padding: 6px 10px;
+      }
+
+      .truck-slider-header {
+        font-size: 11.5px;
+      }
+
+      .truck-val-badge {
+        font-size: 11px;
+        padding: 2px 6px;
+        width: 100%;
+        text-align: center;
+      }
+
+      .sidebar {
+        width: 100% !important;
+        height: auto !important;
+        max-height: none !important;
+        overflow: visible !important;
+      }
+
+      .sidebar-content {
+        padding: 10px;
+        gap: 10px;
+        width: 100%;
+        box-sizing: border-box;
+      }
+
+      .card {
+        padding: 10px 12px;
+      }
+
+      .athena-avatar {
+        width: 34px;
+        height: 34px;
+      }
+
+      .athena-text {
+        font-size: 12px;
+      }
+
+      .math-input {
+        width: 85px;
+        height: 36px;
+        font-size: 13px;
+      }
+
+      .btn {
+        min-height: 36px;
+        padding: 6px 10px;
+        font-size: 12px;
+      }
+
+      .sign-table th, .sign-table td {
+        padding: 4px 3px;
+        font-size: 11px;
+      }
+
+      .sign-slot-btn {
+        width: 28px;
+        height: 24px;
+        font-size: 12px;
+      }
+    }
+  </style>
+</head>
+
+<body>
+
+  <!-- TOPBAR STICKY WRAPPER (HEADER + SUBNAV TABS) -->
+  <div class="top-header-wrapper">
+    <header>
+      <div class="header-title-group">
+        <span class="header-badge"><i class="ti ti-chart-dots"></i> Toán 10</span>
+        <h1 class="header-title">B17 — M2: Giải bất phương trình bậc hai</h1>
+      </div>
+      <div class="header-actions">
+        <button class="btn-header" onclick="openNotebookModal()"><i class="ti ti-book-2"></i> <span>Sổ tay</span></button>
+        <button class="btn-header" onclick="resetCurrentView()"><i class="ti ti-refresh"></i> <span>Làm lại</span></button>
+      </div>
+    </header>
+
+    <!-- SUB-NAVBAR TABS -->
+    <nav class="sub-nav">
+      <button class="sub-nav-btn active" id="tabSecA" onclick="switchSection('A')">
+        <i class="ti ti-truck"></i> <span>Phần A: Xe qua hầm vòm</span>
+      </button>
+      <button class="sub-nav-btn" id="tabSecB" onclick="switchSection('B')">
+        <i class="ti ti-calculator"></i> <span>Phần B: Luyện tập tổng quát</span>
+      </button>
+    </nav>
+  </div>
+
+  <!-- =========================================================
+       SECTION A: VÍ DỤ DẪN DẮT (XE QUA HẦM PARABOL)
+       ========================================================= -->
+  <div class="app-body active-tab" id="sectionA">
+    <!-- Left: Sticky Viewport Canvas -->
+    <div class="viewport-container">
+      <div class="canvas-wrapper">
+        <canvas id="tunnelCanvas"></canvas>
+      </div>
+      <div class="canvas-controls-bar">
+        <div class="truck-slider-header">
+          <span><i class="ti ti-arrows-horizontal"></i> Kéo thử vị trí xe:</span>
+          <span class="truck-val-badge" id="truckXBadge">x = 0.0m (Tại tim hầm)</span>
+        </div>
+        <input type="range" class="custom-range" id="truckSlider" min="-9" max="9" step="0.1" value="0"
+          oninput="onTruckSliderChange(this.value)">
+      </div>
+    </div>
+
+    <!-- Right: Sidebar Steps -->
+    <div class="sidebar">
+      <div class="sidebar-content" id="tunnelStepContainer">
+        <!-- Dynamically populated by JS renderTunnelStep() -->
+      </div>
+    </div>
+  </div>
+
+  <!-- =========================================================
+       SECTION B: CÔNG CỤ LUYỆN TẬP BPT TỔNG QUÁT (KHÔNG GIỚI HẠN)
+       ========================================================= -->
+  <div class="app-body" id="sectionB">
+    <!-- Left: Sticky Viewport Canvas -->
+    <div class="viewport-container">
+      <div class="canvas-wrapper">
+        <canvas id="practiceCanvas"></canvas>
+      </div>
+      <div class="canvas-controls-bar" style="flex-direction: row; justify-content: space-between; align-items: center;">
+        <span style="font-size: 11.5px; color: var(--sub);">Đồ thị tam thức $f(x)$ & Miền nghiệm</span>
+        <button class="btn btn-primary" onclick="generateNewPracticeProblem()" style="padding: 4px 10px; min-height: 30px; font-size: 11.5px;">
+          <i class="ti ti-sparkles"></i> <span>Làm bài khác</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Right: Sidebar Steps -->
+    <div class="sidebar">
+      <div class="sidebar-content">
+        <div class="card" style="background: #ffffff; border-left: 4px solid var(--teal);">
+          <div style="font-size: 11px; font-weight: 700; color: var(--sub); text-transform: uppercase;">BẤT PHƯƠNG TRÌNH ĐANG XÉT:</div>
+          <div style="font-size: 15px; font-weight: 800; color: var(--navy);" id="practiceBptFormula">
+            $$f(x) = x^2 - 5x + 6 \ge 0$$
+          </div>
+        </div>
+
+        <div id="practiceStepsContainer" style="display: flex; flex-direction: column; gap: 10px;">
+          <!-- Dynamically populated by JS renderPracticeSteps() -->
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- KNOWLEDGE NOTEBOOK MODAL -->
+  <div class="modal-overlay" id="notebookModal" onclick="closeNotebookModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title"><i class="ti ti-book-2"></i> Sổ tay kiến thức: Bất phương trình bậc hai</div>
+        <button class="close-btn" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
+      </div>
+      <div style="display: flex; flex-direction: column; gap: 10px; font-size: 13px; color: var(--text-2);">
+        <div style="background: var(--correct-bg); border-left: 4px solid var(--correct); padding: 10px 12px; border-radius: 6px;">
+          <h4 style="color: var(--navy); font-weight: 700; margin-bottom: 4px;">📐 QUY TRÌNH 3 BƯỚC GIẢI BPT BẬC HAI</h4>
+          <p>
+            • <b>Bước 1:</b> Tính biệt thức $\Delta = b^2 - 4ac$ (hoặc $\Delta' = b'^2 - ac$). Tìm các nghiệm của tam thức (nếu có).<br>
+            • <b>Bước 2:</b> Lập bảng xét dấu của tam thức bậc hai $f(x) = ax^2 + bx + c$ theo định lí dấu.<br>
+            • <b>Bước 3:</b> Đối chiếu đúng dấu của bất phương trình đề bài yêu cầu ($>0, \ge 0, <0, \le 0$) với bảng xét dấu để đọc tập nghiệm.
+          </p>
+        </div>
+
+        <div style="background: var(--warning-bg); border-left: 4px solid var(--warning); padding: 10px 12px; border-radius: 6px;">
+          <h4 style="color: #92400e; font-weight: 700; margin-bottom: 4px;">💡 ĐỊNH LÍ DẤU TAM THỨC BẬC HAI</h4>
+          <p>
+            • $\Delta < 0$: $f(x)$ <b>cùng dấu với $a$</b> với mọi $x \in \mathbb{R}$.<br>
+            • $\Delta = 0$: $f(x)$ <b>cùng dấu với $a$</b> với mọi $x \ne -\frac{b}{2a}$.<br>
+            • $\Delta > 0$: $f(x)$ có 2 nghiệm $x_1 < x_2$: <b>Trong trái — Ngoài cùng</b> (trái dấu $a$ trong khoảng $(x_1; x_2)$, cùng dấu $a$ ngoài đoạn $[x_1; x_2]$).
+          </p>
+        </div>
+
+        <div style="background: #f8fafc; border: 1px solid var(--border); padding: 10px 12px; border-radius: 6px;">
+          <h4 style="color: var(--navy); font-weight: 700; margin-bottom: 4px;">⚠️ LƯU Ý KHI GIẢI TOÁN THỰC TIỄN</h4>
+          <p>
+            Sau khi giải xong bất phương trình, luôn <b>đối chiếu tập nghiệm với điều kiện vật lý thực tế</b> (khoảng cách không âm, bề rộng không vượt quá kích thước vật lý của hầm) trước khi kết luận.
+          </p>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT LOGIC ENGINE -->
+  <script>
+    // =========================================================
+    // 0. LMS INTEGRATION & MATH HELPER
+    // =========================================================
+    function LMS() {
+      return {
+        event: (name, data) => console.log('[LMS Event]', name, data),
+        progress: (done, total) => console.log('[LMS Progress]', `${done}/${total}`),
+        complete: () => console.log('[LMS Complete] Module 2 Completed Successfully!'),
+        resize: (data) => console.log('[LMS Resize]', data)
+      };
+    }
+
+    function renderMath(target = document.body) {
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(target, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {
+          console.warn('[KaTeX]', e);
+        }
+      }
+    }
+
+    // =========================================================
+    // 1. APPLICATION STATE
+    // =========================================================
+    const state = {
+      currentTab: 'A',
+      
+      // Section A: Tunnel Problem State
+      tunnel: {
+        step: 1,
+        truckX: 0,
+        attempts: [0, 0, 0, 0],
+        completed: false
+      },
+
+      // Section B: Practice Generator State
+      practice: {
+        step: 1,
+        a: 1,
+        b: -5,
+        c: 6,
+        op: '>=',
+        delta: 1,
+        roots: [2, 3],
+        signSlots: [null, null, null],
+        attempts: [0, 0, 0, 0],
+        completed: false
+      }
+    };
+
+    // =========================================================
+    // 2. INITIALIZATION
+    // =========================================================
+    window.addEventListener('DOMContentLoaded', () => {
+      renderTunnelStep();
+      drawTunnelCanvas();
+      
+      renderPracticeSteps();
+      drawPracticeCanvas();
+
+      window.addEventListener('resize', () => {
+        drawTunnelCanvas();
+        drawPracticeCanvas();
+      });
+    });
+
+    function switchSection(tab) {
+      state.currentTab = tab;
+      document.getElementById('tabSecA').classList.toggle('active', tab === 'A');
+      document.getElementById('tabSecB').classList.toggle('active', tab === 'B');
+      document.getElementById('sectionA').classList.toggle('active-tab', tab === 'A');
+      document.getElementById('sectionB').classList.toggle('active-tab', tab === 'B');
+
+      if (tab === 'A') {
+        setTimeout(drawTunnelCanvas, 50);
+      } else {
+        setTimeout(drawPracticeCanvas, 50);
+      }
+    }
+
+    function resetCurrentView() {
+      if (state.currentTab === 'A') {
+        state.tunnel.step = 1;
+        state.tunnel.truckX = 0;
+        state.tunnel.attempts = [0, 0, 0, 0];
+        document.getElementById('truckSlider').value = 0;
+        onTruckSliderChange(0);
+        renderTunnelStep();
+        drawTunnelCanvas();
+      } else {
+        generateNewPracticeProblem();
+      }
+    }
+
+    // =========================================================
+    // 3. SECTION A: TUNNEL CANVAS & 3-STEP FLOW
+    // =========================================================
+    function onTruckSliderChange(val) {
+      state.tunnel.truckX = parseFloat(val);
+      const absX = Math.abs(state.tunnel.truckX).toFixed(1);
+      const side = state.tunnel.truckX === 0 ? 'Tại tim hầm' : state.tunnel.truckX < 0 ? `Trái tim hầm ${absX}m` : `Phải tim hầm ${absX}m`;
+      document.getElementById('truckXBadge').textContent = `x = ${state.tunnel.truckX > 0 ? '+' : ''}${state.tunnel.truckX.toFixed(1)}m (${side})`;
+      drawTunnelCanvas();
+    }
+
+    function drawTunnelCanvas() {
+      const canvas = document.getElementById('tunnelCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const W = rect.width;
+      const H = rect.height;
+
+      ctx.clearRect(0, 0, W, H);
+
+      const originX = W / 2;
+      const groundY = H - 28;
+      const scaleX = (W * 0.90) / 22;
+      const scaleY = (H * 0.68) / 6.5;
+
+      const toScreenX = (x) => originX + x * scaleX;
+      const toScreenY = (y) => groundY - y * scaleY;
+
+      // Ground Road
+      ctx.fillStyle = '#1E293B';
+      ctx.fillRect(0, groundY, W, H - groundY);
+
+      // Road markings
+      ctx.strokeStyle = '#64748B';
+      ctx.lineWidth = 2;
+      ctx.setLineDash([6, 6]);
+      ctx.beginPath();
+      ctx.moveTo(0, groundY + 14);
+      ctx.lineTo(W, groundY + 14);
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      // Safe Zone Highlight [-5.1, 5.1]
+      const safeLeft = toScreenX(-Math.sqrt(26));
+      const safeRight = toScreenX(Math.sqrt(26));
+      ctx.fillStyle = 'rgba(45, 139, 111, 0.18)';
+      ctx.fillRect(safeLeft, toScreenY(5.5), safeRight - safeLeft, groundY - toScreenY(5.5));
+
+      // Parabola Tunnel Arch: y = 5.5 - 0.05 * x^2
+      ctx.beginPath();
+      let first = true;
+      for (let x = -10.488; x <= 10.488; x += 0.2) {
+        const y = 5.5 - 0.05 * x * x;
+        const sx = toScreenX(x);
+        const sy = toScreenY(y);
+        if (first) {
+          ctx.moveTo(sx, sy);
+          first = false;
+        } else {
+          ctx.lineTo(sx, sy);
+        }
+      }
+      ctx.strokeStyle = '#38BDF8';
+      ctx.lineWidth = 3.5;
+      ctx.stroke();
+
+      ctx.lineTo(toScreenX(10.488), groundY);
+      ctx.lineTo(toScreenX(-10.488), groundY);
+      ctx.closePath();
+      ctx.fillStyle = 'rgba(56, 189, 248, 0.08)';
+      ctx.fill();
+
+      // 4.2m Height Line
+      ctx.strokeStyle = '#F59E0B';
+      ctx.lineWidth = 1.5;
+      ctx.setLineDash([5, 5]);
+      ctx.beginPath();
+      ctx.moveTo(toScreenX(-10.2), toScreenY(4.2));
+      ctx.lineTo(toScreenX(10.2), toScreenY(4.2));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#F59E0B';
+      ctx.font = '600 10px sans-serif';
+      ctx.fillText('Ngưỡng xe: 4.2m', toScreenX(-10.2), toScreenY(4.35));
+
+      // Safe Boundary Marks: x = ±√26 ≈ ±5.1m
+      [-Math.sqrt(26), Math.sqrt(26)].forEach((rx) => {
+        const sx = toScreenX(rx);
+        ctx.strokeStyle = '#22C55E';
+        ctx.lineWidth = 1.5;
+        ctx.setLineDash([3, 3]);
+        ctx.beginPath();
+        ctx.moveTo(sx, groundY);
+        ctx.lineTo(sx, toScreenY(4.2));
+        ctx.stroke();
+        ctx.setLineDash([]);
+
+        ctx.fillStyle = '#22C55E';
+        ctx.font = '700 10.5px monospace';
+        ctx.textAlign = 'center';
+        ctx.fillText(`${rx < 0 ? '-' : '+'}5.1m`, sx, groundY + 12);
+        ctx.textAlign = 'left';
+      });
+
+      // Center Line (x = 0)
+      ctx.strokeStyle = '#94A3B8';
+      ctx.lineWidth = 1;
+      ctx.setLineDash([2, 4]);
+      ctx.beginPath();
+      ctx.moveTo(originX, groundY);
+      ctx.lineTo(originX, toScreenY(5.5));
+      ctx.stroke();
+      ctx.setLineDash([]);
+
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '600 10px sans-serif';
+      ctx.textAlign = 'center';
+      ctx.fillText('Tim hầm (x=0)', originX, toScreenY(5.65));
+      ctx.textAlign = 'left';
+
+      // Draw Truck
+      const truckX = state.tunnel.truckX;
+      const truckArchHeight = 5.5 - 0.05 * truckX * truckX;
+      const isSafe = truckArchHeight >= 4.2;
+
+      const tx = toScreenX(truckX);
+      const truckW = 26;
+      const truckH = 4.2 * scaleY;
+
+      ctx.fillStyle = isSafe ? '#10B981' : '#EF4444';
+      ctx.beginPath();
+      ctx.roundRect(tx - truckW / 2, groundY - truckH, truckW, truckH, [4, 4, 0, 0]);
+      ctx.fill();
+      ctx.strokeStyle = '#FFFFFF';
+      ctx.lineWidth = 1.5;
+      ctx.stroke();
+
+      ctx.fillStyle = '#1E293B';
+      ctx.fillRect(tx - truckW / 2 + 3, groundY - truckH + 4, truckW - 6, 12);
+
+      const statusText = isSafe ? '✓ An toàn' : '⚠ Va chạm vòm!';
+      ctx.font = '700 10.5px sans-serif';
+      const textW = ctx.measureText(statusText).width;
+      
+      ctx.fillStyle = 'rgba(15, 23, 42, 0.85)';
+      ctx.beginPath();
+      ctx.roundRect(tx - textW / 2 - 6, groundY - truckH - 20, textW + 12, 16, 4);
+      ctx.fill();
+
+      ctx.fillStyle = isSafe ? '#34D399' : '#F87171';
+      ctx.textAlign = 'center';
+      ctx.fillText(statusText, tx, groundY - truckH - 8);
+      ctx.textAlign = 'left';
+    }
+
+    function renderTunnelStep() {
+      const panel = document.getElementById('tunnelStepContainer');
+      if (!panel) return;
+
+      if (state.tunnel.step === 1) {
+        panel.innerHTML = `
+          <div class="card">
+            <div>
+              <span class="step-badge"><i class="ti ti-flag"></i> BƯỚC 1 / 3</span>
+              <h3 style="font-size: 14px; font-weight: 700; color: var(--navy); margin-top: 4px;">Thiết lập bất phương trình thực tế</h3>
+            </div>
+
+            <div class="athena-card">
+              <div class="athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
+              <div class="athena-text">
+                Vòm hầm có phương trình $y = 5,5 - 0,05x^2$, xe siêu trường cao <b>$4,2\\text{m}$</b>. Để xe đi qua an toàn mà <b>không chạm trần</b>, bất phương trình nào sau đây mô tả đúng điều kiện an toàn?
+              </div>
+            </div>
+
+            <div class="options-grid">
+              <button class="option-btn" onclick="checkTunnelStep1('A')">
+                <span><b>A.</b> $5,5 - 0,05x^2 \\le 4,2$</span>
+                <i class="ti ti-chevron-right"></i>
+              </button>
+              <button class="option-btn" onclick="checkTunnelStep1('B')">
+                <span><b>B.</b> $5,5 - 0,05x^2 \\ge 4,2$</span>
+                <i class="ti ti-chevron-right"></i>
+              </button>
+              <button class="option-btn" onclick="checkTunnelStep1('C')">
+                <span><b>C.</b> $5,5 - 0,05x^2 = 4,2$</span>
+                <i class="ti ti-chevron-right"></i>
+              </button>
+            </div>
+
+            <div id="tunnelFeedback1"></div>
+          </div>
+        `;
+      } else if (state.tunnel.step === 2) {
+        panel.innerHTML = `
+          <div class="card">
+            <div>
+              <span class="step-badge"><i class="ti ti-flag"></i> BƯỚC 2 / 3</span>
+              <h3 style="font-size: 14px; font-weight: 700; color: var(--navy); margin-top: 4px;">Tính biệt thức $\\Delta$ & Tìm nghiệm</h3>
+            </div>
+
+            <div class="athena-card">
+              <div class="athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
+              <div class="athena-text">
+                Chuyển vế BPT: $5,5 - 0,05x^2 \\ge 4,2 \\iff -0,05x^2 + 1,3 \\ge 0$. Khi nhân 2 vế với $-20$ (số âm), BPT đổi chiều thành <b>$x^2 - 26 \\le 0$</b>. Bạn hãy tìm nghiệm của tam thức $x^2 - 26$ nhé.
+              </div>
+            </div>
+
+            <div style="display: flex; flex-direction: column; gap: 6px;">
+              <label style="font-size: 12.5px; font-weight: 700; color: var(--text-2);">Nghiệm dương $x_2$ (làm tròn đến 1 chữ số thập phân):</label>
+              <div class="input-row">
+                <span>$x = \\pm$</span>
+                <input type="text" class="math-input" id="inTunnelRoot" placeholder="Ví dụ: 3.5..." autofocus>
+                <button class="btn btn-primary" onclick="checkTunnelStep2()"><span>Kiểm tra</span> <i class="ti ti-check"></i></button>
+              </div>
+              <div id="tunnelFeedback2"></div>
+            </div>
+
+            <div class="btn-row">
+              <button class="btn" onclick="goToTunnelStep(1)"><i class="ti ti-arrow-left"></i> <span>Quay lại</span></button>
+            </div>
+          </div>
+        `;
+      } else if (state.tunnel.step === 3) {
+        panel.innerHTML = `
+          <div class="card">
+            <div>
+              <span class="step-badge"><i class="ti ti-flag"></i> BƯỚC 3 / 3</span>
+              <h3 style="font-size: 14px; font-weight: 700; color: var(--navy); margin-top: 4px;">Lập bảng xét dấu & Đối chiếu thực tế</h3>
+            </div>
+
+            <div class="athena-card">
+              <div class="athena-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot"></div>
+              <div class="athena-text">
+                Tam thức $x^2 - 26$ có $a = 1 > 0$. Bất phương trình yêu cầu $x^2 - 26 \\le 0$ (trái dấu $a$). Dựa vào định lí dấu, xe được phép đi trong phạm vi nào?
+              </div>
+            </div>
+
+            <div class="sign-table-wrap">
+              <table class="sign-table">
+                <tr>
+                  <th>$x$</th>
+                  <td>$-\\infty$</td>
+                  <td><b>$-5.1$</b></td>
+                  <td>$0$</td>
+                  <td><b>$5.1$</b></td>
+                  <td>$+\\infty$</td>
+                </tr>
+                <tr>
+                  <th>$x^2 - 26$</th>
+                  <td style="color: var(--correct); font-weight: 800;">$+$</td>
+                  <td>$0$</td>
+                  <td style="color: var(--wrong); font-weight: 800;">$-$</td>
+                  <td>$0$</td>
+                  <td style="color: var(--correct); font-weight: 800;">$+$</td>
+                </tr>
+              </table>
+            </div>
+
+            <div class="options-grid">
+              <button class="option-btn" onclick="checkTunnelStep3('A')">
+                <span><b>A.</b> $x \\in (-\\infty; -5,1] \\cup [5,1; +\\infty)$ (Miền ngoài)</span>
+                <i class="ti ti-chevron-right"></i>
+              </button>
+              <button class="option-btn" onclick="checkTunnelStep3('B')">
+                <span><b>B.</b> $x \\in [-5,1; 5,1]$ (Cách tim hầm không quá $5,1\\text{m}$ mỗi bên)</span>
+                <i class="ti ti-chevron-right"></i>
+              </button>
+            </div>
+
+            <div id="tunnelFeedback3"></div>
+
+            <div class="btn-row" id="tunnelStep3Nav" style="display: none;">
+              <button class="btn" onclick="goToTunnelStep(2)"><i class="ti ti-arrow-left"></i> <span>Quay lại</span></button>
+              <button class="btn btn-primary" onclick="switchSection('B')"><span>Qua Phần B: Luyện tập tổng quát</span> <i class="ti ti-arrow-right"></i></button>
+            </div>
+          </div>
+        `;
+      }
+      renderMath(panel);
+    }
+
+    function goToTunnelStep(step) {
+      state.tunnel.step = step;
+      renderTunnelStep();
+    }
+
+    function checkTunnelStep1(choice) {
+      const fb = document.getElementById('tunnelFeedback1');
+      if (choice === 'B') {
+        fb.innerHTML = `
+          <div class="info-box athena" style="margin-top: 8px;">
+            <i class="ti ti-circle-check"></i>
+            <div><b>Chính xác!</b> Điều kiện an toàn là $5,5 - 0,05x^2 \\ge 4,2$ (độ cao vòm hầm phải $\\ge$ chiều cao xe).</div>
+          </div>
+        `;
+        renderMath(fb);
+        LMS().event('answered', { id: 'm2_a1_thiet_lap_bpt', correct: true });
+        setTimeout(() => goToTunnelStep(2), 1000);
+      } else {
+        state.tunnel.attempts[1]++;
+        if (state.tunnel.attempts[1] === 1) {
+          fb.innerHTML = `
+            <div class="info-box error" style="margin-top: 8px;">
+              <i class="ti ti-alert-circle"></i>
+              <div><b>Chưa đúng:</b> Hãy suy nghĩ xem độ cao vòm cần như thế nào so với chiều cao của xe để không xảy ra va chạm.</div>
+            </div>
+          `;
+        } else if (state.tunnel.attempts[1] === 2) {
+          fb.innerHTML = `
+            <div class="info-box warning" style="margin-top: 8px;">
+              <i class="ti ti-bulb"></i>
+              <div><b>Gợi ý:</b> Độ cao vòm $y = 5,5 - 0,05x^2$, chiều cao xe $4,2\\text{m}$. "Không vướng" nghĩa là độ cao vòm phải lớn hơn hoặc bằng chiều cao xe.</div>
+            </div>
+          `;
+        } else {
+          fb.innerHTML = `
+            <div class="info-box athena" style="margin-top: 8px;">
+              <i class="ti ti-help"></i>
+              <div><b>Đáp án đúng là B:</b> $5,5 - 0,05x^2 \\ge 4,2$. Chọn <b>B</b> để tiếp tục nhé.</div>
+            </div>
+          `;
+        }
+        renderMath(fb);
+      }
+    }
+
+    function checkTunnelStep2() {
+      const inVal = document.getElementById('inTunnelRoot');
+      const val = inVal.value.trim().replace(',', '.');
+      const num = parseFloat(val);
+      const fb = document.getElementById('tunnelFeedback2');
+
+      if (isNaN(num)) {
+        inVal.classList.add('error');
+        return;
+      }
+
+      if (Math.abs(num - 5.1) < 0.2 || Math.abs(num - Math.sqrt(26)) < 0.1) {
+        inVal.className = 'math-input success';
+        fb.innerHTML = `
+          <div class="info-box athena" style="margin-top: 8px;">
+            <i class="ti ti-circle-check"></i>
+            <div><b>Chính xác!</b> $x^2 - 26 = 0 \\iff x = \\pm\\sqrt{26} \\approx \\pm 5,1\\text{m}$.</div>
+          </div>
+        `;
+        renderMath(fb);
+        LMS().event('answered', { id: 'm2_a2_tinh_delta_nghiem', correct: true });
+        setTimeout(() => goToTunnelStep(3), 1000);
+      } else {
+        state.tunnel.attempts[2]++;
+        inVal.className = 'math-input error';
+
+        if (state.tunnel.attempts[2] === 1) {
+          fb.innerHTML = `
+            <div class="info-box error" style="margin-top: 8px;">
+              <i class="ti ti-alert-circle"></i>
+              <div><b>Chưa chính xác:</b> Hãy kiểm tra lại kết quả căn bậc hai của $26$.</div>
+            </div>
+          `;
+        } else if (state.tunnel.attempts[2] === 2) {
+          fb.innerHTML = `
+            <div class="info-box warning" style="margin-top: 8px;">
+              <i class="ti ti-bulb"></i>
+              <div><b>Gợi ý:</b> Phương trình $x^2 - 26 = 0 \\iff x^2 = 26 \\iff x = \\pm\\sqrt{26}$. Hãy bấm máy tính tính $\\sqrt{26}$ và làm tròn 1 chữ số thập phân.</div>
+            </div>
+          `;
+        } else {
+          fb.innerHTML = `
+            <div class="info-box athena" style="margin-top: 8px;">
+              <i class="ti ti-help"></i>
+              <div><b>Đáp án đúng là 5.1:</b> Vì $\\sqrt{26} \\approx 5,099...$ làm tròn thành $5.1$. Bạn hãy nhập <b>5.1</b> để tiếp tục nhé.</div>
+            </div>
+          `;
+        }
+        renderMath(fb);
+      }
+    }
+
+    function checkTunnelStep3(choice) {
+      const fb = document.getElementById('tunnelFeedback3');
+      const nav = document.getElementById('tunnelStep3Nav');
+
+      if (choice === 'B') {
+        fb.innerHTML = `
+          <div class="info-box athena" style="margin-top: 8px;">
+            <i class="ti ti-trophy"></i>
+            <div><b>Tuyệt vời!</b> BPT $x^2 - 26 \\le 0 \\iff x \\in [-5,1; 5,1]$. Đối chiếu thực tế: xe được phép chạy trong phạm vi cách tim hầm không quá $5,1\\text{m}$ mỗi bên.</div>
+          </div>
+        `;
+        renderMath(fb);
+        nav.style.display = 'flex';
+        state.tunnel.completed = true;
+        LMS().event('answered', { id: 'm2_a3_xet_dau_thuc_te', correct: true });
+      } else {
+        state.tunnel.attempts[3]++;
+        if (state.tunnel.attempts[3] === 1) {
+          fb.innerHTML = `
+            <div class="info-box error" style="margin-top: 8px;">
+              <i class="ti ti-alert-circle"></i>
+              <div><b>Chưa đúng:</b> Nhìn kỹ bảng xét dấu: Bạn cần tìm khoảng mang dấu âm ($\\le 0$).</div>
+            </div>
+          `;
+        } else if (state.tunnel.attempts[3] === 2) {
+          fb.innerHTML = `
+            <div class="info-box warning" style="margin-top: 8px;">
+              <i class="ti ti-bulb"></i>
+              <div><b>Gợi ý:</b> Hệ số $a = 1 > 0$, BPT yêu cầu $\\le 0$ (trái dấu $a$) nên phải lấy miền <b>TRONG</b> 2 nghiệm $[-5,1; 5,1]$.</div>
+            </div>
+          `;
+        } else {
+          fb.innerHTML = `
+            <div class="info-box athena" style="margin-top: 8px;">
+              <i class="ti ti-help"></i>
+              <div><b>Đáp án đúng là B:</b> Xe phải chạy trong khoảng $[-5,1; 5,1]$ (cách tim hầm không quá $5,1\\text{m}$ mỗi bên). Hãy chọn <b>B</b> nhé!</div>
+            </div>
+          `;
+        }
+        renderMath(fb);
+      }
+    }
+
+    // =========================================================
+    // 4. SECTION B: PRACTICE GENERATOR & 3-STEP FLOW
+    // =========================================================
+    const PRACTICE_PROBLEMS = [
+      { a: 1, b: -5, c: 6, op: '>=', text: 'x^2 - 5x + 6 \\ge 0' },
+      { a: 1, b: -4, c: 4, op: '<=', text: 'x^2 - 4x + 4 \\le 0' },
+      { a: -1, b: 3, c: -2, op: '>', text: '-x^2 + 3x - 2 > 0' },
+      { a: 1, b: 2, c: 5, op: '>', text: 'x^2 + 2x + 5 > 0' },
+      { a: 2, b: -5, c: 2, op: '<=', text: '2x^2 - 5x + 2 \\le 0' },
+      { a: -1, b: 4, c: -4, op: '>=', text: '-x^2 + 4x - 4 \\ge 0' }
+    ];
+    let practiceIdx = 0;
+
+    function generateNewPracticeProblem() {
+      practiceIdx = (practiceIdx + 1) % PRACTICE_PROBLEMS.length;
+      const prob = PRACTICE_PROBLEMS[practiceIdx];
+      
+      state.practice.a = prob.a;
+      state.practice.b = prob.b;
+      state.practice.c = prob.c;
+      state.practice.op = prob.op;
+      state.practice.step = 1;
+      state.practice.delta = prob.b * prob.b - 4 * prob.a * prob.c;
+      state.practice.signSlots = [null, null, null];
+      state.practice.attempts = [0, 0, 0, 0];
+      state.practice.completed = false;
+
+      if (state.practice.delta > 0) {
+        const r1 = (-prob.b - Math.sqrt(state.practice.delta)) / (2 * prob.a);
+        const r2 = (-prob.b + Math.sqrt(state.practice.delta)) / (2 * prob.a);
+        state.practice.roots = [Math.min(r1, r2), Math.max(r1, r2)];
+      } else if (state.practice.delta === 0) {
+        state.practice.roots = [-prob.b / (2 * prob.a)];
+      } else {
+        state.practice.roots = [];
+      }
+
+      document.getElementById('practiceBptFormula').innerHTML = `$$f(x) = ${prob.text}$$`;
+      renderMath(document.getElementById('practiceBptFormula'));
+
+      renderPracticeSteps();
+      drawPracticeCanvas();
+    }
+
+    function drawPracticeCanvas() {
+      const canvas = document.getElementById('practiceCanvas');
+      if (!canvas) return;
+      const ctx = canvas.getContext('2d');
+      const dpr = window.devicePixelRatio || 1;
+      const rect = canvas.getBoundingClientRect();
+
+      canvas.width = rect.width * dpr;
+      canvas.height = rect.height * dpr;
+      ctx.scale(dpr, dpr);
+
+      const W = rect.width;
+      const H = rect.height;
+      ctx.clearRect(0, 0, W, H);
+
+      const { a, b, c, roots } = state.practice;
+
+      const originX = W / 2;
+      const originY = H / 2 + 16;
+      const scaleX = 32;
+      const scaleY = 18;
+
+      const toScreenX = (x) => originX + x * scaleX;
+      const toScreenY = (y) => originY - y * scaleY;
+
+      // Draw Grid & Axes
+      ctx.strokeStyle = '#334155';
+      ctx.lineWidth = 1;
+      ctx.beginPath();
+      ctx.moveTo(0, originY);
+      ctx.lineTo(W, originY);
+      ctx.moveTo(originX, 0);
+      ctx.lineTo(originX, H);
+      ctx.stroke();
+
+      // Axis Labels
+      ctx.fillStyle = '#94A3B8';
+      ctx.font = '600 11px sans-serif';
+      ctx.fillText('x', W - 14, originY - 6);
+      ctx.fillText('y', originX + 6, 14);
+
+      // Draw Parabola y = ax^2 + bx + c
+      ctx.beginPath();
+      let first = true;
+      for (let px = -6; px <= 6; px += 0.1) {
+        const py = a * px * px + b * px + c;
+        const sx = toScreenX(px);
+        const sy = toScreenY(py);
+        if (first) {
+          ctx.moveTo(sx, sy);
+          first = false;
+        } else {
+          ctx.lineTo(sx, sy);
+        }
+      }
+      ctx.strokeStyle = '#38BDF8';
+      ctx.lineWidth = 3;
+      ctx.stroke();
+
+      // Draw Root Points on Ox
+      roots.forEach((r, idx) => {
+        const rx = toScreenX(r);
+        ctx.fillStyle = '#F59E0B';
+        ctx.beginPath();
+        ctx.arc(rx, originY, 5, 0, Math.PI * 2);
+        ctx.fill();
+        ctx.strokeStyle = '#FFFFFF';
+        ctx.lineWidth = 1.5;
+        ctx.stroke();
+
+        ctx.fillStyle = '#F59E0B';
+        ctx.font = '700 11px monospace';
+        ctx.fillText(`x${idx + 1}=${r}`, rx - 14, originY + 16);
+      });
+    }
+
+    function renderPracticeSteps() {
+      const panel = document.getElementById('practiceStepsContainer');
+      if (!panel) return;
+
+      const { a, b, c, op, delta, roots, step } = state.practice;
+
+      panel.innerHTML = `
+        <!-- STEP 1: DELTA & ROOTS -->
+        <div class="b-step-item ${step === 1 ? 'active' : ''}">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="step-badge"><i class="ti ti-number-1"></i> BƯỚC 1</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--sub);">Tính $\\Delta$ & Tìm nghiệm</span>
+          </div>
+
+          <div style="font-size: 12.5px; color: var(--text);">
+            Tính $\\Delta = b^2 - 4ac$ với $a=${a}, b=${b}, c=${c}$:
+          </div>
+
+          <div class="input-row">
+            <span style="font-weight: 700;">$\\Delta =$</span>
+            <input type="text" class="math-input" id="inPracticeDelta" placeholder="Nhập số..." ${step > 1 ? 'disabled value="' + delta + '"' : ''}>
+            ${step === 1 ? `<button class="btn btn-primary" onclick="checkPracticeStep1()"><span>Kiểm tra</span></button>` : `<i class="ti ti-check" style="color: var(--correct); font-size: 1.2rem;"></i>`}
+          </div>
+          <div id="practiceStep1Feedback"></div>
+        </div>
+
+        <!-- STEP 2: SIGN TABLE -->
+        <div class="b-step-item ${step === 2 ? 'active' : step < 2 ? 'locked' : ''}">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="step-badge"><i class="ti ti-number-2"></i> BƯỚC 2</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--sub);">Lập bảng xét dấu</span>
+          </div>
+
+          ${step >= 2 ? `
+            <div style="font-size: 12.5px; color: var(--text);">
+              Click vào các ô dấu để chọn dấu ($+$ hoặc $-$) theo định lí tam thức bậc hai:
+            </div>
+            <div class="sign-table-wrap">
+              <table class="sign-table">
+                <tr>
+                  <th>$x$</th>
+                  <td>$-\\infty$</td>
+                  ${roots.map(r => `<td><b>${r}</b></td>`).join('')}
+                  <td>$+\\infty$</td>
+                </tr>
+                <tr>
+                  <th>$f(x)$</th>
+                  <td><button class="sign-slot-btn" id="slot0" onclick="toggleSignSlot(0)">${state.practice.signSlots[0] || '?'}</button></td>
+                  ${roots.length > 0 ? roots.map((r, i) => `<td>$0$</td><td><button class="sign-slot-btn" id="slot${i+1}" onclick="toggleSignSlot(${i+1})">${state.practice.signSlots[i+1] || '?'}</button></td>`).join('') : ''}
+                </tr>
+              </table>
+            </div>
+            ${step === 2 ? `<button class="btn btn-primary" style="margin-top: 4px;" onclick="checkPracticeStep2()"><span>Xác nhận bảng dấu</span></button>` : ''}
+            <div id="practiceStep2Feedback"></div>
+          ` : `<div style="font-size: 12px; color: var(--sub);">Hoàn thành Bước 1 để mở khóa bảng xét dấu.</div>`}
+        </div>
+
+        <!-- STEP 3: READ SOLUTION -->
+        <div class="b-step-item ${step === 3 ? 'active' : 'locked'}">
+          <div style="display: flex; justify-content: space-between; align-items: center;">
+            <span class="step-badge"><i class="ti ti-number-3"></i> BƯỚC 3</span>
+            <span style="font-size: 12px; font-weight: 700; color: var(--sub);">Đọc tập nghiệm BPT</span>
+          </div>
+
+          ${step === 3 ? `
+            <div style="font-size: 12.5px; color: var(--text);">
+              Đối chiếu với yêu cầu đề bài $f(x) ${op} 0$, chọn tập nghiệm chính xác:
+            </div>
+            <div class="options-grid">
+              ${renderPracticeSolutionChoices()}
+            </div>
+            <div id="practiceStep3Feedback"></div>
+          ` : `<div style="font-size: 12px; color: var(--sub);">Hoàn thành bảng xét dấu để đọc tập nghiệm.</div>`}
+        </div>
+      `;
+      renderMath(panel);
+    }
+
+    function checkPracticeStep1() {
+      const inVal = document.getElementById('inPracticeDelta');
+      const val = parseInt(inVal.value.trim());
+      const fb = document.getElementById('practiceStep1Feedback');
+
+      if (isNaN(val)) {
+        inVal.classList.add('error');
+        return;
+      }
+
+      if (val === state.practice.delta) {
+        inVal.className = 'math-input success';
+        fb.innerHTML = `
+          <div class="info-box athena" style="margin-top: 6px;">
+            <i class="ti ti-circle-check"></i>
+            <div>$\\Delta = ${state.practice.delta}$ (${state.practice.delta > 0 ? 'có 2 nghiệm phân biệt' : state.practice.delta === 0 ? 'có nghiệm kép' : 'vô nghiệm'}).</div>
+          </div>
+        `;
+        renderMath(fb);
+        state.practice.step = 2;
+        setTimeout(renderPracticeSteps, 800);
+      } else {
+        state.practice.attempts[1]++;
+        inVal.className = 'math-input error';
+
+        if (state.practice.attempts[1] === 1) {
+          fb.innerHTML = `
+            <div class="info-box error" style="margin-top: 6px;">
+              <i class="ti ti-alert-circle"></i>
+              <div><b>Chưa chính xác:</b> Hãy tính lại theo công thức $\\Delta = b^2 - 4ac$.</div>
+            </div>
+          `;
+        } else if (state.practice.attempts[1] === 2) {
+          fb.innerHTML = `
+            <div class="info-box warning" style="margin-top: 6px;">
+              <i class="ti ti-bulb"></i>
+              <div><b>Gợi ý:</b> Thay hệ số $a=${state.practice.a}, b=${state.practice.b}, c=${state.practice.c}$ vào $\\Delta = (${state.practice.b})^2 - 4(${state.practice.a})(${state.practice.c})$.</div>
+            </div>
+          `;
+        } else {
+          fb.innerHTML = `
+            <div class="info-box athena" style="margin-top: 6px;">
+              <i class="ti ti-help"></i>
+              <div><b>Đáp án đúng là ${state.practice.delta}:</b> $\\Delta = (${state.practice.b})^2 - 4(${state.practice.a})(${state.practice.c}) = ${state.practice.delta}$. Hãy nhập <b>${state.practice.delta}</b> nhé.</div>
+            </div>
+          `;
+        }
+        renderMath(fb);
+      }
+    }
+
+    function toggleSignSlot(idx) {
+      const current = state.practice.signSlots[idx];
+      state.practice.signSlots[idx] = current === '+' ? '-' : '+';
+      const btn = document.getElementById(`slot${idx}`);
+      if (btn) {
+        btn.textContent = state.practice.signSlots[idx];
+        btn.className = `sign-slot-btn ${state.practice.signSlots[idx] === '+' ? 'is-plus' : 'is-minus'}`;
+      }
+    }
+
+    function checkPracticeStep2() {
+      const { a, delta } = state.practice;
+      const fb = document.getElementById('practiceStep2Feedback');
+      
+      let isCorrect = true;
+      if (delta > 0) {
+        const signOutside = a > 0 ? '+' : '-';
+        const signInside = a > 0 ? '-' : '+';
+        if (state.practice.signSlots[0] !== signOutside || state.practice.signSlots[1] !== signInside || state.practice.signSlots[2] !== signOutside) {
+          isCorrect = false;
+        }
+      } else {
+        const signAll = a > 0 ? '+' : '-';
+        if (state.practice.signSlots[0] !== signAll) {
+          isCorrect = false;
+        }
+      }
+
+      if (isCorrect) {
+        fb.innerHTML = `
+          <div class="info-box athena" style="margin-top: 6px;">
+            <i class="ti ti-circle-check"></i>
+            <div><b>Bảng dấu chính xác!</b> (Trong trái dấu $a$, ngoài cùng dấu $a$).</div>
+          </div>
+        `;
+        renderMath(fb);
+        state.practice.step = 3;
+        setTimeout(renderPracticeSteps, 800);
+      } else {
+        state.practice.attempts[2]++;
+        if (state.practice.attempts[2] === 1) {
+          fb.innerHTML = `
+            <div class="info-box error" style="margin-top: 6px;">
+              <i class="ti ti-alert-circle"></i>
+              <div><b>Chưa đúng:</b> Hãy kiểm tra lại dấu các khoảng trên bảng.</div>
+            </div>
+          `;
+        } else if (state.practice.attempts[2] === 2) {
+          fb.innerHTML = `
+            <div class="info-box warning" style="margin-top: 6px;">
+              <i class="ti ti-bulb"></i>
+              <div><b>Gợi ý:</b> Khoảng ngoài cùng dấu hệ số $a$ (${a > 0 ? '+' : '-'}), khoảng trong 2 nghiệm trái dấu $a$.</div>
+            </div>
+          `;
+        } else {
+          if (delta > 0) {
+            state.practice.signSlots[0] = a > 0 ? '+' : '-';
+            state.practice.signSlots[1] = a > 0 ? '-' : '+';
+            state.practice.signSlots[2] = a > 0 ? '+' : '-';
+          } else {
+            state.practice.signSlots[0] = a > 0 ? '+' : '-';
+          }
+          fb.innerHTML = `
+            <div class="info-box athena" style="margin-top: 6px;">
+              <i class="ti ti-help"></i>
+              <div><b>Quy tắc chuẩn:</b> Ngoài cùng dấu $a$ (${a > 0 ? '+' : '-'}), trong trái dấu $a$ (${a > 0 ? '-' : '+'}). Đã điền sẵn dấu đúng cho bạn!</div>
+            </div>
+          `;
+          setTimeout(renderPracticeSteps, 1200);
+        }
+        renderMath(fb);
+      }
+    }
+
+    function renderPracticeSolutionChoices() {
+      const { delta, roots } = state.practice;
+      if (delta > 0) {
+        const r1 = roots[0];
+        const r2 = roots[1];
+        return `
+          <button class="option-btn" onclick="checkPracticeStep3(true)">
+            <span>$S = (-\\infty; ${r1}] \\cup [${r2}; +\\infty)$</span>
+            <i class="ti ti-chevron-right"></i>
+          </button>
+          <button class="option-btn" onclick="checkPracticeStep3(false)">
+            <span>$S = [${r1}; ${r2}]$</span>
+            <i class="ti ti-chevron-right"></i>
+          </button>
+          <button class="option-btn" onclick="checkPracticeStep3(false)">
+            <span>$S = \\mathbb{R}$</span>
+            <i class="ti ti-chevron-right"></i>
+          </button>
+        `;
+      } else {
+        return `
+          <button class="option-btn" onclick="checkPracticeStep3(true)">
+            <span>$S = \\mathbb{R}$</span>
+            <i class="ti ti-chevron-right"></i>
+          </button>
+          <button class="option-btn" onclick="checkPracticeStep3(false)">
+            <span>$S = \\emptyset$</span>
+            <i class="ti ti-chevron-right"></i>
+          </button>
+        `;
+      }
+    }
+
+    function checkPracticeStep3(isCorrect) {
+      const fb = document.getElementById('practiceStep3Feedback');
+      if (isCorrect) {
+        fb.innerHTML = `
+          <div class="info-box athena" style="margin-top: 8px;">
+            <i class="ti ti-trophy"></i>
+            <div><b>Xuất sắc!</b> Bạn đã giải hoàn chỉnh bài bất phương trình này. Bấm <b>"Làm bài khác"</b> ở phía trên để luyện thêm các dạng khác nhé!</div>
+          </div>
+        `;
+        renderMath(fb);
+        state.practice.completed = true;
+        LMS().event('answered', { id: 'm2_b3_ket_luan_tap_nghiem_b', correct: true });
+        LMS().complete();
+      } else {
+        state.practice.attempts[3]++;
+        if (state.practice.attempts[3] === 1) {
+          fb.innerHTML = `
+            <div class="info-box error" style="margin-top: 8px;">
+              <i class="ti ti-alert-circle"></i>
+              <div><b>Chưa đúng:</b> Hãy nhìn lại bảng xét dấu ở Bước 2 và đối chiếu với dấu $${state.practice.op} 0$.</div>
+            </div>
+          `;
+        } else if (state.practice.attempts[3] === 2) {
+          fb.innerHTML = `
+            <div class="info-box warning" style="margin-top: 8px;">
+              <i class="ti ti-bulb"></i>
+              <div><b>Gợi ý:</b> BPT yêu cầu $f(x) ${state.practice.op} 0$. Chọn khoảng mang dấu ${state.practice.op.includes('>') ? '+' : '-'} trên bảng xét dấu.</div>
+            </div>
+          `;
+        } else {
+          fb.innerHTML = `
+            <div class="info-box athena" style="margin-top: 8px;">
+              <i class="ti ti-help"></i>
+              <div><b>Đáp án đúng:</b> Đối chiếu đúng dấu trên bảng, tập nghiệm thỏa mãn là phương án đầu tiên. Hãy chọn lại nhé!</div>
+            </div>
+          `;
+        }
+        renderMath(fb);
+      }
+    }
+
+    // =========================================================
+    // 5. NOTEBOOK MODAL
+    // =========================================================
+    function openNotebookModal() {
+      const m = document.getElementById('notebookModal');
+      m.classList.add('active');
+      renderMath(m);
+    }
+
+    function closeNotebookModal(e) {
+      if (e) e.stopPropagation();
+      document.getElementById('notebookModal').classList.remove('active');
+    }
+  </script>
+</body>
+
+</html>
