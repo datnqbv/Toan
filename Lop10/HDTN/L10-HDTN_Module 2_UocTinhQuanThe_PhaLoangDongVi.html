@@ -289,56 +289,67 @@
     }
 
     /* =========================================================
-       4. SIMULATION WORKSPACE (2 COLUMNS: CANVAS + CONTROLS)
+       4. SIMULATION AREA & CANVAS CARDS (CLEAN & NON-OVERLAPPING)
        ========================================================= */
     .simulation-grid {
       display: grid;
       grid-template-columns: 1.25fr 1fr;
-      gap: 18px;
-      background: var(--paper);
+      gap: 20px;
+      background: var(--paper-card);
       border: 1px solid var(--paper-line);
       border-radius: var(--radius-lg);
       padding: 16px;
     }
 
-    /* CANVAS AREA */
+    /* CANVAS CONTAINER (CLEAN 3-LAYER STACK: HEADER - VIEWPORT - LEGEND) */
     .sim-canvas-card {
-      background: #0B251B;
+      background: #0B1E17;
       border-radius: var(--radius-md);
-      border: 1px solid rgba(45, 139, 111, 0.3);
-      position: relative;
-      height: 320px;
+      border: 1px solid rgba(45, 139, 111, 0.35);
       overflow: hidden;
       display: flex;
       flex-direction: column;
-      justify-content: space-between;
-      padding: 12px;
+      box-shadow: var(--shadow-sm);
+      height: auto;
     }
 
     .sim-canvas-header {
       display: flex;
       justify-content: space-between;
       align-items: center;
+      padding: 8px 12px;
+      background: rgba(11, 37, 27, 0.95);
+      border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+      gap: 8px;
+      flex-wrap: wrap;
       z-index: 2;
     }
 
     .canvas-tag {
-      background: rgba(0, 0, 0, 0.55);
-      backdrop-filter: blur(4px);
+      background: rgba(0, 0, 0, 0.45);
       color: #E2E8F0;
-      font-size: 12px;
+      font-size: 11.5px;
       font-weight: 600;
-      padding: 4px 10px;
+      padding: 3px 8px;
       border-radius: var(--radius-full);
-      border: 1px solid rgba(255, 255, 255, 0.15);
-      display: flex;
+      border: 1px solid rgba(255, 255, 255, 0.12);
+      display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      white-space: nowrap;
+    }
+
+    .canvas-view-wrap {
+      position: relative;
+      width: 100%;
+      aspect-ratio: 400 / 240;
+      background: #081B14;
+      overflow: hidden;
     }
 
     .canvas-view {
       position: absolute;
-      top: 0; left: 0; right: 0; bottom: 0;
+      top: 0; left: 0;
       width: 100%;
       height: 100%;
       pointer-events: none;
@@ -346,28 +357,60 @@
 
     .canvas-legend {
       display: flex;
-      gap: 12px;
-      background: rgba(0, 0, 0, 0.65);
-      backdrop-filter: blur(4px);
-      padding: 6px 12px;
-      border-radius: var(--radius-full);
+      gap: 14px;
+      background: #081611;
+      padding: 7px 12px;
       font-size: 11.5px;
-      color: #FFF;
-      align-self: flex-start;
+      color: #E2E8F0;
+      border-top: 1px solid rgba(255, 255, 255, 0.08);
+      flex-wrap: wrap;
+      justify-content: center;
+      align-items: center;
       z-index: 2;
-      border: 1px solid rgba(255, 255, 255, 0.15);
     }
 
     .legend-item {
-      display: flex;
+      display: inline-flex;
       align-items: center;
-      gap: 6px;
+      gap: 5px;
+      white-space: nowrap;
     }
 
     .legend-dot {
-      width: 10px;
-      height: 10px;
+      width: 9px;
+      height: 9px;
       border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+
+    /* ACTIVITY TITLES WITH SAFE LATEX PACKING */
+    .activity-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--jade-deep);
+      line-height: 1.55;
+      margin: 0;
+      display: block;
+    }
+
+    .activity-title i {
+      color: var(--jade);
+      margin-right: 6px;
+      vertical-align: -1px;
+    }
+
+    .activity-param-badge {
+      display: inline-block;
+      font-size: 13.5px;
+      font-weight: 600;
+      color: var(--ink-2);
+      background: var(--paper-subtle);
+      padding: 1px 8px;
+      border-radius: var(--radius-sm);
+      border: 1px solid var(--paper-line);
+      margin-left: 4px;
+      vertical-align: middle;
+      white-space: nowrap;
     }
 
     /* CONTROLS & STEP PANEL */
@@ -924,16 +967,20 @@
         gap: 16px;
       }
 
-      .section-title {
-        font-size: 17px;
-      }
-
       .simulation-grid {
         grid-template-columns: 1fr;
+        gap: 14px;
+        padding: 12px;
       }
 
       .sim-canvas-card {
-        height: 250px;
+        height: auto;
+      }
+
+      .canvas-legend {
+        padding: 6px 8px;
+        gap: 8px;
+        font-size: 11px;
       }
 
       .insight-choices {
@@ -954,6 +1001,30 @@
 
       .rule-highlight-box {
         text-align: left;
+      }
+    }
+
+    @media (max-width: 480px) {
+      .hero-title {
+        font-size: 17.5px;
+      }
+
+      .section-banner-wrap {
+        height: 150px;
+      }
+
+      .activity-title {
+        font-size: 15px;
+      }
+
+      .activity-param-badge {
+        font-size: 12.5px;
+        margin-top: 3px;
+      }
+
+      .btn-sim-action {
+        font-size: 13px;
+        padding: 9px 12px;
       }
     }
   </style>
@@ -1013,8 +1084,8 @@
         </div>
 
         <!-- HOẠT ĐỘNG 1: QUY TRÌNH MÔ PHỎNG -->
-        <h3 style="font-size: 16.5px; font-weight: 700; color: var(--jade-deep); display: flex; align-items: center; gap: 8px;">
-          <i class="ti ti-player-play" style="color: var(--jade);"></i> Hoạt động 1: Thực hiện quy trình ước tính
+        <h3 class="activity-title">
+          <i class="ti ti-player-play"></i> Hoạt động 1: Thực hiện quy trình ước tính
         </h3>
 
         <div class="simulation-grid">
@@ -1025,15 +1096,17 @@
               <div class="canvas-tag" id="turtleCountTag">Tổng thể: 300 con (ẩn)</div>
             </div>
 
-            <!-- SVG CANVAS ANIMATION -->
-            <svg class="canvas-view" id="turtleSvgView" viewBox="0 0 400 240"></svg>
+            <!-- SVG CANVAS ANIMATION (KHÔNG BỊ CHỮ CHE TRÊN MOBILE) -->
+            <div class="canvas-view-wrap">
+              <svg class="canvas-view" id="turtleSvgView" viewBox="0 0 400 240"></svg>
+            </div>
 
             <div class="canvas-legend">
               <div class="legend-item">
-                <span class="legend-dot" style="background: #2E6B52;"></span> Rùa chưa dấu
+                <span class="legend-dot" style="background: #2D8B6F;"></span> Rùa chưa dấu
               </div>
               <div class="legend-item">
-                <span class="legend-dot" style="background: #E8A24A; border: 1.5px solid #FFF;"></span> Rùa đã gắn thẻ ($M$)
+                <span class="legend-dot" style="background: #E8A24A; border: 1.5px solid #FFF;"></span> Rùa có thẻ ($M$)
               </div>
               <div class="legend-item">
                 <span class="legend-dot" style="background: #0284C7;"></span> Mẫu bắt lại ($n$)
@@ -1077,7 +1150,7 @@
               </div>
               <div class="calc-row">
                 <span style="font-weight: 700;">$\hat{N} =$</span>
-                <input type="text" class="answer-input" id="p1_input_n" placeholder="Nhập số con..." onkeydown="if(event.key==='Enter') checkP1Calculation()">
+                <input type="text" inputmode="decimal" class="answer-input" id="p1_input_n" placeholder="Nhập số con..." onkeydown="if(event.key==='Enter') checkP1Calculation()">
                 <span>con rùa</span>
                 <button class="btn-check-calc" id="btn_check_p1_calc" onclick="checkP1Calculation()">
                   <i class="ti ti-check"></i> Kiểm tra
@@ -1090,8 +1163,9 @@
 
         <!-- HOẠT ĐỘNG 2: BẢNG ĐÁNH GIÁ SAI SỐ -->
         <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
-          <h3 style="font-size: 16.5px; font-weight: 700; color: var(--jade-deep); display: flex; align-items: center; gap: 8px;">
-            <i class="ti ti-table" style="color: var(--jade);"></i> Hoạt động 2: Đánh giá sai số khi cỡ mẫu thay đổi ($N_{\text{thật}} = 300$, $M = 40$)
+          <h3 class="activity-title">
+            <i class="ti ti-table"></i> Hoạt động 2: Đánh giá sai số khi cỡ mẫu thay đổi
+            <span class="activity-param-badge">($N_{\text{thật}} = 300$, $M = 40$)</span>
           </h3>
 
           <div class="athena-speech">
@@ -1120,25 +1194,25 @@
                   <td><b>1</b></td>
                   <td>30</td>
                   <td>5</td>
-                  <td><input type="text" class="table-input" id="p1_t_n1" placeholder="Nhập số..."></td>
-                  <td><input type="text" class="table-input" id="p1_t_abs1" placeholder="Nhập số..."></td>
-                  <td><input type="text" class="table-input" id="p1_t_rel1" placeholder="Nhập %..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p1_t_n1" placeholder="Nhập số..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p1_t_abs1" placeholder="Nhập số..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p1_t_rel1" placeholder="Nhập %..."></td>
                 </tr>
                 <tr>
                   <td><b>2</b></td>
                   <td>90</td>
                   <td>11</td>
-                  <td><input type="text" class="table-input" id="p1_t_n2" placeholder="Nhập số..."></td>
-                  <td><input type="text" class="table-input" id="p1_t_abs2" placeholder="Nhập số..."></td>
-                  <td><input type="text" class="table-input" id="p1_t_rel2" placeholder="Nhập %..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p1_t_n2" placeholder="Nhập số..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p1_t_abs2" placeholder="Nhập số..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p1_t_rel2" placeholder="Nhập %..."></td>
                 </tr>
                 <tr>
                   <td><b>3</b></td>
                   <td>150</td>
                   <td>19</td>
-                  <td><input type="text" class="table-input" id="p1_t_n3" placeholder="Nhập số..."></td>
-                  <td><input type="text" class="table-input" id="p1_t_abs3" placeholder="Nhập số..."></td>
-                  <td><input type="text" class="table-input" id="p1_t_rel3" placeholder="Nhập %..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p1_t_n3" placeholder="Nhập số..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p1_t_abs3" placeholder="Nhập số..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p1_t_rel3" placeholder="Nhập %..."></td>
                 </tr>
               </tbody>
             </table>
@@ -1199,24 +1273,26 @@
         </div>
 
         <!-- HOẠT ĐỘNG 1: QUY TRÌNH MÔ PHỎNG BỂ CHỨA -->
-        <h3 style="font-size: 16.5px; font-weight: 700; color: var(--jade-deep); display: flex; align-items: center; gap: 8px;">
-          <i class="ti ti-player-play" style="color: var(--jade);"></i> Hoạt động 1: Thực hiện quy trình ước tính
+        <h3 class="activity-title">
+          <i class="ti ti-player-play"></i> Hoạt động 1: Thực hiện quy trình ước tính
         </h3>
 
         <div class="simulation-grid">
           <!-- CANVAS BỂ CHỨA -->
-          <div class="sim-canvas-card" id="nuclearCanvasCard" style="background: #0E1726;">
-            <div class="sim-canvas-header">
+          <div class="sim-canvas-card" id="nuclearCanvasCard" style="background: #0A1322; border-color: rgba(2, 132, 199, 0.35);">
+            <div class="sim-canvas-header" style="background: rgba(10, 19, 34, 0.95);">
               <div class="canvas-tag"><i class="ti ti-flask"></i> Bể chứa chất thải hạt nhân</div>
               <div class="canvas-tag" id="nuclearWeightTag">Khối lượng thật: 2600g (ẩn)</div>
             </div>
 
-            <!-- SVG CANVAS ANIMATION BỂ CHỨA -->
-            <svg class="canvas-view" id="nuclearSvgView" viewBox="0 0 400 240"></svg>
+            <!-- SVG CANVAS ANIMATION BỂ CHỨA (KHÔNG BỊ CHỮ CHE TRÊN MOBILE) -->
+            <div class="canvas-view-wrap" style="background: #060B14;">
+              <svg class="canvas-view" id="nuclearSvgView" viewBox="0 0 400 240"></svg>
+            </div>
 
-            <div class="canvas-legend">
+            <div class="canvas-legend" style="background: #060B14;">
               <div class="legend-item">
-                <span class="legend-dot" style="background: #475569;"></span> Dung dịch chất thải
+                <span class="legend-dot" style="background: #64748B;"></span> Dung dịch chất thải
               </div>
               <div class="legend-item">
                 <span class="legend-dot" style="background: #10B981; border: 1.5px solid #FFF;"></span> Chất đánh dấu ($M$)
@@ -1263,7 +1339,7 @@
               </div>
               <div class="calc-row">
                 <span style="font-weight: 700;">$\hat{N} \approx$</span>
-                <input type="text" class="answer-input" id="p2_input_n" placeholder="Nhập số g..." onkeydown="if(event.key==='Enter') checkP2Calculation()">
+                <input type="text" inputmode="decimal" class="answer-input" id="p2_input_n" placeholder="Nhập số g..." onkeydown="if(event.key==='Enter') checkP2Calculation()">
                 <span>gam</span>
                 <button class="btn-check-calc" id="btn_check_p2_calc" onclick="checkP2Calculation()">
                   <i class="ti ti-check"></i> Kiểm tra
@@ -1276,8 +1352,9 @@
 
         <!-- HOẠT ĐỘNG 2: BẢNG ĐÁNH GIÁ SAI SỐ PHẦN 2 -->
         <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
-          <h3 style="font-size: 16.5px; font-weight: 700; color: var(--jade-deep); display: flex; align-items: center; gap: 8px;">
-            <i class="ti ti-table" style="color: var(--jade);"></i> Hoạt động 2: Đánh giá sai số khi cỡ mẫu thay đổi ($N_{\text{thật}} = 2600\text{g}$, $M = 50\text{g}$)
+          <h3 class="activity-title">
+            <i class="ti ti-table"></i> Hoạt động 2: Đánh giá sai số khi cỡ mẫu thay đổi
+            <span class="activity-param-badge">($N_{\text{thật}} = 2600\text{g}$, $M = 50\text{g}$)</span>
           </h3>
 
           <div class="athena-speech">
@@ -1306,25 +1383,25 @@
                   <td><b>1</b></td>
                   <td>80</td>
                   <td>1,6</td>
-                  <td><input type="text" class="table-input" id="p2_t_n1" placeholder="Nhập số..."></td>
-                  <td><input type="text" class="table-input" id="p2_t_abs1" placeholder="Nhập số..."></td>
-                  <td><input type="text" class="table-input" id="p2_t_rel1" placeholder="Nhập %..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p2_t_n1" placeholder="Nhập số..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p2_t_abs1" placeholder="Nhập số..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p2_t_rel1" placeholder="Nhập %..."></td>
                 </tr>
                 <tr>
                   <td><b>2</b></td>
                   <td>200</td>
                   <td>3,9</td>
-                  <td><input type="text" class="table-input" id="p2_t_n2" placeholder="Nhập số..."></td>
-                  <td><input type="text" class="table-input" id="p2_t_abs2" placeholder="Nhập số..."></td>
-                  <td><input type="text" class="table-input" id="p2_t_rel2" placeholder="Nhập %..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p2_t_n2" placeholder="Nhập số..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p2_t_abs2" placeholder="Nhập số..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p2_t_rel2" placeholder="Nhập %..."></td>
                 </tr>
                 <tr>
                   <td><b>3</b></td>
                   <td>400</td>
                   <td>7,7</td>
-                  <td><input type="text" class="table-input" id="p2_t_n3" placeholder="Nhập số..."></td>
-                  <td><input type="text" class="table-input" id="p2_t_abs3" placeholder="Nhập số..."></td>
-                  <td><input type="text" class="table-input" id="p2_t_rel3" placeholder="Nhập %..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p2_t_n3" placeholder="Nhập số..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p2_t_abs3" placeholder="Nhập số..."></td>
+                  <td><input type="text" inputmode="decimal" class="table-input" id="p2_t_rel3" placeholder="Nhập %..."></td>
                 </tr>
               </tbody>
             </table>
@@ -1393,28 +1470,28 @@
     <div class="modal-card" onclick="event.stopPropagation()">
       <div class="modal-header">
         <div class="modal-title">
-          <i class="ti ti-book-2"></i> Sổ tay kiến thức: Phương pháp mẫu & Sai số
+          <i class="ti ti-book-2"></i> Sổ tay kiến thức nền tảng
         </div>
         <button class="btn-close" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
       </div>
 
       <div style="font-size: 14.5px; color: var(--ink); line-height: 1.65; display: flex; flex-direction: column; gap: 12px;">
-        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--jade);">
-          <b>1. Phương pháp Đánh dấu - Bắt lại (Lincoln-Petersen):</b><br>
-          Dựa trên giả thiết tỉ lệ cá thể có dấu trong mẫu bắt lại xấp xỉ tỉ lệ cá thể có dấu trong toàn bộ quần thể:
-          $$\frac{k}{n} \approx \frac{M}{N} \implies N \approx \frac{M \cdot n}{k}$$
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid #8B5CF6;">
+          <b>• Xác suất cổ điển (Bài 26):</b><br>
+          Xác suất của biến cố $A$ trong không gian mẫu $\Omega$: $P(A) = \frac{n(A)}{n(\Omega)}$.
         </div>
 
-        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--ocean-blue);">
-          <b>2. Phương pháp Pha loãng đồng vị (Isotope Dilution):</b><br>
-          Thêm một khối lượng $M$ chất đánh dấu đồng vị vào bể chứa $N$. Sau khi khuấy đều, lấy ra mẫu $n$ và đo được $k$ chất đánh dấu $\implies N \approx \frac{M \cdot n}{k}$.
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--jade);">
+          <b>• Phương pháp Đánh dấu - Bắt lại / Pha loãng:</b><br>
+          Thêm hoặc đánh dấu $M$ (số lượng/khối lượng đã biết), trộn đều hoặc chờ phân bố lại vào quần thể/môi trường, sau đó lấy mẫu $n$, đếm/đo được số lượng đã đánh dấu $k$ có trong mẫu đó:
+          $$\hat{N} \approx \frac{M \cdot n}{k}$$
         </div>
 
         <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--accent);">
-          <b>3. Đánh giá sai số thống kê:</b><br>
+          <b>• Đánh giá sai số thống kê:</b><br>
           • <b>Sai số tuyệt đối:</b> $\Delta = |N_{\text{thật}} - \hat{N}|$.<br>
           • <b>Sai số tương đối:</b> $\delta = \frac{\Delta}{N_{\text{thật}}} \times 100\%$.<br>
-          • <b>Quy luật cỡ mẫu:</b> Cỡ mẫu $n$ tăng thì sai số tương đối $\delta$ giảm rõ rệt.
+          • <b>Quy luật cỡ mẫu:</b> Cỡ mẫu $n$ tăng thì sai số tương đối $\delta$ giảm dần.
         </div>
       </div>
     </div>
