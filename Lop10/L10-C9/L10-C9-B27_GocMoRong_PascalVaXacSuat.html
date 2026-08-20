@@ -1,0 +1,1271 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Góc mở rộng: Pascal và hành trình xác suất — Từ trò chơi xúc xắc đến AI</title>
+
+  <!-- GOOGLE FONTS: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- TABLER ICONS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+  <!-- KATEX FOR MATHEMATICAL RENDERING -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    /* =========================================================
+       1. CSS DESIGN SYSTEM & TOKENS (CREAM & JADE)
+       ========================================================= */
+    :root {
+      --bg: #FAF8F5;
+      --paper: #FFFFFF;
+      --paper-subtle: #F4EFEA;
+      --paper-line: #E5DDD0;
+      
+      --jade-deep: #14432F;
+      --jade: #2D8B6F;
+      --jade-light: #E6F4EA;
+      --jade-glow: rgba(45, 139, 111, 0.18);
+      
+      --accent: #D97736;
+      --accent-light: #FDF3E7;
+      --accent-dark: #B45309;
+
+      --tech-blue: #0284C7;
+      --tech-blue-bg: #E0F2FE;
+      
+      --ink: #1F2937;
+      --ink-2: #4B5563;
+      --ink-3: #6B7280;
+      
+      --correct: #16A34A;
+      --correct-bg: #DCFCE7;
+      --warning: #F59E0B;
+      --warning-bg: #FEF3C7;
+      --wrong: #DC2626;
+      --wrong-bg: #FEE2E2;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 12px rgba(20, 67, 47, 0.08);
+      --shadow-lg: 0 10px 25px rgba(20, 67, 47, 0.14);
+
+      --transition-fast: 0.18s ease;
+      --transition-normal: 0.28s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      padding: 16px 16px 80px 16px;
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* =========================================================
+       2. HERO CARD & INTRO HEADER
+       ========================================================= */
+    .hero-card {
+      background: var(--paper);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--paper-line);
+      box-shadow: var(--shadow-md);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .hero-image-wrap {
+      width: 100%;
+      height: 280px;
+      background: #0B1914;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .hero-image {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: transform 0.6s ease;
+    }
+
+    .hero-image-wrap:hover .hero-image {
+      transform: scale(1.02);
+    }
+
+    .hero-badge-overlay {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(20, 67, 47, 0.85);
+      backdrop-filter: blur(8px);
+      color: #FFF;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .hero-content {
+      padding: 24px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .hero-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      line-height: 1.35;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      color: var(--ink-2);
+      line-height: 1.65;
+    }
+
+    .hero-meta-bar {
+      display: flex;
+      flex-wrap: wrap;
+      align-items: center;
+      gap: 12px;
+      padding-top: 12px;
+      border-top: 1px solid var(--paper-line);
+      margin-top: 4px;
+    }
+
+    .meta-tag {
+      background: var(--paper-subtle);
+      color: var(--ink-2);
+      font-size: 12.5px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-sm);
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .btn-notebook {
+      margin-left: auto;
+      background: var(--jade-light);
+      color: var(--jade-deep);
+      border: 1px solid rgba(45, 139, 111, 0.3);
+      padding: 7px 14px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-notebook:hover {
+      background: var(--jade);
+      color: #FFF;
+    }
+
+    /* =========================================================
+       3. SECTION BLOCKS (3 MAIN PARTS)
+       ========================================================= */
+    .module-section {
+      background: var(--paper);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--paper-line);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-banner-wrap {
+      width: 100%;
+      height: 220px;
+      position: relative;
+      overflow: hidden;
+      background: #0B1914;
+    }
+
+    .section-banner-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+    }
+
+    .section-banner-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(20, 67, 47, 0.9);
+      backdrop-filter: blur(6px);
+      color: #FFF;
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .section-body {
+      padding: 24px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 18px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    /* ATHENA SPEECH BUBBLE */
+    .athena-speech {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--paper-subtle);
+      border-left: 4px solid var(--jade);
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      font-size: 14.5px;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    .athena-avatar-bubble {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      border-radius: var(--radius-full);
+      background: #FFF;
+      border: 2px solid var(--jade);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .athena-avatar-bubble img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* =========================================================
+       4. PHẦN 1: MONTE CARLO SIMULATION UI (3 PLANS)
+       ========================================================= */
+    .plans-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-top: 4px;
+    }
+
+    .plan-card {
+      background: var(--paper);
+      border: 2px solid var(--paper-line);
+      border-radius: var(--radius-lg);
+      padding: 16px 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      transition: all var(--transition-fast);
+      position: relative;
+    }
+
+    .plan-card.active {
+      border-color: var(--jade);
+      background: #FAFCFA;
+      box-shadow: 0 4px 14px var(--jade-glow);
+    }
+
+    .plan-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .plan-badge {
+      font-size: 12px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      background: var(--jade-light);
+      padding: 3px 8px;
+      border-radius: var(--radius-sm);
+    }
+
+    .plan-condition {
+      font-size: 13.5px;
+      color: var(--ink);
+      line-height: 1.5;
+      min-height: 48px;
+    }
+
+    .plan-sim-box {
+      background: var(--paper-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      border: 1px solid var(--paper-line);
+    }
+
+    .sim-stat-row {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12.5px;
+      color: var(--ink-2);
+    }
+
+    .sim-rate {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 18px;
+      font-weight: 700;
+      color: var(--jade-deep);
+      text-align: center;
+      padding: 4px 0;
+    }
+
+    .sim-bar-track {
+      width: 100%;
+      height: 7px;
+      background: var(--paper-line);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .sim-bar-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--jade) 0%, #10B981 100%);
+      transition: width 0.2s ease;
+    }
+
+    .btn-sim-run {
+      background: var(--jade);
+      color: #FFF;
+      border: none;
+      padding: 8px 12px;
+      border-radius: var(--radius-md);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      transition: all var(--transition-fast);
+      min-height: 40px;
+    }
+
+    .btn-sim-run:hover {
+      background: var(--jade-deep);
+      transform: translateY(-1px);
+    }
+
+    .btn-sim-run:active {
+      transform: translateY(0);
+    }
+
+    .btn-sim-run:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+    }
+
+    /* PASCAL EXACT PROOF CARD */
+    .pascal-proof-card {
+      background: linear-gradient(135deg, #F0FDF4 0%, #DCFCE7 100%);
+      border: 1px solid #86EFAC;
+      border-radius: var(--radius-lg);
+      padding: 16px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+      font-size: 14.5px;
+    }
+
+    .pascal-proof-title {
+      font-size: 15px;
+      font-weight: 800;
+      color: #14532D;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* =========================================================
+       5. PHẦN 2: TIMELINE THÀNH TỰU CỦA PASCAL
+       ========================================================= */
+    .timeline-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .timeline-card {
+      background: var(--paper-subtle);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-lg);
+      padding: 14px 18px;
+      display: flex;
+      align-items: flex-start;
+      gap: 16px;
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+
+    .timeline-card:hover {
+      background: #FFF;
+      border-color: var(--jade);
+      box-shadow: var(--shadow-sm);
+      transform: translateX(4px);
+    }
+
+    .timeline-age-badge {
+      background: var(--jade-deep);
+      color: #FFF;
+      padding: 6px 12px;
+      border-radius: var(--radius-md);
+      font-weight: 800;
+      font-size: 14px;
+      flex-shrink: 0;
+      text-align: center;
+      min-width: 68px;
+    }
+
+    .timeline-info {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .timeline-info-title {
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--jade-deep);
+    }
+
+    .timeline-info-desc {
+      font-size: 14px;
+      color: var(--ink-2);
+      line-height: 1.5;
+    }
+
+    /* QUOTE CARD */
+    .quote-box {
+      background: var(--accent-light);
+      border-left: 4px solid var(--accent);
+      border-radius: var(--radius-md);
+      padding: 14px 18px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      font-size: 14.5px;
+      color: var(--accent-dark);
+      font-style: italic;
+    }
+
+    /* =========================================================
+       6. PHẦN 3: AI & MODERN TIMELINE (4 MỐC)
+       ========================================================= */
+    .ai-timeline-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 12px;
+    }
+
+    .ai-step-card {
+      background: var(--paper-subtle);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-lg);
+      padding: 14px 12px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .ai-step-year {
+      font-family: 'JetBrains Mono', monospace;
+      font-weight: 800;
+      font-size: 15px;
+      color: var(--tech-blue);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .ai-step-title {
+      font-weight: 700;
+      font-size: 13.5px;
+      color: var(--ink);
+      line-height: 1.4;
+    }
+
+    .ai-step-desc {
+      font-size: 12.5px;
+      color: var(--ink-3);
+      line-height: 1.5;
+    }
+
+    /* =========================================================
+       7. FINAL SUMMARY CARD (ATHENA COMPLETION)
+       ========================================================= */
+    .summary-card {
+      background: linear-gradient(135deg, var(--jade-deep) 0%, #1c523d 100%);
+      color: #FFF;
+      border-radius: var(--radius-xl);
+      padding: 26px 28px;
+      box-shadow: var(--shadow-lg);
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .summary-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .summary-avatar {
+      width: 68px;
+      height: 68px;
+      flex-shrink: 0;
+      background: #FFF;
+      border-radius: var(--radius-full);
+      padding: 3px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .summary-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: var(--radius-full);
+    }
+
+    .summary-text h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 8px;
+    }
+
+    .summary-text p {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .rule-highlight-box {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: var(--radius-lg);
+      padding: 12px 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 12px 0 16px 0;
+    }
+
+    .btn-restart-all {
+      background: var(--accent);
+      color: #FFF;
+      border: none;
+      padding: 9px 20px;
+      border-radius: var(--radius-full);
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-restart-all:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       8. MODAL SỔ TAY KIẾN THỨC
+       ========================================================= */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-normal);
+      padding: 14px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      max-width: 640px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(16px);
+      transition: transform var(--transition-normal);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--paper-line);
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      color: var(--ink-3);
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    /* =========================================================
+       9. RESPONSIVE MOBILE (≤ 768px)
+       ========================================================= */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px 8px 60px 8px;
+      }
+
+      .hero-image-wrap {
+        height: 200px;
+      }
+
+      .section-banner-wrap {
+        height: 160px;
+      }
+
+      .hero-content, .section-body {
+        padding: 16px 14px;
+        gap: 14px;
+      }
+
+      .hero-title {
+        font-size: 19px;
+      }
+
+      .section-title {
+        font-size: 17px;
+      }
+
+      .plans-grid {
+        grid-template-columns: 1fr;
+        gap: 12px;
+      }
+
+      .ai-timeline-grid {
+        grid-template-columns: 1fr;
+        gap: 10px;
+      }
+
+      .timeline-card {
+        flex-direction: column;
+        gap: 8px;
+      }
+
+      .timeline-age-badge {
+        width: 100%;
+        text-align: left;
+      }
+
+      .summary-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
+      }
+
+      .summary-avatar {
+        width: 60px;
+        height: 60px;
+      }
+
+      .rule-highlight-box {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- HERO CARD VỚI ẢNH NGHỆ THUẬT KÉP -->
+    <header class="hero-card">
+      <div class="hero-image-wrap">
+        <img src="https://lh3.googleusercontent.com/d/1Z2ig-bk5sBhRDzzuyhTGE82OLif65hZq" alt="Pascal và Hành trình Xác suất" class="hero-image">
+        <div class="hero-badge-overlay">
+          <i class="ti ti-sparkles"></i> Góc mở rộng · Em có biết
+        </div>
+      </div>
+
+      <div class="hero-content">
+        <h1 class="hero-title">Pascal và hành trình xác suất — Từ trò chơi xúc xắc đến AI</h1>
+        <p class="hero-desc">
+          Khám phá câu chuyện lịch sử năm 1654 đã khai sinh ra <b>Lý thuyết Xác suất</b>, chiêm ngưỡng chân dung thiên tài đa lĩnh vực Blaise Pascal, và khám phá cách xác suất trở thành nền tảng toán học của toàn bộ thế giới AI/Machine Learning hiện đại.
+        </p>
+
+        <div class="hero-meta-bar">
+          <span class="meta-tag"><i class="ti ti-compass"></i> Khám phá tự do</span>
+          <span class="meta-tag"><i class="ti ti-clock"></i> ~10 phút</span>
+          <span class="meta-tag"><i class="ti ti-book"></i> Dựa trên Bài 26, 27 SGK Toán 10</span>
+          <button class="btn-notebook" onclick="openNotebookModal()">
+            <i class="ti ti-notes"></i> Sổ tay kiến thức
+          </button>
+        </div>
+      </div>
+    </header>
+
+    <!-- PHẦN 1: BỨC THƯ ĐỊNH HÌNH 1 NGÀNH KHOA HỌC (1654) -->
+    <section class="module-section" id="sec-part1">
+      <div class="section-banner-wrap">
+        <img src="https://lh3.googleusercontent.com/d/1oJENzyx5dRt5dbOuKLx2V_Sc5SHgX7G4" alt="Bức thư gửi Pascal năm 1654" class="section-banner-img">
+        <div class="section-banner-badge">
+          <i class="ti ti-mail"></i> Phần 1 · Bức thư lịch sử năm 1654
+        </div>
+      </div>
+
+      <div class="section-body">
+        <h2 class="section-title">
+          <i class="ti ti-dice"></i> 1. Bài toán cờ bạc của Chevalier de Méré
+        </h2>
+
+        <div class="athena-speech">
+          <div class="athena-avatar-bubble">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+          </div>
+          <div>
+            <b>Trợ lý Athena:</b> <i>"Năm 1654, một nhà quý tộc mê cờ bạc viết thư hỏi Blaise Pascal về một trò chơi xúc xắc, đưa ra 3 phương án cược và nhờ ông tính xem nên chọn phương án nào để có tỉ lệ thắng cao nhất:"</i>
+          </div>
+        </div>
+
+        <!-- 3 PLAN CARDS FOR MONTE CARLO SIMULATION -->
+        <div class="plans-grid">
+          <!-- PLAN 1 -->
+          <div class="plan-card" id="planCard1">
+            <div class="plan-header">
+              <span class="plan-badge">Phương án 1</span>
+              <span style="font-size: 12px; color: var(--ink-3);">Gieo 6 lần</span>
+            </div>
+            <div class="plan-condition">
+              Gieo xúc xắc <b>6 lần liên tiếp</b>. Thắng nếu có <b>ÍT NHẤT 1 lần</b> ra mặt 6.
+            </div>
+            <div class="plan-sim-box">
+              <div class="sim-stat-row">
+                <span>Thực nghiệm:</span>
+                <span id="p1Stats">0 / 0</span>
+              </div>
+              <div class="sim-rate" id="p1Rate">--%</div>
+              <div class="sim-bar-track">
+                <div class="sim-bar-fill" id="p1Bar"></div>
+              </div>
+            </div>
+            <button class="btn-sim-run" id="btnSim1" onclick="runSimulation(1, 6, 1, 1000)">
+              <i class="ti ti-player-play"></i> Chơi thử 1.000 lượt
+            </button>
+          </div>
+
+          <!-- PLAN 2 -->
+          <div class="plan-card" id="planCard2">
+            <div class="plan-header">
+              <span class="plan-badge">Phương án 2</span>
+              <span style="font-size: 12px; color: var(--ink-3);">Gieo 12 lần</span>
+            </div>
+            <div class="plan-condition">
+              Gieo xúc xắc <b>12 lần liên tiếp</b>. Thắng nếu có <b>ÍT NHẤT 2 lần</b> ra mặt 6.
+            </div>
+            <div class="plan-sim-box">
+              <div class="sim-stat-row">
+                <span>Thực nghiệm:</span>
+                <span id="p2Stats">0 / 0</span>
+              </div>
+              <div class="sim-rate" id="p2Rate">--%</div>
+              <div class="sim-bar-track">
+                <div class="sim-bar-fill" id="p2Bar"></div>
+              </div>
+            </div>
+            <button class="btn-sim-run" id="btnSim2" onclick="runSimulation(2, 12, 2, 1000)">
+              <i class="ti ti-player-play"></i> Chơi thử 1.000 lượt
+            </button>
+          </div>
+
+          <!-- PLAN 3 -->
+          <div class="plan-card" id="planCard3">
+            <div class="plan-header">
+              <span class="plan-badge">Phương án 3</span>
+              <span style="font-size: 12px; color: var(--ink-3);">Gieo 18 lần</span>
+            </div>
+            <div class="plan-condition">
+              Gieo xúc xắc <b>18 lần liên tiếp</b>. Thắng nếu có <b>ÍT NHẤT 3 lần</b> ra mặt 6.
+            </div>
+            <div class="plan-sim-box">
+              <div class="sim-stat-row">
+                <span>Thực nghiệm:</span>
+                <span id="p3Stats">0 / 0</span>
+              </div>
+              <div class="sim-rate" id="p3Rate">--%</div>
+              <div class="sim-bar-track">
+                <div class="sim-bar-fill" id="p3Bar"></div>
+              </div>
+            </div>
+            <button class="btn-sim-run" id="btnSim3" onclick="runSimulation(3, 18, 3, 1000)">
+              <i class="ti ti-player-play"></i> Chơi thử 1.000 lượt
+            </button>
+          </div>
+        </div>
+
+        <!-- PASCAL EXACT CALCULATION PROOF -->
+        <div class="pascal-proof-card" id="pascalProofCard">
+          <div class="pascal-proof-title">
+            <i class="ti ti-certificate"></i> Kết luận toán học chính xác của Blaise Pascal (1654)
+          </div>
+          <p>
+            Bằng các công cụ toán học thuần túy (không cần mô phỏng máy tính), Pascal đã tính toán chính xác xác suất lý thuyết của 3 phương án:
+          </p>
+          <ul style="padding-left: 20px; line-height: 1.7;">
+            <li><b>Phương án 1 ($n=6, k \ge 1$):</b> $P_1 = 1 - \left(\frac{5}{6}\right)^6 \approx \mathbf{0{,}6651}$ (<b>66,51%</b>)</li>
+            <li><b>Phương án 2 ($n=12, k \ge 2$):</b> $P_2 = 1 - \left(\frac{5}{6}\right)^{12} - 12 \cdot \frac{1}{6} \cdot \left(\frac{5}{6}\right)^{11} \approx \mathbf{0{,}6187}$ (<b>61,87%</b>)</li>
+            <li><b>Phương án 3 ($n=18, k \ge 3$):</b> $P_3 \approx \mathbf{0{,}5973}$ (<b>59,73%</b>)</li>
+          </ul>
+          <p style="color: #166534; font-weight: 700; margin-top: 4px;">
+            👉 <b>Lời khuyên của Pascal:</b> Hãy chọn <b>Phương án 1</b> để có xác suất thắng cao nhất ($P_1 > P_2 > P_3$). Cuộc trao đổi thư từ giữa Pascal và Fermat để giải bài toán này đã chính thức khai sinh ra <b>Lý thuyết Xác suất</b>!
+          </p>
+        </div>
+      </div>
+    </section>
+
+    <!-- PHẦN 2: PASCAL — THIÊN TÀI ĐA LĨNH VỰC -->
+    <section class="module-section" id="sec-part2">
+      <div class="section-banner-wrap">
+        <img src="https://lh3.googleusercontent.com/d/1Oal3cuEmcfBvplgdHTis-KX3Dq0BlxBh" alt="Các phát minh và công trình của Pascal" class="section-banner-img">
+        <div class="section-banner-badge">
+          <i class="ti ti-award"></i> Phần 2 · Thiên tài đa lĩnh vực
+        </div>
+      </div>
+
+      <div class="section-body">
+        <h2 class="section-title">
+          <i class="ti ti-bulb"></i> 2. Những mốc thành tựu phi thường của Blaise Pascal
+        </h2>
+
+        <div class="athena-speech">
+          <div class="athena-avatar-bubble">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+          </div>
+          <div>
+            <b>Trợ lý Athena:</b> <i>"Pascal không chỉ là nhà toán học lỗi lạc mà còn là nhà vật lý, triết học và nhà văn vĩ đại. Hãy bấm vào từng mốc tuổi dưới đây để khám phá những dấu ấn của ông:"</i>
+          </div>
+        </div>
+
+        <div class="timeline-container">
+          <!-- 16 TUỔI -->
+          <div class="timeline-card" onclick="trackExplore('mr_pascal_thanh_tuu')">
+            <div class="timeline-age-badge">16 tuổi</div>
+            <div class="timeline-info">
+              <div class="timeline-info-title">Định lí lục giác thần kỳ & 400 hệ quả hình học</div>
+              <div class="timeline-info-desc">
+                Công bố công trình về thiết diện đường conic — sau này gọi là <i>"Định lí Pascal về lục giác thần kì"</i> (nếu một lục giác nội tiếp một đường conic thì ba giao điểm của các cặp cạnh đối diện thẳng hàng), từ đó rút ra được 400 hệ quả hình học sâu sắc.
+              </div>
+            </div>
+          </div>
+
+          <!-- 17 TUỔI -->
+          <div class="timeline-card" onclick="trackExplore('mr_pascal_thanh_tuu')">
+            <div class="timeline-age-badge">17 tuổi</div>
+            <div class="timeline-info">
+              <div class="timeline-info-title">Chế tạo chiếc máy tính cơ học đầu tiên nhân loại (Pascaline)</div>
+              <div class="timeline-info-desc">
+                Để giúp cha mình tính toán thuế khóa bớt vất vả, Pascal đã thiết kế và chế tạo <i>Pascaline</i> — chiếc máy tính cơ học dùng hệ thống bánh răng đầu tiên trong lịch sử thực hiện được 4 phép tính cộng, trừ, nhân, chia.
+              </div>
+            </div>
+          </div>
+
+          <!-- 28 TUỔI -->
+          <div class="timeline-card" onclick="trackExplore('mr_pascal_thanh_tuu')">
+            <div class="timeline-age-badge">28 tuổi</div>
+            <div class="timeline-info">
+              <div class="timeline-info-title">Khai sinh Lý thuyết Xác suất & Tam giác Pascal</div>
+              <div class="timeline-info-desc">
+                Toán học hóa các trò chơi may rủi và nghiên cứu các hệ số nhị thức thông qua <i>Tam giác Pascal</i>, mở ra một nhánh toán học hoàn toàn mới phục vụ nhân loại cho đến ngày nay.
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2 DANH NGÔN TRIẾT HỌC -->
+        <div class="quote-box">
+          <div style="font-weight: 700; font-style: normal; margin-bottom: 2px;">🌟 2 câu nói triết học bất hủ của Blaise Pascal:</div>
+          <div>❝ <i>Con người chỉ là một cây sậy, một vật rất yếu đuối của tự nhiên, nhưng là một cây sậy biết suy nghĩ.</i> ❞</div>
+          <div>❝ <i>Trái tim có những lí lẽ mà lí trí không giải thích được.</i> ❞</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PHẦN 3: TỪ TRÒ CHƠI MAY RỦI ĐẾN AI HIỆN ĐẠI -->
+    <section class="module-section" id="sec-part3">
+      <div class="section-banner-wrap">
+        <img src="https://lh3.googleusercontent.com/d/1tyfX9yLSJc0GjYEltc2njksSn-lyYPhi" alt="Xác suất và Trí tuệ Nhân tạo" class="section-banner-img">
+        <div class="section-banner-badge">
+          <i class="ti ti-cpu"></i> Phần 3 · Hành trình tới Trí tuệ Nhân tạo
+        </div>
+      </div>
+
+      <div class="section-body">
+        <h2 class="section-title">
+          <i class="ti ti-network"></i> 3. Hành trình phát triển: Từ trò chơi xúc xắc đến AI hiện đại
+        </h2>
+
+        <div class="athena-speech">
+          <div class="athena-avatar-bubble">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+          </div>
+          <div>
+            <b>Trợ lý Athena:</b> <i>"Sau bức thư năm 1654, Lý thuyết Xác suất đã phát triển không ngừng qua 4 thế kỷ để trở thành trái tim vận hành của Trí tuệ Nhân tạo ngày nay:"</i>
+          </div>
+        </div>
+
+        <div class="ai-timeline-grid">
+          <!-- MỐC 1: 1654 -->
+          <div class="ai-step-card" onclick="trackExplore('mr_dong_thoi_gian_ai')">
+            <div class="ai-step-year"><i class="ti ti-clock"></i> 1654</div>
+            <div class="ai-step-title">Pascal & Fermat</div>
+            <div class="ai-step-desc">Khởi nguồn từ bài toán cờ bạc xúc xắc và chia tiền cược khi cuộc chơi bị ngắt quãng.</div>
+          </div>
+
+          <!-- MỐC 2: 1814 -->
+          <div class="ai-step-card" onclick="trackExplore('mr_dong_thoi_gian_ai')">
+            <div class="ai-step-year"><i class="ti ti-clock"></i> 1814</div>
+            <div class="ai-step-title">Định nghĩa Laplace</div>
+            <div class="ai-step-desc">Pierre-Simon Laplace hệ thống hóa công thức xác suất cổ điển $P(E) = \frac{n(E)}{n(\Omega)}$.</div>
+          </div>
+
+          <!-- MỐC 3: THẾ KỶ 20 -->
+          <div class="ai-step-card" onclick="trackExplore('mr_dong_thoi_gian_ai')">
+            <div class="ai-step-year"><i class="ti ti-clock"></i> Thế kỷ 20</div>
+            <div class="ai-step-title">Di truyền & Bảo hiểm</div>
+            <div class="ai-step-desc">Ứng dụng vào Định luật Hardy-Weinberg trong sinh học và mô hình định giá rủi ro tài chính.</div>
+          </div>
+
+          <!-- MỐC 4: HIỆN NAY -->
+          <div class="ai-step-card" style="border-color: var(--tech-blue); background: var(--tech-blue-bg);" onclick="trackExplore('mr_dong_thoi_gian_ai')">
+            <div class="ai-step-year" style="color: #0369A1;"><i class="ti ti-robot"></i> Kỷ nguyên AI</div>
+            <div class="ai-step-title" style="color: #0369A1;">Nền tảng của Machine Learning</div>
+            <div class="ai-step-desc">Mọi thuật toán AI (xe tự lái, ChatGPT dự đoán từ tiếp theo) đều tối ưu phân phối xác suất.</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ATHENA FINAL SUMMARY CARD -->
+    <section class="summary-card" id="final-summary">
+      <div class="summary-content">
+        <div class="summary-avatar">
+          <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot" loading="lazy">
+        </div>
+        <div class="summary-text">
+          <h3>🎉 Đúc kết hành trình: Sức mạnh của toán học ứng dụng</h3>
+          <p>
+            "Lý thuyết Xác suất không sinh ra từ phòng thí nghiệm xa vời, mà bắt nguồn từ một bức thư năm 1654 xuất phát từ câu hỏi cờ bạc đời thường. Từ hạt mầm đó, xác suất đã lớn mạnh qua 4 thế kỷ và trở thành nền tảng toán học cốt lõi cho toàn bộ các mô hình AI và học máy hiện đại — một minh chứng tuyệt đẹp cho thấy những tò mò toán học giản đơn có thể mở ra những cuộc cách mạng công nghệ vĩ đại nhất!"
+          </p>
+          <div class="rule-highlight-box">
+            • <b>Khởi nguồn 1654:</b> Blaise Pascal & Pierre de Fermat giải quyết bài toán cờ bạc của Chevalier de Méré.<br>
+            • <b>Nguyên lý nhị thức:</b> Tính xác suất các biến cố độc lập qua quy tắc biến cố đối $P = 1 - P(\overline{E})$.<br>
+            • <b>Tương lai AI:</b> Dự đoán ngôn ngữ, thị giác máy tính và xe tự hành đều dựa trên nền tảng xác suất.
+          </div>
+          <button class="btn-restart-all" onclick="restartExploration()">
+            <i class="ti ti-refresh"></i> Khám phá lại từ đầu
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- SỔ TAY KIẾN THỨC MODAL -->
+  <div class="modal-overlay" id="notebookModal" onclick="closeNotebookModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="ti ti-book-2"></i> Sổ tay kiến thức — Blaise Pascal & Xác suất
+        </div>
+        <button class="btn-close" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
+      </div>
+
+      <div style="font-size: 14.5px; color: var(--ink); line-height: 1.65; display: flex; flex-direction: column; gap: 12px;">
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--jade);">
+          <b>1. Công thức xác suất cổ điển (Bài 26):</b>
+          $$P(E) = \frac{n(E)}{n(\Omega)}$$
+        </div>
+
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--accent);">
+          <b>2. Công thức biến cố đối (Bài 27):</b>
+          $$P(E) = 1 - P(\overline{E})$$
+        </div>
+
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--tech-blue);">
+          <b>3. Vài nét về Blaise Pascal (1623 – 1662):</b><br>
+          Nhà toán học, vật lý học, triết học và nhà văn Pháp. Cùng Pierre de Fermat trao đổi thư từ năm 1654 để giải quyết bài toán cờ bạc — sự kiện đánh dấu sự ra đời của Lý thuyết Xác suất.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATHENA CONTEXT JSON FOR LMS TRACKING -->
+  <script type="application/json" id="athena-context">
+  {
+    "context": {
+      "grade": 10,
+      "chapter": 9,
+      "lesson": 27,
+      "module": 5,
+      "topic": "goc_mo_rong_pascal",
+      "title": "Pascal và hành trình xác suất — từ trò chơi xúc xắc đến AI"
+    },
+    "structure": [
+      { "id": "mr_choi_thu_pa1", "type": "explored", "required": false, "title": "Chơi thử Phương án 1 (6 lần, ít nhất 1 lần mặt 6)" },
+      { "id": "mr_choi_thu_pa2", "type": "explored", "required": false, "title": "Chơi thử Phương án 2 (12 lần, ít nhất 2 lần mặt 6)" },
+      { "id": "mr_choi_thu_pa3", "type": "explored", "required": false, "title": "Chơi thử Phương án 3 (18 lần, ít nhất 3 lần mặt 6)" },
+      { "id": "mr_pascal_thanh_tuu", "type": "explored", "required": false, "title": "Khám phá các thành tựu của Pascal" },
+      { "id": "mr_dong_thoi_gian_ai", "type": "explored", "required": false, "title": "Dòng thời gian từ cờ bạc đến AI" }
+    ],
+    "pedagogy": {
+      "total_progress": 0,
+      "mode": "free_exploration"
+    }
+  }
+  </script>
+
+  <!-- JAVASCRIPT ENGINE -->
+  <script>
+    // =========================================================
+    // 0. LMS INTEGRATION & UTILITIES
+    // =========================================================
+    function LMS() {
+      return {
+        event: (name, data) => console.log('[LMS Event]', name, data),
+        progress: (done, total) => console.log('[LMS Progress]', `${done}/${total}`),
+        complete: () => console.log('[LMS Complete] Exploration Finished!')
+      };
+    }
+
+    function renderMath(target = document.body) {
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(target, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {
+          console.warn('[KaTeX]', e);
+        }
+      }
+    }
+
+    function trackExplore(id) {
+      LMS().event('explored', { id });
+    }
+
+    // =========================================================
+    // 1. REALTIME MONTE CARLO SIMULATION LOGIC
+    // =========================================================
+    const simState = {
+      1: { wins: 0, total: 0 },
+      2: { wins: 0, total: 0 },
+      3: { wins: 0, total: 0 }
+    };
+
+    function runSimulation(planId, numDice, minSuccess, iterations = 1000) {
+      const btn = document.getElementById(`btnSim${planId}`);
+      const statsEl = document.getElementById(`p${planId}Stats`);
+      const rateEl = document.getElementById(`p${planId}Rate`);
+      const barEl = document.getElementById(`p${planId}Bar`);
+      const cardEl = document.getElementById(`planCard${planId}`);
+
+      if (btn) btn.disabled = true;
+      if (cardEl) cardEl.classList.add('active');
+
+      let currentWin = 0;
+      let batchSize = 50; // Update UI in batches for smooth animation
+      let count = 0;
+
+      function simulateBatch() {
+        for (let b = 0; b < batchSize && count < iterations; b++) {
+          let sixCount = 0;
+          for (let d = 0; d < numDice; d++) {
+            const roll = Math.floor(Math.random() * 6) + 1;
+            if (roll === 6) sixCount++;
+          }
+          if (sixCount >= minSuccess) {
+            currentWin++;
+          }
+          count++;
+        }
+
+        simState[planId].wins = currentWin;
+        simState[planId].total = count;
+
+        const rate = (currentWin / count) * 100;
+        if (statsEl) statsEl.textContent = `${currentWin.toLocaleString()} / ${count.toLocaleString()}`;
+        if (rateEl) rateEl.textContent = `${rate.toFixed(1)}%`;
+        if (barEl) barEl.style.width = `${rate}%`;
+
+        if (count < iterations) {
+          requestAnimationFrame(simulateBatch);
+        } else {
+          if (btn) {
+            btn.disabled = false;
+            btn.innerHTML = `<i class="ti ti-refresh"></i> Thử lại 1.000 lượt`;
+          }
+          trackExplore(`mr_choi_thu_pa${planId}`);
+          checkAllSimulationsDone();
+        }
+      }
+
+      simulateBatch();
+    }
+
+    function checkAllSimulationsDone() {
+      if (simState[1].total > 0 && simState[2].total > 0 && simState[3].total > 0) {
+        LMS().complete();
+      }
+    }
+
+    function restartExploration() {
+      // Reset simulation numbers
+      for (let i = 1; i <= 3; i++) {
+        simState[i] = { wins: 0, total: 0 };
+        const statsEl = document.getElementById(`p${i}Stats`);
+        const rateEl = document.getElementById(`p${i}Rate`);
+        const barEl = document.getElementById(`p${i}Bar`);
+        const btn = document.getElementById(`btnSim${i}`);
+        const cardEl = document.getElementById(`planCard${i}`);
+
+        if (statsEl) statsEl.textContent = '0 / 0';
+        if (rateEl) rateEl.textContent = '--%';
+        if (barEl) barEl.style.width = '0%';
+        if (btn) btn.innerHTML = `<i class="ti ti-player-play"></i> Chơi thử 1.000 lượt`;
+        if (cardEl) cardEl.classList.remove('active');
+      }
+
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // =========================================================
+    // 2. MODAL LOGIC
+    // =========================================================
+    function openNotebookModal() {
+      const m = document.getElementById('notebookModal');
+      if (m) {
+        m.classList.add('active');
+        renderMath(m);
+      }
+    }
+
+    function closeNotebookModal(e) {
+      if (e) e.stopPropagation();
+      const m = document.getElementById('notebookModal');
+      if (m) m.classList.remove('active');
+    }
+
+    // Init Math on load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderMath(document.body);
+    });
+  </script>
+</body>
+</html>
