@@ -1,0 +1,1261 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Module 4: Tổng hợp và luyện tập — Chọn đúng phương pháp — Bài 27 Toán 10</title>
+
+  <!-- Google Fonts: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400;1,600&family=JetBrains+Mono:wght@500;700;800&display=swap" rel="stylesheet">
+
+  <!-- KaTeX for beautiful math formulas -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"
+          onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}]});"></script>
+
+  <!-- Tabler Icons -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@2.36.0/tabler-icons.min.css">
+
+  <!-- Athena Context Metadata for LMS / AI Tutor -->
+  <script type="application/json" id="athena-context">
+  {
+    "module": "L10-C9-B27-M4",
+    "title": "Tổng hợp và luyện tập — Chọn đúng phương pháp",
+    "subject": "Toán 10",
+    "structure": [
+      { "id": "m4_cau1", "type": "answered", "required": true },
+      { "id": "m4_cau2", "type": "answered", "required": true },
+      { "id": "m4_cau3", "type": "answered", "required": true },
+      { "id": "m4_cau4", "type": "answered", "required": true },
+      { "id": "m4_cau5", "type": "answered", "required": true }
+    ],
+    "progressTotal": 5,
+    "athenaGuidance": {
+      "m4_cau1": "Gợi ý sai Câu hỏi 1 CHỈ dùng đúng câu 'Bạn thử đọc lại đề: có thể tách thành các bước rõ ràng không, hay chỉ là chọn 1 lần duy nhất?' Gợi ý sai Câu hỏi 2 CHỈ dùng đúng câu 'Đề bài có từ ít nhất không? Nếu không có, có cần dùng biến cố đối không?'",
+      "m4_cau2": "Gợi ý sai Câu hỏi 1 CHỈ dùng đúng câu 'Bạn thử đọc lại đề: có thể tách thành các bước rõ ràng không, hay chỉ là chọn 1 lần duy nhất?' Gợi ý sai Câu hỏi 2 CHỈ dùng đúng câu 'Đề bài có từ ít nhất không? Nếu không có, có cần dùng biến cố đối không?'",
+      "m4_cau3": "Gợi ý sai Câu hỏi 1 CHỈ dùng đúng câu 'Bạn thử đọc lại đề: có thể tách thành các bước rõ ràng không, hay chỉ là chọn 1 lần duy nhất?' Gợi ý sai Câu hỏi 2 CHỈ dùng đúng câu 'Đề bài có từ ít nhất không? Nếu không có, có cần dùng biến cố đối không?'",
+      "m4_cau4": "Gợi ý sai Câu hỏi 1 CHỈ dùng đúng câu 'Bạn thử đọc lại đề: có thể tách thành các bước rõ ràng không, hay chỉ là chọn 1 lần duy nhất?' Gợi ý sai Câu hỏi 2 CHỈ dùng đúng câu 'Đề bài có từ ít nhất không? Nếu không có, có cần dùng biến cố đối không?'",
+      "m4_cau5": "Gợi ý sai Câu hỏi 1 CHỈ dùng đúng câu 'Bạn thử đọc lại đề: có thể tách thành các bước rõ ràng không, hay chỉ là chọn 1 lần duy nhất?' Gợi ý sai Câu hỏi 2 CHỈ dùng đúng câu 'Đề bài có từ ít nhất không? Nếu không có, có cần dùng biến cố đối không?'"
+    }
+  }
+  </script>
+
+  <style>
+    /* =========================================================
+       1. DESIGN SYSTEM TOKENS (Aiducation Jade · Cream · Sage)
+       ========================================================= */
+    :root {
+      --bg: #FAF8F5;            /* Nền trang Cream ấm */
+      --paper: #FFFFFF;         /* Nền card trắng */
+      --paper-subtle: #F7F5F0;  /* Nền khối con nhạt */
+      --paper-line: #E8E4DC;    /* Viền nhẹ */
+      
+      --jade-deep: #14432F;     /* Xanh đậm thương hiệu */
+      --jade-dark: #1E5C45;     /* Xanh ngọc đậm */
+      --jade: #2D8B6F;          /* Xanh ngọc chính */
+      --jade-light: #E6F4EE;    /* Xanh ngọc nhạt */
+      --sage: #4A7C59;          /* Xanh lá xô thơm */
+      --sage-pale: #EBF3ED;     /* Nền sage nhẹ */
+      
+      --accent: #D97736;        /* Cam đất nhấn */
+      --accent-light: #FDF2E9;  /* Cam nhạt */
+      --accent-dark: #B25822;   /* Cam đậm */
+      
+      --ink: #1F2937;           /* Chữ chính */
+      --ink-2: #4B5563;         /* Chữ phụ */
+      --ink-3: #9CA3AF;         /* Chữ mờ / placeholder */
+      
+      --correct: #16A34A;       /* Đúng */
+      --correct-bg: #DCFCE7;
+      --wrong: #DC2626;         /* Sai */
+      --wrong-bg: #FEE2E2;
+      --warning: #D97706;       /* Cảnh báo / gợi ý */
+      --warning-bg: #FEF3C7;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.05);
+      --shadow-md: 0 4px 12px rgba(0,0,0,0.07);
+      --shadow-lg: 0 10px 25px rgba(20,67,47,0.1);
+
+      --transition-fast: 0.15s ease;
+      --transition-normal: 0.25s ease;
+    }
+
+    *, *::before, *::after {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    html, body {
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', -apple-system, BlinkMacSystemFont, sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      padding: 16px 12px 80px 12px;
+      -webkit-font-smoothing: antialiased;
+      font-size: 16px;
+    }
+
+    .container {
+      max-width: 900px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    /* =========================================================
+       2. TOP INTRO HEADER & PROGRESS
+       ========================================================= */
+    .intro-card {
+      background: var(--paper);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-xl);
+      padding: 20px 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 10px;
+      margin-bottom: 10px;
+      flex-wrap: wrap;
+    }
+
+    .badge-topic {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: var(--jade-light);
+      color: var(--jade-dark);
+      font-size: 12.5px;
+      font-weight: 700;
+      padding: 4px 12px;
+      border-radius: var(--radius-full);
+      text-transform: uppercase;
+      letter-spacing: 0.4px;
+    }
+
+    .btn-notebook {
+      background: var(--paper-subtle);
+      border: 1px solid var(--paper-line);
+      color: var(--jade-deep);
+      font-size: 13px;
+      font-weight: 700;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition-fast);
+      min-height: 38px;
+    }
+
+    .btn-notebook:hover {
+      background: var(--jade-light);
+      border-color: var(--jade);
+      color: var(--jade-dark);
+    }
+
+    .intro-title {
+      font-size: 22px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      margin-bottom: 6px;
+      line-height: 1.35;
+    }
+
+    .intro-desc {
+      font-size: 14.5px;
+      color: var(--ink-2);
+      margin-bottom: 14px;
+    }
+
+    .progress-bar-container {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      background: var(--paper-subtle);
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      border: 1px solid var(--paper-line);
+    }
+
+    .progress-text {
+      font-size: 13.5px;
+      font-weight: 700;
+      color: var(--ink-2);
+    }
+
+    .progress-track {
+      flex: 1;
+      max-width: 320px;
+      height: 8px;
+      background: #E5E7EB;
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--jade) 0%, var(--correct) 100%);
+      border-radius: var(--radius-full);
+      transition: width 0.35s ease;
+    }
+
+    /* =========================================================
+       3. EXERCISE QUESTION CARDS
+       ========================================================= */
+    .question-card {
+      background: var(--paper);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-xl);
+      padding: 20px 22px;
+      box-shadow: var(--shadow-sm);
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      transition: border-color var(--transition-normal);
+    }
+
+    .question-card.completed {
+      border-color: var(--correct);
+      background: #FAFCF9;
+    }
+
+    .question-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 8px;
+      border-bottom: 1px solid var(--paper-line);
+      padding-bottom: 10px;
+    }
+
+    .question-tag {
+      font-size: 13px;
+      font-weight: 800;
+      color: var(--jade-dark);
+      background: var(--jade-light);
+      padding: 3px 10px;
+      border-radius: var(--radius-md);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .question-status-badge {
+      font-size: 12px;
+      font-weight: 700;
+      color: var(--ink-3);
+      display: inline-flex;
+      align-items: center;
+      gap: 4px;
+    }
+
+    .question-status-badge.done {
+      color: var(--correct);
+    }
+
+    .problem-statement {
+      font-size: 15.5px;
+      font-weight: 600;
+      color: var(--ink);
+      line-height: 1.55;
+      background: var(--paper-subtle);
+      padding: 12px 16px;
+      border-radius: var(--radius-md);
+      border-left: 4px solid var(--jade);
+    }
+
+    /* FILTER STEP 1 & 2 */
+    .decision-layer {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      background: #FFFFFF;
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+    }
+
+    .layer-title {
+      font-size: 14px;
+      font-weight: 700;
+      color: var(--jade-deep);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .choice-button-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .choice-btn {
+      padding: 10px 14px;
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      background: var(--paper);
+      color: var(--ink);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      text-align: center;
+      transition: all var(--transition-fast);
+      min-height: 46px;
+      user-select: none;
+      touch-action: manipulation;
+    }
+
+    .choice-btn:hover:not(:disabled) {
+      border-color: var(--jade);
+      background: var(--jade-light);
+      color: var(--jade-dark);
+    }
+
+    .choice-btn.selected-correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: var(--correct);
+      font-weight: 800;
+    }
+
+    .choice-btn.selected-wrong {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+      color: var(--wrong);
+      animation: shake 0.35s ease;
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-4px); }
+      40%, 80% { transform: translateX(4px); }
+    }
+
+    /* STEP 3: CALCULATION & INPUT BOX */
+    .calculation-panel {
+      background: #FFFFFF;
+      border: 1.5px dashed var(--jade);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .formula-breakdown-card {
+      background: var(--paper-subtle);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      padding: 12px 14px;
+      font-size: 14px;
+      color: var(--ink);
+      line-height: 1.5;
+    }
+
+    .input-action-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .answer-input {
+      height: 44px;
+      width: 140px;
+      padding: 6px 12px;
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--ink);
+      text-align: center;
+      outline: none;
+      transition: all var(--transition-fast);
+      background: #FFFFFF;
+    }
+
+    .answer-input:focus {
+      border-color: var(--jade);
+      box-shadow: 0 0 0 3px rgba(45, 139, 111, 0.15);
+    }
+
+    .answer-input.correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: #065F46;
+    }
+
+    .answer-input.error {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+      color: #991B1B;
+      animation: shake 0.35s ease;
+    }
+
+    .btn-submit {
+      padding: 0 18px;
+      height: 44px;
+      border-radius: var(--radius-md);
+      background: var(--jade);
+      color: #FFFFFF;
+      font-size: 14px;
+      font-weight: 700;
+      border: none;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition-fast);
+      touch-action: manipulation;
+    }
+
+    .btn-submit:hover:not(:disabled) {
+      background: var(--jade-dark);
+      box-shadow: 0 2px 8px rgba(20, 67, 47, 0.25);
+    }
+
+    .btn-submit:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* 3-TIER ATHENA FEEDBACK BOX */
+    .athena-feedback {
+      border-radius: var(--radius-md);
+      padding: 10px 14px;
+      font-size: 13.5px;
+      line-height: 1.45;
+      display: flex;
+      gap: 10px;
+      align-items: flex-start;
+      margin-top: 4px;
+      animation: fadeIn 0.25s ease;
+    }
+
+    .athena-avatar-img {
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      object-fit: contain;
+      flex-shrink: 0;
+      border: 1px solid var(--jade);
+      background: #FFFFFF;
+      padding: 2px;
+    }
+
+    .athena-feedback.error {
+      background: var(--wrong-bg);
+      border: 1px solid #FCA5A5;
+      color: #991B1B;
+    }
+
+    .athena-feedback.warning {
+      background: var(--warning-bg);
+      border: 1px solid #FDE68A;
+      color: #92400E;
+    }
+
+    .athena-feedback.success {
+      background: var(--correct-bg);
+      border: 1px solid #86EFAC;
+      color: #065F46;
+      font-weight: 600;
+    }
+
+    /* =========================================================
+       4. MODALS (NOTEBOOK & SUMMARY)
+       ========================================================= */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-normal);
+      padding: 14px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      max-width: 680px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(16px);
+      transition: transform var(--transition-normal);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--paper-line);
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      color: var(--ink-3);
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    /* NOTEBOOK TABLE */
+    .notebook-table-wrap {
+      width: 100%;
+      overflow-x: auto;
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      margin: 8px 0;
+    }
+
+    .notebook-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 13px;
+      text-align: left;
+    }
+
+    .notebook-table th, .notebook-table td {
+      padding: 8px 10px;
+      border: 1px solid var(--paper-line);
+      line-height: 1.45;
+    }
+
+    .notebook-table th {
+      background: var(--paper-subtle);
+      color: var(--jade-deep);
+      font-weight: 700;
+    }
+
+    /* =========================================================
+       5. RESPONSIVE MOBILE (≤ 768px)
+       ========================================================= */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px 8px 60px 8px;
+      }
+
+      .intro-card {
+        padding: 16px 14px;
+      }
+
+      .intro-title {
+        font-size: 18px;
+      }
+
+      .intro-desc {
+        font-size: 13.5px;
+      }
+
+      .question-card {
+        padding: 14px 12px;
+        gap: 12px;
+      }
+
+      .problem-statement {
+        font-size: 14.5px;
+        padding: 10px 12px;
+      }
+
+      .choice-button-grid {
+        grid-template-columns: 1fr;
+        gap: 8px;
+      }
+
+      .choice-btn {
+        min-height: 44px;
+        font-size: 13px;
+        padding: 8px 10px;
+      }
+
+      .answer-input {
+        width: 100%;
+        height: 44px;
+        font-size: 15px;
+      }
+
+      .btn-submit {
+        width: 100%;
+        min-height: 44px;
+        justify-content: center;
+      }
+
+      .input-action-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <!-- INTRO CARD -->
+    <div class="intro-card">
+      <div class="header-top">
+        <div class="badge-topic">
+          <i class="ti ti-chart-pie"></i> Toán 10 — Chương IX | Chủ đề 55
+        </div>
+        <button class="btn-notebook" onclick="openNotebookModal()">
+          <i class="ti ti-book-2"></i> Sổ tay phân biệt 3 phương pháp
+        </button>
+      </div>
+
+      <h1 class="intro-title">Module 4: Tổng hợp và luyện tập — Chọn đúng phương pháp</h1>
+      <p class="intro-desc">
+        Học cách nhận diện chính xác cấu trúc phép thử để chọn giữa <b>Phương pháp Tổ hợp</b>, <b>Sơ đồ hình cây</b> và kết hợp linh hoạt chiến thuật <b>Biến cố đối</b> trước khi tính toán.
+      </p>
+
+      <div class="progress-bar-container">
+        <span class="progress-text" id="progressLabel">Tiến độ: 0/5 câu hoàn thành</span>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFillBar"></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 5 QUESTION CARDS -->
+    <div id="questionsContainer" style="display: flex; flex-direction: column; gap: 16px;">
+      <!-- Dynamically generated by JS -->
+    </div>
+  </div>
+
+  <!-- NOTEBOOK MODAL -->
+  <div class="modal-overlay" id="notebookModal" onclick="closeNotebookModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="ti ti-book-2"></i> Sổ tay kiến thức nền tảng — Bảng phân biệt 3 phương pháp
+        </div>
+        <button class="btn-close" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
+      </div>
+
+      <div class="notebook-table-wrap">
+        <table class="notebook-table">
+          <thead>
+            <tr>
+              <th style="width: 22%;">Tiêu chí</th>
+              <th style="width: 26%;">🎯 Phương pháp Tổ hợp</th>
+              <th style="width: 26%;">🌲 Sơ đồ hình cây</th>
+              <th style="width: 26%;">🔄 Biến cố đối (Chiến thuật)</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td><b>Dùng khi nào?</b></td>
+              <td>Phép thử là <b>"chọn ra 1 nhóm $k$ phần tử cùng lúc"</b> từ 1 hoặc vài tập hợp có sẵn.</td>
+              <td>Phép thử gồm <b>NHIỀU công đoạn / bước liên tiếp</b>, mỗi bước có các lựa chọn riêng.</td>
+              <td>Áp dụng <b>THÊM</b> vào 1 trong 2 cách trên khi việc tính trực tiếp quá nhiều trường hợp.</td>
+            </tr>
+            <tr>
+              <td><b>Từ khóa tín hiệu</b></td>
+              <td><i>"chọn ra", "lấy ra đồng thời $k$ viên / $k$ người"</i></td>
+              <td><i>"rút từ mỗi hộp", "tung / gieo liên tiếp", "quay lần lượt"</i></td>
+              <td><i>"ít nhất", "có ít nhất 1"</i></td>
+            </tr>
+            <tr>
+              <td><b>Công thức</b></td>
+              <td>$n(\Omega), n(E)$ tính bằng $C_n^k$ (kết hợp quy tắc nhân nếu có nhiều điều kiện)</td>
+              <td>$n(\Omega) =$ tổng số lá cây;<br>$n(E) =$ số lá thoả mãn biến cố</td>
+              <td>$P(E) = 1 - P(\overline{E})$</td>
+            </tr>
+            <tr>
+              <td><b>Câu tự kiểm tra</b></td>
+              <td>Các phần tử được chọn có phân biệt "bước 1, bước 2..." không, hay chỉ là 1 nhóm duy nhất?</td>
+              <td>Có thể tách phép thử thành các bước rõ ràng, mỗi bước 1 tầng của cây không?</td>
+              <td>Nếu tính "không có... nào cả" thì có ít trường hợp hơn tính trực tiếp không?</td>
+            </tr>
+          </tbody>
+        </table>
+      </div>
+
+      <div style="background: var(--warning-bg); border-left: 4px solid var(--warning); padding: 10px 14px; border-radius: var(--radius-md); font-size: 13.5px; color: #92400E;">
+        ⚠️ <b>Lưu ý quan trọng:</b> Tổ hợp và sơ đồ hình cây là 2 cách THAY THẾ nhau (chọn 1 trong 2 tuỳ cấu trúc bài toán), còn biến cố đối là 1 chiến thuật có thể DÙNG THÊM vào bất kỳ cách nào ở trên — không phải phương pháp thứ 3 độc lập.
+      </div>
+    </div>
+  </div>
+
+  <!-- SUMMARY MODAL (COMPLETED) -->
+  <div class="modal-overlay" id="summaryModal" onclick="closeSummaryModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title" style="color: var(--correct);">
+          <i class="ti ti-trophy"></i> Hoàn thành xuất sắc Module 4!
+        </div>
+        <button class="btn-close" onclick="closeSummaryModal()"><i class="ti ti-x"></i></button>
+      </div>
+
+      <div style="font-size: 14.5px; color: var(--ink); line-height: 1.6; display: flex; flex-direction: column; gap: 10px;">
+        <p>🎉 <b>Chúc mừng bạn đã hoàn thành trọn vẹn 5 bài tập tổng hợp của Module 4!</b></p>
+        <div style="background: var(--paper-subtle); border: 1px solid var(--paper-line); padding: 12px 14px; border-radius: var(--radius-md);">
+          <h4 style="color: var(--jade-deep); margin-bottom: 6px; font-size: 14px;">🌟 BẢN ĐỒ CHIẾN THUẬT TÍNH XÁC SUẤT:</h4>
+          <p>
+            1. <b>Chọn nhóm cùng lúc</b> $\to$ Dùng <b>Tổ hợp ($C_n^k$)</b>.<br>
+            2. <b>Nhiều bước / công đoạn liên tiếp</b> $\to$ Dùng <b>Sơ đồ cây</b>.<br>
+            3. <b>Có từ khóa "Ít nhất"</b> $\to$ Xem xét dùng ngay <b>Biến cố đối ($P = 1 - P(\overline{E})$)</b> để tính nhanh hơn.
+          </p>
+        </div>
+      </div>
+      <button class="btn-submit" style="width: 100%;" onclick="closeSummaryModal()">Đóng bảng tổng kết</button>
+    </div>
+  </div>
+
+  <!-- JAVASCRIPT ENGINE -->
+  <script>
+    // =========================================================
+    // 0. LMS INTEGRATION & UTILITIES
+    // =========================================================
+    function LMS() {
+      return {
+        event: (name, data) => console.log('[LMS Event]', name, data),
+        progress: (done, total) => console.log('[LMS Progress]', `${done}/${total}`),
+        complete: () => console.log('[LMS Complete] Module 4 Completed Successfully!')
+      };
+    }
+
+    function renderMath(target = document.body) {
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(target, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {
+          console.warn('[KaTeX]', e);
+        }
+      }
+    }
+
+    // =========================================================
+    // 1. QUESTION DATA (5 EXERCISES)
+    // =========================================================
+    const QUESTIONS = [
+      {
+        id: 'm4_cau1',
+        index: 1,
+        statement: 'Một hộp có $10$ viên bi ($6$ đỏ, $4$ xanh). Lấy đồng thời $4$ viên. Tính xác suất được $2$ đỏ và $2$ xanh.',
+        q1Correct: 'to_hop', // 'to_hop' or 'cay'
+        q2Correct: 'khong_can', // 'co_doi' or 'khong_can'
+        breakdownText: `
+          <b>Phân tích phương pháp:</b> Chọn đồng thời 4 viên từ 10 viên $\\to$ <b>Tổ hợp</b>. Đề không có "ít nhất" $\\to$ <b>Tính trực tiếp</b>.<br>
+          • Số phần tử không gian mẫu: $n(\\Omega) = C_{10}^4 = 210$.<br>
+          • Số kết quả thuận lợi: $n(E) = C_6^2 \\cdot C_4^2 = 15 \\times 6 = 90$.<br>
+          • Xác suất: $P(E) = \\frac{90}{210} = \\mathbf{\\frac{3}{7}}$.
+        `,
+        correctFraction: '3/7',
+        correctDecimal: 0.4286,
+        correctDecimalStr: '0.429'
+      },
+      {
+        id: 'm4_cau2',
+        index: 2,
+        statement: '$3$ hộp bi đánh số: Hộp 1 (từ $1$ đến $5$), Hộp 2 (từ $1$ đến $4$), Hộp 3 (từ $1$ đến $3$). Rút $1$ viên từ mỗi hộp. Tính xác suất tổng $3$ số bằng $6$.',
+        q1Correct: 'cay',
+        q2Correct: 'khong_can',
+        breakdownText: `
+          <b>Phân tích phương pháp:</b> Phép thử gồm 3 công đoạn rút lần lượt từ 3 hộp $\\to$ <b>Sơ đồ hình cây</b>.<br>
+          • Tổng số lá cây: $n(\\Omega) = 5 \\times 4 \\times 3 = 60$.<br>
+          • Các bộ $(x_1, x_2, x_3)$ có tổng bằng $6$: $(1,4,1), (1,3,2), (1,2,3), (2,3,1), (2,2,2), (2,1,3), (3,2,1), (3,1,2), (4,1,1) \\to n(E) = 9$.<br>
+          • Xác suất: $P(E) = \\frac{9}{60} = \\mathbf{\\frac{3}{20}}$.
+        `,
+        correctFraction: '3/20',
+        correctDecimal: 0.15,
+        correctDecimalStr: '0.15'
+      },
+      {
+        id: 'm4_cau3',
+        index: 3,
+        statement: 'Lớp có $15$ học sinh ($9$ nam, $6$ nữ). Chọn ngẫu nhiên $3$ bạn. Tính xác suất có <b>ÍT NHẤT 1</b> bạn nữ.',
+        q1Correct: 'to_hop',
+        q2Correct: 'co_doi',
+        breakdownText: `
+          <b>Phân tích phương pháp:</b> Chọn 1 nhóm 3 bạn $\\to$ <b>Tổ hợp</b>. Đề có từ <b>"ÍT NHẤT"</b> $\\to$ Dùng <b>Biến cố đối</b> $\\overline{E}$: "Không có bạn nữ nào" (cả 3 đều là nam).<br>
+          • Không gian mẫu: $n(\\Omega) = C_{15}^3 = 455$.<br>
+          • Biến cố đối $\\overline{E}$: Chọn 3 nam từ 9 nam $\\to n(\\overline{E}) = C_9^3 = 84$.<br>
+          • Xác suất đối: $P(\\overline{E}) = \\frac{84}{455} = \\frac{12}{65}$.<br>
+          • Xác suất cần tìm: $P(E) = 1 - \\frac{12}{65} = \\mathbf{\\frac{53}{65}}$.
+        `,
+        correctFraction: '53/65',
+        correctDecimal: 0.8154,
+        correctDecimalStr: '0.815'
+      },
+      {
+        id: 'm4_cau4',
+        index: 4,
+        statement: 'Tung $1$ đồng xu liên tiếp $4$ lần. Tính xác suất có <b>ÍT NHẤT 1</b> lần mặt Ngửa.',
+        q1Correct: 'cay',
+        q2Correct: 'co_doi',
+        breakdownText: `
+          <b>Phân tích phương pháp:</b> Phép thử gồm 4 lần tung liên tiếp $\\to$ <b>Sơ đồ hình cây</b> (mỗi lần có 2 nhánh: Sấp hoặc Ngửa). Đề có <b>"ÍT NHẤT"</b> $\\to$ Dùng <b>Biến cố đối</b> $\\overline{E}$: "Cả 4 lần đều Sấp" (SSSS).<br>
+          • Tổng số kết quả: $n(\\Omega) = 2^4 = 16$.<br>
+          • Số kết quả đối (SSSS): $n(\\overline{E}) = 1$.<br>
+          • Xác suất đối: $P(\\overline{E}) = \\frac{1}{16}$.<br>
+          • Xác suất cần tìm: $P(E) = 1 - \\frac{1}{16} = \\mathbf{\\frac{15}{16}}$.
+        `,
+        correctFraction: '15/16',
+        correctDecimal: 0.9375,
+        correctDecimalStr: '0.9375'
+      },
+      {
+        id: 'm4_cau5',
+        index: 5,
+        statement: 'Một lô hàng $20$ sản phẩm có $3$ sản phẩm lỗi. Kiểm tra ngẫu nhiên $5$ sản phẩm. Tính xác suất có <b>đúng 1</b> sản phẩm lỗi trong $5$ sản phẩm kiểm tra.',
+        q1Correct: 'to_hop',
+        q2Correct: 'khong_can',
+        breakdownText: `
+          <b>Phân tích phương pháp:</b> Chọn ngẫu nhiên 5 sản phẩm $\\to$ <b>Tổ hợp</b>. Đề hỏi <b>"đúng 1"</b> (không phải "ít nhất") $\\to$ <b>Không cần biến cố đối</b>.<br>
+          • Không gian mẫu: $n(\\Omega) = C_{20}^5 = 15504$.<br>
+          • Chọn 1 lỗi từ 3 lỗi và 4 tốt từ 17 tốt: $n(E) = C_3^1 \\cdot C_{17}^4 = 3 \\times 2380 = 7140$.<br>
+          • Xác suất: $P(E) = \\frac{7140}{15504} = \\mathbf{\\frac{35}{76}} \\approx 0,461$.
+        `,
+        correctFraction: '35/76',
+        correctDecimal: 0.4605,
+        correctDecimalStr: '0.461'
+      }
+    ];
+
+    // State of each question
+    const appState = {
+      userAnswers: QUESTIONS.map(q => ({
+        q1: null,
+        q1Attempts: 0,
+        q1Passed: false,
+
+        q2: null,
+        q2Attempts: 0,
+        q2Passed: false,
+
+        inputAttempts: 0,
+        inputPassed: false,
+
+        isCompleted: false
+      }))
+    };
+
+    // =========================================================
+    // 2. RENDER FUNCTIONS
+    // =========================================================
+    function renderAllQuestions() {
+      const container = document.getElementById('questionsContainer');
+      if (!container) return;
+
+      container.innerHTML = QUESTIONS.map((q, idx) => {
+        const s = appState.userAnswers[idx];
+
+        return `
+          <div class="question-card ${s.isCompleted ? 'completed' : ''}" id="card_${idx}">
+            <div class="question-header">
+              <span class="question-tag"><i class="ti ti-target"></i> Bài tập ${q.index} / 5</span>
+              <span class="question-status-badge ${s.isCompleted ? 'done' : ''}" id="statusBadge_${idx}">
+                <i class="ti ${s.isCompleted ? 'ti-check' : 'ti-clock'}"></i>
+                ${s.isCompleted ? 'Đã hoàn thành' : 'Đang thực hiện'}
+              </span>
+            </div>
+
+            <div class="problem-statement">
+              ${q.statement}
+            </div>
+
+            <!-- TẦNG 1: CHỌN PHƯƠNG PHÁP ĐẾM -->
+            <div class="decision-layer">
+              <div class="layer-title">
+                <i class="ti ti-filter"></i> <b>Câu hỏi 1:</b> Phép thử này là chọn ra 1 nhóm cùng lúc, hay có nhiều công đoạn liên tiếp?
+              </div>
+              <div class="choice-button-grid">
+                <button class="choice-btn ${s.q1 === 'to_hop' ? (s.q1Passed ? 'selected-correct' : 'selected-wrong') : ''}" 
+                        id="btn_q1_tohop_${idx}"
+                        onclick="handleSelectQ1(${idx}, 'to_hop')"
+                        ${s.q1Passed ? 'disabled' : ''}>
+                  <i class="ti ti-users-group"></i> Chọn nhóm — dùng Tổ hợp
+                </button>
+                <button class="choice-btn ${s.q1 === 'cay' ? (s.q1Passed ? 'selected-correct' : 'selected-wrong') : ''}" 
+                        id="btn_q1_cay_${idx}"
+                        onclick="handleSelectQ1(${idx}, 'cay')"
+                        ${s.q1Passed ? 'disabled' : ''}>
+                  <i class="ti ti-git-branch"></i> Nhiều công đoạn — dùng Sơ đồ cây
+                </button>
+              </div>
+              <div id="q1Feedback_${idx}"></div>
+            </div>
+
+            <!-- TẦNG 2: XÉT BIẾN CỐ ĐỐI (HIỆN KHI Q1 ĐÃ ĐƯỢC CHỌN HOẶC MỞ SẴN) -->
+            <div class="decision-layer" id="layer2_${idx}" style="${s.q1Passed ? '' : 'opacity: 0.65; pointer-events: none;'}">
+              <div class="layer-title">
+                <i class="ti ti-bulb"></i> <b>Câu hỏi 2:</b> Đề bài có từ "ít nhất" không? Nếu có, tính biến cố đối có dễ hơn không?
+              </div>
+              <div class="choice-button-grid">
+                <button class="choice-btn ${s.q2 === 'co_doi' ? (s.q2Passed ? 'selected-correct' : 'selected-wrong') : ''}"
+                        id="btn_q2_doi_${idx}"
+                        onclick="handleSelectQ2(${idx}, 'co_doi')"
+                        ${s.q2Passed ? 'disabled' : ''}>
+                  <i class="ti ti-refresh"></i> Có, dùng Biến cố đối
+                </button>
+                <button class="choice-btn ${s.q2 === 'khong_can' ? (s.q2Passed ? 'selected-correct' : 'selected-wrong') : ''}"
+                        id="btn_q2_khong_${idx}"
+                        onclick="handleSelectQ2(${idx}, 'khong_can')"
+                        ${s.q2Passed ? 'disabled' : ''}>
+                  <i class="ti ti-arrow-right"></i> Không cần biến cố đối
+                </button>
+              </div>
+              <div id="q2Feedback_${idx}"></div>
+            </div>
+
+            <!-- TẦNG 3: KHUNG TÍNH TOÁN & NHẬP ĐÁP ÁN (HIỆN KHI Q1 & Q2 ĐỀU ĐÚNG) -->
+            ${s.q1Passed && s.q2Passed ? `
+              <div class="calculation-panel">
+                <div class="formula-breakdown-card">
+                  ${q.breakdownText}
+                </div>
+
+                <div class="input-action-row">
+                  <span style="font-weight: 700; font-size: 14.5px;">Xác suất $P(E) = $</span>
+                  <input type="text" 
+                         class="answer-input ${s.inputPassed ? 'correct' : ''}" 
+                         id="input_${idx}" 
+                         placeholder="Ví dụ: ${q.correctFraction}" 
+                         inputmode="text"
+                         ${s.isCompleted ? 'disabled value="' + q.correctFraction + '"' : ''}>
+                  ${!s.isCompleted ? `
+                    <button class="btn-submit" onclick="handleSubmitAnswer(${idx})">
+                      <i class="ti ti-check"></i> Kiểm tra kết quả
+                    </button>
+                  ` : `
+                    <span style="color: var(--correct); font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">
+                      <i class="ti ti-circle-check"></i> Chính xác!
+                    </span>
+                  `}
+                </div>
+                <div id="inputFeedback_${idx}"></div>
+              </div>
+            ` : ''}
+          </div>
+        `;
+      }).join('');
+
+      renderMath(container);
+      updateOverallProgress();
+    }
+
+    // =========================================================
+    // 3. INTERACTION HANDLERS (3-STRIKE FEEDBACK)
+    // =========================================================
+
+    // Handle Question 1 (Counting Method)
+    function handleSelectQ1(idx, choice) {
+      const q = QUESTIONS[idx];
+      const s = appState.userAnswers[idx];
+      s.q1 = choice;
+
+      const fb = document.getElementById(`q1Feedback_${idx}`);
+      const isCorrect = (choice === q.q1Correct);
+
+      if (isCorrect) {
+        s.q1Passed = true;
+        fb.innerHTML = `
+          <div class="athena-feedback success">
+            <img class="athena-avatar-img" src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div><b>Chính xác!</b> ${choice === 'to_hop' ? 'Phép thử là chọn 1 nhóm cùng lúc nên dùng Tổ hợp.' : 'Phép thử gồm nhiều công đoạn liên tiếp nên dùng Sơ đồ cây.'}</div>
+          </div>
+        `;
+        renderMath(fb);
+        setTimeout(renderAllQuestions, 1000);
+      } else {
+        s.q1Attempts++;
+        if (s.q1Attempts === 1) {
+          fb.innerHTML = `
+            <div class="athena-feedback error">
+              <img class="athena-avatar-img" src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Chưa đúng:</b> Hãy đọc kỹ xem bài toán chọn 1 nhóm cùng lúc hay chia làm các bước liên tiếp nhé.</div>
+            </div>
+          `;
+        } else if (s.q1Attempts === 2) {
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img class="athena-avatar-img" src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Gợi ý từ Athena:</b> <i>"Bạn thử đọc lại đề: có thể tách thành các bước rõ ràng (rút từ hộp này, rồi hộp khác) không, hay chỉ là chọn 1 lần duy nhất?"</i></div>
+            </div>
+          `;
+        } else {
+          s.q1Passed = true;
+          s.q1 = q.q1Correct;
+          fb.innerHTML = `
+            <div class="athena-feedback success">
+              <img class="athena-avatar-img" src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Đáp án đúng là:</b> ${q.q1Correct === 'to_hop' ? 'Tổ hợp (vì chọn 1 nhóm cùng lúc).' : 'Sơ đồ hình cây (vì có các công đoạn nối tiếp nhau).'} Athena đã mở khóa bước tiếp theo cho bạn!</div>
+            </div>
+          `;
+          setTimeout(renderAllQuestions, 1200);
+        }
+        renderMath(fb);
+      }
+    }
+
+    // Handle Question 2 (Complementary Strategy)
+    function handleSelectQ2(idx, choice) {
+      const q = QUESTIONS[idx];
+      const s = appState.userAnswers[idx];
+      s.q2 = choice;
+
+      const fb = document.getElementById(`q2Feedback_${idx}`);
+      const isCorrect = (choice === q.q2Correct);
+
+      if (isCorrect) {
+        s.q2Passed = true;
+        fb.innerHTML = `
+          <div class="athena-feedback success">
+            <img class="athena-avatar-img" src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div><b>Chính xác!</b> ${choice === 'co_doi' ? 'Đề bài có từ khóa "ít nhất", dùng biến cố đối sẽ nhanh và gọn hơn rất nhiều.' : 'Đề bài không có "ít nhất" nên tính trực tiếp là tối ưu.'}</div>
+          </div>
+        `;
+        renderMath(fb);
+        setTimeout(renderAllQuestions, 1000);
+      } else {
+        s.q2Attempts++;
+        if (s.q2Attempts === 1) {
+          fb.innerHTML = `
+            <div class="athena-feedback error">
+              <img class="athena-avatar-img" src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Chưa đúng:</b> Hãy quan sát từ khóa trong đề bài để đưa ra quyết định tối ưu.</div>
+            </div>
+          `;
+        } else if (s.q2Attempts === 2) {
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img class="athena-avatar-img" src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Gợi ý từ Athena:</b> <i>"Đề bài có từ 'ít nhất' không? Nếu không có, có cần dùng biến cố đối không?"</i></div>
+            </div>
+          `;
+        } else {
+          s.q2Passed = true;
+          s.q2 = q.q2Correct;
+          fb.innerHTML = `
+            <div class="athena-feedback success">
+              <img class="athena-avatar-img" src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Chiến thuật đúng:</b> ${q.q2Correct === 'co_doi' ? 'Dùng biến cố đối (vì có từ khóa "ít nhất").' : 'Không cần biến cố đối (vì tính trực tiếp đơn giản hơn).'} Khung tính toán đã mở bên dưới!</div>
+            </div>
+          `;
+          setTimeout(renderAllQuestions, 1200);
+        }
+        renderMath(fb);
+      }
+    }
+
+    // Handle Final Probability Input
+    function handleSubmitAnswer(idx) {
+      const q = QUESTIONS[idx];
+      const s = appState.userAnswers[idx];
+      const inputEl = document.getElementById(`input_${idx}`);
+      const fb = document.getElementById(`inputFeedback_${idx}`);
+      if (!inputEl) return;
+
+      const rawVal = inputEl.value.trim().replace(/\s+/g, '').replace(',', '.');
+      if (!rawVal) {
+        inputEl.classList.add('error');
+        return;
+      }
+
+      // Check fraction or float
+      let isCorrect = false;
+      if (rawVal === q.correctFraction) {
+        isCorrect = true;
+      } else if (rawVal.includes('/')) {
+        const parts = rawVal.split('/');
+        const num = parseFloat(parts[0]);
+        const den = parseFloat(parts[1]);
+        if (!isNaN(num) && !isNaN(den) && den !== 0) {
+          const val = num / den;
+          if (Math.abs(val - q.correctDecimal) < 0.005) {
+            isCorrect = true;
+          }
+        }
+      } else {
+        const val = parseFloat(rawVal);
+        if (!isNaN(val) && Math.abs(val - q.correctDecimal) < 0.005) {
+          isCorrect = true;
+        }
+      }
+
+      if (isCorrect) {
+        s.inputPassed = true;
+        s.isCompleted = true;
+        inputEl.className = 'answer-input correct';
+        fb.innerHTML = `
+          <div class="athena-feedback success">
+            <img class="athena-avatar-img" src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div><b>Tuyệt vời!</b> Kết quả xác suất chính xác là $P(E) = \\mathbf{${q.correctFraction}}$ (${q.correctDecimalStr}).</div>
+          </div>
+        `;
+        renderMath(fb);
+        LMS().event('answered', { id: q.id, correct: true });
+        updateOverallProgress();
+
+        // Check all completed
+        const allDone = appState.userAnswers.every(item => item.isCompleted);
+        if (allDone) {
+          LMS().complete();
+          setTimeout(openSummaryModal, 1000);
+        }
+      } else {
+        s.inputAttempts++;
+        inputEl.className = 'answer-input error';
+
+        if (s.inputAttempts === 1) {
+          fb.innerHTML = `
+            <div class="athena-feedback error">
+              <img class="athena-avatar-img" src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Chưa chính xác:</b> Hãy kiểm tra lại phép tính tỉ số $P = \\frac{n(E)}{n(\\Omega)}$ (hoặc $1 - P(\\overline{E})$).</div>
+            </div>
+          `;
+        } else if (s.inputAttempts === 2) {
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img class="athena-avatar-img" src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Gợi ý công thức:</b> Xem lại công thức chi tiết ở khung phân tích phía trên và nhập phân số tối giản dạng <code>${q.correctFraction}</code>.</div>
+            </div>
+          `;
+        } else {
+          s.inputPassed = true;
+          s.isCompleted = true;
+          inputEl.value = q.correctFraction;
+          inputEl.className = 'answer-input correct';
+          fb.innerHTML = `
+            <div class="athena-feedback success">
+              <img class="athena-avatar-img" src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Đáp án chính xác:</b> $P(E) = \\mathbf{${q.correctFraction}}$. Đã ghi nhận hoàn thành bài tập ${q.index}!</div>
+            </div>
+          `;
+          LMS().event('answered', { id: q.id, correct: true });
+          updateOverallProgress();
+
+          const allDone = appState.userAnswers.every(item => item.isCompleted);
+          if (allDone) {
+            LMS().complete();
+            setTimeout(openSummaryModal, 1000);
+          }
+        }
+        renderMath(fb);
+      }
+    }
+
+    function updateOverallProgress() {
+      const doneCount = appState.userAnswers.filter(item => item.isCompleted).length;
+      const total = QUESTIONS.length;
+      const percent = Math.round((doneCount / total) * 100);
+
+      const label = document.getElementById('progressLabel');
+      const bar = document.getElementById('progressFillBar');
+      if (label) label.textContent = `Tiến độ: ${doneCount}/${total} câu hoàn thành (${percent}%)`;
+      if (bar) bar.style.width = `${percent}%`;
+
+      LMS().progress(doneCount, total);
+    }
+
+    // =========================================================
+    // 4. MODAL CONTROLLERS
+    // =========================================================
+    function openNotebookModal() {
+      const m = document.getElementById('notebookModal');
+      if (m) {
+        m.classList.add('active');
+        renderMath(m);
+      }
+    }
+
+    function closeNotebookModal(e) {
+      if (e) e.stopPropagation();
+      const m = document.getElementById('notebookModal');
+      if (m) m.classList.remove('active');
+    }
+
+    function openSummaryModal() {
+      const m = document.getElementById('summaryModal');
+      if (m) {
+        m.classList.add('active');
+        renderMath(m);
+      }
+    }
+
+    function closeSummaryModal(e) {
+      if (e) e.stopPropagation();
+      const m = document.getElementById('summaryModal');
+      if (m) m.classList.remove('active');
+    }
+
+    // Initial Start
+    window.addEventListener('DOMContentLoaded', () => {
+      renderAllQuestions();
+    });
+  </script>
+</body>
+</html>
