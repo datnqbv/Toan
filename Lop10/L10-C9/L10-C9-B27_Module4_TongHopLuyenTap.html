@@ -805,13 +805,14 @@
         id: 'm4_cau1',
         index: 1,
         statement: 'Một hộp có $10$ viên bi ($6$ đỏ, $4$ xanh). Lấy đồng thời $4$ viên. Tính xác suất được $2$ đỏ và $2$ xanh.',
-        q1Correct: 'to_hop', // 'to_hop' or 'cay'
-        q2Correct: 'khong_can', // 'co_doi' or 'khong_can'
-        breakdownText: `
-          <b>Phân tích phương pháp:</b> Chọn đồng thời 4 viên từ 10 viên $\\to$ <b>Tổ hợp</b>. Đề không có "ít nhất" $\\to$ <b>Tính trực tiếp</b>.<br>
+        q1Correct: 'to_hop',
+        q2Correct: 'khong_can',
+        guideText: '💡 <b>Hướng dẫn tính toán:</b> Áp dụng phương pháp <b>Tổ hợp</b> để tính số phần tử không gian mẫu $n(\\Omega)$ (chọn $4$ viên từ $10$ viên) và số kết quả thuận lợi $n(E)$ (chọn $2$ đỏ và $2$ xanh). Sau đó nhập kết quả xác suất $P(E) = \\frac{n(E)}{n(\\Omega)}$ bên dưới.',
+        solutionText: `
+          <b>Lời giải chi tiết:</b><br>
           • Số phần tử không gian mẫu: $n(\\Omega) = C_{10}^4 = 210$.<br>
           • Số kết quả thuận lợi: $n(E) = C_6^2 \\cdot C_4^2 = 15 \\times 6 = 90$.<br>
-          • Xác suất: $P(E) = \\frac{90}{210} = \\mathbf{\\frac{3}{7}}$.
+          • Xác suất: $P(E) = \\frac{90}{210} = \\mathbf{\\frac{3}{7}} \\approx 0,429$.
         `,
         correctFraction: '3/7',
         correctDecimal: 0.4286,
@@ -823,11 +824,12 @@
         statement: '$3$ hộp bi đánh số: Hộp 1 (từ $1$ đến $5$), Hộp 2 (từ $1$ đến $4$), Hộp 3 (từ $1$ đến $3$). Rút $1$ viên từ mỗi hộp. Tính xác suất tổng $3$ số bằng $6$.',
         q1Correct: 'cay',
         q2Correct: 'khong_can',
-        breakdownText: `
-          <b>Phân tích phương pháp:</b> Phép thử gồm 3 công đoạn rút lần lượt từ 3 hộp $\\to$ <b>Sơ đồ hình cây</b>.<br>
-          • Tổng số lá cây: $n(\\Omega) = 5 \\times 4 \\times 3 = 60$.<br>
+        guideText: '💡 <b>Hướng dẫn tính toán:</b> Áp dụng <b>Sơ đồ hình cây / Quy tắc nhân</b> để tính tổng số kết quả $n(\\Omega)$ của $3$ công đoạn rút và đếm số bộ $(x_1, x_2, x_3)$ có tổng bằng $6$. Sau đó nhập xác suất $P(E) = \\frac{n(E)}{n(\\Omega)}$ bên dưới.',
+        solutionText: `
+          <b>Lời giải chi tiết:</b><br>
+          • Tổng số kết quả (số lá cây): $n(\\Omega) = 5 \\times 4 \\times 3 = 60$.<br>
           • Các bộ $(x_1, x_2, x_3)$ có tổng bằng $6$: $(1,4,1), (1,3,2), (1,2,3), (2,3,1), (2,2,2), (2,1,3), (3,2,1), (3,1,2), (4,1,1) \\to n(E) = 9$.<br>
-          • Xác suất: $P(E) = \\frac{9}{60} = \\mathbf{\\frac{3}{20}}$.
+          • Xác suất: $P(E) = \\frac{9}{60} = \\mathbf{\\frac{3}{20}} = 0,15$.
         `,
         correctFraction: '3/20',
         correctDecimal: 0.15,
@@ -839,12 +841,13 @@
         statement: 'Lớp có $15$ học sinh ($9$ nam, $6$ nữ). Chọn ngẫu nhiên $3$ bạn. Tính xác suất có <b>ÍT NHẤT 1</b> bạn nữ.',
         q1Correct: 'to_hop',
         q2Correct: 'co_doi',
-        breakdownText: `
-          <b>Phân tích phương pháp:</b> Chọn 1 nhóm 3 bạn $\\to$ <b>Tổ hợp</b>. Đề có từ <b>"ÍT NHẤT"</b> $\\to$ Dùng <b>Biến cố đối</b> $\\overline{E}$: "Không có bạn nữ nào" (cả 3 đều là nam).<br>
+        guideText: '💡 <b>Hướng dẫn tính toán:</b> Áp dụng <b>Biến cố đối</b> $\\overline{E}$: "Không có bạn nữ nào" (chọn $3$ nam từ $9$ nam). Tính $P(\\overline{E}) = \\frac{n(\\overline{E})}{n(\\Omega)}$ rồi nhập xác suất $P(E) = 1 - P(\\overline{E})$ bên dưới.',
+        solutionText: `
+          <b>Lời giải chi tiết:</b><br>
           • Không gian mẫu: $n(\\Omega) = C_{15}^3 = 455$.<br>
-          • Biến cố đối $\\overline{E}$: Chọn 3 nam từ 9 nam $\\to n(\\overline{E}) = C_9^3 = 84$.<br>
+          • Biến cố đối $\\overline{E}$ (chọn 3 nam từ 9 nam): $n(\\overline{E}) = C_9^3 = 84$.<br>
           • Xác suất đối: $P(\\overline{E}) = \\frac{84}{455} = \\frac{12}{65}$.<br>
-          • Xác suất cần tìm: $P(E) = 1 - \\frac{12}{65} = \\mathbf{\\frac{53}{65}}$.
+          • Xác suất cần tìm: $P(E) = 1 - \\frac{12}{65} = \\mathbf{\\frac{53}{65}} \\approx 0,815$.
         `,
         correctFraction: '53/65',
         correctDecimal: 0.8154,
@@ -856,12 +859,13 @@
         statement: 'Tung $1$ đồng xu liên tiếp $4$ lần. Tính xác suất có <b>ÍT NHẤT 1</b> lần mặt Ngửa.',
         q1Correct: 'cay',
         q2Correct: 'co_doi',
-        breakdownText: `
-          <b>Phân tích phương pháp:</b> Phép thử gồm 4 lần tung liên tiếp $\\to$ <b>Sơ đồ hình cây</b> (mỗi lần có 2 nhánh: Sấp hoặc Ngửa). Đề có <b>"ÍT NHẤT"</b> $\\to$ Dùng <b>Biến cố đối</b> $\\overline{E}$: "Cả 4 lần đều Sấp" (SSSS).<br>
-          • Tổng số kết quả: $n(\\Omega) = 2^4 = 16$.<br>
-          • Số kết quả đối (SSSS): $n(\\overline{E}) = 1$.<br>
+        guideText: '💡 <b>Hướng dẫn tính toán:</b> Áp dụng <b>Biến cố đối</b> $\\overline{E}$: "Cả $4$ lần tung đều ra mặt Sấp" ($SSSS$). Tính $P(\\overline{E}) = \\frac{n(\\overline{E})}{n(\\Omega)}$ rồi nhập xác suất $P(E) = 1 - P(\\overline{E})$ bên dưới.',
+        solutionText: `
+          <b>Lời giải chi tiết:</b><br>
+          • Tổng số kết quả của 4 lần tung: $n(\\Omega) = 2^4 = 16$.<br>
+          • Biến cố đối $\\overline{E}$ (toàn Sấp: SSSS): $n(\\overline{E}) = 1$.<br>
           • Xác suất đối: $P(\\overline{E}) = \\frac{1}{16}$.<br>
-          • Xác suất cần tìm: $P(E) = 1 - \\frac{1}{16} = \\mathbf{\\frac{15}{16}}$.
+          • Xác suất cần tìm: $P(E) = 1 - \\frac{1}{16} = \\mathbf{\\frac{15}{16}} = 0,9375$.
         `,
         correctFraction: '15/16',
         correctDecimal: 0.9375,
@@ -873,8 +877,9 @@
         statement: 'Một lô hàng $20$ sản phẩm có $3$ sản phẩm lỗi. Kiểm tra ngẫu nhiên $5$ sản phẩm. Tính xác suất có <b>đúng 1</b> sản phẩm lỗi trong $5$ sản phẩm kiểm tra.',
         q1Correct: 'to_hop',
         q2Correct: 'khong_can',
-        breakdownText: `
-          <b>Phân tích phương pháp:</b> Chọn ngẫu nhiên 5 sản phẩm $\\to$ <b>Tổ hợp</b>. Đề hỏi <b>"đúng 1"</b> (không phải "ít nhất") $\\to$ <b>Không cần biến cố đối</b>.<br>
+        guideText: '💡 <b>Hướng dẫn tính toán:</b> Áp dụng phương pháp <b>Tổ hợp</b> tính $n(\\Omega)$ (chọn $5$ từ $20$ sp) và $n(E)$ (chọn $1$ lỗi từ $3$ lỗi và $4$ tốt từ $17$ tốt). Sau đó nhập xác suất $P(E) = \\frac{n(E)}{n(\\Omega)}$ bên dưới.',
+        solutionText: `
+          <b>Lời giải chi tiết:</b><br>
           • Không gian mẫu: $n(\\Omega) = C_{20}^5 = 15504$.<br>
           • Chọn 1 lỗi từ 3 lỗi và 4 tốt từ 17 tốt: $n(E) = C_3^1 \\cdot C_{17}^4 = 3 \\times 2380 = 7140$.<br>
           • Xác suất: $P(E) = \\frac{7140}{15504} = \\mathbf{\\frac{35}{76}} \\approx 0,461$.
@@ -975,7 +980,7 @@
             ${s.q1Passed && s.q2Passed ? `
               <div class="calculation-panel">
                 <div class="formula-breakdown-card">
-                  ${q.breakdownText}
+                  ${s.isCompleted ? q.solutionText : q.guideText}
                 </div>
 
                 <div class="input-action-row">
@@ -983,7 +988,7 @@
                   <input type="text" 
                          class="answer-input ${s.inputPassed ? 'correct' : ''}" 
                          id="input_${idx}" 
-                         placeholder="Ví dụ: ${q.correctFraction}" 
+                         placeholder="Ví dụ: 1/2 hoặc 0.5" 
                          inputmode="text"
                          ${s.isCompleted ? 'disabled value="' + q.correctFraction + '"' : ''}>
                   ${!s.isCompleted ? `
@@ -992,7 +997,7 @@
                     </button>
                   ` : `
                     <span style="color: var(--correct); font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">
-                      <i class="ti ti-circle-check"></i> Chính xác!
+                      <i class="ti ti-circle-check"></i> Hoàn thành!
                     </span>
                   `}
                 </div>
