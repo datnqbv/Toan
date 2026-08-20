@@ -1,0 +1,1268 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Hoạt động thực hành trải nghiệm — Module 1: Toán học từ thực tế</title>
+
+  <!-- GOOGLE FONTS: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- TABLER ICONS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+  <!-- KATEX FOR MATHEMATICAL RENDERING -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    /* =========================================================
+       1. CSS DESIGN SYSTEM & TOKENS (CREAM & JADE)
+       ========================================================= */
+    :root {
+      --bg: #FAF8F5;
+      --paper: #FFFFFF;
+      --paper-subtle: #F4EFEA;
+      --paper-line: #E5DDD0;
+      
+      --jade-deep: #14432F;
+      --jade: #2D8B6F;
+      --jade-light: #E6F4EA;
+      --jade-glow: rgba(45, 139, 111, 0.18);
+      
+      --accent: #D97736;
+      --accent-light: #FDF3E7;
+      --accent-dark: #B45309;
+
+      --tech-blue: #0284C7;
+      --tech-blue-bg: #E0F2FE;
+      
+      --ink: #1F2937;
+      --ink-2: #4B5563;
+      --ink-3: #6B7280;
+      
+      --correct: #16A34A;
+      --correct-bg: #DCFCE7;
+      --warning: #F59E0B;
+      --warning-bg: #FEF3C7;
+      --wrong: #DC2626;
+      --wrong-bg: #FEE2E2;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 12px rgba(20, 67, 47, 0.08);
+      --shadow-lg: 0 10px 25px rgba(20, 67, 47, 0.14);
+
+      --transition-fast: 0.18s ease;
+      --transition-normal: 0.28s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      padding: 16px 16px 80px 16px;
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 24px;
+    }
+
+    /* =========================================================
+       2. INTRO HEADER CARD
+       ========================================================= */
+    .intro-card {
+      background: var(--paper);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--paper-line);
+      box-shadow: var(--shadow-sm);
+      padding: 24px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .header-top {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .badge-topic {
+      background: var(--jade-light);
+      color: var(--jade-deep);
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-notebook {
+      background: var(--paper-subtle);
+      color: var(--jade-deep);
+      border: 1px solid var(--paper-line);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-notebook:hover {
+      background: var(--jade-light);
+      border-color: var(--jade);
+    }
+
+    .intro-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      line-height: 1.35;
+    }
+
+    .intro-desc {
+      font-size: 15px;
+      color: var(--ink-2);
+      line-height: 1.65;
+    }
+
+    .progress-bar-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 6px;
+    }
+
+    .progress-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-2);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--paper-line);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--jade) 0%, #10B981 100%);
+      transition: width 0.3s ease;
+    }
+
+    /* =========================================================
+       3. GALLERY CARDS (5 TOPICS)
+       ========================================================= */
+    .gallery-container {
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .gallery-card {
+      background: var(--paper);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--paper-line);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      transition: transform var(--transition-fast), box-shadow var(--transition-fast);
+    }
+
+    .gallery-card.completed {
+      border-color: rgba(22, 163, 74, 0.4);
+      background: #FAFCFA;
+    }
+
+    .card-banner-wrap {
+      width: 100%;
+      height: 240px;
+      position: relative;
+      overflow: hidden;
+      background: #0B1914;
+    }
+
+    .card-banner-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: transform 0.5s ease;
+    }
+
+    .gallery-card:hover .card-banner-img {
+      transform: scale(1.02);
+    }
+
+    .card-banner-badge {
+      position: absolute;
+      top: 12px;
+      left: 12px;
+      background: rgba(20, 67, 47, 0.9);
+      backdrop-filter: blur(6px);
+      color: #FFF;
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12.5px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .card-status-badge {
+      position: absolute;
+      top: 12px;
+      right: 12px;
+      background: rgba(15, 23, 42, 0.75);
+      backdrop-filter: blur(6px);
+      color: #FFF;
+      padding: 5px 12px;
+      border-radius: var(--radius-full);
+      font-size: 12px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .card-status-badge.done {
+      background: rgba(22, 163, 74, 0.95);
+    }
+
+    .card-body {
+      padding: 22px 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .card-title {
+      font-size: 19px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      line-height: 1.4;
+    }
+
+    /* ATHENA SPEECH BOX */
+    .athena-speech {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--paper-subtle);
+      border-left: 4px solid var(--jade);
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      font-size: 14.5px;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    .athena-avatar-bubble {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      border-radius: var(--radius-full);
+      background: #FFF;
+      border: 2px solid var(--jade);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .athena-avatar-bubble img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* INTERACTION QUESTION PANEL */
+    .interaction-panel {
+      background: var(--paper);
+      border: 1px dashed var(--paper-line);
+      border-radius: var(--radius-lg);
+      padding: 14px 16px;
+      display: flex;
+      flex-direction: column;
+      gap: 12px;
+    }
+
+    .question-prompt {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    /* CHOICE BUTTONS GRID (FOR MCQ) */
+    .choice-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .choice-btn {
+      background: var(--paper-subtle);
+      border: 1.5px solid var(--paper-line);
+      color: var(--ink);
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+      min-height: 44px;
+    }
+
+    .choice-btn:hover:not(:disabled) {
+      border-color: var(--jade);
+      background: #FFF;
+      transform: translateY(-1px);
+    }
+
+    .choice-btn.selected-correct {
+      background: var(--correct-bg) !important;
+      border-color: var(--correct) !important;
+      color: #14532D !important;
+    }
+
+    .choice-btn.selected-wrong {
+      background: var(--wrong-bg) !important;
+      border-color: var(--wrong) !important;
+      color: #7F1D1D !important;
+      animation: shake 0.3s ease;
+    }
+
+    /* INPUT ACTION ROW (FOR INPUT QUESTIONS) */
+    .input-action-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .answer-input {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14.5px;
+      font-weight: 600;
+      padding: 9px 14px;
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      background: #FFFFFF;
+      color: var(--ink);
+      outline: none;
+      width: 220px;
+      transition: all var(--transition-fast);
+    }
+
+    .answer-input:focus {
+      border-color: var(--jade);
+      box-shadow: 0 0 0 3px var(--jade-glow);
+    }
+
+    .answer-input.correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: #14532D;
+    }
+
+    .answer-input.error {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+      animation: shake 0.3s ease;
+    }
+
+    .btn-submit {
+      background: var(--jade);
+      color: #FFFFFF;
+      border: none;
+      padding: 9px 18px;
+      border-radius: var(--radius-md);
+      font-size: 14px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition-fast);
+      min-height: 42px;
+    }
+
+    .btn-submit:hover {
+      background: var(--jade-deep);
+      transform: translateY(-1px);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+    }
+
+    /* ATHENA FEEDBACK BOX */
+    .athena-feedback {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      line-height: 1.55;
+      animation: fadeIn 0.25s ease;
+      margin-top: 4px;
+    }
+
+    .athena-feedback.success {
+      background: var(--correct-bg);
+      color: #14532D;
+      border-left: 3px solid var(--correct);
+    }
+
+    .athena-feedback.warning {
+      background: var(--warning-bg);
+      color: #92400E;
+      border-left: 3px solid var(--warning);
+    }
+
+    .athena-feedback.error {
+      background: var(--wrong-bg);
+      color: #991B1B;
+      border-left: 3px solid var(--wrong);
+    }
+
+    .athena-feedback img {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+
+    /* =========================================================
+       4. FINAL SUMMARY CARD (ATHENA COMPLETION)
+       ========================================================= */
+    .summary-card {
+      background: linear-gradient(135deg, var(--jade-deep) 0%, #1c523d 100%);
+      color: #FFF;
+      border-radius: var(--radius-xl);
+      padding: 26px 28px;
+      box-shadow: var(--shadow-lg);
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .summary-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .summary-avatar {
+      width: 68px;
+      height: 68px;
+      flex-shrink: 0;
+      background: #FFF;
+      border-radius: var(--radius-full);
+      padding: 3px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .summary-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: var(--radius-full);
+    }
+
+    .summary-text h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 8px;
+    }
+
+    .summary-text p {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .rule-highlight-box {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: var(--radius-lg);
+      padding: 12px 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 12px 0 16px 0;
+    }
+
+    .btn-restart-all {
+      background: var(--accent);
+      color: #FFF;
+      border: none;
+      padding: 9px 20px;
+      border-radius: var(--radius-full);
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-restart-all:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       5. MODAL SỔ TAY KIẾN THỨC
+       ========================================================= */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-normal);
+      padding: 14px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      max-width: 640px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(16px);
+      transition: transform var(--transition-normal);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--paper-line);
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      color: var(--ink-3);
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    /* =========================================================
+       6. RESPONSIVE MOBILE (≤ 768px)
+       ========================================================= */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px 8px 60px 8px;
+      }
+
+      .intro-card {
+        padding: 16px 14px;
+      }
+
+      .intro-title {
+        font-size: 19px;
+      }
+
+      .card-banner-wrap {
+        height: 180px;
+      }
+
+      .card-body {
+        padding: 16px 14px;
+        gap: 14px;
+      }
+
+      .card-title {
+        font-size: 17px;
+      }
+
+      .choice-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .input-action-row {
+        flex-direction: column;
+        align-items: stretch;
+      }
+
+      .answer-input {
+        width: 100%;
+      }
+
+      .btn-submit {
+        width: 100%;
+        justify-content: center;
+      }
+
+      .summary-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
+      }
+
+      .summary-avatar {
+        width: 60px;
+        height: 60px;
+      }
+
+      .rule-highlight-box {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- INTRO HEADER CARD -->
+    <header class="intro-card">
+      <div class="header-top">
+        <div class="badge-topic">
+          <i class="ti ti-sparkles"></i> Hoạt động trải nghiệm · Toán 10 Cuối năm
+        </div>
+        <button class="btn-notebook" onclick="openNotebookModal()">
+          <i class="ti ti-notes"></i> Sổ tay kiến thức
+        </button>
+      </div>
+
+      <h1 class="intro-title">Module 1: Toán học từ thực tế — Hành trình 5 khái niệm</h1>
+      <p class="intro-desc">
+        Mỗi công thức hay định lí trong chương trình Toán 10 đều bắt nguồn từ những bài toán thực tiễn của cuộc sống. Hãy cùng Trợ lý Athena khám phá 5 câu chuyện lịch sử và ứng dụng đời sống sau đây!
+      </p>
+
+      <div class="progress-bar-container">
+        <div class="progress-text">
+          <span id="progressLabel">Tiến độ khám phá: 0/5 thẻ hoàn thành</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFillBar"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- 5 GALLERY CARDS CONTAINER -->
+    <main class="gallery-container" id="cardsContainer">
+      <!-- Rendered dynamically by JavaScript -->
+    </main>
+
+    <!-- FINAL SUMMARY CARD -->
+    <section class="summary-card" id="final-summary">
+      <div class="summary-content">
+        <div class="summary-avatar">
+          <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot" loading="lazy">
+        </div>
+        <div class="summary-text">
+          <h3>🎉 Đúc kết hành trình: Toán học — Ngôn ngữ của thế giới thực!</h3>
+          <p>
+            "Mỗi công thức, định lí trong Toán 10 đều bắt nguồn từ một nhu cầu thực tế cụ thể: <b>Parabol</b> từ quỹ đạo vật rơi & ăng-ten hội tụ sóng, <b>Vectơ</b> từ nhu cầu mô tả hướng của lực gió và dòng nước, <b>Hệ tọa độ Descartes</b> từ bài toán định vị GPS, <b>Ba đường conic</b> từ quỹ đạo chuyển động thiên thể của Kepler, và <b>Thống kê</b> từ bài toán kiểm soát chất lượng sản xuất công nghiệp. Toán học không phải là những công thức trừu tượng — mà là chiếc chìa khóa vạn năng để giải quyết các vấn đề của thế giới thật!"
+          </p>
+          <div class="rule-highlight-box">
+            • <b>Hàm số bậc hai:</b> Quỹ đạo chuyển động vật ném & bề mặt hội tụ quang học / sóng.<br>
+            • <b>Đại số vectơ:</b> Mô tả các đại lượng vật lý có cả phương, hướng và độ lớn.<br>
+            • <b>Hình học tọa độ & Conic:</b> Nền tảng cho bản đồ số, GPS và du hành vũ trụ.<br>
+            • <b>Thống kê mô tả:</b> Số trung bình kết hợp độ lệch chuẩn để đánh giá độ tin cậy.
+          </div>
+          <button class="btn-restart-all" onclick="restartExploration()">
+            <i class="ti ti-refresh"></i> Khám phá lại từ đầu
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- SỔ TAY KIẾN THỨC MODAL -->
+  <div class="modal-overlay" id="notebookModal" onclick="closeNotebookModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="ti ti-book-2"></i> Sổ tay kiến thức nền tảng — Toán 10
+        </div>
+        <button class="btn-close" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
+      </div>
+
+      <div style="font-size: 14.5px; color: var(--ink); line-height: 1.65; display: flex; flex-direction: column; gap: 12px;">
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--jade);">
+          <b>1. Hàm số bậc hai & Parabol (Chương VI):</b><br>
+          Dạng $y = ax^2 + bx + c$ ($a \neq 0$). Bề lõm quay lên khi $a > 0$, quay xuống khi $a < 0$.
+        </div>
+
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--accent);">
+          <b>2. Vectơ & Phép toán vectơ (Học kì I):</b><br>
+          Đại lượng có hướng và độ lớn. Hai vectơ đối nhau có cùng độ lớn, ngược hướng $\implies \vec{u} + (-\vec{u}) = \vec{0}$.
+        </div>
+
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--tech-blue);">
+          <b>3. Phương trình đường thẳng & Hệ tọa độ (Chương VII):</b><br>
+          Đường thẳng $\Delta: ax + by + c = 0$ có vectơ pháp tuyến $\vec{n} = (a; b)$.
+        </div>
+
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid #8B5CF6;">
+          <b>4. Ba đường conic (Chương VII):</b><br>
+          Elip, Hypebol, Parabol. Đường conic có tâm sai $e = 0$ là đường tròn.
+        </div>
+
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid #EC4899;">
+          <b>5. Thống kê mô tả (Đầu năm):</b><br>
+          Số trung bình $\overline{x}$ đo xu hướng trung tâm; Độ lệch chuẩn $s$ đo mức độ phân tán của dữ liệu quanh số trung bình.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATHENA CONTEXT JSON FOR LMS TRACKING -->
+  <script type="application/json" id="athena-context">
+  {
+    "context": {
+      "grade": 10,
+      "chapter": "HDTN",
+      "lesson": 1,
+      "module": 1,
+      "topic": "toan_hoc_tu_thuc_te",
+      "title": "Toán học từ thực tế — Hành trình 5 khái niệm"
+    },
+    "structure": [
+      { "id": "hd_the1_parabol", "type": "explored", "required": false, "title": "Thẻ 1: Parabol — Đại bác đến ăng-ten vệ tinh" },
+      { "id": "hd_the2_vecto", "type": "explored", "required": false, "title": "Thẻ 2: Vectơ — Độ lớn và hướng của lực" },
+      { "id": "hd_the3_toado", "type": "explored", "required": false, "title": "Thẻ 3: Hệ tọa độ — Descartes đến GPS" },
+      { "id": "hd_the4_conic", "type": "explored", "required": false, "title": "Thẻ 4: Ba đường conic — Quỹ đạo hành tinh Elip" },
+      { "id": "hd_the5_thongke", "type": "explored", "required": false, "title": "Thẻ 5: Thống kê — Số trung bình & Độ lệch chuẩn" }
+    ],
+    "pedagogy": {
+      "total_progress": 0,
+      "mode": "free_exploration_showcase"
+    }
+  }
+  </script>
+
+  <!-- JAVASCRIPT ENGINE -->
+  <script>
+    // =========================================================
+    // 0. LMS INTEGRATION & UTILITIES
+    // =========================================================
+    function LMS() {
+      return {
+        event: (name, data) => console.log('[LMS Event]', name, data),
+        progress: (done, total) => console.log('[LMS Progress]', `${done}/${total}`),
+        complete: () => console.log('[LMS Complete] Exploration Completed!')
+      };
+    }
+
+    function renderMath(target = document.body) {
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(target, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {
+          console.warn('[KaTeX]', e);
+        }
+      }
+    }
+
+    // =========================================================
+    // 1. DATA OF 5 TOPICS
+    // =========================================================
+    const TOPICS = [
+      {
+        id: 'hd_the1_parabol',
+        index: 1,
+        title: 'Thẻ 1 — Parabol: Từ quỹ đạo đại bác đến ăng-ten vệ tinh',
+        badge: 'Chương VI · Hàm số bậc hai',
+        image: 'https://lh3.googleusercontent.com/d/1Zx3Xou5i3T0ymZ7uTn3_l2RH-Ss80JYV',
+        speech: 'Khi Galileo quan sát đường bay của đại bác, ông nhận ra nó luôn có hình dạng giống nhau — hình parabol. Ngày nay, hình dạng đó lại xuất hiện ngược lại: ăng-ten vệ tinh, gương đèn pha đều có mặt cắt hình parabol, vì đường parabol có tính chất hội tụ mọi tia đến 1 điểm duy nhất (tiêu điểm).',
+        type: 'mcq',
+        question: 'Parabol $y = ax^2 + bx + c$ có bề lõm quay lên khi nào?',
+        options: [
+          { key: 'a_gt_0', label: '$a > 0$', isCorrect: true },
+          { key: 'a_lt_0', label: '$a < 0$', isCorrect: false }
+        ],
+        hint: 'Hãy nhớ lại đồ thị hàm bậc hai: khi hệ số $a$ mang dấu dương, đồ thị có điểm cực tiểu ở đáy và hướng lên trên.',
+        explanation: 'Khi $a > 0$, đồ thị parabol có bề lõm quay lên trên (đỉnh là điểm thấp nhất). Khi $a < 0$, bề lõm quay xuống dưới.'
+      },
+      {
+        id: 'hd_the2_vecto',
+        index: 2,
+        title: 'Thẻ 2 — Vectơ: Vì sao lực cần cả độ lớn và hướng',
+        badge: 'Học kì I · Vectơ & Lực',
+        image: 'https://lh3.googleusercontent.com/d/1RYRbgdq-MOCjcPdOV3XQgylqLD1-Tnip',
+        speech: 'Khi thủy thủ tính hướng đi, chỉ biết "gió mạnh 20km/h" là chưa đủ — phải biết gió thổi theo hướng nào. Đây chính là lý do Vật lý và Toán học cần đến vectơ: 1 đại lượng có cả độ lớn VÀ hướng, khác hẳn 1 số đo thông thường.',
+        type: 'input',
+        question: 'Hai vectơ cùng độ lớn nhưng ngược hướng thì tổng của chúng là gì?',
+        placeholder: 'Nhập câu trả lời của bạn...',
+        displayAnswer: 'vectơ-không (hoặc 0)',
+        validAnswers: [
+          'vectơ-không', 'vecto-khong', 'vectơ không', 'vecto khong', 
+          'vecto 0', 'vectơ 0', 'vector 0', 'vector-0', 'vector-không', 
+          '0', 'vec(0)', '\\vec{0}', 'không', 'khong'
+        ],
+        hint: 'Hai vectơ cùng độ lớn và ngược hướng nhau là hai vectơ đối nhau. Tổng của hai vectơ đối nhau bằng gì?',
+        explanation: 'Tổng của hai vectơ đối nhau (cùng độ lớn, ngược hướng) là <b>vectơ-không</b> (kí hiệu là $\\vec{0}$).'
+      },
+      {
+        id: 'hd_the3_toado',
+        index: 3,
+        title: 'Thẻ 3 — Hệ tọa độ: Từ Descartes đến GPS',
+        badge: 'Chương VII · Phương pháp tọa độ',
+        image: 'https://lh3.googleusercontent.com/d/1VUbDaogQzQYGJk-e2XrK2kOjOodrbaQM',
+        speech: 'Descartes muốn tìm cách mô tả CHÍNH XÁC vị trí của 1 điểm bằng số, không cần vẽ hình. Ý tưởng đơn giản đó — dùng 2 số $(x, y)$ — chính là nền tảng cho mọi hệ thống định vị hiện đại, từ bản đồ đến GPS trên điện thoại của bạn.',
+        type: 'input',
+        question: 'Đường thẳng $ax + by + c = 0$ có vectơ pháp tuyến là gì?',
+        placeholder: 'Ví dụ: (x; y) hoặc (1; 2)...',
+        displayAnswer: '(a; b)',
+        validAnswers: [
+          '(a; b)', '(a;b)', '(a, b)', '(a,b)', 
+          'a; b', 'a;b', 'a, b', 'a,b', 
+          'n=(a;b)', 'n=(a,b)', '\\vec{n}=(a;b)', '\\vec{n}=(a,b)'
+        ],
+        hint: 'Hệ số của $x$ và $y$ trong phương trình tổng quát chính là tọa độ của vectơ pháp tuyến.',
+        explanation: 'Đường thẳng $ax + by + c = 0$ có một vectơ pháp tuyến là $\\vec{n} = (a; b)$.'
+      },
+      {
+        id: 'hd_the4_conic',
+        index: 4,
+        title: 'Thẻ 4 — Ba đường conic: Vì sao hành tinh không chuyển động theo đường tròn',
+        badge: 'Chương VII · Ba đường Conic',
+        image: 'https://lh3.googleusercontent.com/d/1bJ92f8319R1uM9ZwnEWzUOLWosDbeW08',
+        speech: 'Kepler mất nhiều năm mới nhận ra: quỹ đạo hành tinh không phải hình tròn hoàn hảo như người ta từng tin, mà là hình ELIP — Mặt Trời nằm ở 1 tiêu điểm, không phải tâm. Đây là 1 trong 3 đường conic bạn đã học — cùng họ với hypebol và parabol.',
+        type: 'input',
+        question: 'Đường conic có tâm sai $e = 0$ là đường gì?',
+        placeholder: 'Ví dụ: elip, parabol...',
+        displayAnswer: 'đường tròn',
+        validAnswers: [
+          'đường tròn', 'duong tron', 'đường tròn (hoặc hình tròn)', 
+          'hình tròn', 'hinh tron', 'tròn', 'tron', 'duongtron', 'hinhtron'
+        ],
+        hint: 'Khi hai tiêu điểm của hình elip trùng vào nhau, tâm sai $e = \\frac{c}{a} = 0$, hình elip trở thành đường gì?',
+        explanation: 'Khi tâm sai $e = 0$, đường conic trở thành <b>đường tròn</b> (trường hợp đặc biệt của elip khi 2 tiêu điểm trùng nhau).'
+      },
+      {
+        id: 'hd_the5_thongke',
+        index: 5,
+        title: 'Thẻ 5 — Thống kê: Vì sao chỉ nhìn số trung bình là chưa đủ',
+        badge: 'Đầu năm · Thống kê mô tả',
+        image: 'https://lh3.googleusercontent.com/d/1eHl8Nw5vCmmqvD8ubGj648lXirxU4VTv',
+        speech: 'Một nhà máy sản xuất 1000 sản phẩm/ngày, số trung bình về kích thước có thể đúng chuẩn — nhưng nếu độ lệch chuẩn quá lớn, rất nhiều sản phẩm vẫn bị lỗi dù trung bình đẹp. Đây là lý do ngành công nghiệp luôn cần CẢ số trung bình VÀ độ lệch chuẩn để kiểm soát chất lượng.',
+        type: 'mcq',
+        question: 'Độ lệch chuẩn lớn có nghĩa là dữ liệu phân tán nhiều hay ít so với số trung bình?',
+        options: [
+          { key: 'nhieu', label: 'Phân tán nhiều', isCorrect: true },
+          { key: 'it', label: 'Phân tán ít', isCorrect: false }
+        ],
+        hint: 'Độ lệch chuẩn $s$ đo mức độ dao động quanh số trung bình. Độ lệch chuẩn càng lớn thì các giá trị càng lệch xa trung bình.',
+        explanation: 'Độ lệch chuẩn lớn thể hiện dữ liệu <b>phân tán nhiều</b> (dao động mạnh) xung quanh số trung bình, độ ổn định thấp.'
+      }
+    ];
+
+    // State management
+    const state = {
+      answers: TOPICS.map(t => ({
+        selectedKey: null,
+        inputValue: '',
+        attempts: 0,
+        isCompleted: false
+      }))
+    };
+
+    // Chuẩn hóa chuỗi tiếng Việt (hỗ trợ có dấu, không dấu, khoảng trắng)
+    function normalizeText(str) {
+      if (!str) return '';
+      return str
+        .toString()
+        .trim()
+        .toLowerCase()
+        .normalize('NFD')
+        .replace(/[\u0300-\u036f]/g, '') // Bỏ toàn bộ dấu thanh tiếng Việt
+        .replace(/[đĐ]/g, 'd')
+        .replace(/[\(\)\[\]\{\}\\\;\,\:\.\s\-_]/g, ''); // Bỏ dấu ngoặc, phân cách, khoảng trắng
+    }
+
+    // =========================================================
+    // 2. RENDER FUNCTIONS
+    // =========================================================
+    function renderCards() {
+      const container = document.getElementById('cardsContainer');
+      if (!container) return;
+
+      container.innerHTML = TOPICS.map((topic, idx) => {
+        const s = state.answers[idx];
+
+        return `
+          <article class="gallery-card ${s.isCompleted ? 'completed' : ''}" id="card_${idx}">
+            <div class="card-banner-wrap">
+              <img src="${topic.image}" alt="${topic.title}" class="card-banner-img" loading="lazy">
+              <div class="card-banner-badge">
+                <i class="ti ti-bookmark"></i> ${topic.badge}
+              </div>
+              <div class="card-status-badge ${s.isCompleted ? 'done' : ''}" id="status_${idx}">
+                <i class="ti ${s.isCompleted ? 'ti-check' : 'ti-clock'}"></i>
+                ${s.isCompleted ? 'Đã khám phá' : 'Chưa tương tác'}
+              </div>
+            </div>
+
+            <div class="card-body">
+              <h2 class="card-title">${topic.title}</h2>
+
+              <div class="athena-speech">
+                <div class="athena-avatar-bubble">
+                  <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+                </div>
+                <div>
+                  <b>Trợ lý Athena:</b> <i>"${topic.speech}"</i>
+                </div>
+              </div>
+
+              <!-- INTERACTION PANEL -->
+              <div class="interaction-panel">
+                <div class="question-prompt">
+                  <i class="ti ti-help-circle" style="color: var(--jade);"></i>
+                  <span>${topic.question}</span>
+                </div>
+
+                ${topic.type === 'mcq' ? `
+                  <div class="choice-grid">
+                    ${topic.options.map(opt => `
+                      <button class="choice-btn ${s.selectedKey === opt.key ? (opt.isCorrect ? 'selected-correct' : 'selected-wrong') : ''}"
+                              id="btn_mcq_${idx}_${opt.key}"
+                              onclick="handleSelectMCQ(${idx}, '${opt.key}')"
+                              ${s.isCompleted ? 'disabled' : ''}>
+                        ${opt.label}
+                      </button>
+                    `).join('')}
+                  </div>
+                ` : `
+                  <div class="input-action-row">
+                    <input type="text"
+                           class="answer-input ${s.isCompleted ? 'correct' : ''}"
+                           id="input_${idx}"
+                           placeholder="${topic.placeholder}"
+                           value="${s.inputValue}"
+                           ${s.isCompleted ? 'disabled' : ''}
+                           onkeydown="if(event.key==='Enter') submitInput(${idx})">
+                    ${!s.isCompleted ? `
+                      <button class="btn-submit" onclick="submitInput(${idx})">
+                        <i class="ti ti-check"></i> Kiểm tra
+                      </button>
+                    ` : `
+                      <span style="color: var(--correct); font-weight: 800; display: inline-flex; align-items: center; gap: 4px;">
+                        <i class="ti ti-circle-check"></i> Chính xác!
+                      </span>
+                    `}
+                  </div>
+                `}
+
+                <div id="feedback_${idx}"></div>
+              </div>
+            </div>
+          </article>
+        `;
+      }).join('');
+
+      renderMath(container);
+      updateProgress();
+    }
+
+    // =========================================================
+    // 3. INTERACTION HANDLERS (3-STRIKE PEDAGOGY)
+    // =========================================================
+
+    // Handle Multiple Choice (MCQ)
+    function handleSelectMCQ(idx, key) {
+      const topic = TOPICS[idx];
+      const s = state.answers[idx];
+      s.selectedKey = key;
+
+      const opt = topic.options.find(o => o.key === key);
+      const fb = document.getElementById(`feedback_${idx}`);
+
+      // Cập nhật ngay màu nút bấm để học sinh thấy phản hồi lập tức
+      topic.options.forEach(o => {
+        const btn = document.getElementById(`btn_mcq_${idx}_${o.key}`);
+        if (btn) {
+          btn.className = 'choice-btn';
+          if (o.key === key) {
+            btn.classList.add(o.isCorrect ? 'selected-correct' : 'selected-wrong');
+          }
+        }
+      });
+
+      if (opt && opt.isCorrect) {
+        s.isCompleted = true;
+        fb.innerHTML = `
+          <div class="athena-feedback success">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div><b>Chính xác!</b> ${topic.explanation}</div>
+          </div>
+        `;
+        renderMath(fb);
+        LMS().event('explored', { id: topic.id });
+        // Độ trễ đúng 2 giây (2000ms) để học sinh kịp quan sát trạng thái đúng
+        setTimeout(renderCards, 2000);
+      } else {
+        s.attempts++;
+        if (s.attempts === 1) {
+          fb.innerHTML = `
+            <div class="athena-feedback error">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Chưa đúng:</b> Hãy đọc kỹ câu hỏi và thử lại nhé!</div>
+            </div>
+          `;
+        } else if (s.attempts === 2) {
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Gợi ý từ Athena:</b> <i>"${topic.hint}"</i></div>
+            </div>
+          `;
+        } else {
+          const correctOpt = topic.options.find(o => o.isCorrect);
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Đáp án đúng là:</b> <b>${correctOpt.label}</b>. Bạn hãy bấm chọn lại phương án đúng để hoàn thành thẻ nhé!</div>
+            </div>
+          `;
+        }
+        renderMath(fb);
+      }
+    }
+
+    // Handle Text Input
+    function submitInput(idx) {
+      const topic = TOPICS[idx];
+      const s = state.answers[idx];
+      const inputEl = document.getElementById(`input_${idx}`);
+      const fb = document.getElementById(`feedback_${idx}`);
+      if (!inputEl) return;
+
+      const rawVal = inputEl.value.trim();
+      if (!rawVal) {
+        inputEl.classList.add('error');
+        return;
+      }
+
+      s.inputValue = rawVal;
+      const normalizedUser = normalizeText(rawVal);
+
+      // So sánh linh hoạt: chuỗi gốc thường, hoặc chuỗi đã chuẩn hóa tiếng Việt bỏ dấu
+      const isCorrect = topic.validAnswers.some(ans => {
+        const normAns = normalizeText(ans);
+        return (
+          rawVal.toLowerCase() === ans.toLowerCase() ||
+          rawVal.toLowerCase().replace(/\s+/g, '') === ans.toLowerCase().replace(/\s+/g, '') ||
+          normalizedUser === normAns ||
+          (normAns.length > 0 && normalizedUser.includes(normAns))
+        );
+      });
+
+      if (isCorrect) {
+        s.isCompleted = true;
+        inputEl.className = 'answer-input correct';
+        fb.innerHTML = `
+          <div class="athena-feedback success">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div><b>Rất tốt!</b> ${topic.explanation}</div>
+          </div>
+        `;
+        renderMath(fb);
+        LMS().event('explored', { id: topic.id });
+        // Độ trễ 2 giây (2000ms) trước khi re-render
+        setTimeout(renderCards, 2000);
+      } else {
+        s.attempts++;
+        inputEl.className = 'answer-input error';
+
+        if (s.attempts === 1) {
+          fb.innerHTML = `
+            <div class="athena-feedback error">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Chưa chính xác:</b> Hãy kiểm tra lại câu trả lời và thử lại nhé!</div>
+            </div>
+          `;
+        } else if (s.attempts === 2) {
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Gợi ý từ Athena:</b> <i>"${topic.hint}"</i></div>
+            </div>
+          `;
+        } else {
+          inputEl.value = '';
+          inputEl.className = 'answer-input';
+          inputEl.focus();
+          const targetAnswer = topic.displayAnswer || topic.validAnswers[0];
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Đáp án chính xác là:</b> <b>${targetAnswer}</b>. Bạn hãy tự nhập <b>${targetAnswer}</b> vào ô trên rồi bấm <b>"Kiểm tra"</b> nhé!</div>
+            </div>
+          `;
+        }
+        renderMath(fb);
+      }
+    }
+
+    function updateProgress() {
+      const doneCount = state.answers.filter(a => a.isCompleted).length;
+      const total = TOPICS.length;
+      const percent = Math.round((doneCount / total) * 100);
+
+      const label = document.getElementById('progressLabel');
+      const pText = document.getElementById('progressPercent');
+      const bar = document.getElementById('progressFillBar');
+
+      if (label) label.textContent = `Tiến độ khám phá: ${doneCount}/${total} thẻ hoàn thành`;
+      if (pText) pText.textContent = `${percent}%`;
+      if (bar) bar.style.width = `${percent}%`;
+
+      LMS().progress(doneCount, total);
+
+      if (doneCount === total) {
+        LMS().complete();
+      }
+    }
+
+    function restartExploration() {
+      state.answers = TOPICS.map(t => ({
+        selectedKey: null,
+        inputValue: '',
+        attempts: 0,
+        isCompleted: false
+      }));
+      renderCards();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // =========================================================
+    // 4. MODAL LOGIC
+    // =========================================================
+    function openNotebookModal() {
+      const m = document.getElementById('notebookModal');
+      if (m) {
+        m.classList.add('active');
+        renderMath(m);
+      }
+    }
+
+    function closeNotebookModal(e) {
+      if (e) e.stopPropagation();
+      const m = document.getElementById('notebookModal');
+      if (m) m.classList.remove('active');
+    }
+
+    // Initial Load
+    window.addEventListener('DOMContentLoaded', () => {
+      renderCards();
+    });
+  </script>
+</body>
+</html>
