@@ -1532,127 +1532,291 @@
     }
 
     // =========================================================
-    // 2. PHẦN 1: SIMULATION CANVAS (TURTLES)
+    // 2. PHẦN 1: SIMULATION CANVAS (REALISTIC TURTLE TAGGING)
     // =========================================================
     const TOTAL_TURTLES_VISUAL = 80;
     const turtlesData = [];
+    let p1SimState = 'idle'; // 'idle' | 'capturing' | 'tagged_in_station' | 'releasing' | 'mixed' | 'sampling' | 'sampled'
+    let sampleCounterAnim = 0;
 
     function initTurtles() {
       turtlesData.length = 0;
+      p1SimState = 'idle';
       for (let i = 0; i < TOTAL_TURTLES_VISUAL; i++) {
         turtlesData.push({
           id: i,
-          x: 20 + Math.random() * 360,
-          y: 20 + Math.random() * 200,
-          vx: (Math.random() - 0.5) * 0.6,
-          vy: (Math.random() - 0.5) * 0.6,
+          x: 40 + Math.random() * 320,
+          y: 60 + Math.random() * 160,
+          targetX: 0,
+          targetY: 0,
+          vx: (Math.random() - 0.5) * 0.7,
+          vy: (Math.random() - 0.5) * 0.7,
+          angle: Math.random() * Math.PI * 2,
           isMarked: false,
-          isSampled: false
+          isSampled: false,
+          inStation: false
         });
       }
       renderTurtleSvg();
+    }
+
+    function drawTurtleShape(x, y, angle, isMarked, isSampled, scale = 1) {
+      const bodyColor = isMarked ? '#2E6B52' : '#2D8B6F';
+      const shellColor = isMarked ? '#14432F' : '#1F5E48';
+      const strokeColor = isSampled ? '#38BDF8' : '#0B1914';
+      const strokeWidth = isSampled ? 2 : 1;
+
+      let tagMarker = '';
+      if (isMarked) {
+        tagMarker = `
+          <!-- GPS TAG / MARKER -->
+          <circle cx="0" cy="0" r="3.5" fill="#E8A24A" stroke="#FFFFFF" stroke-width="1" />
+          <line x1="0" y1="0" x2="0" y2="-5" stroke="#E8A24A" stroke-width="1.2" />
+          <circle cx="0" cy="-5.5" r="1.2" fill="#E8A24A" />
+        `;
+      }
+
+      return `
+        <g transform="translate(${x}, ${y}) rotate(${angle * 180 / Math.PI}) scale(${scale})">
+          <!-- FLIPPERS (VÂY BƠI) -->
+          <ellipse cx="-7" cy="-5" rx="5" ry="2.2" fill="${bodyColor}" transform="rotate(-30, -7, -5)" />
+          <ellipse cx="7" cy="-5" rx="5" ry="2.2" fill="${bodyColor}" transform="rotate(30, 7, -5)" />
+          <ellipse cx="-5" cy="6" rx="3.5" ry="1.8" fill="${bodyColor}" transform="rotate(25, -5, 6)" />
+          <ellipse cx="5" cy="6" rx="3.5" ry="1.8" fill="${bodyColor}" transform="rotate(-25, 5, 6)" />
+          <!-- HEAD -->
+          <circle cx="0" cy="-8.5" r="3.2" fill="${bodyColor}" />
+          <!-- SHELL (MAI RÙA) -->
+          <ellipse cx="0" cy="0" rx="6.5" ry="7.5" fill="${shellColor}" stroke="${strokeColor}" stroke-width="${strokeWidth}" />
+          <!-- SHELL PATTERN -->
+          <polygon points="0,-4 3,-1 3,3 0,5 -3,3 -3,-1" fill="none" stroke="rgba(255,255,255,0.25)" stroke-width="0.7" />
+          ${tagMarker}
+        </g>
+      `;
     }
 
     function renderTurtleSvg() {
       const svg = document.getElementById('turtleSvgView');
       if (!svg) return;
 
-      let html = '';
-      turtlesData.forEach(t => {
-        let fill = '#2E6B52';
-        let stroke = '#14432F';
-        let badge = '';
+      let html = `
+        <!-- VỊNH BIỂN VÀ BÃI CÁT BẢO TỒN -->
+        <defs>
+          <linearGradient id="bayGradient" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#082A24" />
+            <stop offset="40%" stop-color="#0D3B33" />
+            <stop offset="100%" stop-color="#144E43" />
+          </linearGradient>
+          <linearGradient id="sandGradient" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#CBB58A" />
+            <stop offset="100%" stop-color="#E2D4B7" />
+          </linearGradient>
+        </defs>
 
-        if (t.isSampled) {
-          stroke = '#0284C7';
-        }
-        if (t.isMarked) {
-          badge = `<circle cx="${t.x}" cy="${t.y}" r="2.5" fill="#E8A24A" stroke="#FFF" stroke-width="0.8" />`;
-        }
+        <!-- WATER BG -->
+        <rect x="0" y="0" width="400" height="240" fill="url(#bayGradient)" />
 
+        <!-- CORAL & SEAWEED DECORATIONS -->
+        <path d="M 20 240 Q 30 200 25 180 Q 20 160 35 150" stroke="#10B981" stroke-width="3" fill="none" opacity="0.35" />
+        <path d="M 35 240 Q 45 210 40 190 Q 35 170 50 160" stroke="#10B981" stroke-width="2.5" fill="none" opacity="0.35" />
+        <circle cx="80" cy="220" r="14" fill="#E8A24A" opacity="0.15" />
+        <circle cx="95" cy="225" r="10" fill="#10B981" opacity="0.15" />
+
+        <!-- SAND BEACH / RESEARCH STATION (TOP-RIGHT) -->
+        <path d="M 250 0 C 270 50, 290 85, 400 95 L 400 0 Z" fill="url(#sandGradient)" opacity="0.92" />
+        <path d="M 250 0 C 270 50, 290 85, 400 95" stroke="#FFFFFF" stroke-width="2.5" stroke-dasharray="4,4" fill="none" opacity="0.7" />
+
+        <!-- TRẠM NGHIÊN CỨU LABEL TRÊN BÃI CÁT -->
+        <g transform="translate(315, 24)">
+          <rect x="-42" y="-12" width="84" height="24" rx="12" fill="rgba(20,67,47,0.85)" stroke="#E8A24A" stroke-width="1.2" />
+          <text x="0" y="4" fill="#FFF" font-size="10.5" font-weight="700" text-anchor="middle" font-family="'Be Vietnam Pro', sans-serif">
+            Trạm gắn thẻ
+          </text>
+        </g>
+      `;
+
+      // Draw Net overlay if capturing
+      if (p1SimState === 'capturing') {
         html += `
-          <g>
-            <ellipse cx="${t.x}" cy="${t.y}" rx="6.5" ry="5" fill="${fill}" stroke="${stroke}" stroke-width="1.2" />
-            <circle cx="${t.x + (t.vx >= 0 ? 6 : -6)}" cy="${t.y}" r="2.5" fill="${fill}" />
-            ${badge}
+          <g transform="translate(180, 110)">
+            <ellipse cx="0" cy="0" rx="90" ry="70" fill="rgba(232, 162, 74, 0.15)" stroke="#E8A24A" stroke-width="2" stroke-dasharray="6,4" />
+            <text x="0" y="86" fill="#E8A24A" font-size="11.5" font-weight="800" text-anchor="middle" font-family="'Be Vietnam Pro', sans-serif">
+              🎣 Đang kéo lưới bắt 40 con lên trạm...
+            </text>
           </g>
         `;
+      } else if (p1SimState === 'sampling') {
+        html += `
+          <g transform="translate(170, 130)">
+            <ellipse cx="0" cy="0" rx="110" ry="75" fill="rgba(2, 132, 199, 0.15)" stroke="#38BDF8" stroke-width="2.5" stroke-dasharray="6,4" />
+            <text x="0" y="92" fill="#38BDF8" font-size="12" font-weight="800" text-anchor="middle" font-family="'Be Vietnam Pro', sans-serif">
+              🔍 Đang thu mẫu ngẫu nhiên 60 con rùa...
+            </text>
+          </g>
+        `;
+      }
+
+      // Draw Turtles
+      turtlesData.forEach(t => {
+        html += drawTurtleShape(t.x, t.y, t.angle, t.isMarked, t.isSampled);
       });
+
+      // HUD Sample Inspection Banner when sampled
+      if (p1SimState === 'sampled') {
+        html += `
+          <g transform="translate(190, 192)">
+            <rect x="-130" y="-12" width="260" height="24" rx="6" fill="rgba(15,23,42,0.92)" stroke="#38BDF8" stroke-width="1.2" />
+            <text x="0" y="4" fill="#FFFFFF" font-size="10.5" font-weight="700" text-anchor="middle" font-family="'Be Vietnam Pro', sans-serif">
+              Mẫu ($n = 60$): <tspan fill="#E8A24A" font-weight="800">8 rùa có thẻ ($k=8$)</tspan> + 52 rùa không thẻ
+            </text>
+          </g>
+        `;
+      }
+
       svg.innerHTML = html;
     }
 
     let turtleAnimId = null;
     function animateTurtles() {
       turtlesData.forEach(t => {
-        t.x += t.vx;
-        t.y += t.vy;
-        if (t.x < 15 || t.x > 385) t.vx *= -1;
-        if (t.y < 15 || t.y > 225) t.vy *= -1;
+        if (p1SimState === 'capturing' && t.inStation) {
+          // Move towards research station
+          t.x += (t.targetX - t.x) * 0.08;
+          t.y += (t.targetY - t.y) * 0.08;
+          t.angle = Math.atan2(t.targetY - t.y, t.targetX - t.x) + Math.PI / 2;
+        } else if (p1SimState === 'releasing' && t.isMarked) {
+          // Swim actively away from beach into deep water
+          t.x += (t.targetX - t.x) * 0.04;
+          t.y += (t.targetY - t.y) * 0.04;
+          t.angle = Math.atan2(t.targetY - t.y, t.targetX - t.x) + Math.PI / 2;
+        } else {
+          // Free swimming with subtle turning
+          t.x += t.vx;
+          t.y += t.vy;
+          t.angle = Math.atan2(t.vy, t.vx) + Math.PI / 2;
+
+          // Boundary checks
+          if (t.x < 20 || t.x > 380) t.vx *= -1;
+          if (t.y < 20 || t.y > 220) t.vy *= -1;
+
+          // Avoid staying on top-right sand beach unless in station
+          if (t.x > 260 && t.y < 90 && !t.inStation) {
+            t.vx = -Math.abs(t.vx);
+            t.vy = Math.abs(t.vy);
+          }
+        }
       });
+
       renderTurtleSvg();
       turtleAnimId = requestAnimationFrame(animateTurtles);
     }
 
-    // P1 Step 1: Mark 40 turtles
+    // P1 Step 1: Capture and Tag 40 turtles
     function handleP1MarkTurtles() {
       const btnMark = document.getElementById('btnP1Mark');
       const btnRel = document.getElementById('btnP1Release');
       btnMark.disabled = true;
 
-      // Mark first 40 visual turtles
-      for (let i = 0; i < 40; i++) {
-        turtlesData[i].isMarked = true;
-      }
-      renderTurtleSvg();
+      p1SimState = 'capturing';
 
-      document.getElementById('p1_step1_ui').className = 'step-item completed';
-      document.getElementById('p1_step2_ui').className = 'step-item active';
-      btnRel.disabled = false;
+      // Select 40 visual turtles and move them to research station on sand beach
+      for (let i = 0; i < 40; i++) {
+        turtlesData[i].inStation = true;
+        turtlesData[i].targetX = 300 + (Math.random() - 0.5) * 60;
+        turtlesData[i].targetY = 40 + (Math.random() - 0.5) * 35;
+      }
+
+      // After 1.2s, finish moving and apply tags with animation
+      setTimeout(() => {
+        for (let i = 0; i < 40; i++) {
+          turtlesData[i].isMarked = true;
+        }
+        p1SimState = 'tagged_in_station';
+        document.getElementById('turtleCountTag').innerHTML = 'Trạm: Đã gắn thẻ $M = 40$ con';
+        renderMath(document.getElementById('turtleCountTag'));
+
+        document.getElementById('p1_step1_ui').className = 'step-item completed';
+        document.getElementById('p1_step2_ui').className = 'step-item active';
+        btnRel.disabled = false;
+      }, 1300);
     }
 
-    // P1 Step 1.5: Release and shuffle
+    // P1 Step 1.5: Release and mix naturally into bay
     function handleP1ReleaseTurtles() {
       const btnRel = document.getElementById('btnP1Release');
       const btnRecap = document.getElementById('btnP1Recapture');
       btnRel.disabled = true;
 
-      // Shuffle positions randomly
+      p1SimState = 'releasing';
+      document.getElementById('turtleCountTag').innerHTML = 'Vịnh biển: Rùa đang phân tán đều';
+
+      // Send 40 tagged turtles swimming to random deep-sea coordinates
+      for (let i = 0; i < 40; i++) {
+        turtlesData[i].inStation = false;
+        turtlesData[i].targetX = 30 + Math.random() * 260;
+        turtlesData[i].targetY = 70 + Math.random() * 150;
+      }
+
+      // Also swirl non-tagged turtles to mix thoroughly
       turtlesData.forEach(t => {
         t.vx = (Math.random() - 0.5) * 1.8;
         t.vy = (Math.random() - 0.5) * 1.8;
       });
-      setTimeout(() => {
-        turtlesData.forEach(t => {
-          t.vx = (Math.random() - 0.5) * 0.6;
-          t.vy = (Math.random() - 0.5) * 0.6;
-        });
-      }, 1000);
 
-      btnRecap.disabled = false;
+      setTimeout(() => {
+        p1SimState = 'mixed';
+        const tag = document.getElementById('turtleCountTag');
+        tag.innerHTML = 'Vịnh biển: Đã hòa lẫn tự nhiên ($N$)';
+        renderMath(tag);
+        turtlesData.forEach(t => {
+          t.vx = (Math.random() - 0.5) * 0.7;
+          t.vy = (Math.random() - 0.5) * 0.7;
+        });
+        btnRecap.disabled = false;
+      }, 1600);
     }
 
-    // P1 Step 2: Recapture sample of 60
+    // P1 Step 2: Recapture Sample of 60
     function handleP1Recapture() {
       const btnRecap = document.getElementById('btnP1Recapture');
       btnRecap.disabled = true;
 
-      // Highlight 60 turtles, exactly 8 marked
-      let markedCount = 0;
-      turtlesData.forEach((t, i) => {
-        if (i < 60) {
-          t.isSampled = true;
-          if (t.isMarked) markedCount++;
+      p1SimState = 'sampling';
+
+      setTimeout(() => {
+        // Highlight exactly 60 turtles (ensure exactly 8 marked among them)
+        let markedTaggedCount = 0;
+        let unmarkedCount = 0;
+
+        turtlesData.forEach(t => {
+          t.isSampled = false;
+        });
+
+        // Pick 8 marked turtles
+        for (let i = 0; i < turtlesData.length; i++) {
+          if (turtlesData[i].isMarked && markedTaggedCount < 8) {
+            turtlesData[i].isSampled = true;
+            markedTaggedCount++;
+          }
         }
-      });
 
-      renderTurtleSvg();
+        // Pick 52 unmarked turtles
+        for (let i = 0; i < turtlesData.length; i++) {
+          if (!turtlesData[i].isMarked && unmarkedCount < 52) {
+            turtlesData[i].isSampled = true;
+            unmarkedCount++;
+          }
+        }
 
-      document.getElementById('p1_step2_ui').className = 'step-item completed';
-      document.getElementById('p1_step3_ui').className = 'step-item active';
+        p1SimState = 'sampled';
+        renderTurtleSvg();
 
-      const calcBox = document.getElementById('p1_calc_box');
-      calcBox.style.display = 'flex';
-      renderMath(calcBox);
+        document.getElementById('p1_step2_ui').className = 'step-item completed';
+        document.getElementById('p1_step3_ui').className = 'step-item active';
+
+        const calcBox = document.getElementById('p1_calc_box');
+        calcBox.style.display = 'flex';
+        renderMath(calcBox);
+      }, 1200);
     }
 
     // P1 Step 3: Check Calculation (N = 300)
@@ -1837,19 +2001,24 @@
     }
 
     // =========================================================
-    // 3. PHẦN 2: SIMULATION CANVAS (NUCLEAR TANK)
+    // 3. PHẦN 2: SIMULATION CANVAS (ISOTOPE DILUTION REALISTIC)
     // =========================================================
     const particles = [];
-    const TOTAL_PARTICLES = 120;
+    const TOTAL_PARTICLES = 110;
+    let p2SimState = 'idle'; // 'idle' | 'adding' | 'added' | 'stirring' | 'mixed' | 'sampling' | 'sampled'
+    let stirrerAngle = 0;
 
     function initNuclearTank() {
       particles.length = 0;
+      p2SimState = 'idle';
       for (let i = 0; i < TOTAL_PARTICLES; i++) {
         particles.push({
-          x: 50 + Math.random() * 300,
-          y: 60 + Math.random() * 140,
-          vx: (Math.random() - 0.5) * 0.4,
-          vy: (Math.random() - 0.5) * 0.4,
+          x: 40 + Math.random() * 200,
+          y: 75 + Math.random() * 115,
+          targetX: 0,
+          targetY: 0,
+          vx: (Math.random() - 0.5) * 0.45,
+          vy: (Math.random() - 0.5) * 0.45,
           isIsotope: false,
           isSampled: false
         });
@@ -1862,78 +2031,231 @@
       if (!svg) return;
 
       let html = `
-        <!-- TANK OUTLINE -->
-        <rect x="40" y="40" width="320" height="170" rx="12" fill="#1E293B" stroke="#475569" stroke-width="2.5" />
-        <rect x="44" y="55" width="312" height="150" rx="8" fill="#0F172A" />
+        <defs>
+          <linearGradient id="tankLiquidGrad" x1="0" y1="0" x2="0" y2="1">
+            <stop offset="0%" stop-color="#1E293B" />
+            <stop offset="50%" stop-color="#0F172A" />
+            <stop offset="100%" stop-color="#090D16" />
+          </linearGradient>
+          <linearGradient id="cuvetteGrad" x1="0" y1="0" x2="1" y2="0">
+            <stop offset="0%" stop-color="#F59E0B" />
+            <stop offset="100%" stop-color="#D97706" />
+          </linearGradient>
+        </defs>
+
+        <!-- LAB BACKGROUND -->
+        <rect x="0" y="0" width="400" height="240" fill="#0A0F1D" />
+
+        <!-- 1. BỂ CHỨA DUNG DỊCH (BÊN TRÁI: x=25..245) -->
+        <g id="tankGroup">
+          <rect x="25" y="55" width="220" height="145" rx="12" fill="url(#tankLiquidGrad)" stroke="#334155" stroke-width="2.5" />
+          <line x1="25" y1="70" x2="245" y2="70" stroke="rgba(255,255,255,0.15)" stroke-width="1.2" stroke-dasharray="3,3" />
+
+          <!-- MECHANICAL STIRRER (TRỤC KHUẤY CƠ HỌC Ở GIỮA BỂ x=135) -->
+          <g transform="translate(135, 42)">
+            <!-- MOTOR HOUSING -->
+            <rect x="-14" y="-12" width="28" height="16" rx="3" fill="#475569" stroke="#64748B" stroke-width="1.2" />
+            <!-- SHAFT -->
+            <line x1="0" y1="4" x2="0" y2="125" stroke="#94A3B8" stroke-width="3" />
+            <!-- IMPELLER BLADES (CÁNH KHUẤY XOAY) -->
+            <g transform="translate(0, 125) rotate(${stirrerAngle})">
+              <line x1="-24" y1="0" x2="24" y2="0" stroke="#E2E8F0" stroke-width="3.5" stroke-linecap="round" />
+              <line x1="0" y1="-10" x2="0" y2="10" stroke="#E2E8F0" stroke-width="2.5" stroke-linecap="round" />
+            </g>
+          </g>
+        </g>
+
+        <!-- 2. TRẠM MÁY ĐO QUANG PHỔ PHÓNG XẠ (BÊN PHẢI: x=255..385) -->
+        <g id="analyzerGroup" transform="translate(255, 46)">
+          <!-- HOUSING CABINET -->
+          <rect x="0" y="0" width="130" height="156" rx="10" fill="#1E293B" stroke="#475569" stroke-width="2" />
+          
+          <!-- LCD DISPLAY SCREEN -->
+          <rect x="8" y="10" width="114" height="60" rx="6" fill="#020617" stroke="#38BDF8" stroke-width="1.2" />
+          <text x="65" y="24" fill="#38BDF8" font-size="8.5" font-weight="700" text-anchor="middle" font-family="'JetBrains Mono', monospace">
+            MÁY ĐO ĐỒNG VỊ
+          </text>
+
+          ${p2SimState === 'sampled' ? `
+            <text x="65" y="42" fill="#E2E8F0" font-size="9.5" font-weight="600" text-anchor="middle" font-family="'JetBrains Mono', monospace">
+              Mẫu n: <tspan fill="#F59E0B" font-weight="800">200g</tspan>
+            </text>
+            <text x="65" y="58" fill="#10B981" font-size="9.5" font-weight="800" text-anchor="middle" font-family="'JetBrains Mono', monospace">
+              k = 3,9g (Chất dấu)
+            </text>
+          ` : `
+            <text x="65" y="46" fill="#64748B" font-size="9" font-style="italic" text-anchor="middle" font-family="'Be Vietnam Pro', sans-serif">
+              [Chờ nạp mẫu]
+            </text>
+          `}
+
+          <!-- CUVETTE / ỐNG NGHIỆM CHỨA MẪU RÚT RA -->
+          <g transform="translate(18, 78)">
+            <rect x="0" y="0" width="94" height="66" rx="6" fill="#0F172A" stroke="#64748B" stroke-width="1" />
+            <text x="47" y="15" fill="#94A3B8" font-size="8.5" font-weight="700" text-anchor="middle">
+              Khay lấy mẫu n
+            </text>
+            <!-- TUBE -->
+            <rect x="34" y="24" width="26" height="30" rx="4" fill="${p2SimState === 'sampled' ? 'url(#cuvetteGrad)' : '#334155'}" stroke="#E2E8F0" stroke-width="1.2" />
+            ${p2SimState === 'sampled' ? `
+              <circle cx="47" cy="39" r="3.5" fill="#10B981" stroke="#FFF" stroke-width="0.8" />
+            ` : ''}
+          </g>
+
+          <!-- STATUS LED -->
+          <circle cx="114" cy="90" r="3.5" fill="${p2SimState === 'sampled' ? '#10B981' : '#64748B'}" />
+        </g>
       `;
 
+      // DROPPER PIPETTE ANIMATION (ADDING 50G ISOTOPE)
+      if (p2SimState === 'adding') {
+        html += `
+          <!-- ỐNG NHỎ GIỌT ĐỒNG VỊ (MIỆNG BỂ x=75) -->
+          <g transform="translate(75, 24)">
+            <path d="M -5 -12 L 5 -12 L 3 16 L 0 26 L -3 16 Z" fill="#38BDF8" stroke="#FFFFFF" stroke-width="1" />
+            <rect x="-7" y="-18" width="14" height="6" rx="2" fill="#E8A24A" />
+            <!-- GIỌT DUNG DỊCH ĐỒNG VỊ RƠI -->
+            <circle cx="0" cy="34" r="3.2" fill="#10B981" />
+            <circle cx="0" cy="46" r="2.5" fill="#10B981" />
+          </g>
+        `;
+      }
+
+      // PARTICLES (WASTE & ISOTOPE MOLECULES IN TANK)
       particles.forEach(p => {
         let fill = '#64748B';
-        let r = 3;
+        let r = 2.6;
+        let glow = '';
+
         if (p.isIsotope) {
           fill = '#10B981';
-          r = 4;
+          r = 3.8;
+          glow = `stroke="#A7F3D0" stroke-width="1.2"`;
         }
         if (p.isSampled) {
           fill = '#F59E0B';
+          glow = `stroke="#FEF3C7" stroke-width="1.2"`;
         }
-        html += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${fill}" opacity="0.85" />`;
+        html += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${fill}" ${glow} />`;
       });
+
+      // SAMPLER PIPETTE LINE FROM TANK TO ANALYZER CUVETTE (KHÔNG CẮT QUA MÀN HÌNH)
+      if (p2SimState === 'sampling' || p2SimState === 'sampled') {
+        html += `
+          <!-- ĐƯỜNG ỐNG HÚT MẪU NỐI TỪ BỂ VÀO KHAY MẪU PHÍA DƯỚI -->
+          <path d="M 215 125 L 255 125 L 292 125" fill="none" stroke="#F59E0B" stroke-width="2.5" stroke-dasharray="${p2SimState === 'sampling' ? '4,4' : 'none'}" />
+          <circle cx="215" cy="125" r="9" fill="rgba(245, 158, 11, 0.25)" stroke="#F59E0B" stroke-width="1.2" />
+        `;
+      }
 
       svg.innerHTML = html;
     }
 
     let nuclearAnimId = null;
+    let stirDurationTimer = null;
+
     function animateNuclear() {
+      if (p2SimState === 'stirring') {
+        stirrerAngle = (stirrerAngle + 20) % 360;
+      } else {
+        stirrerAngle = (stirrerAngle + 0.6) % 360;
+      }
+
       particles.forEach(p => {
-        p.x += p.vx;
-        p.y += p.vy;
-        if (p.x < 55 || p.x > 345) p.vx *= -1;
-        if (p.y < 65 || p.y > 195) p.vy *= -1;
+        if (p2SimState === 'adding' && p.isIsotope) {
+          // Flow downwards from dropper into top fluid layer smoothly
+          p.x += (p.targetX - p.x) * 0.07;
+          p.y += (p.targetY - p.y) * 0.07;
+        } else if (p2SimState === 'stirring') {
+          // FLUID VORTEX SWIRL DISPERSION (XOAY VÒNG VÀ KHUẾCH TÁN TỪ TỪ KHẮP BỂ)
+          const dx = p.x - 135;
+          const dy = p.y - 130;
+          const r = Math.sqrt(dx * dx + dy * dy);
+          
+          // Angular speed: faster near stirrer impeller
+          const angularSpeed = 0.07 * (1 + 25 / (r + 15));
+          const currentAngle = Math.atan2(dy, dx);
+          const newAngle = currentAngle + angularSpeed;
+          
+          // Smooth radial dispersion (nở dần từ từ ra khắp bể)
+          let newR = r + (Math.random() - 0.46) * 1.5;
+          if (newR < 12) newR = 12;
+          if (newR > 102) newR = 102;
+
+          p.x = 135 + Math.cos(newAngle) * newR + (Math.random() - 0.5) * 0.8;
+          p.y = 130 + Math.sin(newAngle) * newR + (Math.random() - 0.5) * 0.8;
+
+          // Confine strictly inside tank x:32..238, y:72..192
+          if (p.x < 32) p.x = 32;
+          if (p.x > 238) p.x = 238;
+          if (p.y < 72) p.y = 72;
+          if (p.y > 192) p.y = 192;
+        } else {
+          // Normal thermal Brownian movement inside tank (trôi bồng bềnh êm dịu)
+          p.x += p.vx;
+          p.y += p.vy;
+          if (p.x < 32 || p.x > 238) p.vx *= -1;
+          if (p.y < 72 || p.y > 192) p.vy *= -1;
+        }
       });
+
       renderNuclearSvg();
       nuclearAnimId = requestAnimationFrame(animateNuclear);
     }
 
-    // P2 Step 1: Add 50g Isotope
+    // P2 Step 1: Add 50g Isotope Dropper
     function handleP2AddIsotope() {
       const btnAdd = document.getElementById('btnP2AddIsotope');
       const btnStir = document.getElementById('btnP2Stir');
       btnAdd.disabled = true;
 
-      // Add 25 isotope particles concentrated at top center
-      for (let i = 0; i < 25; i++) {
-        particles[i].isIsotope = true;
-        particles[i].x = 180 + (Math.random() - 0.5) * 40;
-        particles[i].y = 70 + Math.random() * 30;
-      }
-      renderNuclearSvg();
+      p2SimState = 'adding';
 
-      document.getElementById('p2_step1_ui').className = 'step-item completed';
-      document.getElementById('p2_step2_ui').className = 'step-item active';
-      btnStir.disabled = false;
+      // 28 isotope particles drop near top-left under dropper
+      for (let i = 0; i < 28; i++) {
+        particles[i].isIsotope = true;
+        particles[i].x = 75 + (Math.random() - 0.5) * 10;
+        particles[i].y = 55 + Math.random() * 10;
+        particles[i].targetX = 75 + (Math.random() - 0.5) * 45;
+        particles[i].targetY = 78 + Math.random() * 30;
+      }
+
+      setTimeout(() => {
+        p2SimState = 'added';
+        document.getElementById('nuclearWeightTag').innerHTML = 'Bể: Đã nạp $M = 50\\text{g}$ đồng vị';
+        renderMath(document.getElementById('nuclearWeightTag'));
+
+        document.getElementById('p2_step1_ui').className = 'step-item completed';
+        document.getElementById('p2_step2_ui').className = 'step-item active';
+        btnStir.disabled = false;
+      }, 1300);
     }
 
-    // P2 Step 1.5: Stir tank
+    // P2 Step 1.5: Stir tank thoroughly with continuous fluid vortex
     function handleP2StirTank() {
       const btnStir = document.getElementById('btnP2Stir');
       const btnSample = document.getElementById('btnP2Sample');
       btnStir.disabled = true;
 
-      // Swirling animation
-      particles.forEach(p => {
-        p.vx = (Math.random() - 0.5) * 2.2;
-        p.vy = (Math.random() - 0.5) * 2.2;
-      });
+      p2SimState = 'stirring';
+      document.getElementById('nuclearWeightTag').innerHTML = 'Bể: Đang khuấy phân tán xoáy 3D';
 
-      setTimeout(() => {
+      // Stir continuously for 2.8s without sudden position jumps
+      if (stirDurationTimer) clearTimeout(stirDurationTimer);
+      stirDurationTimer = setTimeout(() => {
+        p2SimState = 'mixed';
+        const nTag = document.getElementById('nuclearWeightTag');
+        nTag.innerHTML = 'Bể: Đã phân bố đồng nhất ($N$)';
+        renderMath(nTag);
+
+        // Assign gentle random thermal velocities for natural post-stir movement
         particles.forEach(p => {
-          p.vx = (Math.random() - 0.5) * 0.4;
-          p.vy = (Math.random() - 0.5) * 0.4;
+          p.vx = (Math.random() - 0.5) * 0.45;
+          p.vy = (Math.random() - 0.5) * 0.45;
         });
-      }, 1200);
 
-      btnSample.disabled = false;
+        btnSample.disabled = false;
+      }, 2800);
     }
 
     // P2 Step 2: Take Sample (n=200g, k=3.9g)
@@ -1941,18 +2263,33 @@
       const btnSample = document.getElementById('btnP2Sample');
       btnSample.disabled = true;
 
-      // Highlight a sample zone
-      for (let i = 0; i < 30; i++) {
-        particles[i].isSampled = true;
-      }
-      renderNuclearSvg();
+      p2SimState = 'sampling';
+      const nTag = document.getElementById('nuclearWeightTag');
+      nTag.innerHTML = 'Máy đo: Đang hút mẫu $n = 200\\text{g}$';
+      renderMath(nTag);
 
-      document.getElementById('p2_step2_ui').className = 'step-item completed';
-      document.getElementById('p2_step3_ui').className = 'step-item active';
+      setTimeout(() => {
+        // Highlight sample zone near sampler at x=215
+        particles.forEach(p => {
+          const dx = p.x - 215;
+          const dy = p.y - 125;
+          if (Math.sqrt(dx * dx + dy * dy) < 40) {
+            p.isSampled = true;
+          }
+        });
 
-      const calcBox = document.getElementById('p2_calc_box');
-      calcBox.style.display = 'flex';
-      renderMath(calcBox);
+        p2SimState = 'sampled';
+        nTag.innerHTML = 'Máy đo: $n = 200\\text{g} \\implies k = 3{,}9\\text{g}$';
+        renderMath(nTag);
+        renderNuclearSvg();
+
+        document.getElementById('p2_step2_ui').className = 'step-item completed';
+        document.getElementById('p2_step3_ui').className = 'step-item active';
+
+        const calcBox = document.getElementById('p2_calc_box');
+        calcBox.style.display = 'flex';
+        renderMath(calcBox);
+      }, 1200);
     }
 
     // P2 Step 3: Check Calculation (N = 2564.1)
