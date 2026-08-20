@@ -1,0 +1,2224 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+  <title>Ước tính số lượng bằng phương pháp mẫu — Quần thể rùa biển & Pha loãng đồng vị</title>
+
+  <!-- GOOGLE FONTS: Be Vietnam Pro & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@400;600;700&display=swap" rel="stylesheet">
+
+  <!-- TABLER ICONS -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@latest/dist/tabler-icons.min.css">
+
+  <!-- KATEX FOR MATHEMATICAL RENDERING -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.8/dist/contrib/auto-render.min.js"></script>
+
+  <style>
+    /* =========================================================
+       1. CSS DESIGN SYSTEM & TOKENS (CREAM & JADE)
+       ========================================================= */
+    :root {
+      --bg: #FAF8F5;
+      --paper: #FFFFFF;
+      --paper-subtle: #F4EFEA;
+      --paper-line: #E5DDD0;
+      
+      --jade-deep: #14432F;
+      --jade: #2D8B6F;
+      --jade-light: #E6F4EA;
+      --jade-glow: rgba(45, 139, 111, 0.18);
+      
+      --accent: #D97736;
+      --accent-light: #FDF3E7;
+      --accent-dark: #B45309;
+
+      --tech-blue: #0284C7;
+      --tech-blue-bg: #E0F2FE;
+      
+      --ocean-blue: #2563EB;
+      --ocean-bg: #EFF6FF;
+
+      --ink: #1F2937;
+      --ink-2: #4B5563;
+      --ink-3: #6B7280;
+      
+      --correct: #16A34A;
+      --correct-bg: #DCFCE7;
+      --warning: #F59E0B;
+      --warning-bg: #FEF3C7;
+      --wrong: #DC2626;
+      --wrong-bg: #FEE2E2;
+
+      --radius-sm: 6px;
+      --radius-md: 10px;
+      --radius-lg: 14px;
+      --radius-xl: 20px;
+      --radius-full: 9999px;
+
+      --shadow-sm: 0 1px 3px rgba(0, 0, 0, 0.05);
+      --shadow-md: 0 4px 12px rgba(20, 67, 47, 0.08);
+      --shadow-lg: 0 10px 25px rgba(20, 67, 47, 0.14);
+
+      --transition-fast: 0.18s ease;
+      --transition-normal: 0.28s ease;
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+    body {
+      font-family: 'Be Vietnam Pro', sans-serif;
+      background-color: var(--bg);
+      color: var(--ink);
+      line-height: 1.6;
+      padding: 16px 16px 80px 16px;
+      overflow-x: hidden;
+      max-width: 100vw;
+    }
+
+    .container {
+      max-width: 980px;
+      margin: 0 auto;
+      display: flex;
+      flex-direction: column;
+      gap: 26px;
+    }
+
+    /* =========================================================
+       2. HERO CARD
+       ========================================================= */
+    .hero-card {
+      background: var(--paper);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--paper-line);
+      box-shadow: var(--shadow-sm);
+      padding: 24px 26px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .hero-top-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 10px;
+    }
+
+    .hero-badge {
+      background: var(--jade-light);
+      color: var(--jade-deep);
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn-notebook {
+      background: var(--paper-subtle);
+      color: var(--jade-deep);
+      border: 1px solid var(--paper-line);
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-notebook:hover {
+      background: var(--jade-light);
+      border-color: var(--jade);
+    }
+
+    .hero-title {
+      font-size: 24px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      line-height: 1.35;
+    }
+
+    .hero-desc {
+      font-size: 15px;
+      color: var(--ink-2);
+      line-height: 1.65;
+    }
+
+    .progress-bar-container {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      margin-top: 4px;
+    }
+
+    .progress-text {
+      font-size: 13px;
+      font-weight: 700;
+      color: var(--ink-2);
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .progress-track {
+      width: 100%;
+      height: 8px;
+      background: var(--paper-line);
+      border-radius: var(--radius-full);
+      overflow: hidden;
+    }
+
+    .progress-fill {
+      height: 100%;
+      width: 0%;
+      background: linear-gradient(90deg, var(--jade) 0%, #10B981 100%);
+      transition: width 0.35s ease;
+    }
+
+    /* =========================================================
+       3. SECTION MODULES
+       ========================================================= */
+    .module-section {
+      background: var(--paper);
+      border-radius: var(--radius-xl);
+      border: 1px solid var(--paper-line);
+      box-shadow: var(--shadow-sm);
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .section-banner-wrap {
+      width: 100%;
+      height: 250px;
+      position: relative;
+      overflow: hidden;
+      background: #0B1914;
+    }
+
+    .section-banner-img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+      object-position: center;
+      transition: transform 0.5s ease;
+    }
+
+    .module-section:hover .section-banner-img {
+      transform: scale(1.02);
+    }
+
+    .section-banner-badge {
+      position: absolute;
+      top: 14px;
+      left: 14px;
+      background: rgba(20, 67, 47, 0.9);
+      backdrop-filter: blur(6px);
+      color: #FFF;
+      padding: 6px 14px;
+      border-radius: var(--radius-full);
+      font-size: 13px;
+      font-weight: 700;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      border: 1px solid rgba(255, 255, 255, 0.2);
+    }
+
+    .section-content {
+      padding: 24px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+    }
+
+    .section-title {
+      font-size: 20px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      line-height: 1.4;
+    }
+
+    /* ATHENA SPEECH BOX */
+    .athena-speech {
+      display: flex;
+      align-items: flex-start;
+      gap: 14px;
+      background: var(--paper-subtle);
+      border-left: 4px solid var(--jade);
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      font-size: 14.5px;
+      color: var(--ink);
+      line-height: 1.6;
+    }
+
+    .athena-avatar-bubble {
+      width: 42px;
+      height: 42px;
+      flex-shrink: 0;
+      border-radius: var(--radius-full);
+      background: #FFF;
+      border: 2px solid var(--jade);
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .athena-avatar-bubble img {
+      width: 100%;
+      height: 100%;
+      object-fit: cover;
+    }
+
+    /* =========================================================
+       4. SIMULATION WORKSPACE (2 COLUMNS: CANVAS + CONTROLS)
+       ========================================================= */
+    .simulation-grid {
+      display: grid;
+      grid-template-columns: 1.25fr 1fr;
+      gap: 18px;
+      background: var(--paper);
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+    }
+
+    /* CANVAS AREA */
+    .sim-canvas-card {
+      background: #0B251B;
+      border-radius: var(--radius-md);
+      border: 1px solid rgba(45, 139, 111, 0.3);
+      position: relative;
+      height: 320px;
+      overflow: hidden;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      padding: 12px;
+    }
+
+    .sim-canvas-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      z-index: 2;
+    }
+
+    .canvas-tag {
+      background: rgba(0, 0, 0, 0.55);
+      backdrop-filter: blur(4px);
+      color: #E2E8F0;
+      font-size: 12px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: var(--radius-full);
+      border: 1px solid rgba(255, 255, 255, 0.15);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .canvas-view {
+      position: absolute;
+      top: 0; left: 0; right: 0; bottom: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+    }
+
+    .canvas-legend {
+      display: flex;
+      gap: 12px;
+      background: rgba(0, 0, 0, 0.65);
+      backdrop-filter: blur(4px);
+      padding: 6px 12px;
+      border-radius: var(--radius-full);
+      font-size: 11.5px;
+      color: #FFF;
+      align-self: flex-start;
+      z-index: 2;
+      border: 1px solid rgba(255, 255, 255, 0.15);
+    }
+
+    .legend-item {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .legend-dot {
+      width: 10px;
+      height: 10px;
+      border-radius: var(--radius-full);
+    }
+
+    /* CONTROLS & STEP PANEL */
+    .sim-controls-card {
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      gap: 14px;
+    }
+
+    .step-list {
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .step-item {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      padding: 10px 12px;
+      background: var(--paper-subtle);
+      border-radius: var(--radius-md);
+      border: 1px solid var(--paper-line);
+      font-size: 13.5px;
+      color: var(--ink-2);
+      transition: all var(--transition-fast);
+    }
+
+    .step-item.active {
+      border-color: var(--jade);
+      background: #F0FDF4;
+      color: var(--jade-deep);
+      font-weight: 600;
+    }
+
+    .step-item.completed {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: #14532D;
+    }
+
+    .step-number {
+      width: 22px;
+      height: 22px;
+      border-radius: var(--radius-full);
+      background: var(--paper-line);
+      color: var(--ink);
+      font-size: 11.5px;
+      font-weight: 800;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+
+    .step-item.active .step-number {
+      background: var(--jade);
+      color: #FFF;
+    }
+
+    .step-item.completed .step-number {
+      background: var(--correct);
+      color: #FFF;
+    }
+
+    .sim-btn-group {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .btn-sim-action {
+      background: var(--jade);
+      color: #FFF;
+      border: none;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+      min-height: 42px;
+    }
+
+    .btn-sim-action:hover:not(:disabled) {
+      background: var(--jade-deep);
+      transform: translateY(-1px);
+    }
+
+    .btn-sim-action:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+    }
+
+    /* CALCULATION INPUT BOX */
+    .calc-box {
+      background: var(--paper-subtle);
+      border: 1.5px dashed var(--paper-line);
+      border-radius: var(--radius-md);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .calc-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      flex-wrap: wrap;
+    }
+
+    .answer-input {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 14.5px;
+      font-weight: 600;
+      padding: 8px 12px;
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-md);
+      background: #FFFFFF;
+      color: var(--ink);
+      outline: none;
+      width: 140px;
+      transition: all var(--transition-fast);
+    }
+
+    .answer-input:focus {
+      border-color: var(--jade);
+      box-shadow: 0 0 0 3px var(--jade-glow);
+    }
+
+    .answer-input.correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: #14532D;
+    }
+
+    .answer-input.error {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+      animation: shake 0.3s ease;
+    }
+
+    .btn-check-calc {
+      background: var(--accent);
+      color: #FFF;
+      border: none;
+      padding: 8px 16px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      transition: all var(--transition-fast);
+      min-height: 38px;
+    }
+
+    .btn-check-calc:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       5. DATA TABLES (ACTIVITY 2 ERROR EVALUATION)
+       ========================================================= */
+    .table-container {
+      width: 100%;
+      overflow-x: auto;
+      background: #FFFFFF;
+      border: 1px solid var(--paper-line);
+      border-radius: var(--radius-lg);
+      box-shadow: var(--shadow-sm);
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 14px;
+      text-align: center;
+      min-width: 580px;
+    }
+
+    .data-table th {
+      background: var(--paper-subtle);
+      color: var(--jade-deep);
+      font-weight: 700;
+      padding: 12px 10px;
+      border-bottom: 2px solid var(--paper-line);
+      border-right: 1px solid var(--paper-line);
+    }
+
+    .data-table th:last-child {
+      border-right: none;
+    }
+
+    .data-table td {
+      padding: 10px 8px;
+      border-bottom: 1px solid var(--paper-line);
+      border-right: 1px solid var(--paper-line);
+      color: var(--ink);
+    }
+
+    .data-table td:last-child {
+      border-right: none;
+    }
+
+    .table-input {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 13.5px;
+      font-weight: 600;
+      padding: 6px 8px;
+      border: 1.5px solid var(--paper-line);
+      border-radius: var(--radius-sm);
+      background: #FFF;
+      color: var(--ink);
+      outline: none;
+      width: 86px;
+      text-align: center;
+      transition: all var(--transition-fast);
+    }
+
+    .table-input:focus {
+      border-color: var(--jade);
+      box-shadow: 0 0 0 2px var(--jade-glow);
+    }
+
+    .table-input.correct {
+      border-color: var(--correct);
+      background: var(--correct-bg);
+      color: #14532D;
+    }
+
+    .table-input.error {
+      border-color: var(--wrong);
+      background: var(--wrong-bg);
+      animation: shake 0.3s ease;
+    }
+
+    .btn-submit-table {
+      background: var(--jade);
+      color: #FFF;
+      border: none;
+      padding: 8px 18px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      align-self: flex-end;
+      transition: all var(--transition-fast);
+    }
+
+    .btn-submit-table:hover {
+      background: var(--jade-deep);
+      transform: translateY(-1px);
+    }
+
+    /* INSIGHT DISCUSSION BOX */
+    .insight-box {
+      background: var(--paper-subtle);
+      border-left: 4px solid var(--accent);
+      padding: 14px 16px;
+      border-radius: var(--radius-md);
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .insight-question {
+      font-size: 14.5px;
+      font-weight: 700;
+      color: var(--ink);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .insight-choices {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 10px;
+    }
+
+    .choice-btn {
+      background: #FFFFFF;
+      border: 1.5px solid var(--paper-line);
+      color: var(--ink);
+      padding: 10px 12px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+      min-height: 42px;
+    }
+
+    .choice-btn:hover:not(:disabled) {
+      border-color: var(--jade);
+      transform: translateY(-1px);
+    }
+
+    .choice-btn.selected-correct {
+      background: var(--correct-bg) !important;
+      border-color: var(--correct) !important;
+      color: #14532D !important;
+    }
+
+    .choice-btn.selected-wrong {
+      background: var(--wrong-bg) !important;
+      border-color: var(--wrong) !important;
+      color: #7F1D1D !important;
+      animation: shake 0.3s ease;
+    }
+
+    /* ATHENA FEEDBACK BOX */
+    .athena-feedback {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      padding: 10px 14px;
+      border-radius: var(--radius-md);
+      font-size: 13.5px;
+      line-height: 1.55;
+      animation: fadeIn 0.25s ease;
+      margin-top: 6px;
+    }
+
+    .athena-feedback.success {
+      background: var(--correct-bg);
+      color: #14532D;
+      border-left: 3px solid var(--correct);
+    }
+
+    .athena-feedback.warning {
+      background: var(--warning-bg);
+      color: #92400E;
+      border-left: 3px solid var(--warning);
+    }
+
+    .athena-feedback.error {
+      background: var(--wrong-bg);
+      color: #991B1B;
+      border-left: 3px solid var(--wrong);
+    }
+
+    .athena-feedback img {
+      width: 32px;
+      height: 32px;
+      border-radius: var(--radius-full);
+      flex-shrink: 0;
+    }
+
+    /* ANIMATIONS */
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(4px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    @keyframes shake {
+      0%, 100% { transform: translateX(0); }
+      20%, 60% { transform: translateX(-5px); }
+      40%, 80% { transform: translateX(5px); }
+    }
+
+    /* =========================================================
+       6. FINAL SUMMARY CARD
+       ========================================================= */
+    .summary-card {
+      background: linear-gradient(135deg, var(--jade-deep) 0%, #1c523d 100%);
+      color: #FFF;
+      border-radius: var(--radius-xl);
+      padding: 26px 28px;
+      box-shadow: var(--shadow-lg);
+      display: block;
+      animation: fadeIn 0.4s ease;
+    }
+
+    .summary-content {
+      display: flex;
+      align-items: flex-start;
+      gap: 20px;
+    }
+
+    .summary-avatar {
+      width: 68px;
+      height: 68px;
+      flex-shrink: 0;
+      background: #FFF;
+      border-radius: var(--radius-full);
+      padding: 3px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      overflow: hidden;
+    }
+
+    .summary-avatar img {
+      width: 100%;
+      height: 100%;
+      object-fit: contain;
+      border-radius: var(--radius-full);
+    }
+
+    .summary-text h3 {
+      font-size: 20px;
+      font-weight: 800;
+      color: #FFF;
+      margin-bottom: 8px;
+    }
+
+    .summary-text p {
+      font-size: 15px;
+      color: rgba(255, 255, 255, 0.92);
+      line-height: 1.6;
+      margin-bottom: 12px;
+    }
+
+    .rule-highlight-box {
+      background: rgba(255, 255, 255, 0.1);
+      border: 1px solid rgba(255, 255, 255, 0.22);
+      border-radius: var(--radius-lg);
+      padding: 12px 16px;
+      font-size: 14px;
+      line-height: 1.6;
+      margin: 12px 0 16px 0;
+    }
+
+    .btn-restart-all {
+      background: var(--accent);
+      color: #FFF;
+      border: none;
+      padding: 9px 20px;
+      border-radius: var(--radius-full);
+      font-size: 14.5px;
+      font-weight: 700;
+      cursor: pointer;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: all var(--transition-fast);
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+    }
+
+    .btn-restart-all:hover {
+      background: var(--accent-dark);
+      transform: translateY(-1px);
+    }
+
+    /* =========================================================
+       7. MODAL SỔ TAY KIẾN THỨC
+       ========================================================= */
+    .modal-overlay {
+      position: fixed;
+      top: 0; left: 0; right: 0; bottom: 0;
+      background: rgba(15, 23, 42, 0.6);
+      backdrop-filter: blur(4px);
+      z-index: 200;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      opacity: 0;
+      pointer-events: none;
+      transition: opacity var(--transition-normal);
+      padding: 14px;
+    }
+
+    .modal-overlay.active {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    .modal-card {
+      background: #FFFFFF;
+      border-radius: var(--radius-xl);
+      max-width: 640px;
+      width: 100%;
+      max-height: 90vh;
+      overflow-y: auto;
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
+      transform: translateY(16px);
+      transition: transform var(--transition-normal);
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .modal-overlay.active .modal-card {
+      transform: translateY(0);
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--paper-line);
+    }
+
+    .modal-title {
+      font-size: 17px;
+      font-weight: 800;
+      color: var(--jade-deep);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .btn-close {
+      background: transparent;
+      border: none;
+      font-size: 22px;
+      color: var(--ink-3);
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    /* =========================================================
+       8. RESPONSIVE MOBILE (≤ 768px)
+       ========================================================= */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px 8px 60px 8px;
+      }
+
+      .hero-card {
+        padding: 16px 14px;
+      }
+
+      .hero-title {
+        font-size: 19px;
+      }
+
+      .section-banner-wrap {
+        height: 180px;
+      }
+
+      .section-content {
+        padding: 16px 14px;
+        gap: 16px;
+      }
+
+      .section-title {
+        font-size: 17px;
+      }
+
+      .simulation-grid {
+        grid-template-columns: 1fr;
+      }
+
+      .sim-canvas-card {
+        height: 250px;
+      }
+
+      .insight-choices {
+        grid-template-columns: 1fr;
+      }
+
+      .summary-content {
+        flex-direction: column;
+        align-items: center;
+        text-align: center;
+        gap: 12px;
+      }
+
+      .summary-avatar {
+        width: 60px;
+        height: 60px;
+      }
+
+      .rule-highlight-box {
+        text-align: left;
+      }
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+
+    <!-- HERO HEADER CARD -->
+    <header class="hero-card">
+      <div class="hero-top-bar">
+        <div class="hero-badge">
+          <i class="ti ti-compass"></i> Hoạt động thực hành trải nghiệm · Toán 10 Cuối năm
+        </div>
+        <button class="btn-notebook" onclick="openNotebookModal()">
+          <i class="ti ti-notes"></i> Sổ tay kiến thức
+        </button>
+      </div>
+
+      <h1 class="hero-title">Module 2: Ước tính số lượng bằng phương pháp mẫu — Quần thể rùa biển & Pha loãng đồng vị</h1>
+      <p class="hero-desc">
+        Khám phá sức mạnh của phương pháp <b>đánh dấu - bắt lại (Capture-Recapture)</b> trong bảo tồn sinh học và kỹ thuật <b>pha loãng đồng vị (Isotope Dilution)</b> trong ngành công nghiệp hạt nhân. Tìm hiểu quy luật giảm sai số khi tăng cỡ mẫu!
+      </p>
+
+      <div class="progress-bar-container">
+        <div class="progress-text">
+          <span id="progressLabel">Tiến độ hoàn thành: 0/6 nhiệm vụ</span>
+          <span id="progressPercent">0%</span>
+        </div>
+        <div class="progress-track">
+          <div class="progress-fill" id="progressFillBar"></div>
+        </div>
+      </div>
+    </header>
+
+    <!-- =========================================================
+         PHẦN 1: ƯỚC TÍNH QUẦN THỂ RÙA BIỂN
+         ========================================================= -->
+    <section class="module-section" id="sec-part1">
+      <div class="section-banner-wrap">
+        <img src="https://lh3.googleusercontent.com/d/1OlKkCpZ_V0n4cbnrspJJLtQxl5dF7Bk1" alt="Nghiên cứu bảo tồn rùa biển" class="section-banner-img">
+        <div class="section-banner-badge">
+          <i class="ti ti-seeding"></i> Phần 1 · Sinh học bảo tồn — Quần thể rùa biển
+        </div>
+      </div>
+
+      <div class="section-content">
+        <h2 class="section-title">Phần 1: Ước tính số lượng rùa biển trong vịnh</h2>
+
+        <div class="athena-speech">
+          <div class="athena-avatar-bubble">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+          </div>
+          <div>
+            <b>Trợ lý Athena:</b> <i>"Một nhóm nghiên cứu sinh vật biển muốn ước tính số lượng rùa biển đang sinh sống trong 1 vịnh nhỏ mà không thể đếm hết từng con. Họ dùng đúng phương pháp đánh dấu - bắt lại đã học: bắt 1 số con, đánh dấu, thả lại, rồi sau đó bắt lại 1 mẫu khác để suy ra tổng số."</i>
+          </div>
+        </div>
+
+        <!-- HOẠT ĐỘNG 1: QUY TRÌNH MÔ PHỎNG -->
+        <h3 style="font-size: 16.5px; font-weight: 700; color: var(--jade-deep); display: flex; align-items: center; gap: 8px;">
+          <i class="ti ti-player-play" style="color: var(--jade);"></i> Hoạt động 1: Thực hiện quy trình ước tính
+        </h3>
+
+        <div class="simulation-grid">
+          <!-- CANVAS VỊNH BIỂN -->
+          <div class="sim-canvas-card" id="turtleCanvasCard">
+            <div class="sim-canvas-header">
+              <div class="canvas-tag"><i class="ti ti-map-pin"></i> Vịnh bảo tồn rùa biển</div>
+              <div class="canvas-tag" id="turtleCountTag">Tổng thể: 300 con (ẩn)</div>
+            </div>
+
+            <!-- SVG CANVAS ANIMATION -->
+            <svg class="canvas-view" id="turtleSvgView" viewBox="0 0 400 240"></svg>
+
+            <div class="canvas-legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #2E6B52;"></span> Rùa chưa dấu
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #E8A24A; border: 1.5px solid #FFF;"></span> Rùa đã gắn thẻ ($M$)
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #0284C7;"></span> Mẫu bắt lại ($n$)
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTROLS & CALCULATIONS -->
+          <div class="sim-controls-card">
+            <div class="step-list">
+              <div class="step-item active" id="p1_step1_ui">
+                <span class="step-number">1</span>
+                <div><b>Bước 1:</b> Bắt & đánh dấu $M = 40$ con rùa, sau đó thả lại vào vịnh.</div>
+              </div>
+              <div class="step-item" id="p1_step2_ui">
+                <span class="step-number">2</span>
+                <div><b>Bước 2:</b> Bắt mẫu $n = 60$ con, đếm được $k = 8$ con có dấu.</div>
+              </div>
+              <div class="step-item" id="p1_step3_ui">
+                <span class="step-number">3</span>
+                <div><b>Bước 3:</b> Áp dụng công thức $\hat{N} \approx \frac{M \cdot n}{k}$ để ước tính.</div>
+              </div>
+            </div>
+
+            <div class="sim-btn-group">
+              <button class="btn-sim-action" id="btnP1Mark" onclick="handleP1MarkTurtles()">
+                <i class="ti ti-tag"></i> 1. Bắt & đánh dấu 40 con rùa
+              </button>
+              <button class="btn-sim-action" id="btnP1Release" onclick="handleP1ReleaseTurtles()" disabled style="background: var(--ocean-blue);">
+                <i class="ti ti-arrows-shuffle"></i> Thả lại & Trộn lẫn vào vịnh
+              </button>
+              <button class="btn-sim-action" id="btnP1Recapture" onclick="handleP1Recapture()" disabled style="background: var(--accent);">
+                <i class="ti ti-bucket"></i> 2. Bắt mẫu 60 con rùa ($n=60$)
+              </button>
+            </div>
+
+            <!-- NHẬP KẾT QUẢ TÍNH TOÁN -->
+            <div class="calc-box" id="p1_calc_box" style="display: none;">
+              <div style="font-size: 13.5px; font-weight: 700; color: var(--ink);">
+                Ước tính tổng số rùa trong vịnh $\hat{N}$:
+              </div>
+              <div class="calc-row">
+                <span style="font-weight: 700;">$\hat{N} =$</span>
+                <input type="text" class="answer-input" id="p1_input_n" placeholder="Nhập số con..." onkeydown="if(event.key==='Enter') checkP1Calculation()">
+                <span>con rùa</span>
+                <button class="btn-check-calc" id="btn_check_p1_calc" onclick="checkP1Calculation()">
+                  <i class="ti ti-check"></i> Kiểm tra
+                </button>
+              </div>
+              <div id="p1_calc_feedback"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HOẠT ĐỘNG 2: BẢNG ĐÁNH GIÁ SAI SỐ -->
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+          <h3 style="font-size: 16.5px; font-weight: 700; color: var(--jade-deep); display: flex; align-items: center; gap: 8px;">
+            <i class="ti ti-table" style="color: var(--jade);"></i> Hoạt động 2: Đánh giá sai số khi cỡ mẫu thay đổi ($N_{\text{thật}} = 300$, $M = 40$)
+          </h3>
+
+          <div class="athena-speech">
+            <div class="athena-avatar-bubble">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            </div>
+            <div>
+              <b>Trợ lý Athena:</b> <i>"Giả sử số rùa thật trong vịnh là 300 con (đã kiểm định bằng gắn thiết bị định vị). Nhóm nghiên cứu lặp lại quy trình 3 lần với cỡ mẫu bắt lại $n$ khác nhau. Hãy hoàn thành bảng tính dưới đây:"</i>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Lần</th>
+                  <th>Cỡ mẫu $n$</th>
+                  <th>Có dấu $k$</th>
+                  <th>Số ước tính $\hat{N}$ (con)</th>
+                  <th>Sai số tuyệt đối</th>
+                  <th>Sai số tương đối (%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>1</b></td>
+                  <td>30</td>
+                  <td>5</td>
+                  <td><input type="text" class="table-input" id="p1_t_n1" placeholder="Nhập số..."></td>
+                  <td><input type="text" class="table-input" id="p1_t_abs1" placeholder="Nhập số..."></td>
+                  <td><input type="text" class="table-input" id="p1_t_rel1" placeholder="Nhập %..."></td>
+                </tr>
+                <tr>
+                  <td><b>2</b></td>
+                  <td>90</td>
+                  <td>11</td>
+                  <td><input type="text" class="table-input" id="p1_t_n2" placeholder="Nhập số..."></td>
+                  <td><input type="text" class="table-input" id="p1_t_abs2" placeholder="Nhập số..."></td>
+                  <td><input type="text" class="table-input" id="p1_t_rel2" placeholder="Nhập %..."></td>
+                </tr>
+                <tr>
+                  <td><b>3</b></td>
+                  <td>150</td>
+                  <td>19</td>
+                  <td><input type="text" class="table-input" id="p1_t_n3" placeholder="Nhập số..."></td>
+                  <td><input type="text" class="table-input" id="p1_t_abs3" placeholder="Nhập số..."></td>
+                  <td><input type="text" class="table-input" id="p1_t_rel3" placeholder="Nhập %..."></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="font-size: 13px; color: var(--ink-3);">
+              * Lưu ý: Làm tròn đến 1 chữ số thập phân cho $\hat{N}$ và sai số tuyệt đối; 2 chữ số thập phân cho sai số tương đối.
+            </div>
+            <button class="btn-submit-table" id="btn_submit_p1_table" onclick="checkP1Table()">
+              <i class="ti ti-check"></i> Kiểm tra bảng số liệu
+            </button>
+          </div>
+          <div id="p1_table_feedback"></div>
+
+          <!-- CÂU HỎI NHẬN XÉT PHẦN 1 -->
+          <div class="insight-box" id="p1_insight_box" style="margin-top: 6px;">
+            <div class="insight-question">
+              <i class="ti ti-bulb" style="color: var(--accent);"></i>
+              <span>Câu hỏi nhận xét: Bạn nhận xét gì về sai số khi cỡ mẫu bắt lại $n$ tăng dần?</span>
+            </div>
+            <div class="insight-choices">
+              <button class="choice-btn" id="p1_choice_1" onclick="handleP1Insight(true)">
+                Cỡ mẫu $n$ càng lớn thì sai số càng giảm
+              </button>
+              <button class="choice-btn" id="p1_choice_2" onclick="handleP1Insight(false)">
+                Cỡ mẫu $n$ càng lớn thì sai số càng tăng
+              </button>
+            </div>
+            <div id="p1_insight_feedback"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================
+         PHẦN 2: PHA LOÃNG ĐỒNG VỊ TRONG BỂ CHỨA PHÓNG XẠ
+         ========================================================= -->
+    <section class="module-section" id="sec-part2">
+      <div class="section-banner-wrap">
+        <img src="https://lh3.googleusercontent.com/d/1i11x_OlRnayM9BZWi-mAMeFDNjBlsxAW" alt="Phòng thí nghiệm phân tích pha loãng đồng vị" class="section-banner-img">
+        <div class="section-banner-badge">
+          <i class="ti ti-atom-2"></i> Phần 2 · Công nghệ Hạt nhân — Pha loãng đồng vị
+        </div>
+      </div>
+
+      <div class="section-content">
+        <h2 class="section-title">Phần 2: Ước tính khối lượng chất phóng xạ trong bể chứa</h2>
+
+        <div class="athena-speech">
+          <div class="athena-avatar-bubble">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+          </div>
+          <div>
+            <b>Trợ lý Athena:</b> <i>"Vừa rồi bạn ước tính số lượng cá thể sống bằng cách đánh dấu - bắt lại. Cùng công thức đó còn dùng được cho vật chất không sống: Một bể chứa chất thải phóng xạ tại nhà máy điện hạt nhân cần được ước tính khối lượng chất còn lại để tính mức an toàn xử lý. Kỹ thuật viên dùng phương pháp pha loãng đồng vị — thêm vào 1 lượng nhỏ chất đánh dấu đã biết chính xác khối lượng, rồi suy ra tổng khối lượng."</i>
+          </div>
+        </div>
+
+        <!-- HOẠT ĐỘNG 1: QUY TRÌNH MÔ PHỎNG BỂ CHỨA -->
+        <h3 style="font-size: 16.5px; font-weight: 700; color: var(--jade-deep); display: flex; align-items: center; gap: 8px;">
+          <i class="ti ti-player-play" style="color: var(--jade);"></i> Hoạt động 1: Thực hiện quy trình ước tính
+        </h3>
+
+        <div class="simulation-grid">
+          <!-- CANVAS BỂ CHỨA -->
+          <div class="sim-canvas-card" id="nuclearCanvasCard" style="background: #0E1726;">
+            <div class="sim-canvas-header">
+              <div class="canvas-tag"><i class="ti ti-flask"></i> Bể chứa chất thải hạt nhân</div>
+              <div class="canvas-tag" id="nuclearWeightTag">Khối lượng thật: 2600g (ẩn)</div>
+            </div>
+
+            <!-- SVG CANVAS ANIMATION BỂ CHỨA -->
+            <svg class="canvas-view" id="nuclearSvgView" viewBox="0 0 400 240"></svg>
+
+            <div class="canvas-legend">
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #475569;"></span> Dung dịch chất thải
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #10B981; border: 1.5px solid #FFF;"></span> Chất đánh dấu ($M$)
+              </div>
+              <div class="legend-item">
+                <span class="legend-dot" style="background: #F59E0B;"></span> Ống hút mẫu ($n$)
+              </div>
+            </div>
+          </div>
+
+          <!-- CONTROLS & CALCULATIONS PHẦN 2 -->
+          <div class="sim-controls-card">
+            <div class="step-list">
+              <div class="step-item active" id="p2_step1_ui">
+                <span class="step-number">1</span>
+                <div><b>Bước 1:</b> Thêm $M = 50\text{g}$ chất đánh dấu vào bể và khuấy đều.</div>
+              </div>
+              <div class="step-item" id="p2_step2_ui">
+                <span class="step-number">2</span>
+                <div><b>Bước 2:</b> Lấy mẫu $n = 200\text{g}$, máy đo phát hiện $k = 3{,}9\text{g}$ chất đánh dấu.</div>
+              </div>
+              <div class="step-item" id="p2_step3_ui">
+                <span class="step-number">3</span>
+                <div><b>Bước 3:</b> Áp dụng công thức $\hat{N} \approx \frac{M \cdot n}{k}$ để ước tính tổng khối lượng.</div>
+              </div>
+            </div>
+
+            <div class="sim-btn-group">
+              <button class="btn-sim-action" id="btnP2AddIsotope" onclick="handleP2AddIsotope()">
+                <i class="ti ti-droplet-filled-2"></i> 1. Thêm 50g chất đánh dấu ($M=50\text{g}$)
+              </button>
+              <button class="btn-sim-action" id="btnP2Stir" onclick="handleP2StirTank()" disabled style="background: var(--ocean-blue);">
+                <i class="ti ti-rotate-clockwise-2"></i> Khuấy đều dung dịch trong bể
+              </button>
+              <button class="btn-sim-action" id="btnP2Sample" onclick="handleP2TakeSample()" disabled style="background: var(--accent);">
+                <i class="ti ti-test-pipe"></i> 2. Lấy mẫu 200g ($n=200\text{g}$)
+              </button>
+            </div>
+
+            <!-- NHẬP KẾT QUẢ TÍNH TOÁN PHẦN 2 -->
+            <div class="calc-box" id="p2_calc_box" style="display: none;">
+              <div style="font-size: 13.5px; font-weight: 700; color: var(--ink);">
+                Ước tính tổng khối lượng chất trong bể $\hat{N}$:
+              </div>
+              <div class="calc-row">
+                <span style="font-weight: 700;">$\hat{N} \approx$</span>
+                <input type="text" class="answer-input" id="p2_input_n" placeholder="Nhập số g..." onkeydown="if(event.key==='Enter') checkP2Calculation()">
+                <span>gam</span>
+                <button class="btn-check-calc" id="btn_check_p2_calc" onclick="checkP2Calculation()">
+                  <i class="ti ti-check"></i> Kiểm tra
+                </button>
+              </div>
+              <div id="p2_calc_feedback"></div>
+            </div>
+          </div>
+        </div>
+
+        <!-- HOẠT ĐỘNG 2: BẢNG ĐÁNH GIÁ SAI SỐ PHẦN 2 -->
+        <div style="display: flex; flex-direction: column; gap: 12px; margin-top: 10px;">
+          <h3 style="font-size: 16.5px; font-weight: 700; color: var(--jade-deep); display: flex; align-items: center; gap: 8px;">
+            <i class="ti ti-table" style="color: var(--jade);"></i> Hoạt động 2: Đánh giá sai số khi cỡ mẫu thay đổi ($N_{\text{thật}} = 2600\text{g}$, $M = 50\text{g}$)
+          </h3>
+
+          <div class="athena-speech">
+            <div class="athena-avatar-bubble">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            </div>
+            <div>
+              <b>Trợ lý Athena:</b> <i>"Giả sử khối lượng thật của chất trong bể là 2600g. Kỹ thuật viên lặp lại quy trình 3 lần với các cỡ mẫu lấy ra $n$ khác nhau. Hãy hoàn thành bảng tính dưới đây:"</i>
+            </div>
+          </div>
+
+          <div class="table-container">
+            <table class="data-table">
+              <thead>
+                <tr>
+                  <th>Lần</th>
+                  <th>Cỡ mẫu $n$ (g)</th>
+                  <th>Chất đánh dấu $k$ (g)</th>
+                  <th>Khối lượng ước tính $\hat{N}$ (g)</th>
+                  <th>Sai số tuyệt đối (g)</th>
+                  <th>Sai số tương đối (%)</th>
+                </tr>
+              </thead>
+              <tbody>
+                <tr>
+                  <td><b>1</b></td>
+                  <td>80</td>
+                  <td>1,6</td>
+                  <td><input type="text" class="table-input" id="p2_t_n1" placeholder="Nhập số..."></td>
+                  <td><input type="text" class="table-input" id="p2_t_abs1" placeholder="Nhập số..."></td>
+                  <td><input type="text" class="table-input" id="p2_t_rel1" placeholder="Nhập %..."></td>
+                </tr>
+                <tr>
+                  <td><b>2</b></td>
+                  <td>200</td>
+                  <td>3,9</td>
+                  <td><input type="text" class="table-input" id="p2_t_n2" placeholder="Nhập số..."></td>
+                  <td><input type="text" class="table-input" id="p2_t_abs2" placeholder="Nhập số..."></td>
+                  <td><input type="text" class="table-input" id="p2_t_rel2" placeholder="Nhập %..."></td>
+                </tr>
+                <tr>
+                  <td><b>3</b></td>
+                  <td>400</td>
+                  <td>7,7</td>
+                  <td><input type="text" class="table-input" id="p2_t_n3" placeholder="Nhập số..."></td>
+                  <td><input type="text" class="table-input" id="p2_t_abs3" placeholder="Nhập số..."></td>
+                  <td><input type="text" class="table-input" id="p2_t_rel3" placeholder="Nhập %..."></td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+
+          <div style="display: flex; justify-content: space-between; align-items: center; flex-wrap: wrap; gap: 10px;">
+            <div style="font-size: 13px; color: var(--ink-3);">
+              * Lưu ý: Làm tròn đến 1 chữ số thập phân cho $\hat{N}$ và sai số tuyệt đối; 2 chữ số thập phân cho sai số tương đối.
+            </div>
+            <button class="btn-submit-table" id="btn_submit_p2_table" onclick="checkP2Table()">
+              <i class="ti ti-check"></i> Kiểm tra bảng số liệu
+            </button>
+          </div>
+          <div id="p2_table_feedback"></div>
+
+          <!-- CÂU HỎI NHẬN XÉT PHẦN 2 -->
+          <div class="insight-box" id="p2_insight_box" style="margin-top: 6px;">
+            <div class="insight-question">
+              <i class="ti ti-bulb" style="color: var(--accent);"></i>
+              <span>Câu hỏi nhận xét: Bạn nhận xét gì về quy luật sai số khi cỡ mẫu lấy ra $n$ tăng dần?</span>
+            </div>
+            <div class="insight-choices">
+              <button class="choice-btn" id="p2_choice_1" onclick="handleP2Insight(true)">
+                Cỡ mẫu càng lớn, ước tính càng chính xác, sai số càng giảm
+              </button>
+              <button class="choice-btn" id="p2_choice_2" onclick="handleP2Insight(false)">
+                Cỡ mẫu càng lớn, sai số ngẫu nhiên càng dao động tăng
+              </button>
+            </div>
+            <div id="p2_insight_feedback"></div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- =========================================================
+         FINAL SUMMARY CARD
+         ========================================================= -->
+    <section class="summary-card" id="final-summary">
+      <div class="summary-content">
+        <div class="summary-avatar">
+          <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena Mascot" loading="lazy">
+        </div>
+        <div class="summary-text">
+          <h3>🎉 Tổng kết tri thức: Sức mạnh của phương pháp mẫu & Quy luật sai số!</h3>
+          <p>
+            "Phương pháp đánh dấu - bắt lại và pha loãng đồng vị là minh chứng tuyệt vời cho việc toán học ứng dụng giải quyết các vấn đề lớn của thực tế khi không thể đo đếm trực tiếp toàn bộ: <b>$\hat{N} \approx \frac{M \cdot n}{k}$</b>. Dù áp dụng cho sinh vật sống (rùa biển) hay vật chất vô tri (chất thải phóng xạ trong bể chứa), <b>quy luật số lớn</b> luôn khẳng định: <i>Cỡ mẫu $n$ càng lớn thì sai số càng giảm và độ chính xác càng cao!</i>"
+          </p>
+          <div class="rule-highlight-box">
+            • <b>Công thức ước tính tổng thể:</b> $\hat{N} \approx \frac{M \cdot n}{k}$ (với $M$: số lượng đã đánh dấu, $n$: cỡ mẫu lấy ra, $k$: số lượng có dấu trong mẫu).<br>
+            • <b>Độ chính xác:</b> $\text{Sai số tuyệt đối} = |N_{\text{thật}} - \hat{N}|$; $\text{Sai số tương đối} = \frac{|N_{\text{thật}} - \hat{N}|}{N_{\text{thật}}} \times 100\%$.<br>
+            • <b>Ứng dụng liên ngành:</b> Sinh học (bảo tồn quần thể động vật), Kỹ thuật hạt nhân (phân tích phóng xạ), Y học (đo thể tích máu tuần hoàn).
+          </div>
+          <button class="btn-restart-all" onclick="restartAllSimulation()">
+            <i class="ti ti-refresh"></i> Khám phá lại từ đầu
+          </button>
+        </div>
+      </div>
+    </section>
+
+  </div>
+
+  <!-- SỔ TAY KIẾN THỨC MODAL -->
+  <div class="modal-overlay" id="notebookModal" onclick="closeNotebookModal(event)">
+    <div class="modal-card" onclick="event.stopPropagation()">
+      <div class="modal-header">
+        <div class="modal-title">
+          <i class="ti ti-book-2"></i> Sổ tay kiến thức: Phương pháp mẫu & Sai số
+        </div>
+        <button class="btn-close" onclick="closeNotebookModal()"><i class="ti ti-x"></i></button>
+      </div>
+
+      <div style="font-size: 14.5px; color: var(--ink); line-height: 1.65; display: flex; flex-direction: column; gap: 12px;">
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--jade);">
+          <b>1. Phương pháp Đánh dấu - Bắt lại (Lincoln-Petersen):</b><br>
+          Dựa trên giả thiết tỉ lệ cá thể có dấu trong mẫu bắt lại xấp xỉ tỉ lệ cá thể có dấu trong toàn bộ quần thể:
+          $$\frac{k}{n} \approx \frac{M}{N} \implies N \approx \frac{M \cdot n}{k}$$
+        </div>
+
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--ocean-blue);">
+          <b>2. Phương pháp Pha loãng đồng vị (Isotope Dilution):</b><br>
+          Thêm một khối lượng $M$ chất đánh dấu đồng vị vào bể chứa $N$. Sau khi khuấy đều, lấy ra mẫu $n$ và đo được $k$ chất đánh dấu $\implies N \approx \frac{M \cdot n}{k}$.
+        </div>
+
+        <div style="background: var(--paper-subtle); padding: 12px 14px; border-radius: var(--radius-md); border-left: 4px solid var(--accent);">
+          <b>3. Đánh giá sai số thống kê:</b><br>
+          • <b>Sai số tuyệt đối:</b> $\Delta = |N_{\text{thật}} - \hat{N}|$.<br>
+          • <b>Sai số tương đối:</b> $\delta = \frac{\Delta}{N_{\text{thật}}} \times 100\%$.<br>
+          • <b>Quy luật cỡ mẫu:</b> Cỡ mẫu $n$ tăng thì sai số tương đối $\delta$ giảm rõ rệt.
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ATHENA CONTEXT JSON FOR LMS TRACKING -->
+  <script type="application/json" id="athena-context">
+  {
+    "context": {
+      "grade": 10,
+      "chapter": "HDTN",
+      "lesson": 2,
+      "module": 2,
+      "topic": "uoc_tinh_quan_the_pha_loang_dong_vi",
+      "title": "Ước tính số lượng bằng phương pháp mẫu — Quần thể rùa biển & Pha loãng đồng vị"
+    },
+    "structure": [
+      { "id": "p1_hd1_quy_trinh", "type": "answered", "required": true, "title": "Phần 1 - HĐ1: Quy trình ước tính quần thể rùa" },
+      { "id": "p1_hd2_bang_saiso", "type": "answered", "required": true, "title": "Phần 1 - HĐ2: Bảng đánh giá sai số cỡ mẫu rùa" },
+      { "id": "p1_hd2_nhan_xet", "type": "explored", "required": true, "title": "Phần 1 - HĐ2: Nhận xét quy luật sai số rùa" },
+      { "id": "p2_hd1_quy_trinh", "type": "answered", "required": true, "title": "Phần 2 - HĐ1: Quy trình pha loãng đồng vị" },
+      { "id": "p2_hd2_bang_saiso", "type": "answered", "required": true, "title": "Phần 2 - HĐ2: Bảng đánh giá sai số pha loãng đồng vị" },
+      { "id": "p2_hd2_nhan_xet", "type": "explored", "required": true, "title": "Phần 2 - HĐ2: Nhận xét quy luật sai số pha loãng" }
+    ],
+    "pedagogy": {
+      "total_progress": 6,
+      "mode": "step_by_step_and_discovery"
+    }
+  }
+  </script>
+
+  <!-- JAVASCRIPT ENGINE -->
+  <script>
+    // =========================================================
+    // 0. LMS INTEGRATION & UTILITIES
+    // =========================================================
+    function LMS() {
+      return {
+        event: (name, data) => console.log('[LMS Event]', name, data),
+        progress: (done, total) => {
+          console.log('[LMS Progress]', `${done}/${total}`);
+          const pLabel = document.getElementById('progressLabel');
+          const pPercent = document.getElementById('progressPercent');
+          const pBar = document.getElementById('progressFillBar');
+          const pct = Math.round((done / total) * 100);
+          if (pLabel) pLabel.textContent = `Tiến độ hoàn thành: ${done}/${total} nhiệm vụ`;
+          if (pPercent) pPercent.textContent = `${pct}%`;
+          if (pBar) pBar.style.width = `${pct}%`;
+        },
+        complete: () => console.log('[LMS Complete] All 6 Module 2 Tasks Done!')
+      };
+    }
+
+    function renderMath(target = document.body) {
+      if (window.renderMathInElement) {
+        try {
+          renderMathInElement(target, {
+            delimiters: [
+              { left: '$$', right: '$$', display: true },
+              { left: '$', right: '$', display: false }
+            ],
+            throwOnError: false
+          });
+        } catch (e) {
+          console.warn('[KaTeX]', e);
+        }
+      }
+    }
+
+    // Number parser accepting both comma and dot
+    function parseNum(val) {
+      if (typeof val !== 'string') return NaN;
+      return parseFloat(val.trim().replace(/\s+/g, '').replace('%', '').replace(',', '.'));
+    }
+
+    // =========================================================
+    // 1. STATE MANAGEMENT
+    // =========================================================
+    const state = {
+      p1: {
+        step: 1,
+        marked: false,
+        released: false,
+        recaptured: false,
+        calcAttempts: 0,
+        calcDone: false,
+        tableAttempts: 0,
+        tableDone: false,
+        insightDone: false
+      },
+      p2: {
+        step: 1,
+        added: false,
+        stirred: false,
+        sampled: false,
+        calcAttempts: 0,
+        calcDone: false,
+        tableAttempts: 0,
+        tableDone: false,
+        insightDone: false
+      }
+    };
+
+    function checkOverallProgress() {
+      let count = 0;
+      if (state.p1.calcDone) count++;
+      if (state.p1.tableDone) count++;
+      if (state.p1.insightDone) count++;
+      if (state.p2.calcDone) count++;
+      if (state.p2.tableDone) count++;
+      if (state.p2.insightDone) count++;
+
+      LMS().progress(count, 6);
+      if (count === 6) LMS().complete();
+    }
+
+    // =========================================================
+    // 2. PHẦN 1: SIMULATION CANVAS (TURTLES)
+    // =========================================================
+    const TOTAL_TURTLES_VISUAL = 80;
+    const turtlesData = [];
+
+    function initTurtles() {
+      turtlesData.length = 0;
+      for (let i = 0; i < TOTAL_TURTLES_VISUAL; i++) {
+        turtlesData.push({
+          id: i,
+          x: 20 + Math.random() * 360,
+          y: 20 + Math.random() * 200,
+          vx: (Math.random() - 0.5) * 0.6,
+          vy: (Math.random() - 0.5) * 0.6,
+          isMarked: false,
+          isSampled: false
+        });
+      }
+      renderTurtleSvg();
+    }
+
+    function renderTurtleSvg() {
+      const svg = document.getElementById('turtleSvgView');
+      if (!svg) return;
+
+      let html = '';
+      turtlesData.forEach(t => {
+        let fill = '#2E6B52';
+        let stroke = '#14432F';
+        let badge = '';
+
+        if (t.isSampled) {
+          stroke = '#0284C7';
+        }
+        if (t.isMarked) {
+          badge = `<circle cx="${t.x}" cy="${t.y}" r="2.5" fill="#E8A24A" stroke="#FFF" stroke-width="0.8" />`;
+        }
+
+        html += `
+          <g>
+            <ellipse cx="${t.x}" cy="${t.y}" rx="6.5" ry="5" fill="${fill}" stroke="${stroke}" stroke-width="1.2" />
+            <circle cx="${t.x + (t.vx >= 0 ? 6 : -6)}" cy="${t.y}" r="2.5" fill="${fill}" />
+            ${badge}
+          </g>
+        `;
+      });
+      svg.innerHTML = html;
+    }
+
+    let turtleAnimId = null;
+    function animateTurtles() {
+      turtlesData.forEach(t => {
+        t.x += t.vx;
+        t.y += t.vy;
+        if (t.x < 15 || t.x > 385) t.vx *= -1;
+        if (t.y < 15 || t.y > 225) t.vy *= -1;
+      });
+      renderTurtleSvg();
+      turtleAnimId = requestAnimationFrame(animateTurtles);
+    }
+
+    // P1 Step 1: Mark 40 turtles
+    function handleP1MarkTurtles() {
+      const btnMark = document.getElementById('btnP1Mark');
+      const btnRel = document.getElementById('btnP1Release');
+      btnMark.disabled = true;
+
+      // Mark first 40 visual turtles
+      for (let i = 0; i < 40; i++) {
+        turtlesData[i].isMarked = true;
+      }
+      renderTurtleSvg();
+
+      document.getElementById('p1_step1_ui').className = 'step-item completed';
+      document.getElementById('p1_step2_ui').className = 'step-item active';
+      btnRel.disabled = false;
+    }
+
+    // P1 Step 1.5: Release and shuffle
+    function handleP1ReleaseTurtles() {
+      const btnRel = document.getElementById('btnP1Release');
+      const btnRecap = document.getElementById('btnP1Recapture');
+      btnRel.disabled = true;
+
+      // Shuffle positions randomly
+      turtlesData.forEach(t => {
+        t.vx = (Math.random() - 0.5) * 1.8;
+        t.vy = (Math.random() - 0.5) * 1.8;
+      });
+      setTimeout(() => {
+        turtlesData.forEach(t => {
+          t.vx = (Math.random() - 0.5) * 0.6;
+          t.vy = (Math.random() - 0.5) * 0.6;
+        });
+      }, 1000);
+
+      btnRecap.disabled = false;
+    }
+
+    // P1 Step 2: Recapture sample of 60
+    function handleP1Recapture() {
+      const btnRecap = document.getElementById('btnP1Recapture');
+      btnRecap.disabled = true;
+
+      // Highlight 60 turtles, exactly 8 marked
+      let markedCount = 0;
+      turtlesData.forEach((t, i) => {
+        if (i < 60) {
+          t.isSampled = true;
+          if (t.isMarked) markedCount++;
+        }
+      });
+
+      renderTurtleSvg();
+
+      document.getElementById('p1_step2_ui').className = 'step-item completed';
+      document.getElementById('p1_step3_ui').className = 'step-item active';
+
+      const calcBox = document.getElementById('p1_calc_box');
+      calcBox.style.display = 'flex';
+      renderMath(calcBox);
+    }
+
+    // P1 Step 3: Check Calculation (N = 300)
+    function checkP1Calculation() {
+      const inputEl = document.getElementById('p1_input_n');
+      const fb = document.getElementById('p1_calc_feedback');
+      const btn = document.getElementById('btn_check_p1_calc');
+      const val = parseNum(inputEl.value);
+
+      if (isNaN(val)) {
+        inputEl.className = 'answer-input error';
+        return;
+      }
+
+      if (Math.abs(val - 300) < 0.5) {
+        state.p1.calcDone = true;
+        inputEl.className = 'answer-input correct';
+        btn.disabled = true;
+        document.getElementById('p1_step3_ui').className = 'step-item completed';
+
+        fb.innerHTML = `
+          <div class="athena-feedback success">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div>
+              <b>Chính xác!</b> $\\hat{N} \\approx \\frac{M \\cdot n}{k} = \\frac{40 \\times 60}{8} = 300$ (con rùa).
+            </div>
+          </div>
+        `;
+        renderMath(fb);
+        LMS().event('answered', { id: 'p1_hd1_quy_trinh', result: 300 });
+        checkOverallProgress();
+      } else {
+        state.p1.calcAttempts++;
+        inputEl.className = 'answer-input error';
+
+        if (state.p1.calcAttempts === 1) {
+          fb.innerHTML = `
+            <div class="athena-feedback error">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Chưa đúng:</b> Hãy áp dụng công thức $\\hat{N} \\approx \\frac{M \\cdot n}{k}$ và tính lại nhé!</div>
+            </div>
+          `;
+        } else if (state.p1.calcAttempts === 2) {
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Gợi ý từ Athena:</b> <i>"Công thức là $\\hat{N} \\approx \\frac{M \\cdot n}{k}$ — bạn đã thay đúng $M=40, n=60, k=8$ chưa?"</i></div>
+            </div>
+          `;
+        } else {
+          inputEl.value = '';
+          inputEl.className = 'answer-input';
+          inputEl.focus();
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Đáp án chính xác là:</b> <b>300</b>. Bạn hãy tự gõ <b>300</b> vào ô trên rồi bấm <b>"Kiểm tra"</b> nhé!</div>
+            </div>
+          `;
+        }
+        renderMath(fb);
+      }
+    }
+
+    // P1 Activity 2: Table validation
+    function checkP1Table() {
+      const inputs = [
+        { el: document.getElementById('p1_t_n1'), ans: 240.0, tol: 0.5 },
+        { el: document.getElementById('p1_t_abs1'), ans: 60.0, tol: 0.5 },
+        { el: document.getElementById('p1_t_rel1'), ans: 20.00, tol: 0.1 },
+
+        { el: document.getElementById('p1_t_n2'), ans: 327.3, tol: 0.5 },
+        { el: document.getElementById('p1_t_abs2'), ans: 27.3, tol: 0.5 },
+        { el: document.getElementById('p1_t_rel2'), ans: 9.09, tol: 0.1 },
+
+        { el: document.getElementById('p1_t_n3'), ans: 315.8, tol: 0.5 },
+        { el: document.getElementById('p1_t_abs3'), ans: 15.8, tol: 0.5 },
+        { el: document.getElementById('p1_t_rel3'), ans: 5.26, tol: 0.1 }
+      ];
+
+      let allCorrect = true;
+      inputs.forEach(item => {
+        const val = parseNum(item.el.value);
+        if (!isNaN(val) && Math.abs(val - item.ans) <= item.tol) {
+          item.el.className = 'table-input correct';
+        } else {
+          item.el.className = 'table-input error';
+          allCorrect = false;
+        }
+      });
+
+      const fb = document.getElementById('p1_table_feedback');
+      const btn = document.getElementById('btn_submit_p1_table');
+
+      if (allCorrect) {
+        state.p1.tableDone = true;
+        btn.disabled = true;
+        fb.innerHTML = `
+          <div class="athena-feedback success">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div>
+              <b>Xuất sắc!</b> Bạn đã tính đúng toàn bộ bảng sai số:
+              <br>• Lần 1: $\\hat{N} = 240{,}0$, Sai số tuyệt đối $= 60{,}0$, Sai số tương đối $= 20{,}00\\%$.
+              <br>• Lần 2: $\\hat{N} = 327{,}3$, Sai số tuyệt đối $= 27{,}3$, Sai số tương đối $= 9{,}09\\%$.
+              <br>• Lần 3: $\\hat{N} = 315{,}8$, Sai số tuyệt đối $= 15{,}8$, Sai số tương đối $= 5{,}26\\%$.
+            </div>
+          </div>
+        `;
+        renderMath(fb);
+        LMS().event('answered', { id: 'p1_hd2_bang_saiso' });
+        checkOverallProgress();
+      } else {
+        state.p1.tableAttempts++;
+        if (state.p1.tableAttempts === 1) {
+          fb.innerHTML = `
+            <div class="athena-feedback error">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Một số ô chưa chính xác:</b> Hãy kiểm tra lại các phép tính $\\hat{N} = \\frac{40 \\times n}{k}$, $\\Delta = |300 - \\hat{N}|$ và $\\delta = \\frac{\\Delta}{300} \\times 100\\%$.</div>
+            </div>
+          `;
+        } else if (state.p1.tableAttempts === 2) {
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Gợi ý từ Athena:</b> Lần 1: $\\hat{N}=240$; Lần 2: $\\hat{N}=327{,}3$; Lần 3: $\\hat{N}=315{,}8$. Hãy kiểm tra kỹ sai số tương đối (chia cho 300).</div>
+            </div>
+          `;
+        } else {
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div>
+                <b>Đáp án đầy đủ các ô:</b><br>
+                • Lần 1 ($n=30$): $\\hat{N}=\\mathbf{240{,}0}$, Tuyệt đối $=\\mathbf{60{,}0}$, Tương đối $=\\mathbf{20{,}00\\%}$.<br>
+                • Lần 2 ($n=90$): $\\hat{N}=\\mathbf{327{,}3}$, Tuyệt đối $=\\mathbf{27{,}3}$, Tương đối $=\\mathbf{9{,}09\\%}$.<br>
+                • Lần 3 ($n=150$): $\\hat{N}=\\mathbf{315{,}8}$, Tuyệt đối $=\\mathbf{15{,}8}$, Tương đối $=\\mathbf{5{,}26\\%}$.<br>
+                <i>Bạn hãy nhập các số chính xác vào ô đỏ và bấm "Kiểm tra" lại nhé!</i>
+              </div>
+            </div>
+          `;
+        }
+        renderMath(fb);
+      }
+    }
+
+    // P1 Insight Choice
+    function handleP1Insight(isCorrectChoice) {
+      const b1 = document.getElementById('p1_choice_1');
+      const b2 = document.getElementById('p1_choice_2');
+      const fb = document.getElementById('p1_insight_feedback');
+
+      b1.className = 'choice-btn';
+      b2.className = 'choice-btn';
+
+      if (isCorrectChoice) {
+        b1.classList.add('selected-correct');
+        state.p1.insightDone = true;
+        b1.disabled = true;
+        b2.disabled = true;
+
+        fb.innerHTML = `
+          <div class="athena-feedback success">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div>
+              <b>Chính xác!</b> <i>"Cỡ mẫu càng lớn, ước tính càng ổn định, sai số càng có xu hướng giảm — đây là quy luật chung của mọi phương pháp ước tính bằng mẫu."</i>
+            </div>
+          </div>
+        `;
+        renderMath(fb);
+        LMS().event('explored', { id: 'p1_hd2_nhan_xet' });
+        checkOverallProgress();
+      } else {
+        b2.classList.add('selected-wrong');
+        fb.innerHTML = `
+          <div class="athena-feedback error">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div><b>Chưa đúng:</b> Hãy quan sát lại cột sai số tương đối khi $n$ tăng từ 30 lên 150: sai số giảm từ $20\\% \\to 9{,}09\\% \\to 5{,}26\\%$. Hãy chọn lại nhé!</div>
+          </div>
+        `;
+        renderMath(fb);
+      }
+    }
+
+    // =========================================================
+    // 3. PHẦN 2: SIMULATION CANVAS (NUCLEAR TANK)
+    // =========================================================
+    const particles = [];
+    const TOTAL_PARTICLES = 120;
+
+    function initNuclearTank() {
+      particles.length = 0;
+      for (let i = 0; i < TOTAL_PARTICLES; i++) {
+        particles.push({
+          x: 50 + Math.random() * 300,
+          y: 60 + Math.random() * 140,
+          vx: (Math.random() - 0.5) * 0.4,
+          vy: (Math.random() - 0.5) * 0.4,
+          isIsotope: false,
+          isSampled: false
+        });
+      }
+      renderNuclearSvg();
+    }
+
+    function renderNuclearSvg() {
+      const svg = document.getElementById('nuclearSvgView');
+      if (!svg) return;
+
+      let html = `
+        <!-- TANK OUTLINE -->
+        <rect x="40" y="40" width="320" height="170" rx="12" fill="#1E293B" stroke="#475569" stroke-width="2.5" />
+        <rect x="44" y="55" width="312" height="150" rx="8" fill="#0F172A" />
+      `;
+
+      particles.forEach(p => {
+        let fill = '#64748B';
+        let r = 3;
+        if (p.isIsotope) {
+          fill = '#10B981';
+          r = 4;
+        }
+        if (p.isSampled) {
+          fill = '#F59E0B';
+        }
+        html += `<circle cx="${p.x}" cy="${p.y}" r="${r}" fill="${fill}" opacity="0.85" />`;
+      });
+
+      svg.innerHTML = html;
+    }
+
+    let nuclearAnimId = null;
+    function animateNuclear() {
+      particles.forEach(p => {
+        p.x += p.vx;
+        p.y += p.vy;
+        if (p.x < 55 || p.x > 345) p.vx *= -1;
+        if (p.y < 65 || p.y > 195) p.vy *= -1;
+      });
+      renderNuclearSvg();
+      nuclearAnimId = requestAnimationFrame(animateNuclear);
+    }
+
+    // P2 Step 1: Add 50g Isotope
+    function handleP2AddIsotope() {
+      const btnAdd = document.getElementById('btnP2AddIsotope');
+      const btnStir = document.getElementById('btnP2Stir');
+      btnAdd.disabled = true;
+
+      // Add 25 isotope particles concentrated at top center
+      for (let i = 0; i < 25; i++) {
+        particles[i].isIsotope = true;
+        particles[i].x = 180 + (Math.random() - 0.5) * 40;
+        particles[i].y = 70 + Math.random() * 30;
+      }
+      renderNuclearSvg();
+
+      document.getElementById('p2_step1_ui').className = 'step-item completed';
+      document.getElementById('p2_step2_ui').className = 'step-item active';
+      btnStir.disabled = false;
+    }
+
+    // P2 Step 1.5: Stir tank
+    function handleP2StirTank() {
+      const btnStir = document.getElementById('btnP2Stir');
+      const btnSample = document.getElementById('btnP2Sample');
+      btnStir.disabled = true;
+
+      // Swirling animation
+      particles.forEach(p => {
+        p.vx = (Math.random() - 0.5) * 2.2;
+        p.vy = (Math.random() - 0.5) * 2.2;
+      });
+
+      setTimeout(() => {
+        particles.forEach(p => {
+          p.vx = (Math.random() - 0.5) * 0.4;
+          p.vy = (Math.random() - 0.5) * 0.4;
+        });
+      }, 1200);
+
+      btnSample.disabled = false;
+    }
+
+    // P2 Step 2: Take Sample (n=200g, k=3.9g)
+    function handleP2TakeSample() {
+      const btnSample = document.getElementById('btnP2Sample');
+      btnSample.disabled = true;
+
+      // Highlight a sample zone
+      for (let i = 0; i < 30; i++) {
+        particles[i].isSampled = true;
+      }
+      renderNuclearSvg();
+
+      document.getElementById('p2_step2_ui').className = 'step-item completed';
+      document.getElementById('p2_step3_ui').className = 'step-item active';
+
+      const calcBox = document.getElementById('p2_calc_box');
+      calcBox.style.display = 'flex';
+      renderMath(calcBox);
+    }
+
+    // P2 Step 3: Check Calculation (N = 2564.1)
+    function checkP2Calculation() {
+      const inputEl = document.getElementById('p2_input_n');
+      const fb = document.getElementById('p2_calc_feedback');
+      const btn = document.getElementById('btn_check_p2_calc');
+      const val = parseNum(inputEl.value);
+
+      if (isNaN(val)) {
+        inputEl.className = 'answer-input error';
+        return;
+      }
+
+      if (Math.abs(val - 2564.1) <= 1.0) {
+        state.p2.calcDone = true;
+        inputEl.className = 'answer-input correct';
+        btn.disabled = true;
+        document.getElementById('p2_step3_ui').className = 'step-item completed';
+
+        fb.innerHTML = `
+          <div class="athena-feedback success">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div>
+              <b>Chính xác!</b> $\\hat{N} \\approx \\frac{M \\cdot n}{k} = \\frac{50 \\times 200}{3{,}9} \\approx 2564{,}1$ (g).
+            </div>
+          </div>
+        `;
+        renderMath(fb);
+        LMS().event('answered', { id: 'p2_hd1_quy_trinh', result: 2564.1 });
+        checkOverallProgress();
+      } else {
+        state.p2.calcAttempts++;
+        inputEl.className = 'answer-input error';
+
+        if (state.p2.calcAttempts === 1) {
+          fb.innerHTML = `
+            <div class="athena-feedback error">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Chưa đúng:</b> Hãy áp dụng công thức $\\hat{N} \\approx \\frac{M \\cdot n}{k}$ và làm tròn 1 chữ số thập phân nhé!</div>
+            </div>
+          `;
+        } else if (state.p2.calcAttempts === 2) {
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Gợi ý từ Athena:</b> <i>"Công thức là $\\hat{N} \\approx \\frac{M \\cdot n}{k}$ — bạn đã thay đúng $M=50, n=200, k=3{,}9$ chưa?"</i></div>
+            </div>
+          `;
+        } else {
+          inputEl.value = '';
+          inputEl.className = 'answer-input';
+          inputEl.focus();
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Đáp án chính xác là:</b> <b>2564,1</b>. Bạn hãy tự gõ <b>2564,1</b> vào ô trên rồi bấm <b>"Kiểm tra"</b> nhé!</div>
+            </div>
+          `;
+        }
+        renderMath(fb);
+      }
+    }
+
+    // P2 Activity 2: Table validation
+    function checkP2Table() {
+      const inputs = [
+        { el: document.getElementById('p2_t_n1'), ans: 2500.0, tol: 0.5 },
+        { el: document.getElementById('p2_t_abs1'), ans: 100.0, tol: 0.5 },
+        { el: document.getElementById('p2_t_rel1'), ans: 3.85, tol: 0.1 },
+
+        { el: document.getElementById('p2_t_n2'), ans: 2564.1, tol: 0.5 },
+        { el: document.getElementById('p2_t_abs2'), ans: 35.9, tol: 0.5 },
+        { el: document.getElementById('p2_t_rel2'), ans: 1.38, tol: 0.1 },
+
+        { el: document.getElementById('p2_t_n3'), ans: 2597.4, tol: 0.5 },
+        { el: document.getElementById('p2_t_abs3'), ans: 2.6, tol: 0.5 },
+        { el: document.getElementById('p2_t_rel3'), ans: 0.10, tol: 0.1 }
+      ];
+
+      let allCorrect = true;
+      inputs.forEach(item => {
+        const val = parseNum(item.el.value);
+        if (!isNaN(val) && Math.abs(val - item.ans) <= item.tol) {
+          item.el.className = 'table-input correct';
+        } else {
+          item.el.className = 'table-input error';
+          allCorrect = false;
+        }
+      });
+
+      const fb = document.getElementById('p2_table_feedback');
+      const btn = document.getElementById('btn_submit_p2_table');
+
+      if (allCorrect) {
+        state.p2.tableDone = true;
+        btn.disabled = true;
+        fb.innerHTML = `
+          <div class="athena-feedback success">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div>
+              <b>Tuyệt vời!</b> Bạn đã tính chính xác toàn bộ bảng pha loãng đồng vị:
+              <br>• Lần 1: $\\hat{N} = 2500{,}0\\text{g}$, Tuyệt đối $= 100{,}0\\text{g}$, Tương đối $= 3{,}85\\%$.
+              <br>• Lần 2: $\\hat{N} = 2564{,}1\\text{g}$, Tuyệt đối $= 35{,}9\\text{g}$, Tương đối $= 1{,}38\\%$.
+              <br>• Lần 3: $\\hat{N} = 2597{,}4\\text{g}$, Tuyệt đối $= 2{,}6\\text{g}$, Tương đối $= 0{,}10\\%$.
+            </div>
+          </div>
+        `;
+        renderMath(fb);
+        LMS().event('answered', { id: 'p2_hd2_bang_saiso' });
+        checkOverallProgress();
+      } else {
+        state.p2.tableAttempts++;
+        if (state.p2.tableAttempts === 1) {
+          fb.innerHTML = `
+            <div class="athena-feedback error">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Một số ô chưa chính xác:</b> Hãy tính $\\hat{N} = \\frac{50 \\times n}{k}$, $\\Delta = |2600 - \\hat{N}|$ và $\\delta = \\frac{\\Delta}{2600} \\times 100\\%$.</div>
+            </div>
+          `;
+        } else if (state.p2.tableAttempts === 2) {
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div><b>Gợi ý từ Athena:</b> Lần 1: $\\hat{N}=2500{,}0$; Lần 2: $\\hat{N}=2564{,}1$; Lần 3: $\\hat{N}=2597{,}4$. Lưu ý chia cho $N_{\\text{thật}} = 2600$ khi tính sai số tương đối.</div>
+            </div>
+          `;
+        } else {
+          fb.innerHTML = `
+            <div class="athena-feedback warning">
+              <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+              <div>
+                <b>Đáp án đầy đủ các ô:</b><br>
+                • Lần 1 ($n=80$): $\\hat{N}=\\mathbf{2500{,}0}$, Tuyệt đối $=\\mathbf{100{,}0}$, Tương đối $=\\mathbf{3{,}85\\%}$.<br>
+                • Lần 2 ($n=200$): $\\hat{N}=\\mathbf{2564{,}1}$, Tuyệt đối $=\\mathbf{35{,}9}$, Tương đối $=\\mathbf{1{,}38\\%}$.<br>
+                • Lần 3 ($n=400$): $\\hat{N}=\\mathbf{2597{,}4}$, Tuyệt đối $=\\mathbf{2{,}6}$, Tương đối $=\\mathbf{0{,}10\\%}$.<br>
+                <i>Bạn hãy nhập các số chính xác vào ô đỏ và bấm "Kiểm tra" lại nhé!</i>
+              </div>
+            </div>
+          `;
+        }
+        renderMath(fb);
+      }
+    }
+
+    // P2 Insight Choice
+    function handleP2Insight(isCorrectChoice) {
+      const b1 = document.getElementById('p2_choice_1');
+      const b2 = document.getElementById('p2_choice_2');
+      const fb = document.getElementById('p2_insight_feedback');
+
+      b1.className = 'choice-btn';
+      b2.className = 'choice-btn';
+
+      if (isCorrectChoice) {
+        b1.classList.add('selected-correct');
+        state.p2.insightDone = true;
+        b1.disabled = true;
+        b2.disabled = true;
+
+        fb.innerHTML = `
+          <div class="athena-feedback success">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div>
+              <b>Chính xác!</b> <i>"Cỡ mẫu càng lớn, ước tính càng chính xác, sai số càng nhỏ — đúng quy luật bạn đã thấy ở Phần 1 với rùa biển. Đây là nguyên lí chung của mọi phương pháp ước tính bằng mẫu, dù áp dụng cho sinh vật sống hay chất vô tri."</i>
+            </div>
+          </div>
+        `;
+        renderMath(fb);
+        LMS().event('explored', { id: 'p2_hd2_nhan_xet' });
+        checkOverallProgress();
+      } else {
+        b2.classList.add('selected-wrong');
+        fb.innerHTML = `
+          <div class="athena-feedback error">
+            <img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena">
+            <div><b>Chưa đúng:</b> Nhìn vào bảng số liệu: khi $n$ tăng từ $80\\text{g} \\to 400\\text{g}$, sai số tương đối giảm cực mạnh từ $3{,}85\\% \\to 0{,}10\\%$. Hãy chọn lại nhé!</div>
+          </div>
+        `;
+        renderMath(fb);
+      }
+    }
+
+    // Restart All Simulation
+    function restartAllSimulation() {
+      state.p1 = {
+        step: 1, marked: false, released: false, recaptured: false,
+        calcAttempts: 0, calcDone: false, tableAttempts: 0, tableDone: false, insightDone: false
+      };
+      state.p2 = {
+        step: 1, added: false, stirred: false, sampled: false,
+        calcAttempts: 0, calcDone: false, tableAttempts: 0, tableDone: false, insightDone: false
+      };
+
+      document.getElementById('btnP1Mark').disabled = false;
+      document.getElementById('btnP1Release').disabled = true;
+      document.getElementById('btnP1Recapture').disabled = true;
+      document.getElementById('p1_calc_box').style.display = 'none';
+      document.getElementById('p1_input_n').value = '';
+      document.getElementById('p1_input_n').className = 'answer-input';
+      document.getElementById('btn_check_p1_calc').disabled = false;
+      document.getElementById('p1_calc_feedback').innerHTML = '';
+      document.getElementById('btn_submit_p1_table').disabled = false;
+      document.getElementById('p1_table_feedback').innerHTML = '';
+      document.getElementById('p1_choice_1').className = 'choice-btn';
+      document.getElementById('p1_choice_2').className = 'choice-btn';
+      document.getElementById('p1_choice_1').disabled = false;
+      document.getElementById('p1_choice_2').disabled = false;
+      document.getElementById('p1_insight_feedback').innerHTML = '';
+
+      ['p1_t_n1', 'p1_t_abs1', 'p1_t_rel1', 'p1_t_n2', 'p1_t_abs2', 'p1_t_rel2', 'p1_t_n3', 'p1_t_abs3', 'p1_t_rel3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.value = ''; el.className = 'table-input'; }
+      });
+
+      document.getElementById('btnP2AddIsotope').disabled = false;
+      document.getElementById('btnP2Stir').disabled = true;
+      document.getElementById('btnP2Sample').disabled = true;
+      document.getElementById('p2_calc_box').style.display = 'none';
+      document.getElementById('p2_input_n').value = '';
+      document.getElementById('p2_input_n').className = 'answer-input';
+      document.getElementById('btn_check_p2_calc').disabled = false;
+      document.getElementById('p2_calc_feedback').innerHTML = '';
+      document.getElementById('btn_submit_p2_table').disabled = false;
+      document.getElementById('p2_table_feedback').innerHTML = '';
+      document.getElementById('p2_choice_1').className = 'choice-btn';
+      document.getElementById('p2_choice_2').className = 'choice-btn';
+      document.getElementById('p2_choice_1').disabled = false;
+      document.getElementById('p2_choice_2').disabled = false;
+      document.getElementById('p2_insight_feedback').innerHTML = '';
+
+      ['p2_t_n1', 'p2_t_abs1', 'p2_t_rel1', 'p2_t_n2', 'p2_t_abs2', 'p2_t_rel2', 'p2_t_n3', 'p2_t_abs3', 'p2_t_rel3'].forEach(id => {
+        const el = document.getElementById(id);
+        if (el) { el.value = ''; el.className = 'table-input'; }
+      });
+
+      initTurtles();
+      initNuclearTank();
+      checkOverallProgress();
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+
+    // Modal logic
+    function openNotebookModal() {
+      const m = document.getElementById('notebookModal');
+      if (m) {
+        m.classList.add('active');
+        renderMath(m);
+      }
+    }
+
+    function closeNotebookModal(e) {
+      if (e) e.stopPropagation();
+      const m = document.getElementById('notebookModal');
+      if (m) m.classList.remove('active');
+    }
+
+    // Window Init
+    window.addEventListener('DOMContentLoaded', () => {
+      initTurtles();
+      animateTurtles();
+      initNuclearTank();
+      animateNuclear();
+      renderMath();
+      checkOverallProgress();
+    });
+  </script>
+</body>
+</html>
