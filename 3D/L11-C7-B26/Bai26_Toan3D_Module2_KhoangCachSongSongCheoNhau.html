@@ -1,0 +1,400 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Bài 26 · Khoảng cách giữa các đối tượng song song và chéo nhau</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script type="application/json" id="athena-context">
+  {
+    "version":"1.0",
+    "subject":"Toán 11",
+    "lesson":"Bài 26 · Khoảng cách trong không gian",
+    "module":"Module 2",
+    "objectives":["Tính khoảng cách giữa đường thẳng và mặt phẳng song song","Dựng đoạn vuông góc chung của 2 đường chéo nhau","Phân biệt đoạn vuông góc chung với đoạn xiên bất kỳ","Quy khoảng cách 2 đường chéo nhau về khoảng cách đường-mặt song song"],
+    "structure":[{"id":"step1-line-plane","title":"Cổng trạm thu phí"},{"id":"step2-perp-common","title":"Đoạn vuông góc chung"},{"id":"step3-trap","title":"Bẫy đoạn xiên"},{"id":"step4-reduce","title":"Quy về dễ hơn"}],
+    "misconceptions":["Nhầm đoạn vuông góc chung với đoạn vuông góc bất kỳ","Chọn mặt phẳng phụ không song song","Tính nhầm d(P,Q) bằng khoảng cách 2 điểm bất kỳ","Dựng đoạn vuông góc chung mù quáng khi cấu hình phức tạp"],
+    "athenaGuidance":"Bước 1: cổng trạm thu phí trên đường dốc 10°, thanh ngang song song mặt dốc, d=2,5cos10°≈2,462m. Bước 2: chóp S.ABC có SA⊥(ABC), AH⊥BC là đoạn vuông góc chung, AH=5,6382. Bước 3: kéo K trên BC, SK luôn>AH và SK không⊥BC. Bước 4: 2 ống kỹ thuật chéo nhau, quy về mặt phẳng song song, d=0,8m."
+  }
+  </script>
+  <style>
+    :root{--cream:#FAF7F0;--cream-2:#F0EADD;--cream-3:#E7DECC;--paper-line:#E5DECF;--paper-line-2:#D6CCB6;--ink:#1A1A1A;--ink-2:#514C44;--ink-3:#7C756A;--ink-faint:#ABA396;--jade:#3CA57A;--jade-deep:#2D8B6F;--jade-dark:#14432F;--jade-text:#1B5E48;--jade-soft:#A9D0BE;--jade-pale:#DCEAE1;--sage:#A8C9B8;--sage-deep:#7CA792;--sage-text:#46685A;--sage-pale:#E1ECE4;--accent:#E8A24A;--accent-deep:#CE8A33;--accent-text:#8A551A;--accent-pale:#F7E7CD;--correct:#2D8B6F;--correct-bg:#DCEAE1;--wrong:#C15F3C;--wrong-bg:#F3E2D6;--warning:#C58A2E;--warning-bg:#F5E7CB;--info:#4E7F92;--info-bg:#DCE7EB;--white:#FFFFFF;--radius:10px;--radius-lg:14px;--radius-sm:6px;--shadow:0 4px 12px rgba(45,139,111,.10);--shadow-sm:0 2px 6px rgba(26,26,26,.05);--canvas-bg:#0a1628}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--cream);color:var(--ink);font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:18px;line-height:1.7}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+    header{height:64px;padding:10px 20px;background:linear-gradient(135deg,var(--jade-dark),var(--jade-deep));color:var(--white);display:flex;align-items:center;gap:14px}.header-badge{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.13);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}header h1{margin:0;flex:1;font-size:18px;line-height:1.3}.header-progress{font:700 12px 'JetBrains Mono',monospace;white-space:nowrap}
+    .app-shell{height:calc(100dvh - 64px);min-height:600px;display:flex;overflow:hidden}.viewport{position:relative;flex:1;min-width:0;background:var(--canvas-bg);overflow:hidden}.viewport canvas{width:100%;height:100%;display:block;touch-action:none}.label-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}.label{position:absolute;transform:translate(-50%,-115%);padding:2px 6px;border-radius:5px;background:rgba(10,22,40,.78);color:var(--white);font:700 13px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;text-shadow:0 1px 3px #000;white-space:nowrap;will-change:transform}.label.result{color:#FAC775}.label.jade{color:#34D399}.canvas-top{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}.scene-chip{padding:6px 10px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:rgba(10,22,40,.78);color:rgba(255,255,255,.86);font-size:12px;font-weight:700;backdrop-filter:blur(6px)}.distance-readout{padding:8px 11px;border:1px solid rgba(250,199,117,.4);border-radius:9px;background:rgba(10,22,40,.84);color:#FAC775;font:700 16px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}.canvas-actions{position:absolute;left:14px;bottom:14px;display:flex;gap:8px}.canvas-btn{min-height:40px;border:1px solid rgba(255,255,255,.2);border-radius:9px;background:rgba(10,22,40,.82);color:var(--white);padding:7px 11px;font-size:12px;font-weight:700}.canvas-hint{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);padding:5px 12px;border:1px solid rgba(255,255,255,.15);border-radius:20px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.78);font-size:11.5px;white-space:nowrap;pointer-events:none}
+    .sidebar{width:370px;flex:0 0 370px;background:var(--white);border-left:1px solid var(--paper-line);display:flex;flex-direction:column;overflow:auto}.step-tabs{position:sticky;top:0;z-index:8;display:flex;background:var(--white);border-bottom:1px solid var(--paper-line)}.step-tab{flex:1;min-height:48px;border:0;border-bottom:3px solid transparent;background:var(--white);color:var(--ink-3);font-size:11px;font-weight:700;text-transform:uppercase}.step-tab.active{color:var(--jade-dark);border-bottom-color:var(--jade-deep);background:var(--jade-pale)}.step-tab.done{color:var(--jade-deep)}.step-body{padding:16px}.eyebrow{margin:0 0 5px;color:var(--ink-3);font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.step-title{margin:0 0 9px;color:var(--jade-dark);font-size:20px;line-height:1.35}.athena{margin:10px 0;padding:11px 12px;border-left:4px solid var(--jade-deep);border-radius:0 9px 9px 0;background:var(--jade-pale);color:var(--jade-text);font-size:14px}.athena b{display:block;margin-bottom:3px}.card{margin:11px 0;padding:12px;border:1px solid var(--paper-line);border-radius:var(--radius);background:var(--cream)}.card h3{margin:0 0 7px;color:var(--jade-dark);font-size:14px}.body-small{margin:6px 0;color:var(--ink-3);font-size:13px}.formula{padding:8px 10px;border:1px solid var(--info);border-radius:8px;background:var(--info-bg);font:700 13px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}.control{margin:11px 0}.control label{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:700}.control output{color:var(--jade-deep);font-family:'JetBrains Mono',monospace}.control input[type=range]{width:100%;min-height:34px;accent-color:var(--jade-deep)}.btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.btn{min-height:44px;border:0;border-radius:9px;padding:9px 13px;font-size:14px;font-weight:700}.btn-primary{background:var(--jade-deep);color:var(--white)}.btn-secondary{border:1px solid var(--jade-deep);background:var(--white);color:var(--jade-deep)}.btn:disabled{opacity:.48;cursor:not-allowed}.choice{display:block;width:100%;min-height:44px;margin:7px 0;padding:9px 11px;border:1px solid var(--paper-line-2);border-radius:9px;background:var(--white);color:var(--ink);text-align:left;font-size:13px}.choice.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--jade-text);font-weight:700}.choice.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:var(--wrong);font-weight:700}.feedback{margin-top:9px;padding:9px 11px;border-radius:8px;font-size:13px}.feedback.info{background:var(--info-bg);color:var(--ink-2)}.feedback.good{background:var(--correct-bg);color:var(--jade-text)}.feedback.bad{background:var(--wrong-bg);color:var(--wrong)}.feedback.warn{background:var(--warning-bg);color:var(--accent-text)}.shake{animation:shake .28s}@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}.notebook{margin-top:12px;padding:11px;border:1px dashed var(--sage-deep);border-radius:9px;background:var(--sage-pale);color:var(--sage-text);font-size:13px}.summary-list{margin:7px 0;padding-left:20px}.summary-list li{margin:6px 0}.hidden{display:none!important}
+    @media(max-width:768px){body{min-height:100vh;overflow-y:auto}.app-shell{display:flex!important;width:100%;height:auto!important;min-height:auto!important;max-height:none!important;flex-direction:column!important;overflow:visible!important}.viewport{position:sticky!important;top:0!important;z-index:50!important;flex:none!important;width:100%!important;height:calc((100vh - 58px)*.5)!important;height:calc((100dvh - 58px)*.5)!important;min-height:220px!important;border-bottom:1px solid var(--paper-line);box-shadow:0 4px 14px rgba(0,0,0,.4)}.sidebar{width:100%!important;min-width:0;height:auto!important;max-height:none!important;flex:none!important;border-left:0;border-top:1px solid var(--paper-line);overflow:visible!important}.step-tabs{position:static;width:100%;min-width:0;overflow-x:auto}.step-tab{min-width:0}.step-body{width:100%;min-width:0;overflow:visible}.athena,.card,.notebook{max-width:100%;overflow-wrap:anywhere}.formula{max-width:100%;overflow-x:auto}.canvas-hint{display:none}}
+    @media(max-width:560px){header{height:58px;min-height:58px;padding:7px 10px;gap:7px;flex-wrap:nowrap}.header-badge{font-size:9px;padding:2px 6px}header h1{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.header-progress{display:none}.sidebar,.step-tabs,.step-body{width:100%!important;max-width:100%!important}.step-tab{flex:0 0 25%;width:25%;min-height:44px;font-size:9px}.step-body{padding:12px;overflow:visible}.step-title{font-size:18px}.canvas-top{top:8px;left:8px;right:8px}.scene-chip{font-size:10px;padding:4px 7px}.distance-readout{font-size:13px;padding:5px 7px}.canvas-actions{left:8px;bottom:8px}.canvas-btn{min-height:36px;padding:6px 9px}.card{padding:10px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <header>
+    <span class="header-badge">🧊 Hình học không gian</span>
+    <h1>Bài 26 · Khoảng cách song song & chéo nhau</h1>
+    <span class="header-progress" id="header-progress">BƯỚC 1/4</span>
+  </header>
+  <main class="app-shell">
+    <section class="viewport" id="canvas-wrap" aria-label="Mô hình hình học 3D">
+      <canvas id="three-canvas"></canvas><div class="label-layer" id="label-layer"></div>
+      <div class="canvas-top"><span class="scene-chip" id="scene-chip">Cổng trạm thu phí · mặt đường dốc</span><span class="distance-readout" id="distance-readout">d = 2,46m</span></div>
+      <div class="canvas-actions"><button class="canvas-btn" id="btn-reset"><i class="ti ti-refresh"></i> Phối cảnh</button><button class="canvas-btn" id="btn-top"><i class="ti ti-arrow-up"></i> Từ trên</button></div>
+      <div class="canvas-hint">Kéo nền để xoay · Cuộn để zoom</div>
+    </section>
+    <aside class="sidebar">
+      <nav class="step-tabs" aria-label="Các bước học">
+        <button class="step-tab active" data-step="1">Bước 1</button><button class="step-tab" data-step="2">Bước 2</button><button class="step-tab" data-step="3">Bước 3</button><button class="step-tab" data-step="4">Bước 4</button>
+      </nav>
+      <div class="step-body" id="step-body"></div>
+    </aside>
+  </main>
+  <script>
+  (()=>{'use strict';
+    const LMS=()=>window.AiducationLMS||{ready(){},progress(){},event(){},state(){},complete(){},resize(){}};
+    const canvas=document.getElementById('three-canvas'),wrap=document.getElementById('canvas-wrap'),stepBody=document.getElementById('step-body');
+    const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));renderer.setClearColor(0x0a1628);renderer.outputEncoding=THREE.sRGBEncoding;
+    const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(46,1,.1,100),controls=new THREE.OrbitControls(camera,canvas);controls.enableDamping=true;controls.dampingFactor=.08;controls.minDistance=3;controls.maxDistance=22;
+    scene.add(new THREE.HemisphereLight(0xddeeff,0x172235,1.15));const keyLight=new THREE.DirectionalLight(0xffffff,1.1);keyLight.position.set(6,10,8);scene.add(keyLight);const backLight=new THREE.DirectionalLight(0x38bdf8,.35);backLight.position.set(-5,-3,-6);scene.add(backLight);
+
+    const C={slate:0x64748b,sand:0x94a3b8,sandFill:0xcbd5e1,jade:0x2D8B6F,jadePale:0xDCEAE1,accent:0xE8A24A,ochre:0xD97706,point:0xFAC775,terracotta:0xC15F3C,dustyBlue:0x4E7F92,paperLine:0xE5DECF,cream2:0xF0EADD,grid:0x1e293b};
+    let currentStep=1,unlocked=1,root=null,labels=[],objects={},dragMode=null;
+    let kT=.5;
+    let q1Done=false,q1Strikes=0,q3Done=false,q3Strikes=0,q4aDone=false,q4aStrikes=0,q4bDone=false,q4bStrikes=0,completed=false;
+    const V=(x=0,y=0,z=0)=>new THREE.Vector3(x,y,z),rad=d=>d*Math.PI/180,fmt=n=>n.toFixed(2).replace('.',',');
+
+    function dispose(obj){if(!obj)return;obj.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose())});if(obj.parent)obj.parent.remove(obj)}
+    function clearScene(){dispose(root);root=new THREE.Group();scene.add(root);labels.forEach(x=>x.el.remove());labels=[];objects={}}
+    function addLabel(text,pos,cls=''){const el=document.createElement('div');el.className='label '+cls;el.textContent=text;document.getElementById('label-layer').appendChild(el);const item={el,pos:pos.clone()};labels.push(item);return item}
+    function mkLine(a,b,color,lw=1.5,dashed=false){const g=new THREE.BufferGeometry().setFromPoints([a,b]);let m;if(dashed){m=new THREE.LineDashedMaterial({color,dashSize:.2,gapSize:.1,linewidth:lw})}else{m=new THREE.LineBasicMaterial({color,linewidth:lw,transparent:true,opacity:.95})}const l=new THREE.Line(g,m);if(dashed)l.computeLineDistances();root.add(l);return l}
+    function setLine(l,a,b){l.geometry.setFromPoints([a,b]);l.geometry.attributes.position.needsUpdate=true;if(l.material.isLineDashedMaterial)l.computeLineDistances()}
+    function dot(pos,color=C.point,r=.1,name=''){const m=new THREE.Mesh(new THREE.SphereGeometry(r,20,14),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.3}));m.position.copy(pos);m.userData.name=name;root.add(m);return m}
+    function cylinder(a,b,r=.05,color=C.slate){const dir=b.clone().sub(a),len=dir.length();const g=new THREE.CylinderGeometry(r,r,len,16);const m=new THREE.MeshStandardMaterial({color,metalness:.3,roughness:.5});const mesh=new THREE.Mesh(g,m);mesh.position.copy(a.clone().add(b).multiplyScalar(.5));mesh.quaternion.setFromUnitVectors(V(0,1,0),dir.clone().normalize());root.add(mesh);return mesh}
+    function plane(pts,color=C.sandFill,op=.22){const s=new THREE.Shape();s.moveTo(pts[0].x,pts[0].z);for(let i=1;i<pts.length;i++)s.lineTo(pts[i].x,pts[i].z);s.closePath();const g=new THREE.ShapeGeometry(s);g.rotateX(Math.PI/2);const m=new THREE.MeshPhongMaterial({color,transparent:true,opacity:op,side:THREE.DoubleSide,depthWrite:false});const mesh=new THREE.Mesh(g,m);mesh.position.y=pts[0].y;root.add(mesh);return mesh}
+    function rightAngle(vertex,d1,d2,sz=.25,color=C.jade){const u=d1.clone().normalize().multiplyScalar(sz),v=d2.clone().normalize().multiplyScalar(sz);const pts=[vertex.clone().add(u),vertex.clone().add(u).add(v),vertex.clone().add(v)];const g=new THREE.BufferGeometry().setFromPoints(pts);root.add(new THREE.Line(g,new THREE.LineBasicMaterial({color,linewidth:2})));return pts}
+
+    /* ===== STEP 1: Cổng trạm thu phí ===== */
+    function buildStep1Scene(){
+      clearScene();
+      const alpha=rad(10),cosA=Math.cos(alpha),sinA=Math.sin(alpha);
+      // Mặt đường dốc
+      const roadG=new THREE.PlaneGeometry(14,8);const roadM=new THREE.MeshPhongMaterial({color:C.sandFill,transparent:true,opacity:.35,side:THREE.DoubleSide,depthWrite:false});
+      const road=new THREE.Mesh(roadG,roadM);road.rotation.x=-Math.PI/2+alpha;road.position.set(0,sinA*4*.5,0);root.add(road);
+      // Lưới đường
+      const gridG=new THREE.GridHelper(12,12,C.grid,C.grid);gridG.rotation.x=alpha;gridG.position.set(0,sinA*4*.5+.01,0);root.add(gridG);
+      // 2 Cột đứng thẳng (theo trọng lực)
+      const colH=2.5,gap=4;
+      const colL=V(-gap/2,0,0),colR=V(gap/2,0,0);
+      cylinder(colL,colL.clone().add(V(0,colH,0)),.12,C.slate);
+      cylinder(colR,colR.clone().add(V(0,colH,0)),.12,C.slate);
+      // Thanh ngang
+      const topL=colL.clone().add(V(0,colH,0)),topR=colR.clone().add(V(0,colH,0));
+      objects.bar=cylinder(topL,topR,.06,C.accent);
+      // Đoạn vuông góc chuẩn (ẩn ban đầu, hiện khi tính xong)
+      const dPerp=colH*cosA;
+      const footL=V(-gap/2,colH-dPerp,0);
+      objects.perpLine=mkLine(topL,footL,C.jade,2.5,true);
+      rightAngle(footL,V(0,1,0),V(sinA,cosA,0),.3,C.jade);
+      // Xe tải minh họa
+      const carBody=new THREE.Mesh(new THREE.BoxGeometry(1.8,.9,.9),new THREE.MeshStandardMaterial({color:C.terracotta,roughness:.6}));carBody.position.set(-.5,.45,2.5);root.add(carBody);
+      const wheelG=new THREE.CylinderGeometry(.18,.18,.12,16);const wheelM=new THREE.MeshStandardMaterial({color:0x333333});
+      [V(-.9,.18,2.1),V(.4,.18,2.1),V(-.9,.18,2.9),V(.4,.18,2.9)].forEach(p=>{const w=new THREE.Mesh(wheelG,wheelM);w.position.copy(p);w.rotation.x=Math.PI/2;root.add(w)});
+      // Labels
+      addLabel('Thanh ngang',topL.clone().add(topR).multiplyScalar(.5).add(V(0,.25,0)));
+      addLabel('2,5m',colL.clone().add(V(-.3,colH/2,0)));
+      addLabel('α = 10°',V(3,.3,0));
+      addLabel('d = '+fmt(dPerp)+'m',topL.clone().add(footL).multiplyScalar(.5).add(V(-1,.1,0)),'result');
+      addLabel('Mặt đường dốc',V(4,sinA*2,.5));
+      document.getElementById('distance-readout').textContent='d = '+fmt(dPerp)+'m';
+      document.getElementById('scene-chip').textContent='Cổng trạm thu phí · đường dốc 10°';
+    }
+
+    /* ===== STEP 2: Đoạn vuông góc chung SA & BC ===== */
+    function buildStep2Scene(){
+      clearScene();
+      const AB=6,angABC=rad(70);
+      const A=V(0,0,0),B=V(AB,0,0);
+      const Cx=B.x+AB*Math.cos(Math.PI-angABC),Cz=AB*Math.sin(Math.PI-angABC);
+      const Cp=V(Cx,0,Cz);
+      const hSA=5;const S=V(0,hSA,0);
+      // Đáy
+      plane([A,B,Cp],C.sandFill,.2);
+      mkLine(A,B,C.slate,1.8);mkLine(B,Cp,C.ochre,3);mkLine(Cp,A,C.slate,1.8);
+      // Cạnh bên
+      cylinder(A,S,.06,C.slate);mkLine(S,B,C.slate,1);mkLine(S,Cp,C.slate,1);
+      // AH ⊥ BC
+      const BC=Cp.clone().sub(B),t=A.clone().sub(B).dot(BC)/BC.dot(BC);
+      const H=B.clone().add(BC.clone().multiplyScalar(t));
+      const AH=A.distanceTo(H);
+      mkLine(A,H,C.jade,3);
+      rightAngle(H,A.clone().sub(H),BC.clone().normalize(),.35,C.jade);
+      rightAngle(A,V(0,1,0),H.clone().sub(A),.35,C.jade);
+      // Dots
+      dot(S,C.point,.14,'S');dot(A,C.point,.1,'A');dot(B,C.point,.1,'B');dot(Cp,C.point,.1,'C');dot(H,C.jade,.12,'H');
+      // Labels
+      addLabel('S',S.clone().add(V(0,.3,0)),'result');addLabel('A',A.clone().add(V(-.25,0,-.2)));addLabel('B',B.clone().add(V(.25,0,-.15)));addLabel('C',Cp.clone().add(V(.15,0,.2)));addLabel('H',H.clone().add(V(0,-.3,.15)),'jade');
+      addLabel('AH = '+fmt(AH),A.clone().add(H).multiplyScalar(.5).add(V(-.4,.15,0)),'result');
+      addLabel('SA ⊥ đáy',V(-.5,hSA/2,0));
+      document.getElementById('distance-readout').textContent='d(SA,BC) = AH = '+fmt(AH);
+      document.getElementById('distance-readout').style.color='#34D399';
+      document.getElementById('scene-chip').textContent='Chóp S.ABC · đoạn vuông góc chung AH';
+    }
+
+    /* ===== STEP 3: Bẫy đoạn xiên SK ===== */
+    function buildStep3Scene(){
+      clearScene();
+      const AB=6,angABC=rad(70);
+      const A=V(0,0,0),B=V(AB,0,0);
+      const Cx=B.x+AB*Math.cos(Math.PI-angABC),Cz=AB*Math.sin(Math.PI-angABC);
+      const Cp=V(Cx,0,Cz);
+      const hSA=5;const S=V(0,hSA,0);
+      // Đáy + chóp
+      plane([A,B,Cp],C.sandFill,.18);
+      mkLine(A,B,C.slate,1.5);mkLine(B,Cp,C.ochre,3);mkLine(Cp,A,C.slate,1.5);
+      cylinder(A,S,.06,C.slate);mkLine(S,B,C.slate,1);mkLine(S,Cp,C.slate,1);
+      // AH chuẩn (jade, nét liền)
+      const BC=Cp.clone().sub(B),tH=A.clone().sub(B).dot(BC)/BC.dot(BC);
+      const H=B.clone().add(BC.clone().multiplyScalar(tH));
+      const AHlen=A.distanceTo(H);
+      mkLine(A,H,C.jade,3);rightAngle(H,A.clone().sub(H),BC.clone().normalize(),.35,C.jade);
+      // Điểm K kéo được trên BC
+      const K=B.clone().add(BC.clone().multiplyScalar(kT));
+      objects.kMesh=dot(K,C.accent,.16,'K');
+      objects.skLine=mkLine(S,K,C.accent,2,true);
+      // Dots cố định
+      dot(S,C.point,.14,'S');dot(A,C.point,.1,'A');dot(B,C.point,.1,'B');dot(Cp,C.point,.1,'C');dot(H,C.jade,.12,'H');
+      // Labels
+      addLabel('S',S.clone().add(V(0,.3,0)),'result');addLabel('A',A.clone().add(V(-.25,0,-.2)));addLabel('B',B.clone().add(V(.25,0,-.15)));addLabel('C',Cp.clone().add(V(.15,0,.2)));addLabel('H',H.clone().add(V(0,-.3,.15)),'jade');
+      addLabel('AH = '+fmt(AHlen),A.clone().add(H).multiplyScalar(.5).add(V(-.4,.15,0)),'jade');
+      objects.kLabel=addLabel('K',K.clone().add(V(0,-.3,0)),'result');
+      objects.skLabel=addLabel('SK = '+fmt(S.distanceTo(K)),S.clone().add(K).multiplyScalar(.5).add(V(.3,.1,0)),'result');
+      // Store geometry refs
+      objects.S=S;objects.B=B;objects.Cp=Cp;objects.BC=BC;objects.AHlen=AHlen;
+      document.getElementById('scene-chip').textContent='Bẫy đoạn xiên · kéo K trên BC';
+      updateStep3Geometry();
+    }
+    function updateStep3Geometry(){
+      if(!objects.kMesh)return;
+      const K=objects.B.clone().add(objects.BC.clone().multiplyScalar(kT));
+      objects.kMesh.position.copy(K);
+      setLine(objects.skLine,objects.S,K);
+      objects.kLabel.pos.copy(K).add(V(0,-.3,0));
+      const skDist=objects.S.distanceTo(K);
+      objects.skLabel.pos.copy(objects.S.clone().add(K).multiplyScalar(.5)).add(V(.3,.1,0));
+      objects.skLabel.el.textContent='SK = '+fmt(skDist);
+      const rd=document.getElementById('distance-readout');
+      rd.textContent='SK = '+fmt(skDist)+' · AH = '+fmt(objects.AHlen);
+      rd.style.color=skDist<=objects.AHlen+.01?'#34D399':'#FAC775';
+      const out=document.querySelector('[data-out="kt"]');
+      if(out)out.textContent=fmt(kT);
+      const skVal=document.getElementById('sk-val');
+      if(skVal)skVal.textContent=fmt(skDist);
+    }
+
+    /* ===== STEP 4: 2 ống kỹ thuật chéo nhau ===== */
+    function buildStep4Scene(){
+      clearScene();
+      // Trần giả
+      const ceilG=new THREE.PlaneGeometry(10,10);const ceilM=new THREE.MeshPhongMaterial({color:C.paperLine,transparent:true,opacity:.45,side:THREE.DoubleSide,depthWrite:false});
+      const ceil=new THREE.Mesh(ceilG,ceilM);ceil.rotation.x=Math.PI/2;ceil.position.y=2.5;root.add(ceil);
+      const ceilGrid=new THREE.GridHelper(10,20,C.paperLine,C.paperLine);ceilGrid.position.y=2.51;ceilGrid.material.opacity=.3;ceilGrid.material.transparent=true;root.add(ceilGrid);
+      // Sàn
+      const floorG=new THREE.PlaneGeometry(10,10);const floorM=new THREE.MeshPhongMaterial({color:C.cream2,transparent:true,opacity:.4,side:THREE.DoubleSide,depthWrite:false});
+      const floor=new THREE.Mesh(floorG,floorM);floor.rotation.x=Math.PI/2;floor.position.y=0;root.add(floor);
+      const floorGrid=new THREE.GridHelper(10,10,C.grid,C.grid);floorGrid.position.y=.01;root.add(floorGrid);
+      // Ống nước (hướng X, y=1.0)
+      const pipeWaterA=V(-4,1,0),pipeWaterB=V(4,1,0);
+      cylinder(pipeWaterA,pipeWaterB,.05,C.dustyBlue);
+      // Ống điều hòa (hướng chéo 45°, y=1.8)
+      const dir45=V(Math.cos(rad(45)),0,Math.sin(rad(45)));
+      const pipeACa=V(-4*dir45.x,1.8,-4*dir45.z),pipeACb=V(4*dir45.x,1.8,4*dir45.z);
+      cylinder(pipeACa,pipeACb,.08,C.ochre);
+      // Đường đo khoảng cách (đứng, jade)
+      mkLine(V(0,1,0),V(0,1.8,0),C.jade,3);
+      rightAngle(V(0,1,0),V(0,1,0),V(1,0,0),.25,C.jade);
+      dot(V(0,1,0),C.jade,.08);dot(V(0,1.8,0),C.jade,.08);
+      // Mặt phẳng (Q) — luôn hiện ở bước 4
+      const qPlane=new THREE.Mesh(new THREE.PlaneGeometry(9,9),new THREE.MeshPhongMaterial({color:C.jadePale,transparent:true,opacity:.22,side:THREE.DoubleSide,depthWrite:false}));
+      qPlane.rotation.x=Math.PI/2;qPlane.position.y=1.8;root.add(qPlane);
+      // Labels
+      addLabel('Ống nước (y=1,0m)',V(3.5,.7,0));
+      addLabel('Ống điều hòa (y=1,8m)',V(2.5,2.15,2.5));
+      addLabel('d = 0,80m',V(-1.5,1.4,0),'result');
+      addLabel('(Q)',V(-3.5,1.95,3),'jade');
+      addLabel('Trần giả',V(-4,2.55,4));
+      document.getElementById('distance-readout').textContent='d = 0,80m (hiệu cao độ)';
+      document.getElementById('distance-readout').style.color='#34D399';
+      document.getElementById('scene-chip').textContent='2 ống kỹ thuật · quy về mặt song song';
+    }
+
+    /* ===== CAMERA ===== */
+    function setCamera(mode){
+      if(currentStep===1){
+        if(mode==='top'){camera.position.set(.01,12,0);controls.target.set(0,1.2,0)}
+        else if(mode==='side'){camera.position.set(12,2,0);controls.target.set(0,1.2,0)}
+        else{camera.position.set(8,5,10);controls.target.set(0,1.2,0)}
+      }else if(currentStep===4){
+        if(mode==='top'){camera.position.set(.01,10,0);controls.target.set(0,1,0)}
+        else if(mode==='side'){camera.position.set(10,1.4,0);controls.target.set(0,1.4,0)}
+        else{camera.position.set(7,4,8);controls.target.set(0,1.4,0)}
+      }else{
+        if(mode==='top'){camera.position.set(.01,14,0);controls.target.set(2,0,1)}
+        else if(mode==='side'){camera.position.set(0,4,12);controls.target.set(2,2,1)}
+        else{camera.position.set(8,7,9);controls.target.set(2,2,1)}
+      }
+      camera.up.set(0,1,0);controls.update();
+    }
+
+    /* ===== UI RENDERERS ===== */
+    function notebook(text){return`<div class="notebook"><b><i class="ti ti-notebook"></i> Sổ tay kiến thức</b><br>${text}</div>`}
+    function navButtons(nextLabel='Tiếp tục',needQuiz=null){
+      const dis=needQuiz!==null&&!needQuiz?'disabled':'';
+      return`<div class="btn-row">${currentStep>1?'<button class="btn btn-secondary" onclick="lesson.prevStep()">← Quay lại</button>':''}<button class="btn btn-primary" ${dis} onclick="${currentStep<4?'lesson.completeStep()':'lesson.finish()'}">
+      ${nextLabel} →</button></div>`;
+    }
+
+    function renderStep(){
+      document.getElementById('header-progress').textContent=`BƯỚC ${currentStep}/4`;
+      document.querySelectorAll('.step-tab').forEach(b=>{const n=+b.dataset.step;b.classList.toggle('active',n===currentStep);b.classList.toggle('done',n<unlocked);b.disabled=n>unlocked});
+      if(currentStep===1)renderStep1UI();
+      if(currentStep===2)renderStep2UI();
+      if(currentStep===3)renderStep3UI();
+      if(currentStep===4)renderStep4UI();
+      reportHeight();
+    }
+
+    function renderStep1UI(){
+      stepBody.innerHTML=`
+      <p class="eyebrow">Bước 1 · Khoảng cách đường — mặt song song</p>
+      <h2 class="step-title">Cổng trạm thu phí</h2>
+      <div class="athena"><b>✦ Athena</b>Cổng trạm thu phí có thanh ngang nối 2 đỉnh cột. Cột dựng thẳng đứng (theo phương trọng lực), nhưng mặt đường lại dốc 10°. Vì thanh ngang chạy theo đường đồng mức, nó <b>song song</b> với mặt đường dốc.</div>
+      <div class="card"><h3>Khoảng cách thanh ngang — mặt dốc:</h3>
+      <p class="body-small">Cột cao L = 2,5m dựng thẳng đứng (vuông góc mặt NGANG, không vuông góc mặt DỐC). Khoảng cách thực = hình chiếu của cột lên phương pháp tuyến mặt dốc:</p>
+      <div class="formula">d = L · cos(α) = 2,5 × cos(10°) ≈ 2,462m</div>
+      <p class="body-small">Vì thanh ngang song song mặt dốc, khoảng cách giữa chúng = khoảng cách từ <b>1 điểm BẤT KỲ</b> trên thanh đến mặt dốc — luôn bằng 2,462m.</p></div>
+      <div class="card" id="q1-card"><h3><i class="ti ti-help-circle"></i> Ứng dụng thực tế:</h3>
+      <p class="body-small">Nếu xe tải cao 2,4m, xe có qua được cổng trạm thu phí không?</p>
+      <button class="choice" onclick="lesson.answerQ1(0)">A. Không — cột chỉ cao 2,5m, gần bằng xe nên rất nguy hiểm</button>
+      <button class="choice ${q1Done?'correct':''}" onclick="lesson.answerQ1(1)">B. Có — vì khoảng cách thật là 2,462m > chiều cao xe 2,4m</button>
+      <button class="choice" onclick="lesson.answerQ1(2)">C. Không xác định được vì mặt đường dốc</button>
+      <div id="q1-feedback">${q1Done?'<div class="feedback good">Chính xác! Khoảng cách thực 2,462m > 2,4m → xe vẫn có khoảng hở 6,2cm để qua.</div>':''}</div></div>
+      ${notebook('Khoảng cách giữa đường thẳng a song song mặt phẳng (P): d(a, (P)) = khoảng cách từ 1 điểm BẤT KỲ trên a đến (P) — vì mọi điểm trên a cách (P) như nhau.')}
+      ${navButtons('Tôi đã hiểu',q1Done)}`;
+    }
+
+    function renderStep2UI(){
+      stepBody.innerHTML=`
+      <p class="eyebrow">Bước 2 · Đoạn vuông góc chung</p>
+      <h2 class="step-title">Khoảng cách SA và BC trong chóp S.ABC</h2>
+      <div class="athena"><b>✦ Athena</b>Hình chóp S.ABC có SA ⊥ (ABC), AB = 6, ∠ABC = 70°. SA và BC là 2 đường chéo nhau. Vì SA đã ⊥ CẢ mặt phẳng (ABC), chỉ cần tìm 1 đường trong đáy mà ⊥ BC.</div>
+      <div class="card"><h3>Quy trình dựng đoạn vuông góc chung:</h3>
+      <p class="body-small"><b>1.</b> SA ⊥ (ABC) → SA ⊥ mọi đường trong (ABC), kể cả AH sắp dựng.<br>
+      <b>2.</b> Dựng AH ⊥ BC tại H (hình chiếu A trên BC).<br>
+      <b>3.</b> AH ⊥ SA (vì SA ⊥ đáy) VÀ AH ⊥ BC (theo cách dựng) → <b>AH là đoạn vuông góc chung</b>.</p>
+      <div class="formula">AH = AB · sin(∠ABC) = 6 · sin(70°) ≈ 5,6382</div></div>
+      <div class="feedback good">Khoảng cách giữa SA và BC = AH ≈ 5,64. Đây là kỹ thuật: khi đã có đường ⊥ mặt phẳng, chỉ cần hạ vuông góc trong mặt.</div>
+      ${notebook('Đoạn vuông góc chung của 2 đường chéo nhau a, b: đoạn Δ cắt cả a, b và ⊥ CẢ HAI. Khoảng cách = độ dài Δ.')}
+      ${navButtons('Tiếp: Bẫy đoạn xiên')}`;
+    }
+
+    function renderStep3UI(){
+      const skDist=objects.S?objects.S.distanceTo(objects.B.clone().add(objects.BC.clone().multiplyScalar(kT))):7.8;
+      stepBody.innerHTML=`
+      <p class="eyebrow">Bước 3 · Nhận diện sai lầm</p>
+      <h2 class="step-title">Đoạn bất kỳ ≠ Đoạn vuông góc chung</h2>
+      <div class="athena"><b>✦ Athena</b>Nếu nối S với điểm K (khác H) trên BC, đoạn SK có đo đúng khoảng cách SA–BC không? Hãy kéo điểm vàng trên BC và quan sát.</div>
+      <div class="control"><label>Vị trí K trên BC <output data-out="kt">${fmt(kT)}</output></label>
+      <input type="range" min="0" max="1" step=".02" value="${kT}" oninput="lesson.setKT(this.value)"></div>
+      <div class="formula" style="display:flex;justify-content:space-between">
+      <span>SK = <b id="sk-val">${fmt(skDist)}</b></span><span style="color:var(--jade-dark)">AH = 5,64 (chuẩn)</span></div>
+      <div class="card" id="q3-card"><h3><i class="ti ti-help-circle"></i> Câu hỏi tư duy:</h3>
+      <p class="body-small">SK có phải là đoạn vuông góc chung của SA và BC không?</p>
+      <button class="choice" onclick="lesson.answerQ3(false)">A. Có — vì SK nối 2 đường SA và BC</button>
+      <button class="choice ${q3Done?'correct':''}" onclick="lesson.answerQ3(true)">B. Không — SK không ⊥ BC, chỉ là đoạn xiên bất kỳ</button>
+      <div id="q3-feedback">${q3Done?'<div class="feedback good">Đúng! Đoạn vuông góc chung phải ⊥ CẢ HAI đường, và luôn là đoạn NGẮN NHẤT — giống MH ≤ MK ở Module 1.</div>':q3Strikes>=2?'<div class="feedback warn">Gợi ý: Kéo K về đúng vị trí H và so sánh — đoạn nào ngắn nhất?</div>':''}</div></div>
+      ${notebook('Đoạn vuông góc chung LUÔN là đoạn NGẮN NHẤT nối 2 đường chéo nhau. Bất kỳ đoạn nối nào khác (như SK khi K ≠ H) đều dài hơn.')}
+      ${navButtons('Tiếp: Ứng dụng thực tế',q3Done)}`;
+    }
+
+    function renderStep4UI(){
+      stepBody.innerHTML=`
+      <p class="eyebrow">Bước 4 · Quy về dễ hơn</p>
+      <h2 class="step-title">2 đường ống kỹ thuật chéo nhau</h2>
+      <div class="athena"><b>✦ Athena</b>Trong trần giả toà nhà: ống nước nằm ngang tại y = 1,0m, ống điều hoà chéo 45° tại y = 1,8m. 2 ống không cắt, không song song → chéo nhau. Đội thi công cần biết khoảng cách giữa chúng.</div>
+      <div class="card"><h3>Cách 1 — Dựng trực tiếp đoạn vuông góc chung:</h3>
+      <p class="body-small">Rất phức tạp! Cả 2 ống đều chéo tự do, không có sẵn ống nào ⊥ mặt phẳng chứa ống kia. Dựng trực tiếp đoạn vuông góc chung khó hơn nhiều so với Bước 2.</p></div>
+      <div class="card" style="border-color:var(--jade);background:var(--jade-pale)"><h3 style="color:var(--jade-dark)">✓ Cách 2 — Quy về đường–mặt phẳng song song:</h3>
+      <p class="body-small">Dựng mặt phẳng (Q) chứa ống điều hoà VÀ song song ống nước. Vì cả 2 ống đều nằm ngang → (Q) chính là mặt ngang qua ống điều hoà.</p>
+      <div class="formula">d = khoảng cách ống nước đến (Q) = |1,8 − 1,0| = 0,80m</div>
+      <p class="body-small">Đơn giản hơn hẳn Cách 1!</p></div>
+      <div class="card" id="q4a-card"><h3><i class="ti ti-help-circle"></i> Câu hỏi 1 — Chọn cách tối ưu:</h3>
+      <p class="body-small">Khi cấu hình phức tạp (không có đường nào ⊥ mặt phẳng sẵn), cách nào NÊN dùng?</p>
+      <button class="choice" onclick="lesson.answerQ4a(false)">A. Luôn dựng trực tiếp đoạn vuông góc chung cho chính xác</button>
+      <button class="choice ${q4aDone?'correct':''}" onclick="lesson.answerQ4a(true)">B. Quy về khoảng cách đường–mặt phẳng song song, dễ hơn</button>
+      <div id="q4a-feedback">${q4aDone?'<div class="feedback good">Chính xác! Quy về d(a, (Q)) thường đơn giản hơn dựng trực tiếp đoạn vuông góc chung.</div>':''}</div></div>
+      <div class="card" id="q4b-card"><h3><i class="ti ti-help-circle"></i> Câu hỏi 2 — Điều kiện mặt phẳng (Q):</h3>
+      <p class="body-small">Khi dựng mặt phẳng (Q) ở Cách 2, điều kiện BẮT BUỘC nào (Q) phải thoả?</p>
+      <button class="choice ${q4bDone?'correct':''}" onclick="lesson.answerQ4b(true)">A. Chứa 1 đường (ống điều hoà) VÀ song song đường còn lại (ống nước)</button>
+      <button class="choice" onclick="lesson.answerQ4b(false)">B. Chỉ cần vuông góc với cả 2 ống</button>
+      <div id="q4b-feedback">${q4bDone?'<div class="feedback good">Đúng! (Q) phải chứa 1 đường VÀ song song đường kia — sai điều kiện này thì toàn bộ cách tính sai.</div>':''}</div></div>
+      ${notebook('<b>Tổng hợp Module 2:</b><ol class="summary-list"><li><b>Đường–mặt song song:</b> d = từ 1 điểm bất kỳ trên đường đến mặt.</li><li><b>Đoạn vuông góc chung:</b> Tận dụng đường đã ⊥ mặt phẳng nếu có sẵn.</li><li><b>Đoạn bất kỳ ≠ vuông góc chung:</b> Phải ⊥ cả 2 đường, luôn ngắn nhất.</li><li><b>Quy về dễ hơn:</b> Đường–mặt song song thường dễ hơn dựng trực tiếp.</li></ol>')}
+      <div class="btn-row"><button class="btn btn-secondary" onclick="lesson.prevStep()">← Quay lại</button>
+      <button class="btn btn-primary" ${!(q4aDone&&q4bDone)?'disabled':''} onclick="lesson.finish()">Hoàn thành Module 2 🎉</button></div>`;
+    }
+
+    /* ===== NAVIGATION ===== */
+    function goStep(n){if(n<1||n>unlocked)return;currentStep=n;window.scrollTo(0,0);const sb=document.querySelector('.sidebar');if(sb)sb.scrollTop=0;
+      if(n===1){buildStep1Scene();setCamera('perspective')}
+      if(n===2){buildStep2Scene();setCamera('perspective')}
+      if(n===3){buildStep3Scene();setCamera('perspective')}
+      if(n===4){buildStep4Scene();setCamera('perspective')}
+      renderStep()}
+    function completeStep(){unlocked=Math.max(unlocked,Math.min(4,currentStep+1));LMS().progress({done:currentStep,total:4});LMS().event('completed-section',{id:['step1-line-plane','step2-perp-common','step3-trap','step4-reduce'][currentStep-1]});if(currentStep<4)goStep(currentStep+1)}
+    function finish(){if(completed)return;completed=true;LMS().progress({done:4,total:4});const sc=[q1Done,q3Done,q4aDone,q4bDone].filter(Boolean).length;LMS().complete({summary:'Đã hoàn thành Module 2: khoảng cách đường-mặt song song, đoạn vuông góc chung, bẫy đoạn xiên và kỹ thuật quy về dễ hơn.',score:sc,max:4});stepBody.insertAdjacentHTML('beforeend','<div class="feedback good" style="margin-top:10px"><b>Chúc mừng!</b> Bạn đã nắm vững cách tính khoảng cách giữa các đối tượng song song và chéo nhau!</div>');reportHeight()}
+
+    window.lesson={
+      setKT(v){kT=+v;updateStep3Geometry();LMS().state({kT})},
+      answerQ1(i){if(q1Done)return;if(i===1){q1Done=true;LMS().event('answered',{id:'q1-xe-qua-cong',correct:true});renderStep1UI()}else{q1Strikes++;LMS().event('answered',{id:'q1-xe-qua-cong',correct:false,strikes:q1Strikes});const c=document.getElementById('q1-card');if(c){c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),320)}const fb=document.getElementById('q1-feedback');if(fb)fb.innerHTML='<div class="feedback bad">Chưa đúng. Gợi ý: khoảng cách thật = 2,5 × cos(10°), so sánh với chiều cao xe!</div>';if(q1Strikes>=3){q1Done=true;renderStep1UI()}}},
+      answerQ3(ok){if(q3Done)return;if(ok){q3Done=true;LMS().event('answered',{id:'q3-sk-vuong-goc-chung',correct:true});renderStep3UI()}else{q3Strikes++;LMS().event('answered',{id:'q3-sk-vuong-goc-chung',correct:false,strikes:q3Strikes});const c=document.getElementById('q3-card');if(c){c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),320)}const fb=document.getElementById('q3-feedback');if(fb)fb.innerHTML='<div class="feedback bad">Chưa đúng. Đoạn vuông góc chung phải vuông góc với CẢ HAI đường!</div>';if(q3Strikes>=3){q3Done=true;renderStep3UI()}}},
+      answerQ4a(ok){if(q4aDone)return;if(ok){q4aDone=true;LMS().event('answered',{id:'q4a-cach-nao-dung',correct:true});renderStep4UI()}else{q4aStrikes++;LMS().event('answered',{id:'q4a-cach-nao-dung',correct:false,strikes:q4aStrikes});const c=document.getElementById('q4a-card');if(c){c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),320)}const fb=document.getElementById('q4a-feedback');if(fb)fb.innerHTML='<div class="feedback bad">Chưa đúng. Dựng trực tiếp quá phức tạp khi không có đường ⊥ mặt phẳng sẵn!</div>';if(q4aStrikes>=3){q4aDone=true;renderStep4UI()}}},
+      answerQ4b(ok){if(q4bDone)return;if(ok){q4bDone=true;LMS().event('answered',{id:'q4b-dieu-kien-Q',correct:true});renderStep4UI()}else{q4bStrikes++;LMS().event('answered',{id:'q4b-dieu-kien-Q',correct:false,strikes:q4bStrikes});const c=document.getElementById('q4b-card');if(c){c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),320)}const fb=document.getElementById('q4b-feedback');if(fb)fb.innerHTML='<div class="feedback bad">Chưa đúng. (Q) phải chứa 1 đường VÀ song song đường còn lại!</div>';if(q4bStrikes>=3){q4bDone=true;renderStep4UI()}}},
+      completeStep,prevStep(){goStep(currentStep-1)},finish
+    };
+
+    document.querySelectorAll('.step-tab').forEach(b=>b.onclick=()=>goStep(+b.dataset.step));
+    document.getElementById('btn-reset').onclick=()=>setCamera('perspective');
+    document.getElementById('btn-top').onclick=()=>setCamera('top');
+
+    /* ===== RAYCASTING DRAG ===== */
+    const raycaster=new THREE.Raycaster(),pointer=new THREE.Vector2();
+    function pointerRay(e){const r=canvas.getBoundingClientRect();pointer.set((e.clientX-r.left)/r.width*2-1,-(e.clientY-r.top)/r.height*2+1);raycaster.setFromCamera(pointer,camera)}
+    canvas.addEventListener('pointerdown',e=>{if(currentStep===3&&objects.kMesh){pointerRay(e);if(raycaster.intersectObject(objects.kMesh,false).length){dragMode='K';controls.enabled=false;canvas.setPointerCapture(e.pointerId)}}});
+    canvas.addEventListener('pointermove',e=>{if(dragMode!=='K')return;pointerRay(e);
+      const planeY=new THREE.Plane(V(0,1,0),0);const hit=V();
+      if(raycaster.ray.intersectPlane(planeY,hit)){
+        const BA=hit.clone().sub(objects.B),bcN=objects.BC.clone().normalize();
+        let t=BA.dot(bcN)/objects.BC.length();t=Math.max(0,Math.min(1,t));
+        kT=t;const slider=stepBody.querySelector('input[type="range"]');if(slider)slider.value=kT;
+        updateStep3Geometry()}});
+    function endDrag(){if(dragMode)LMS().event('dragged-point',{target:'K',t:kT});dragMode=null;controls.enabled=true}
+    canvas.addEventListener('pointerup',endDrag);canvas.addEventListener('pointercancel',endDrag);
+
+    /* ===== RENDER LOOP ===== */
+    function resize(){const w=wrap.clientWidth,h=wrap.clientHeight;camera.aspect=w/Math.max(1,h);camera.updateProjectionMatrix();renderer.setSize(w,h,false)}
+    new ResizeObserver(resize).observe(wrap);window.addEventListener('resize',resize);
+    function updateLabels(){labels.forEach(l=>{const p=l.pos.clone().project(camera),show=p.z>-1&&p.z<1;l.el.style.display=show?'block':'none';if(show)l.el.style.transform=`translate(${(p.x*.5+.5)*wrap.clientWidth}px,${(-p.y*.5+.5)*wrap.clientHeight}px) translate(-50%,-115%)`})}
+    function animate(){requestAnimationFrame(animate);controls.update();updateLabels();renderer.render(scene,camera)}
+    function reportHeight(){if(window.innerWidth<=768){LMS().resize({height:document.documentElement.scrollHeight})}else{LMS().resize({height:window.innerHeight})}}
+    new ResizeObserver(()=>{clearTimeout(window._rh);window._rh=setTimeout(reportHeight,100)}).observe(document.body);
+
+    buildStep1Scene();setCamera('perspective');renderStep();resize();animate();
+    LMS().ready({id:'bai26-module2-khoang-cach-song-song-cheo-nhau'});
+    if(window.AiducationLMS)window.AiducationLMS.onResume=s=>{if(!s)return;kT=Number.isFinite(s.kT)?s.kT:kT;unlocked=Math.max(1,Math.min(4,s.unlocked||1));goStep(Math.min(unlocked,s.currentStep||1))};
+  })();
+  </script>
+</body>
+</html>
