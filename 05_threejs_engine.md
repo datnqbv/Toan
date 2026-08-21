@@ -903,6 +903,399 @@ function updateKinhTuyenP(longitudeDeg) {
 
 ---
 
+## PHẦN 2.13 — KHỐI NƯỚC ĐẶC TRONG CONTAINER (clipping plane) — bản đã sửa lỗi thật qua prototype
+
+> **Thêm 08/2026, SỬA LẠI 08/2026 sau khi test prototype thật** — bản đầu
+> tiên (đã xoá) dùng 1 mặt phẳng mỏng scale theo tiết diện để giả lập mực
+> nước — nhìn "giả", không có cảm giác khối đặc. Bản này dùng
+> **clipping plane cắt 1 khối đặc thật** (đúng hình dạng container), đã
+> qua 3 vòng sửa lỗi thật dựa trên phản hồi hình ảnh trực tiếp — ghi lại
+> đầy đủ NGUYÊN NHÂN + CÁCH SỬA để không lặp lại.
+
+### 2.13.1 Nguyên tắc cốt lõi: 1 khối đặc + clipping, KHÔNG dùng mặt phẳng giả lập
+
+```javascript
+renderer.localClippingEnabled = true; // BẮT BUỘC set 1 lần khi khởi tạo renderer
+
+// clipPlane: mặt phẳng NẰM NGANG, world space — dùng CHUNG cho cả khối
+// container thật (nếu cần) và khối nước (bắt buộc)
+const clipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
+// clipPlane.constant = fillRatio * H  → cập nhật mỗi khi mực nước đổi
+
+function createWaterBody(bodyGeometry, clipPlane) {
+  return new THREE.Mesh(bodyGeometry, new THREE.MeshStandardMaterial({
+    color: 0x6fb3dd,              // xanh lam ĐẬM đủ để nổi bật (đã tăng
+                                    // từ 0x9ecbe8 quá nhạt ở bản đầu)
+    transparent: true, opacity: 0.78,   // đã tăng từ 0.42→0.78 sau khi
+                                          // bản đầu "không phân biệt được
+                                          // có nước hay không"
+    side: THREE.FrontSide,        // ⚠️ XEM 2.13.2 — KHÔNG dùng DoubleSide
+    depthWrite: false,            // ⚠️ XEM 2.13.3 — bắt buộc false
+    clippingPlanes: [clipPlane]
+  }));
+}
+```
+
+- Với khối **chóp** (đỉnh dưới, miệng mở trên — xem 2.14.1 về hướng dựng
+  đúng): dùng LẠI đúng geometry của container (`chopGeom.clone()`),
+  clipping sẽ tự cho ra đúng hình frustum thu nhỏ dần — KHÔNG cần
+  scale-hack thủ công.
+- Với khối **lăng trụ** (tiết diện không đổi): dùng `BoxGeometry`, chỉ
+  cần đổi `position.y` theo mực nước, KHÔNG cần đổi scale.
+
+### 2.13.2 ⚠️ LỖI THẬT #1 — DoubleSide làm tường bình trông "xám đục"
+
+**Hiện tượng quan sát được:** dựng container bằng `BoxGeometry` +
+material `side: THREE.DoubleSide` (để nhìn được cả từ trong ra ngoài) →
+tường bình hiện lên như 1 khối xám đục, không có cảm giác "trong như
+kính", và khối nước bên trong gần như không thấy được (phải xoay camera
+mới thấy).
+
+**Nguyên nhân:** `DoubleSide` khiến CẢ mặt trước VÀ mặt sau của khối hộp
+cùng được vẽ. Với vật liệu trong suốt, 2 lớp mờ (mặt trước + mặt sau)
+CỘNG DỒN lại nhìn như 1 lớp đục hơn hẳn — không phải hiệu ứng "kính
+trong" như mong đợi.
+
+**Cách sửa:** đổi `side: THREE.DoubleSide` → `side: THREE.FrontSide`
+cho MỌI vật liệu container/khối nước dạng khối kín (box, cone kín). Chỉ
+dùng `DoubleSide` cho vật thể THỰC SỰ chỉ có 1 lớp mặt phẳng đơn (như mặt
+nước gợn sóng dạng `PlaneGeometry`, xem 2.13.4).
+
+### 2.13.3 ⚠️ LỖI THẬT #2 — depthWrite mặc định khiến vật trong suốt vẫn "che" nhau
+
+**Hiện tượng quan sát được:** ngay cả sau khi đổi sang `FrontSide`, có
+lúc khối nước bên trong vẫn không hiện ra dù đã đổ nước — phải xoay góc
+camera khác mới thấy.
+
+**Nguyên nhân:** `depthWrite` mặc định là `true` cho MỌI vật liệu, kể cả
+vật liệu `transparent: true`. Nghĩa là 1 vật trong suốt vẫn GHI LẠI độ
+sâu vào depth buffer như vật đặc — nếu tường container (vẽ trước) ghi độ
+sâu của nó, khối nước (vẽ sau, ở vị trí xa camera hơn 1 chút) có thể bị
+depth-test loại bỏ dù đáng lẽ phải nhìn xuyên qua tường để thấy được.
+
+**Cách sửa:** thêm `depthWrite: false` cho MỌI vật liệu trong suốt xếp
+lớp lên nhau (tường container, khối nước, mặt gợn sóng) — chỉ giữ
+`depthWrite: true` (mặc định) cho các vật ĐẶC không xuyên thấu (nếu có).
+
+### 2.13.4 renderOrder — đảm bảo thứ tự vẽ đúng, không phụ thuộc thứ tự add vào scene
+
+```javascript
+containerMesh.renderOrder = 0;   // tường bình — vẽ TRƯỚC
+waterBodyMesh.renderOrder = 1;   // khối nước — vẽ SAU tường
+rippleCapMesh.renderOrder = 2;   // mặt gợn sóng (nếu có) — vẽ SAU CÙNG
+```
+
+> Three.js không tự sắp xếp thứ tự vẽ giữa các vật trong suốt khác nhau
+> theo độ sâu thật — phải set `renderOrder` thủ công khi có nhiều lớp
+> trong suốt chồng nhau, nếu không thứ tự vẽ sẽ phụ thuộc thứ tự
+> `scene.add()`, dễ cho kết quả không ổn định giữa các lần tải trang.
+
+### 2.13.5 ⚠️ LỖI THẬT #3 — mặt phẳng "cap" gây hình chồng chéo trên container NGHIÊNG/CÓ TIẾT DIỆN ĐỔI
+
+**Hiện tượng quan sát được:** thêm 1 mặt phẳng phẳng (`PlaneGeometry`,
+xoay 45° khớp đáy vuông) làm "màng nước" tại miệng khối CHÓP → khi chóp
+nghiêng (xem PHẦN 2.14), mặt phẳng này hiện thành hình đa giác xiên chồng
+chéo, nhìn rất giả ("ghê" — phản hồi trực tiếp từ giáo viên).
+
+**Nguyên nhân:** mặt cap phẳng đơn giản chỉ đúng hình khi container
+KHÔNG nghiêng và có tiết diện không đổi theo chiều cao (như lăng trụ).
+Với container CÓ TIẾT DIỆN ĐỔI (chóp) hoặc ĐANG NGHIÊNG, 1 mặt cap đơn
+không còn khớp hình dạng miệng thật, gây artefact.
+
+**Cách sửa — quy tắc áp dụng:**
+- Container tiết diện KHÔNG đổi, KHÔNG nghiêng (lăng trụ, hộp): dùng mặt
+  cap gợn sóng (`PlaneGeometry`, xem 2.13.6) — an toàn, hiệu ứng đẹp.
+- Container tiết diện ĐỔI hoặc CÓ NGHIÊNG (chóp, đặc biệt khi có
+  animation nghiêng như PHẦN 2.14): **KHÔNG dùng cap riêng** — chỉ dựa
+  vào khối nước đặc (2.13.1) với clipping, đơn giản và không bị lỗi hình.
+
+### 2.13.6 Mặt gợn sóng (cap) — CHỈ dùng cho container không nghiêng/tiết diện cố định
+
+```javascript
+function createRippleCap(width, depth, segments = 14) {
+  const geo = new THREE.PlaneGeometry(width, depth, segments, segments);
+  geo.rotateX(-Math.PI / 2);
+  const mat = new THREE.MeshStandardMaterial({
+    color: 0xbfe0f2, transparent: true, opacity: 0.85,
+    side: THREE.DoubleSide, depthWrite: false // Plane đơn — DoubleSide ở
+                                                 // đây AN TOÀN (không phải
+                                                 // khối kín như 2.13.2)
+  });
+  return new THREE.Mesh(geo, mat);
+}
+function updateRipple(mesh, t) {
+  const pa = mesh.geometry.attributes.position;
+  for (let i = 0; i < pa.count; i++) {
+    const x = pa.getX(i), z = pa.getZ(i);
+    pa.setY(i, Math.sin(x*0.9 + t*0.0025)*0.05 + Math.sin(z*1.1 + t*0.0018)*0.03);
+  }
+  pa.needsUpdate = true;
+}
+```
+
+> **Verify đã thực hiện:** đã chạy qua prototype thật (trình duyệt),
+> điều chỉnh 3 vòng dựa trên phản hồi hình ảnh trực tiếp — hiện tại
+> (08/2026) đã đạt yêu cầu hiển thị rõ ràng, không cần xoay camera mới
+> thấy khối nước, tường bình không còn "xám đục".
+
+---
+
+## PHẦN 2.14 — ANIMATION NGHIÊNG BÌNH ĐỔ NƯỚC (tilt thật + dòng rơi cong xuống) — bản đã sửa lỗi thật
+
+> **Thêm 08/2026, SỬA LẠI 08/2026 sau 2 vòng phản hồi thật** — bản đầu
+> dùng dòng hạt nước bay theo cung Bezier NHÔ LÊN giữa 2 container ĐỨNG
+> YÊN cách xa nhau — phản hồi: "trông như bắn pháo hoa, phi vật lý". Bản
+> này: container NGHIÊNG THẬT + DI CHUYỂN lại gần mục tiêu + dòng nước rơi
+> CONG XUỐNG (đúng trọng lực).
+
+### 2.14.1 Dựng container "chóp" đúng hướng — đỉnh DƯỚI, miệng mở TRÊN
+
+```javascript
+// ⚠️ QUAN TRỌNG: THREE.ConeGeometry mặc định có ĐỈNH ở TRÊN, ĐÁY TRÒN ở
+// DƯỚI — NGƯỢC với 1 cái ly/bình hình chóp thật (đỉnh nhọn dưới, miệng
+// mở trên, để đổ nước vào từ trên). Đã verify bằng Node: cần translate +
+// rotateX(π) + translate lại để lật đúng hướng.
+function buildChopGeometry(circumRadius, H) {
+  const geo = new THREE.ConeGeometry(circumRadius, H, 4, 1, true); // openEnded=true — miệng KHÔNG có nắp, mở thật
+  geo.translate(0, H/2, 0);
+  geo.rotateX(Math.PI);      // LẬT NGƯỢC — đỉnh xuống dưới
+  geo.translate(0, H, 0);    // đưa về đúng khoảng [0, H]: đỉnh ở y=0, miệng ở y=H
+  geo.rotateY(Math.PI/4);    // xoay 45° để 1 mặt bên hướng thẳng về mục tiêu đổ
+  return geo;
+}
+```
+
+### 2.14.2 Nghiêng quanh 1 điểm PIVOT tuỳ ý (không phải gốc toạ độ) — dùng 2 Group lồng nhau
+
+```javascript
+// Muốn xoay quanh 1 điểm KHÔNG phải gốc toạ độ cục bộ (ở đây: mép miệng
+// container, phía hướng về mục tiêu đổ) — dùng 2 Group lồng nhau:
+const hinge = new THREE.Group();  // đặt ĐÚNG tại vị trí pivot world
+const inner = new THREE.Group();  // chứa mesh, offset NGƯỢC lại pivot
+hinge.add(inner);
+scene.add(hinge);
+
+const pivotLocal = new THREE.Vector3(circumRadius, H, 0); // mép miệng, phía +X
+hinge.position.set(CONTAINER_X + pivotLocal.x, pivotLocal.y, pivotLocal.z);
+inner.position.set(-pivotLocal.x, -pivotLocal.y, -pivotLocal.z);
+
+// Xoay: chỉ cần đổi hinge.rotation — điểm pivot LUÔN đứng yên (đã verify
+// bằng Node ở nhiều góc nghiêng, world position của pivot không đổi).
+hinge.rotation.z = -tiltDeg * Math.PI/180;
+```
+
+> ⚠️ **Lỗi thật đã gặp:** lần đầu dùng 1 điểm KHÁC (không phải pivot
+> chính xác) làm "điểm rót nước", tính qua `matrixWorld` — điểm đó BAY
+> LÊN vô lý khi nghiêng (do chọn nhầm điểm). **Cách sửa:** điểm rót nước
+> PHẢI CHÍNH LÀ điểm pivot (`hinge.position`) — điểm này đứng yên theo
+> định nghĩa của phép xoay, không cần tính lại qua ma trận mỗi frame.
+
+### 2.14.3 Dòng nước rơi CONG XUỐNG (đúng trọng lực) — KHÔNG dùng hạt rời rạc
+
+> ⚠️ **Lỗi thật đã gặp (2 lần):** (1) dùng nhiều "viên nước" hình cầu bay
+> rời rạc theo cung Bezier NHÔ LÊN — phản hồi: "trông như bắn pháo hoa,
+> vèo vèo, ghê". (2) Sửa thành ellipsoid + tune hướng — vẫn còn cảm giác
+> "bắn" vì vẫn là các vật rời rạc riêng lẻ, không phải dòng liên tục.
+>
+> **Cách sửa cuối cùng:** BỎ HẲN hạt rời rạc — dùng đúng 1 dòng LIÊN TỤC
+> (`TubeGeometry` dọc theo cung), và bắt buộc control point cung Bezier
+> NẰM DƯỚI đường thẳng nối 2 đầu (võng xuống, đúng trọng lực) — KHÔNG
+> NẰM TRÊN (nhô lên, sai vật lý, gây cảm giác "pháo hoa/bắn").
+
+```javascript
+function fallingBezierPoint(p0, p2, sagDepth, t) {
+  const mid = p0.clone().add(p2).multiplyScalar(0.5);
+  mid.y -= sagDepth; // ⚠️ TRỪ, không phải CỘNG — võng XUỐNG dưới trọng lực
+  const x=(1-t)*(1-t)*p0.x+2*(1-t)*t*mid.x+t*t*p2.x;
+  const y=(1-t)*(1-t)*p0.y+2*(1-t)*t*mid.y+t*t*p2.y;
+  const z=(1-t)*(1-t)*p0.z+2*(1-t)*t*mid.z+t*t*p2.z;
+  return new THREE.Vector3(x,y,z);
+}
+
+// Dòng nước MỌC DẦN từ điểm rót ra tới đích (growFrac 0→1), rồi RÚT NGẮN
+// lại khi kết thúc — KHÔNG bật/tắt đột ngột
+function updateStreamGeometry(scene, streamMeshRef, p0, p2, sagDepth, growFrac) {
+  const segments = 24;
+  const pts = [];
+  const visibleLen = Math.max(0.02, growFrac);
+  for (let i=0;i<=segments;i++) pts.push(fallingBezierPoint(p0, p2, sagDepth, (i/segments)*visibleLen));
+  const curve = new THREE.CatmullRomCurve3(pts);
+  const geo = new THREE.TubeGeometry(curve, segments, 0.045, 6, false);
+  if (streamMeshRef.mesh) { scene.remove(streamMeshRef.mesh); streamMeshRef.mesh.geometry.dispose(); }
+  streamMeshRef.mesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({
+    color: 0x9ecbe8, transparent: true, opacity: 0.75, depthWrite: false
+  }));
+  scene.add(streamMeshRef.mesh);
+}
+```
+
+### 2.14.4 ⚠️ LỖI THẬT #4 — quỹ đạo lướt chéo xa (container đứng cố định cách xa mục tiêu)
+
+**Hiện tượng quan sát được:** dù đã sửa cung rơi cong xuống, dòng nước
+vẫn "lướt chéo" 1 quãng dài (container đặt cố định cách mục tiêu 6 đơn
+vị) — không giống cảm giác rót thật (đưa 2 miệng bình lại gần trước khi
+đổ).
+
+**Cách sửa:** container phải DI CHUYỂN lại gần mục tiêu trong lúc
+nghiêng (không chỉ xoay tại chỗ) — animate cả `hinge.position` (không
+chỉ `hinge.rotation`) theo 3 pha:
+
+```javascript
+const originalPivot = new THREE.Vector3(CONTAINER_X + circumRadius, H, 0);
+const pourPivot = new THREE.Vector3(TARGET_X - 0.3, H + 1.2, 0); // sát
+                                    // miệng mục tiêu — verify Node: tỉ lệ
+                                    // ngang/dọc quỹ đạo rơi chỉ ~0,2 (gần
+                                    // thẳng đứng), so với ~1,4 nếu để
+                                    // container cố định tại chỗ
+
+function runOnePour(t) { // t: 0→1 trong suốt thời gian 1 lần đổ
+  if (t < 0.22) {                         // Pha A — nghiêng lên + di chuyển lại gần
+    const pt = Ease.easeInOut(t/0.22);
+    tiltDeg = lerp(0, TILT_MAX_DEG, pt);
+    hinge.position.lerpVectors(originalPivot, pourPivot, pt);
+  } else if (t < 0.82) {                  // Pha B — giữ nghiêng + vị trí, rót
+    tiltDeg = TILT_MAX_DEG;
+    hinge.position.copy(pourPivot);
+    // ... giảm fillRatio nguồn, tăng fillRatio đích (xem PHẦN 2.13)
+  } else {                                // Pha C — nghiêng về + di chuyển trả lại
+    const pt = Ease.easeInOut((t-0.82)/0.18);
+    tiltDeg = lerp(TILT_MAX_DEG, 0, pt);
+    hinge.position.lerpVectors(pourPivot, originalPivot, pt);
+  }
+  hinge.rotation.z = -tiltDeg * Math.PI/180;
+}
+```
+
+> **Đơn giản hoá có chủ đích (ghi nhận rõ, không phải lỗi):** mực nước
+> bên trong container khi ĐÃ NGHIÊNG vẫn tính theo hệ toạ độ CỤC BỘ của
+> container (không phải mặt nước ngang tuyệt đối theo trọng lực thật) —
+> mô phỏng mặt nước ngang thật khi vật nghiêng là bài toán vật lý chất
+> lỏng phức tạp hơn nhiều, không cần thiết cho mục đích minh hoạ toán học
+> (thể tích, tỉ lệ 1:3), không phải mô phỏng vật lý chính xác.
+
+⚠️ **Đã verify qua prototype HTML thật** (không chỉ Node) — đã sửa qua 4
+vòng phản hồi hình ảnh trực tiếp (droplet giả → dòng liên tục; cung nhô
+lên → cong xuống; đứng cố định → di chuyển lại gần; DoubleSide xám đục →
+FrontSide+depthWrite:false+renderOrder). Khi build cho bài học cụ thể,
+vẫn cần đối chiếu lại tỉ lệ hình học đúng bài (bán kính đáy, chiều cao,
+khoảng cách 2 khối) — các số trong ví dụ trên chỉ mang tính minh hoạ.
+
+---
+
+## PHẦN 2.15 — KHAI TRIỂN PHẲNG KHỐI CHÓP CỤT ĐỀU (gấp/mở lưới phẳng)
+
+> **Thêm 08/2026** — phục vụ Bài 27 Module 2 Bước 3 (khuôn bánh cô Mai —
+> khối chóp cụt đều). Đây là animation "mở bung" 1 khối 3D thành hình
+> khai triển phẳng (net) và ngược lại — KHÔNG viết pattern hoàn toàn
+> mới, mà TÁI DÙNG 2 kỹ thuật đã có: (1) xoay quanh bản lề (giống PHẦN
+> 2.6/2.7) áp đồng thời cho 4 mặt bên, (2) cách tính góc gấp dựa trên
+> khoảng cách/toạ độ tương đối (cùng tinh thần "Đo góc nhị diện" ở Lab
+> Bài 25).
+
+### 2.15.1 Nguyên lý: mỗi mặt bên là 1 "cánh" (flap) tự xoay quanh cạnh đáy nhỏ
+
+```javascript
+// Đáy nhỏ (a') CỐ ĐỊNH tại y=0, không tham gia khai triển.
+// Mỗi mặt bên (hình thang cân) đặt trong 1 Group riêng ("flap"), pivot
+// tại 1 điểm TRÊN cạnh đáy nhỏ tương ứng — xoay quanh CHÍNH cạnh đó.
+//
+// Toạ độ LOCAL của mỗi flap được định nghĩa ở TRẠNG THÁI TRẢI PHẲNG
+// (rotation = 0) — animation chỉ cần đổi 1 giá trị rotation duy nhất
+// mỗi flap, không cần tính lại vertex mỗi frame.
+
+const foldedAngleRad = Math.atan2(h, (a-ap)/2); // góc gấp — GIỐNG NHAU
+                          // cho cả 4 mặt vì khối chóp cụt ĐỀU (đối xứng)
+const slantLen = Math.sqrt(((a-ap)/2)**2 + h**2); // cạnh bên — khoảng
+                          // cách từ bản lề tới điểm ngoài, KHÔNG ĐỔI khi
+                          // xoay (đặc trưng của phép xoay cứng)
+```
+
+### 2.15.2 Dựng 1 "cánh" — ví dụ mặt hướng +X (bản lề dọc trục Z)
+
+```javascript
+function buildFlap(hingeAxis, hingeSign) {
+  // hingeAxis: 'x' | 'z' — trục mà CẠNH BẢN LỀ chạy dọc theo (do đáy
+  //   hình vuông, chỉ có 2 hướng cạnh: dọc x hoặc dọc z)
+  // hingeSign: +1 | -1 — bản lề ở phía nào của trục kia
+  const hinge = new THREE.Group();
+  if (hingeAxis === 'z') hinge.position.set(hingeSign * halfAp, 0, 0);
+  else hinge.position.set(0, 0, hingeSign * halfAp);
+  scene.add(hinge);
+
+  // Toạ độ LOCAL ở trạng thái TRẢI PHẲNG (rotation=0): 2 điểm bản lề +
+  // 2 điểm ngoài (cách bản lề đúng slantLen, nằm trong mặt y=0)
+  let pos;
+  if (hingeAxis === 'z') {
+    pos = new Float32Array([
+      0,0,-halfAp,  0,0,halfAp,  hingeSign*slantLen,0,halfA,
+      0,0,-halfAp,  hingeSign*slantLen,0,halfA,  hingeSign*slantLen,0,-halfA,
+    ]);
+  } else {
+    pos = new Float32Array([
+      -halfAp,0,0,  halfAp,0,0,  halfA,0,hingeSign*slantLen,
+      -halfAp,0,0,  halfA,0,hingeSign*slantLen,  -halfA,0,hingeSign*slantLen,
+    ]);
+  }
+  const geo = new THREE.BufferGeometry();
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.computeVertexNormals();
+  hinge.add(new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0xe8d9a0, side: THREE.DoubleSide })));
+
+  return { hinge, axis: hingeAxis, hingeSign };
+}
+
+const flaps = [
+  buildFlap('z', +1), buildFlap('z', -1), // mặt +X, -X
+  buildFlap('x', +1), buildFlap('x', -1), // mặt +Z, -Z
+];
+```
+
+### 2.15.3 ⚠️ LỖI THẬT — sai dấu góc xoay khiến mặt gập XUỐNG thay vì LÊN
+
+**Hiện tượng phát hiện được (qua verify bằng Node, KHÔNG chờ tới khi
+build xong mới thấy):** dùng 1 công thức dấu cố định `rotation.z =
+-angle` cho MỌI mặt trục `z` → tại trạng thái gấp hoàn toàn (progress=0,
+đáng lẽ phải khớp đúng hình chóp cụt thật), toạ độ Y của điểm ngoài ra
+**−8** thay vì **+8** — mặt gập lộn xuống dưới sàn, sai hoàn toàn.
+
+**Nguyên nhân:** chiều xoay dương/âm của `rotation.z` và `rotation.x`
+trong Three.js phụ thuộc hướng bản lề đang xét (`hingeSign`) theo quy tắc
+KHÁC NHAU giữa 2 trục — không thể dùng 1 dấu cố định cho cả 4 mặt.
+
+**Cách sửa (đã verify đúng bằng Node ở cả 4 mặt, progress 0/0,5/1):**
+
+```javascript
+function updateUnfold(flaps, progress, foldedAngleRad) {
+  const angle = (1 - progress) * foldedAngleRad; // progress=0→gấp hết,
+                                                     // progress=1→trải phẳng
+  flaps.forEach(f => {
+    // ⚠️ QUY TẮC DẤU BẮT BUỘC — khác nhau giữa 2 trục:
+    const rotSign = (f.axis === 'z') ? f.hingeSign : -f.hingeSign;
+    if (f.axis === 'z') f.hinge.rotation.z = rotSign * angle;
+    else f.hinge.rotation.x = rotSign * angle;
+  });
+}
+```
+
+> **Verify đã thực hiện (Node, `three` thật qua npm):** với khuôn bánh
+> a=18, a'=10, h=8 — góc gấp = 63,435°, cạnh bên (slantLen) = 8,944. Tại
+> progress=0, cả 4 điểm ngoài đều đúng y=+8, toạ độ (x,z) khớp đúng hình
+> chóp cụt thật ((9,8,9), (−9,8,9), (9,8,9), (9,8,−9) theo từng mặt). Tại
+> progress=1, cả 4 điểm về đúng y=0, xoè ra 4 hướng, cách bản lề đúng
+> 8,944 — khớp lý thuyết.
+
+⚠️ **Đã verify qua prototype HTML thật** (không chỉ Node) — có slider
+kéo tay + nút tự động gấp/mở lặp lại, chạy qua bài kiểm tra thực thi mô
+phỏng DOM (không chỉ soát cú pháp) — không phát sinh lỗi runtime. Khi
+build cho bài học cụ thể khác (kích thước khác), CHỈ cần đổi `a, ap, h`
+— công thức `foldedAngleRad`/`slantLen`/quy tắc dấu giữ nguyên.
+
+> 💡 **Đây vẫn là phần TUỲ CHỌN** (theo đúng ghi chú gốc ở kịch bản Bài
+> 27 Module 2 Bước 3) — có thể bỏ nếu đội build thấy độ khó không tương
+> xứng giá trị sư phạm, dù giờ đã có sẵn code tham khảo đầy đủ, verify kỹ.
+
+---
+
 ## PHẦN 3 — LABEL: HTML OVERLAY vs SPRITE 3D
 
 > Đã test cả 2 cách trực tiếp. Kết luận: **dùng HTML overlay làm chuẩn**
@@ -3575,3 +3968,59 @@ function buildCatalog(query) {
 > độ. Đã verify bằng Node (three thật qua npm): góc giữa kinh tuyến
 > gốc/45° tại xích đạo = đúng 45,0000°; vĩ tuyến 30° khớp đúng bán kính
 > và độ cao lý thuyết. ⚠️ CHƯA verify bằng file HTML thật.
+> **Cập nhật 08/2026 (v16.0):** thêm PHẦN 2.13 — MỰC NƯỚC DÂNG DẦN
+> TRONG KHỐI RỖNG (3D) — phục vụ Bài 27 Module 1 Bước 2 (thí nghiệm đong
+> nước chóp/lăng trụ). KHÔNG viết từ đầu — chuyển thể trực tiếp từ thư
+> viện Vật Lý `04a_nhiet_hoc.md` (`animateCalorimeter`/`animateBoiling`,
+> 2D Canvas) sang lưới `PlaneGeometry` 3D, giữ nguyên công thức sin tạo
+> gợn sóng. Tái dùng THẲNG `Ease`/`lerp` từ `04d_daodong_helpers.md`
+> (thuần toán, không phụ thuộc Canvas). Thêm công thức riêng cho ca khối
+> CHÓP (tiết diện co theo tỉ lệ (H−y)/H, khác lăng trụ tiết diện không
+> đổi). Đã verify bằng Node: tỉ lệ tiết diện khớp đúng ở 7 mốc chiều
+> cao; Ease/lerp cho fillRatio tăng mượt đúng 0→1. ⚠️ CHƯA verify bằng
+> file HTML thật, và phần "trút nước giữa 2 khối" cần thêm 1 lớp
+> animation riêng (gợi ý: quả cầu nhỏ rơi + đồng thời đổi fillRatio 2
+> bên) — chưa thiết kế chi tiết.
+> **Cập nhật 08/2026 (v17.0):** thêm PHẦN 2.14 — ANIMATION "TRÚT NƯỚC"
+> GIỮA 2 KHỐI, đặc tả ĐẦY ĐỦ (không để ngỏ cho đội build tự quyết, theo
+> yêu cầu giảm rủi ro) — dòng hạt nước bay theo cung Bezier bậc 2 (chọn
+> thay cho mô phỏng nghiêng bình vật lý thật — rủi ro thấp hơn hẳn),
+> đồng bộ 3 lớp trong 1 hàm điều phối duy nhất `runOnePour`: mực nước
+> chóp giảm (PHẦN 2.13.3), mực nước lăng trụ tăng đúng 1/3 mỗi lần đổ,
+> và dòng hạt nước spawn liên tục. Đã verify bằng Node: quỹ đạo cung
+> đúng hình dạng kỳ vọng, 3 lần đổ liên tiếp cho lăng trụ đúng
+> 0→1/3→2/3→1. ⚠️ CHƯA verify bằng file HTML thật.
+> ⚠️ **v16.0 và v17.0 ở trên ĐÃ ĐƯỢC THAY THẾ HOÀN TOÀN bởi v18.0 ngay
+> dưới đây** — sau khi build prototype HTML thật và nhận phản hồi hình
+> ảnh trực tiếp qua 4 vòng sửa, cách làm mô tả ở v16/v17 (mặt phẳng scale
+> giả lập mực nước, dòng hạt cầu bay theo cung nhô lên, 2 khối đứng cố
+> định cách xa) đều bị bỏ. Giữ lại 2 mục changelog cũ này chỉ để LƯU VẾT
+> lịch sử, KHÔNG dùng làm tài liệu triển khai — nội dung PHẦN 2.13, 2.14
+> trong file (đã cập nhật) phản ánh đúng bản v18.0.
+> **Cập nhật 08/2026 (v18.0) — VIẾT LẠI HOÀN TOÀN PHẦN 2.13 + 2.14 sau
+> khi test prototype HTML thật qua 4 vòng phản hồi hình ảnh trực tiếp:**
+> (1) Đổi cơ chế mực nước từ "mặt phẳng scale giả lập" sang "khối đặc +
+> clipping plane" thật. (2) Phát hiện + sửa 2 lỗi Three.js kinh điển:
+> `DoubleSide` làm tường bình "xám đục" (→ đổi `FrontSide`), `depthWrite`
+> mặc định `true` khiến vật trong suốt che nhau (→ set `false` + thêm
+> `renderOrder` rõ ràng). (3) Bỏ hẳn "mặt cap" trên container CHÓP/NGHIÊNG
+> (gây hình chồng chéo giả) — chỉ dùng cap cho container tiết diện cố
+> định, không nghiêng (lăng trụ). (4) Bỏ hẳn dòng hạt cầu rời rạc (gây
+> cảm giác "bắn pháo hoa") — đổi sang 1 dòng `TubeGeometry` liên tục,
+> cung Bezier VÕNG XUỐNG (đúng trọng lực, không nhô lên). (5) Container
+> giờ NGHIÊNG THẬT quanh 1 pivot (2 Group lồng nhau) VÀ DI CHUYỂN lại gần
+> mục tiêu trong lúc nghiêng (không đứng cố định cách xa) — quỹ đạo rơi
+> ngắn, gần thẳng đứng, đúng cảm giác rót thật. Đã verify bằng Node
+> (nhiều lượt) VÀ bằng prototype HTML thật chạy trên trình duyệt qua
+> nhiều vòng chỉnh sửa dựa trên phản hồi hình ảnh trực tiếp.
+> **Cập nhật 08/2026 (v19.0):** thêm PHẦN 2.15 — KHAI TRIỂN PHẲNG KHỐI
+> CHÓP CỤT ĐỀU (gấp/mở lưới phẳng) — phục vụ Bài 27 Module 2 Bước 3
+> (khuôn bánh cô Mai, TUỲ CHỌN — không bắt buộc build). Tái dùng 2 kỹ
+> thuật đã có: xoay quanh bản lề (PHẦN 2.6/2.7) áp cho 4 mặt bên đồng
+> thời + cách tính góc dựa trên toạ độ tương đối. Phát hiện + sửa 1 lỗi
+> thật: quy tắc dấu xoay KHÁC NHAU giữa bản lề trục x và trục z (dùng 1
+> dấu cố định cho cả 4 mặt khiến 2 mặt gập lộn xuống dưới sàn) — công
+> thức đúng: `rotSign = hingeSign` cho trục z, `rotSign = -hingeSign`
+> cho trục x. Đã verify bằng Node (4 mặt, 3 mốc progress) VÀ bằng
+> prototype HTML thật (slider + tự động gấp/mở, qua bài kiểm tra thực
+> thi mô phỏng DOM, không lỗi runtime).
