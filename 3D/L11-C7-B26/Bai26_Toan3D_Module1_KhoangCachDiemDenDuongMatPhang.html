@@ -1,0 +1,1338 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Bài 26 · Khoảng cách từ một điểm đến đường thẳng, mặt phẳng</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  
+  <script type="application/json" id="athena-context">
+  {
+    "version": "1.0",
+    "subject": "Toán 11",
+    "lesson": "Bài 26 · Khoảng cách trong không gian",
+    "module": "Module 1",
+    "objectives": [
+      "Hiểu định nghĩa khoảng cách là đoạn vuông góc ngắn nhất",
+      "Thực hiện quy trình tính khoảng cách bằng hệ thức lượng trong hình chóp đều",
+      "Thành thạo kỹ thuật kẻ hai lần trong hình lăng trụ/hình hộp",
+      "Vận dụng thành thạo kỹ thuật dời điểm theo tỉ số khoảng cách"
+    ],
+    "structure": [
+      { "id": "step1-definition", "title": "Khoảng cách ngắn nhất" },
+      { "id": "step2-trig-calc", "title": "Tính bằng hệ thức lượng" },
+      { "id": "step3-two-step-draw", "title": "Kỹ thuật kẻ hai lần" },
+      { "id": "step4-point-shift", "title": "Kỹ thuật dời điểm" }
+    ],
+    "misconceptions": [
+      "Dùng đoạn thẳng bất kỳ nối điểm với đường/mặt mà không kiểm tra tính vuông góc",
+      "Xác định sai chân đường vuông góc khi đáy hình học không quen thuộc",
+      "Kẻ đường vuông góc nhưng không chứng minh được nó vuông góc với mặt phẳng",
+      "Quên kỹ thuật kẻ hai lần để tìm đoạn vuông góc thực sự",
+      "Lập sai tỉ số hệ số khoảng cách khi dời điểm"
+    ],
+    "athenaGuidance": "Bối cảnh xuyên suốt: Kỹ sư xây dựng Trạm phát sóng viễn thông. Bước 1: Kéo điểm K dọc theo con đường a để thấy MK nhỏ nhất khi K trùng H (MH vuông góc a). Bước 2: Tính chiều cao giá đỡ 3 chân tripod bằng cách tìm bán kính đáy OA trước, rồi dùng Pythagore tính SO = 140,71cm. Bước 3: Khung thiết bị hình hộp đứng đáy thoi, kẻ AO vuông góc BD trong đáy rồi chứng minh AO vuông góc (BDD'B') để ra d = 2,57m. Bước 4: Dây giằng néo cột, di chuyển điểm M trên SA và quan sát khoảng cách d(M,đáy) thay đổi đúng theo tỉ lệ MA/SA. Khi SM:MA = 1:3 thì d = 3/4 * 8m = 6m."
+  }
+  </script>
+
+  <style>
+    :root{--cream:#FAF7F0;--cream-2:#F0EADD;--cream-3:#E7DECC;--paper-line:#E5DECF;--paper-line-2:#D6CCB6;--ink:#1A1A1A;--ink-2:#514C44;--ink-3:#7C756A;--ink-faint:#ABA396;--jade:#3CA57A;--jade-deep:#2D8B6F;--jade-dark:#14432F;--jade-text:#1B5E48;--jade-soft:#A9D0BE;--jade-pale:#DCEAE1;--sage:#A8C9B8;--sage-deep:#7CA792;--sage-text:#46685A;--sage-pale:#E1ECE4;--accent:#E8A24A;--accent-deep:#CE8A33;--accent-text:#8A551A;--accent-pale:#F7E7CD;--il-slate:#4E6E7E;--il-sand:#D8C4A0;--il-ochre:#B9782D;--correct:#2D8B6F;--correct-bg:#DCEAE1;--wrong:#C15F3C;--wrong-bg:#F3E2D6;--warning:#C58A2E;--warning-bg:#F5E7CB;--info:#4E7F92;--info-bg:#DCE7EB;--white:#FFFFFF;--radius:10px;--radius-lg:14px;--radius-sm:6px;--shadow:0 4px 12px rgba(45,139,111,.10);--shadow-sm:0 2px 6px rgba(26,26,26,.05);--canvas-bg:#0a1628}
+    *{box-sizing:border-box}html,body{margin:0;min-height:100%;background:var(--cream);color:var(--ink);font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:18px;line-height:1.7}button,input{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+    header{height:64px;padding:10px 20px;background:linear-gradient(135deg,var(--jade-dark),var(--jade-deep));color:var(--white);display:flex;align-items:center;gap:14px}.header-badge{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.13);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}header h1{margin:0;flex:1;font-size:18px;line-height:1.3}.header-progress{font:700 12px 'JetBrains Mono',monospace;white-space:nowrap}
+    .app-shell{height:calc(100dvh - 64px);min-height:600px;display:flex;overflow:hidden}.viewport{position:relative;flex:1;min-width:0;background:var(--canvas-bg);overflow:hidden}.viewport canvas{width:100%;height:100%;display:block;touch-action:none}.label-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}.label{position:absolute;transform:translate(-50%,-115%);padding:2px 6px;border-radius:5px;background:rgba(10,22,40,.78);color:var(--white);font:700 13px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;text-shadow:0 1px 3px #000;white-space:nowrap;will-change:transform}.label.result{color:#FAC775;border:1px solid rgba(250,199,117,.6);background:rgba(15,30,55,.9)}.label.jade{color:#34D399;border:1px solid rgba(52,211,153,.6)}.label.measure{color:var(--ink);border:1px solid rgba(216,196,160,.85);background:rgba(250,247,240,.9);text-shadow:none}.canvas-top{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}.scene-chip{padding:6px 10px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:rgba(10,22,40,.78);color:rgba(255,255,255,.86);font-size:12px;font-weight:700;backdrop-filter:blur(6px)}.distance-readout{padding:8px 11px;border:1px solid rgba(250,199,117,.4);border-radius:9px;background:rgba(10,22,40,.84);color:#FAC775;font:700 16px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;backdrop-filter:blur(6px)}.distance-readout.lock-pulse{animation:lockPulse .65s ease-out}.canvas-actions{position:absolute;left:14px;bottom:14px;display:flex;gap:8px}.canvas-btn{min-height:44px;border:1px solid rgba(255,255,255,.2);border-radius:9px;background:rgba(10,22,40,.82);color:var(--white);padding:7px 11px;font-size:12px;font-weight:700;display:inline-flex;align-items:center;gap:6px}.canvas-hint{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);padding:5px 12px;border:1px solid rgba(255,255,255,.15);border-radius:20px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.78);font-size:11.5px;white-space:nowrap;pointer-events:none}
+    .sidebar{width:380px;flex:0 0 380px;background:var(--white);border-left:1px solid var(--paper-line);display:flex;flex-direction:column;overflow:auto}.step-tabs{position:sticky;top:0;z-index:8;display:flex;background:var(--white);border-bottom:1px solid var(--paper-line)}.step-tab{flex:1;min-height:48px;border:0;border-bottom:3px solid transparent;background:var(--white);color:var(--ink-3);font-size:11px;font-weight:700;text-transform:uppercase}.step-tab.active{color:var(--jade-dark);border-bottom-color:var(--jade-deep);background:var(--jade-pale)}.step-tab.done{color:var(--jade-deep)}.step-body{padding:16px}.eyebrow{margin:0 0 5px;color:var(--ink-3);font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}.step-title{margin:0 0 9px;color:var(--jade-dark);font-size:20px;line-height:1.35}.module-hook{margin:10px 0;border:1px solid var(--paper-line);border-radius:12px;overflow:hidden;background:linear-gradient(180deg,#f8fbfa,var(--cream))}.module-hook svg{display:block;width:100%;height:auto;max-height:190px}.module-hook figcaption{padding:8px 11px;color:var(--ink-2);font-size:12px}.mini-plane{margin-top:9px;padding:9px;border-radius:9px;background:var(--white);border:1px solid var(--paper-line)}.mini-plane svg{display:block;width:100%;height:auto}.stage-list{display:grid;gap:8px;margin:10px 0}.stage-item{padding:9px 10px;border:1px solid var(--paper-line);border-radius:9px;background:var(--white);font-size:13px}.stage-item.done{border-color:var(--jade);background:var(--jade-pale);color:var(--jade-text)}.stage-item.active{border-color:var(--accent);background:var(--accent-pale)}.athena{margin:10px 0;padding:11px 12px;border-left:4px solid var(--jade-deep);border-radius:0 9px 9px 0;background:var(--jade-pale);color:var(--jade-text);font-size:14px}.athena b{display:block;margin-bottom:3px}.card{margin:11px 0;padding:12px;border:1px solid var(--paper-line);border-radius:var(--radius);background:var(--cream)}.card h3{margin:0 0 7px;color:var(--jade-dark);font-size:14px}.body-small{margin:6px 0;color:var(--ink-3);font-size:13px}.formula{padding:8px 10px;border:1px solid var(--info);border-radius:8px;background:var(--info-bg);font:700 13px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;line-height:1.5}.control{margin:11px 0}.control label{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:700}.control output{color:var(--jade-deep);font-family:'JetBrains Mono',monospace}.control input[type=range]{width:100%;min-height:44px;accent-color:var(--jade-deep)}.btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}.btn{min-height:44px;border:0;border-radius:9px;padding:9px 13px;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px}.btn-primary{background:var(--jade-deep);color:var(--white)}.btn-secondary{border:1px solid var(--jade-deep);background:var(--white);color:var(--jade-deep)}.btn:disabled{opacity:.48;cursor:not-allowed}.choice{display:block;width:100%;min-height:44px;margin:7px 0;padding:9px 11px;border:1px solid var(--paper-line-2);border-radius:9px;background:var(--white);color:var(--ink);text-align:left;font-size:13px;line-height:1.5}.choice.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--jade-text);font-weight:700}.choice.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:var(--wrong);font-weight:700}.feedback{margin-top:9px;padding:9px 11px;border-radius:8px;font-size:13px;line-height:1.55}.feedback.info{background:var(--info-bg);color:var(--ink-2)}.feedback.good{background:var(--correct-bg);color:var(--jade-text);border-left:3px solid var(--correct)}.feedback.bad{background:var(--wrong-bg);color:var(--wrong);border-left:3px solid var(--wrong)}.feedback.warn{background:var(--warning-bg);color:var(--accent-text)}.shake{animation:shake .28s}@keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}@keyframes lockPulse{0%{transform:scale(1)}40%{transform:scale(1.08);box-shadow:0 0 0 8px rgba(60,165,122,.2)}100%{transform:scale(1);box-shadow:none}}.notebook{margin-top:12px;padding:11px;border:1px dashed var(--sage-deep);border-radius:9px;background:var(--sage-pale);color:var(--sage-text);font-size:13px;line-height:1.6}.notebook b{color:var(--jade-dark);display:inline-flex;align-items:center;gap:5px}.summary-list{margin:7px 0;padding-left:20px}.summary-list li{margin:6px 0}.hidden{display:none!important}
+    
+    /* MOBILE RESPONSIVE (EXACT PATTERN FROM BAI 25) */
+    @media(max-width:768px){body{min-height:100vh;overflow-y:auto}.app-shell{display:flex!important;width:100%;height:auto!important;min-height:auto!important;max-height:none!important;flex-direction:column!important;overflow:visible!important}.viewport{position:sticky!important;top:0!important;z-index:50!important;flex:none!important;width:100%!important;height:calc((100vh - 58px)*.5)!important;height:calc((100dvh - 58px)*.5)!important;min-height:220px!important;border-bottom:1px solid var(--paper-line);box-shadow:0 4px 14px rgba(0,0,0,.4)}.sidebar{width:100%!important;min-width:0;height:auto!important;max-height:none!important;flex:none!important;border-left:0;border-top:1px solid var(--paper-line);overflow:visible!important}.step-tabs{position:static;width:100%;min-width:0;overflow-x:auto}.step-tab{min-width:0}.step-body{width:100%;min-width:0;overflow:visible}.athena,.card,.notebook,.module-hook{max-width:100%;overflow-wrap:anywhere}.formula{max-width:100%;overflow-x:auto}.canvas-hint{display:none}.canvas-actions{left:8px;bottom:8px;gap:6px}.canvas-btn{min-height:44px;padding:7px 9px;font-size:11.5px}}
+    @media(max-width:560px){header{height:58px;min-height:58px;padding:7px 10px;gap:7px;flex-wrap:nowrap}.header-badge{font-size:9px;padding:2px 6px}header h1{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}.header-progress{display:none}.sidebar,.step-tabs,.step-body{width:100%!important;max-width:100%!important}.step-tab{flex:0 0 25%;width:25%;min-height:44px;font-size:9px}.step-body{padding:12px;overflow:visible}.step-title{font-size:18px}.canvas-top{top:8px;left:8px;right:8px}.scene-chip{font-size:10px;padding:4px 7px}.distance-readout{font-size:13px;padding:5px 7px}.canvas-actions{left:8px;bottom:8px}.canvas-btn{min-height:44px;padding:7px 9px}.card{padding:10px}}
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+
+  <!-- HEADER -->
+  <header>
+    <span class="header-badge">🧊 Hình học không gian</span>
+    <h1>Bài 26 · Khoảng cách từ một điểm đến đường thẳng, mặt phẳng</h1>
+    <span class="header-progress" id="header-progress">BƯỚC 1/4</span>
+  </header>
+
+  <!-- MAIN APP SHELL -->
+  <main class="app-shell">
+    
+    <!-- 3D VIEWPORT -->
+    <section class="viewport" id="canvas-wrap" aria-label="Mô hình hình học 3D">
+      <canvas id="three-canvas"></canvas>
+      <div class="label-layer" id="label-layer"></div>
+      <div class="canvas-top">
+        <span class="scene-chip" id="scene-chip">Trạm phát sóng · Kéo điểm K</span>
+        <span class="distance-readout" id="distance-readout">MK = 4,00m</span>
+      </div>
+      <div class="canvas-actions">
+        <button class="canvas-btn" id="btn-reset"><i class="ti ti-refresh"></i> Phối cảnh</button>
+        <button class="canvas-btn" id="btn-top"><i class="ti ti-arrow-up"></i> Nhìn từ trên</button>
+        <button class="canvas-btn" id="btn-side"><i class="ti ti-layout-sidebar-right"></i> Chính diện</button>
+      </div>
+      <div class="canvas-hint">Kéo nền để xoay · Cuộn để zoom · Kéo điểm vàng để kiểm tra</div>
+    </section>
+
+    <!-- SIDEBAR WITH PROGRESS TABS -->
+    <aside class="sidebar">
+      <nav class="step-tabs" aria-label="Các bước học">
+        <button class="step-tab active" data-step="1">Bước 1</button>
+        <button class="step-tab" data-step="2">Bước 2</button>
+        <button class="step-tab" data-step="3">Bước 3</button>
+        <button class="step-tab" data-step="4">Bước 4</button>
+      </nav>
+      <div class="step-body" id="step-body"></div>
+    </aside>
+
+  </main>
+
+  <!-- JAVASCRIPT THREE.JS ENGINE & LESSON LOGIC -->
+  <script>
+  (() => {
+    'use strict';
+
+    // 0. LMS INTEGRATION
+    const LMS = () => window.AiducationLMS || {
+      ready() {}, progress() {}, event() {}, state() {}, complete() {}, resize() {}
+    };
+
+    // 1. THREE.JS INITIALIZATION
+    const canvas = document.getElementById('three-canvas');
+    const wrap = document.getElementById('canvas-wrap');
+    const stepBody = document.getElementById('step-body');
+    const labelLayer = document.getElementById('label-layer');
+    const headerProgress = document.getElementById('header-progress');
+    const sceneChip = document.getElementById('scene-chip');
+    const distanceReadout = document.getElementById('distance-readout');
+
+    const renderer = new THREE.WebGLRenderer({ canvas, antialias: true, alpha: false });
+    renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+    renderer.setClearColor(0x0a1628);
+    renderer.outputEncoding = THREE.sRGBEncoding;
+
+    const scene = new THREE.Scene();
+    const camera = new THREE.PerspectiveCamera(46, 1, 0.1, 100);
+    const controls = new THREE.OrbitControls(camera, canvas);
+    controls.enableDamping = true;
+    controls.dampingFactor = 0.08;
+    controls.minDistance = 4;
+    controls.maxDistance = 26;
+
+    // Lights
+    scene.add(new THREE.HemisphereLight(0xddeeff, 0x172235, 1.2));
+    const dirLight = new THREE.DirectionalLight(0xffffff, 1.15);
+    dirLight.position.set(6, 10, 8);
+    scene.add(dirLight);
+
+    const backLight = new THREE.DirectionalLight(0x38bdf8, 0.4);
+    backLight.position.set(-6, -4, -6);
+    scene.add(backLight);
+
+    // Color Palette Tokens
+    const COLORS = {
+      slate: 0x4E6E7E,
+      sand: 0xD8C4A0,
+      sandFill: 0xD8C4A0,
+      jade: 0x2D8B6F,
+      accent: 0xE8A24A,
+      ochre: 0xB9782D,
+      point: 0xFAC775,
+      axis: 0x475569,
+      groundGrid: 0x1e293b
+    };
+
+    // State Variables
+    let currentStep = 1;
+    let unlocked = 1;
+    let rootGroup = null;
+    let labels = [];
+    let objects = {};
+    let dragTarget = null;
+
+    let kX = 2.5;           // Bước 1: Vị trí K trên đường x
+    let mRatio = 0.5;       // Bước 4: Vị trí M trên SA (0 to 1)
+    let wasKAtH = false;
+    let step2Stage = 0;     // 0: chọn O, 1: tính OA, 2: tính SO, 3: hoàn tất
+    let step3Stage = 0;     // 0: dựng AO, 1: AO⊥BD, 2: AO⊥BB', 3: hoàn tất
+
+    // Quiz & Strikes
+    let q1Strikes = 0, q1Done = false;
+    let q3Strikes = 0, q3Done = false;
+    let q4Strikes = 0, q4Done = false;
+    let q1Correct = false, q3Correct = false, q4Correct = false;
+    let q1Chosen = null, q3Chosen = null, q4Chosen = null;
+    let step2FootChosen = null, step2OAChosen = null, step2SOChosen = null;
+    let step3CheckBD = null, step3CheckBB = null;
+    let completed = false;
+
+    // Math Helpers
+    const V = (x=0, y=0, z=0) => new THREE.Vector3(x, y, z);
+    const fmt = n => n.toFixed(2).replace('.', ',');
+
+    function dispose(obj) {
+      if (!obj) return;
+      obj.traverse(o => {
+        if (o.geometry) o.geometry.dispose();
+        if (o.material) {
+          (Array.isArray(o.material) ? o.material : [o.material]).forEach(m => m.dispose());
+        }
+      });
+      if (obj.parent) obj.parent.remove(obj);
+    }
+
+    function clearScene() {
+      dispose(rootGroup);
+      rootGroup = new THREE.Group();
+      scene.add(rootGroup);
+      labels.forEach(x => x.el.remove());
+      labels = [];
+      objects = {};
+    }
+
+    // 2. GEOMETRIC BUILDER HELPERS
+    function addLabel(text, pos, cls = '') {
+      const el = document.createElement('div');
+      el.className = 'label ' + cls;
+      el.textContent = text;
+      labelLayer.appendChild(el);
+      const item = { el, pos };
+      labels.push(item);
+      return item;
+    }
+
+    function line(a, b, color, width = 1.5, dashed = false) {
+      const g = new THREE.BufferGeometry().setFromPoints([a, b]);
+      let m;
+      if (dashed) {
+        m = new THREE.LineDashedMaterial({ color, dashSize: 0.2, gapSize: 0.1, linewidth: width });
+      } else {
+        m = new THREE.LineBasicMaterial({ color, linewidth: width, transparent: true, opacity: 0.95 });
+      }
+      const l = new THREE.Line(g, m);
+      if (dashed) l.computeLineDistances();
+      rootGroup.add(l);
+      return l;
+    }
+
+    function updateLine(lineObj, a, b) {
+      lineObj.geometry.setFromPoints([a, b]);
+      lineObj.geometry.attributes.position.needsUpdate = true;
+      if (lineObj.material.isLineDashedMaterial) lineObj.computeLineDistances();
+    }
+
+    function dot(pos, color = COLORS.point, r = 0.1, name = '') {
+      const g = new THREE.SphereGeometry(r, 20, 16);
+      const m = new THREE.MeshStandardMaterial({ color, emissive: color, emissiveIntensity: 0.35 });
+      const mesh = new THREE.Mesh(g, m);
+      mesh.position.copy(pos);
+      mesh.userData.name = name;
+      rootGroup.add(mesh);
+      return mesh;
+    }
+
+    function cylinderLeg(a, b, r = 0.045, color = COLORS.slate) {
+      const dir = b.clone().sub(a);
+      const len = dir.length();
+      const g = new THREE.CylinderGeometry(r, r, len, 16);
+      const m = new THREE.MeshStandardMaterial({ color, metalness: 0.3, roughness: 0.4 });
+      const mesh = new THREE.Mesh(g, m);
+      mesh.position.copy(a.clone().add(b).multiplyScalar(0.5));
+      mesh.quaternion.setFromUnitVectors(V(0, 1, 0), dir.clone().normalize());
+      rootGroup.add(mesh);
+      return mesh;
+    }
+
+    function boxBeam(a, b, thickness = 0.075, color = COLORS.slate) {
+      const dir = b.clone().sub(a);
+      const len = dir.length();
+      const g = new THREE.BoxGeometry(thickness, len, thickness);
+      const m = new THREE.MeshStandardMaterial({ color, metalness: 0.72, roughness: 0.28 });
+      const mesh = new THREE.Mesh(g, m);
+      mesh.position.copy(a.clone().add(b).multiplyScalar(0.5));
+      mesh.quaternion.setFromUnitVectors(V(0, 1, 0), dir.clone().normalize());
+      rootGroup.add(mesh);
+      return mesh;
+    }
+
+    function curvedCable(a, b, sag = 0.32, color = COLORS.ochre) {
+      const mid = a.clone().add(b).multiplyScalar(0.5);
+      mid.y = Math.max(0.12, mid.y - sag);
+      const curve = new THREE.QuadraticBezierCurve3(a, mid, b);
+      const g = new THREE.TubeGeometry(curve, 28, 0.022, 7, false);
+      const m = new THREE.MeshStandardMaterial({ color, metalness: 0.15, roughness: 0.65 });
+      const mesh = new THREE.Mesh(g, m);
+      rootGroup.add(mesh);
+      return mesh;
+    }
+
+    function saveState() {
+      LMS().state({
+        currentStep, unlocked, kX, mRatio, step2Stage, step3Stage,
+        q1Strikes, q1Done, q1Correct,
+        q3Strikes, q3Done, q3Correct,
+        q4Strikes, q4Done, q4Correct,
+        q1Chosen, q3Chosen, q4Chosen,
+        step2FootChosen, step2OAChosen, step2SOChosen,
+        step3CheckBD, step3CheckBB,
+        completed
+      });
+    }
+
+    function planeMesh(pts, color = COLORS.sandFill, opacity = 0.22) {
+      const shape = new THREE.Shape();
+      shape.moveTo(pts[0].x, pts[0].z);
+      for (let i = 1; i < pts.length; i++) shape.lineTo(pts[i].x, pts[i].z);
+      shape.closePath();
+      const g = new THREE.ShapeGeometry(shape);
+      g.rotateX(Math.PI / 2);
+      const m = new THREE.MeshPhongMaterial({ color, transparent: true, opacity, side: THREE.DoubleSide, depthWrite: false });
+      const mesh = new THREE.Mesh(g, m);
+      mesh.position.y = pts[0].y;
+      rootGroup.add(mesh);
+      return mesh;
+    }
+
+    function quadMesh3D(a, b, c, d, color, opacity = 0.22) {
+      const g = new THREE.BufferGeometry();
+      g.setAttribute('position', new THREE.Float32BufferAttribute([
+        a.x,a.y,a.z, b.x,b.y,b.z, c.x,c.y,c.z,
+        a.x,a.y,a.z, c.x,c.y,c.z, d.x,d.y,d.z
+      ], 3));
+      g.computeVertexNormals();
+      const m = new THREE.MeshPhongMaterial({ color, transparent: true, opacity, side: THREE.DoubleSide, depthWrite: false });
+      const mesh = new THREE.Mesh(g, m);
+      rootGroup.add(mesh);
+      return mesh;
+    }
+
+    function rightAngleMark(vertex, dir1, dir2, size = 0.25, color = COLORS.jade) {
+      const u = dir1.clone().normalize().multiplyScalar(size);
+      const v = dir2.clone().normalize().multiplyScalar(size);
+      const p1 = vertex.clone().add(u);
+      const p2 = vertex.clone().add(u).add(v);
+      const p3 = vertex.clone().add(v);
+      const g = new THREE.BufferGeometry().setFromPoints([p1, p2, p3]);
+      const m = new THREE.LineBasicMaterial({ color, linewidth: 2 });
+      const l = new THREE.Line(g, m);
+      rootGroup.add(l);
+      return l;
+    }
+
+    function angleArcXZ(vertex, startAngle, endAngle, radius = 0.65, color = COLORS.accent) {
+      const pts = [];
+      for (let i = 0; i <= 24; i++) {
+        const t = i / 24;
+        const a = startAngle + (endAngle - startAngle) * t;
+        pts.push(V(vertex.x + Math.cos(a) * radius, vertex.y + 0.025, vertex.z + Math.sin(a) * radius));
+      }
+      const g = new THREE.BufferGeometry().setFromPoints(pts);
+      const arc = new THREE.Line(g, new THREE.LineBasicMaterial({ color, linewidth: 2 }));
+      rootGroup.add(arc);
+      return arc;
+    }
+
+    // 3. SCENE BUILDERS
+
+    // -------------------------------------------------------------
+    // STEP 1: ĐỊNH NGHĨA KHOẢNG CÁCH NGẮN NHẤT
+    // -------------------------------------------------------------
+    function buildStep1Scene() {
+      clearScene();
+
+      // Sàn mặt đất
+      planeMesh([V(-6, 0, -4), V(6, 0, -4), V(6, 0, 4), V(-6, 0, 4)], COLORS.sandFill, 0.15);
+      const grid = new THREE.GridHelper(12, 12, 0x1e293b, 0x1e293b);
+      grid.position.y = -0.01;
+      rootGroup.add(grid);
+
+      // Cột trạm phát sóng M(0, 4, 0)
+      cylinderLeg(V(0, 0, 0), V(0, 4, 0), 0.08, COLORS.slate);
+      dot(V(0, 4, 0), COLORS.slate, 0.14, 'M');
+      dot(V(0, 0, 0), COLORS.jade, 0.1, 'H');
+
+      // Vòng cung phát sóng tại đỉnh M
+      for (let i = 1; i <= 3; i++) {
+        const ringG = new THREE.RingGeometry(i * 0.35, i * 0.35 + 0.025, 32);
+        const ringM = new THREE.MeshBasicMaterial({ color: COLORS.jade, transparent: true, opacity: 0.7 - i * 0.18, side: THREE.DoubleSide });
+        const ring = new THREE.Mesh(ringG, ringM);
+        ring.position.set(0, 4, 0);
+        ring.rotation.x = Math.PI / 2;
+        rootGroup.add(ring);
+      }
+
+      // Con đường thẳng a
+      line(V(-6.5, 0, 0), V(6.5, 0, 0), COLORS.sand, 3);
+
+      // Điểm K kéo được trên đường a
+      objects.kMesh = dot(V(kX, 0, 0), COLORS.accent, 0.16, 'K');
+      
+      // Đoạn vuông góc chuẩn MH
+      objects.mhLine = line(V(0, 4, 0), V(0, 0, 0), COLORS.jade, 2.5);
+      objects.rightAngle = rightAngleMark(V(0, 0, 0), V(0, 1, 0), V(1, 0, 0), 0.35, COLORS.jade);
+
+      // Đoạn nối thử MK
+      objects.mkLine = line(V(0, 4, 0), V(kX, 0, 0), COLORS.accent, 2);
+
+      // Labels
+      addLabel('M', V(0, 4.3, 0), 'result');
+      addLabel('H', V(0, -0.3, 0), 'jade');
+      objects.kLabel = addLabel('K', V(kX, -0.35, 0), 'result');
+      objects.mkMeasure = addLabel('MK', V(kX / 2, 2.15, 0), 'measure');
+      addLabel('Đường a', V(5.5, 0.2, 0));
+      addLabel('Mặt (P)', V(-4.8, 0, 3.2));
+
+      updateStep1Geometry();
+    }
+
+    function updateStep1Geometry() {
+      if (!objects.kMesh) return;
+      const Kpos = V(kX, 0, 0);
+      const Mpos = V(0, 4, 0);
+      objects.kMesh.position.copy(Kpos);
+      updateLine(objects.mkLine, Mpos, Kpos);
+      objects.kLabel.pos.copy(Kpos).add(V(0, -0.35, 0));
+
+      const dist = Math.sqrt(kX * kX + 16);
+      const isAtH = Math.abs(kX) < 0.08;
+      if (objects.mkMeasure) {
+        objects.mkMeasure.pos.copy(Mpos.clone().add(Kpos).multiplyScalar(0.5)).add(V(0, 0.18, 0));
+        objects.mkMeasure.el.textContent = `MK = ${fmt(dist)}m`;
+      }
+
+      if (isAtH) {
+        objects.mkLine.material.color.setHex(COLORS.jade);
+        objects.kMesh.material.color.setHex(COLORS.jade);
+        distanceReadout.textContent = `MK = MH = 4,00m (NGẮN NHẤT)`;
+        distanceReadout.style.borderColor = '#34D399';
+        distanceReadout.style.color = '#34D399';
+        if (!wasKAtH) {
+          distanceReadout.classList.remove('lock-pulse');
+          void distanceReadout.offsetWidth;
+          distanceReadout.classList.add('lock-pulse');
+          objects.kMesh.scale.setScalar(1.28);
+          setTimeout(() => { if (objects.kMesh) objects.kMesh.scale.setScalar(1); }, 420);
+        }
+      } else {
+        objects.mkLine.material.color.setHex(COLORS.accent);
+        objects.kMesh.material.color.setHex(COLORS.accent);
+        distanceReadout.textContent = `MK = ${fmt(dist)}m ≥ 4,00m`;
+        distanceReadout.style.borderColor = 'rgba(250,199,117,.5)';
+        distanceReadout.style.color = '#FAC775';
+      }
+      wasKAtH = isAtH;
+
+      const out = document.querySelector('[data-out="kx"]');
+      if (out) out.textContent = fmt(kX) + 'm';
+      const mVal = document.getElementById('measured-dist-val');
+      if (mVal) mVal.textContent = fmt(dist) + 'm';
+    }
+
+    // -------------------------------------------------------------
+    // STEP 2: TÍNH BẰNG HỆ THỨC LƯỢNG (GIÁ ĐỠ 3 CHÂN TRIPOD)
+    // -------------------------------------------------------------
+    function buildStep2Scene() {
+      clearScene();
+
+      const rO = 1.732;
+      const hSO = 4.69;
+
+      const S = V(0, hSO, 0);
+      const A = V(rO * Math.cos(Math.PI / 2), 0, -rO * Math.sin(Math.PI / 2));
+      const B = V(rO * Math.cos(Math.PI / 2 + 2 * Math.PI / 3), 0, -rO * Math.sin(Math.PI / 2 + 2 * Math.PI / 3));
+      const C = V(rO * Math.cos(Math.PI / 2 + 4 * Math.PI / 3), 0, -rO * Math.sin(Math.PI / 2 + 4 * Math.PI / 3));
+      const O = V(0, 0, 0);
+
+      // Mặt đất đáy tam giác đều
+      planeMesh([A, B, C], COLORS.sandFill, 0.28);
+      line(A, B, COLORS.sand, 2);
+      line(B, C, COLORS.sand, 2);
+      line(C, A, COLORS.sand, 2);
+
+      // 3 chân giá đỡ tripod
+      cylinderLeg(S, A, 0.055, COLORS.slate);
+      cylinderLeg(S, B, 0.055, COLORS.slate);
+      cylinderLeg(S, C, 0.055, COLORS.slate);
+
+      dot(S, COLORS.point, 0.15, 'S');
+      dot(A, COLORS.point, 0.1, 'A');
+      dot(B, COLORS.point, 0.1, 'B');
+      dot(C, COLORS.point, 0.1, 'C');
+      objects.step2OMesh = dot(O, step2Stage >= 1 ? COLORS.jade : COLORS.accent, 0.15, 'O');
+
+      // Chỉ mở các đường dựng khi học sinh hoàn thành đúng từng cửa.
+      if (step2Stage >= 1) {
+        objects.oaLine = line(O, A, COLORS.ochre, 2, true);
+        rightAngleMark(O, V(0, 1, 0), A.clone().sub(O), 0.35, COLORS.jade);
+        addLabel('OA = 51,96cm', O.clone().add(A).multiplyScalar(0.5).add(V(0, 0.15, 0)), 'measure');
+      }
+      if (step2Stage >= 2) {
+        const confirmed = step2Stage >= 3;
+        objects.soLine = line(S, O, confirmed ? COLORS.jade : COLORS.accent, confirmed ? 3 : 2, !confirmed);
+        addLabel(confirmed ? 'SO = 140,71cm' : 'SO = ?', S.clone().add(O).multiplyScalar(0.5).add(V(0.2, 0, 0)), 'measure');
+      }
+
+      // Labels
+      addLabel('S (Đỉnh)', S.clone().add(V(0, 0.35, 0)), 'result');
+      addLabel('A', A.clone().add(V(0, -0.25, -0.2)));
+      addLabel('B', B.clone().add(V(-0.25, -0.25, 0.1)));
+      addLabel('C', C.clone().add(V(0.25, -0.25, 0.1)));
+      addLabel(step2Stage >= 1 ? 'O (Tâm đáy)' : '? Chọn chân đường cao', O.clone().add(V(0.25, 0.15, 0.25)), step2Stage >= 1 ? 'jade' : 'result');
+
+      const step2Readouts = [
+        'Hãy xác định chân đường cao',
+        'Đã chọn O · Hãy tính OA',
+        'OA = 51,96cm · Hãy tính SO',
+        'SO = 140,71cm · HOÀN TẤT'
+      ];
+      distanceReadout.textContent = step2Readouts[step2Stage];
+      const done = step2Stage >= 3;
+      distanceReadout.style.borderColor = done ? '#34D399' : 'rgba(250,199,117,.5)';
+      distanceReadout.style.color = done ? '#34D399' : '#FAC775';
+    }
+
+    // -------------------------------------------------------------
+    // STEP 3: KỸ THUẬT KẺ HAI LẦN (KHUNG HỘP ĐỨNG ĐÁY THOI)
+    // -------------------------------------------------------------
+    function buildStep3Scene() {
+      clearScene();
+
+      const aO = 2.5712;
+      const bO = 3.064;
+      const h = 5;
+
+      const O = V(0, 0, 0);
+      const A = V(-aO, 0, 0);
+      const C = V(aO, 0, 0);
+      const B = V(0, 0, bO);
+      const D = V(0, 0, -bO);
+
+      const A1 = A.clone().add(V(0, h, 0));
+      const B1 = B.clone().add(V(0, h, 0));
+      const C1 = C.clone().add(V(0, h, 0));
+      const D1 = D.clone().add(V(0, h, 0));
+
+      angleArcXZ(A, -50 * Math.PI / 180, 50 * Math.PI / 180, 0.72, COLORS.accent);
+      addLabel('100°', A.clone().add(V(0.82, 0.12, 0)), 'measure');
+
+      // Hai đáy mờ và khung nhôm BoxGeometry, không dùng line thuần.
+      planeMesh([A, B, C, D], COLORS.sandFill, 0.2);
+      planeMesh([A1, B1, C1, D1], COLORS.sandFill, 0.12);
+      [[A,B],[B,C],[C,D],[D,A],[A1,B1],[B1,C1],[C1,D1],[D1,A1],
+       [A,A1],[B,B1],[C,C1],[D,D1]].forEach(([p,q]) => boxBeam(p, q, 0.085, COLORS.slate));
+
+      // Mặt phẳng chéo (BDD'B')
+      quadMesh3D(B, D, D1, B1, 0x38bdf8, 0.22);
+      line(B, D, COLORS.ochre, 2, true);
+      line(B1, D1, COLORS.ochre, 1.5, true);
+
+      // AO và các dấu xác nhận chỉ xuất hiện theo đúng tiến trình.
+      if (step3Stage >= 1) {
+        line(A, O, step3Stage >= 3 ? COLORS.jade : COLORS.accent, 3.5, step3Stage < 3);
+        addLabel(step3Stage >= 3 ? 'AO = 2,57m' : 'AO đang kiểm tra', A.clone().add(O).multiplyScalar(0.5).add(V(0, 0.18, 0)), 'measure');
+      }
+      dot(O, step3Stage >= 1 ? COLORS.jade : COLORS.accent, 0.11, 'O');
+      dot(A, COLORS.point, 0.12, 'A');
+      dot(A1, COLORS.point, 0.12, "A'");
+      dot(B, COLORS.point, 0.1, 'B');
+      dot(D, COLORS.point, 0.1, 'D');
+
+      if (step3Stage >= 2) rightAngleMark(O, V(-1, 0, 0), V(0, 0, 1), 0.35, COLORS.jade);
+      if (step3Stage >= 3) rightAngleMark(A, V(1, 0, 0), V(0, 1, 0), 0.35, COLORS.jade);
+
+      // Labels
+      addLabel('A', A.clone().add(V(-0.25, 0, 0)), 'result');
+      addLabel("A'", A1.clone().add(V(-0.3, 0.25, 0)), 'result');
+      addLabel('B', B.clone().add(V(0, 0, 0.25)));
+      addLabel('D', D.clone().add(V(0, 0, -0.25)));
+      addLabel('O', O.clone().add(V(0.2, 0.15, 0.2)), 'jade');
+      addLabel('(BDD\'B\')', B1.clone().add(D1).multiplyScalar(0.5).add(V(0.2, 0.2, 0)));
+
+      const step3Readouts = [
+        'Lần 1 · Hãy dựng AO trong đáy',
+        'Kiểm tra 1 · AO có vuông góc BD?',
+        "Kiểm tra 2 · AO có vuông góc BB'?",
+        `d(AA', BDD'B') = AO = 2,57m`
+      ];
+      distanceReadout.textContent = step3Readouts[step3Stage];
+      const done = step3Stage >= 3;
+      distanceReadout.style.borderColor = done ? '#34D399' : 'rgba(250,199,117,.5)';
+      distanceReadout.style.color = done ? '#34D399' : '#FAC775';
+    }
+
+    // -------------------------------------------------------------
+    // STEP 4: KỸ THUẬT DỜI ĐIỂM (DÂY GIẰNG NÉO CỘT)
+    // -------------------------------------------------------------
+    function buildStep4Scene() {
+      clearScene();
+
+      const h = 5.0;
+      const S = V(0, h, 0);
+      const A = V(0, 0, 0);
+
+      // Mặt đất
+      planeMesh([V(-4.5, 0, -4.5), V(4.5, 0, -4.5), V(4.5, 0, 4.5), V(-4.5, 0, 4.5)], COLORS.sandFill, 0.18);
+      const grid = new THREE.GridHelper(10, 10, 0x1e293b, 0x1e293b);
+      grid.position.y = -0.01;
+      rootGroup.add(grid);
+
+      // Cột chính SA
+      cylinderLeg(A, S, 0.085, COLORS.slate);
+      dot(S, COLORS.point, 0.15, 'S');
+      dot(A, COLORS.point, 0.12, 'A');
+
+      // 3 điểm neo dây giằng dưới đất
+      const B = V(3.5, 0, 0);
+      const C = V(-1.75, 0, 3.03);
+      const D = V(-1.75, 0, -3.03);
+
+      dot(B, COLORS.ochre, 0.09, 'B');
+      dot(C, COLORS.ochre, 0.09, 'C');
+      dot(D, COLORS.ochre, 0.09, 'D');
+
+      // Dây giằng thật: ống rất mảnh, võng nhẹ theo đường cong Bezier.
+      curvedCable(S, B, 0.32, COLORS.ochre);
+      curvedCable(S, C, 0.32, COLORS.ochre);
+      curvedCable(S, D, 0.32, COLORS.ochre);
+
+      // Điểm M trượt trên cột SA
+      objects.mMesh = dot(V(0, h * mRatio, 0), COLORS.accent, 0.16, 'M');
+      
+      // Đoạn khoảng cách từ M xuống đất (MA)
+      objects.maLine = line(V(0, h * mRatio, 0), V(0, 0, 0), COLORS.jade, 3.5);
+      rightAngleMark(A, V(0, 1, 0), V(1, 0, 0), 0.35, COLORS.jade);
+
+      // Labels
+      addLabel('S (8m)', S.clone().add(V(0, 0.35, 0)), 'result');
+      addLabel('A (0m)', A.clone().add(V(0, -0.25, 0.25)));
+      objects.mLabel = addLabel(`M`, V(0, h * mRatio + 0.2, 0), 'result');
+      objects.maMeasure = addLabel('MA', V(0.25, h * mRatio / 2, 0), 'measure');
+      addLabel('Mặt đất (ABC)', V(2.5, 0, 2.5));
+
+      updateStep4Geometry();
+    }
+
+    function updateStep4Geometry() {
+      if (!objects.mMesh) return;
+      const h = 5.0;
+      const mY = h * mRatio;
+      const Mpos = V(0, mY, 0);
+      objects.mMesh.position.copy(Mpos);
+      updateLine(objects.maLine, Mpos, V(0, 0, 0));
+
+      const actualDist = 8.0 * mRatio;
+      objects.mLabel.pos.copy(Mpos).add(V(0.3, 0.15, 0));
+      objects.maMeasure.pos.copy(Mpos.clone().multiplyScalar(0.5)).add(V(0.25, 0, 0));
+      objects.maMeasure.el.textContent = `MA = ${fmt(actualDist)}m`;
+      const confirmed = dragTarget !== 'M' && Math.abs(mRatio - 0.75) <= 0.025;
+      const mColor = confirmed ? COLORS.jade : COLORS.accent;
+      objects.mMesh.material.color.setHex(mColor);
+      objects.mMesh.material.emissive.setHex(mColor);
+      objects.mLabel.el.className = `label ${confirmed ? 'jade' : 'result'}`;
+
+      distanceReadout.textContent = `d(M, đất) = ${fmt(actualDist)}m (${(mRatio*100).toFixed(0)}% SA)`;
+      distanceReadout.style.borderColor = confirmed ? '#34D399' : 'rgba(250,199,117,.5)';
+      distanceReadout.style.color = confirmed ? '#34D399' : '#FAC775';
+
+      const out = document.querySelector('[data-out="mratio"]');
+      if (out) out.textContent = fmt(actualDist) + 'm (Tỉ lệ ' + mRatio.toFixed(2) + ')';
+    }
+
+    // 4. CAMERA VIEW PRESETS
+    function setCamera(mode = 'perspective') {
+      if (mode === 'top') {
+        camera.position.set(0.01, 14, 0);
+        controls.target.set(0, 0, 0);
+      } else if (mode === 'side') {
+        camera.position.set(11, 3, 0);
+        controls.target.set(0, 2, 0);
+      } else {
+        camera.position.set(7.5, 6.5, 9);
+        controls.target.set(0, 1.8, 0);
+      }
+      camera.up.set(0, 1, 0);
+      controls.update();
+    }
+
+    // 5. STEP CONTENT RENDERING (CLEAN & NATIVE TYPOGRAPHY)
+    function renderStep() {
+      headerProgress.textContent = `BƯỚC ${currentStep}/4`;
+      document.querySelectorAll('.step-tab').forEach(b => {
+        const n = +b.dataset.step;
+        b.classList.toggle('active', n === currentStep);
+        b.classList.toggle('done', n < unlocked);
+        b.disabled = n > unlocked;
+      });
+
+      if (currentStep === 1) renderStep1UI();
+      if (currentStep === 2) renderStep2UI();
+      if (currentStep === 3) renderStep3UI();
+      if (currentStep === 4) renderStep4UI();
+
+      reportHeight();
+      saveState();
+    }
+
+    function renderStep1UI() {
+      sceneChip.textContent = 'Trạm phát sóng · Kéo điểm K';
+      stepBody.innerHTML = `
+        <figure class="module-hook" aria-label="Trạm phát sóng và bài toán tìm khoảng cách ngắn nhất">
+          <svg viewBox="0 0 500 300" role="img" aria-labelledby="hook-title hook-desc">
+            <title id="hook-title">Trạm phát sóng bên con đường</title>
+            <desc id="hook-desc">Một cột phát sóng, các vòng sóng, con đường và đoạn nét đứt có dấu hỏi.</desc>
+            <rect width="500" height="300" fill="#f8fbfa"/>
+            <rect x="0" y="235" width="500" height="48" rx="6" fill="var(--il-sand)" opacity=".8"/>
+            <line x1="250" y1="74" x2="250" y2="216" stroke="var(--il-slate)" stroke-width="13" stroke-linecap="round"/>
+            <line x1="210" y1="216" x2="250" y2="126" stroke="var(--il-slate)" stroke-width="6"/>
+            <line x1="290" y1="216" x2="250" y2="126" stroke="var(--il-slate)" stroke-width="6"/>
+            <circle cx="250" cy="65" r="9" fill="var(--jade)"/>
+            <path d="M224 86 Q250 108 276 86 M205 70 Q250 118 295 70 M183 53 Q250 128 317 53" fill="none" stroke="var(--jade)" stroke-width="5" stroke-linecap="round" opacity=".78"/>
+            <line x1="250" y1="216" x2="330" y2="258" stroke="var(--accent)" stroke-width="5" stroke-dasharray="10 9"/>
+            <text x="340" y="250" fill="var(--accent-deep)" font-family="JetBrains Mono, monospace" font-size="34" font-weight="700">?</text>
+          </svg>
+          <figcaption>Đường cáp nào từ trạm xuống đường là ngắn nhất?</figcaption>
+        </figure>
+
+        <p class="eyebrow">Bước 1 · Định nghĩa khoảng cách</p>
+        <h2 class="step-title">Khoảng cách là đoạn NGẮN NHẤT</h2>
+        
+        <div class="athena">
+          <b>✦ Athena</b>
+          Kỹ sư cần kéo cáp nối từ trạm phát sóng M xuống con đường a. Hãy kéo điểm vàng K trượt dọc theo đường và quan sát độ dài đoạn MK thay đổi thế nào.
+        </div>
+
+        <div class="control">
+          <label>Vị trí điểm K trên đường a <output data-out="kx">${fmt(kX)}m</output></label>
+          <input type="range" min="-5" max="5" step="0.1" value="${kX}" oninput="lesson.setKX(this.value)">
+        </div>
+
+        <div class="card">
+          <h3>Thước đo khoảng cách thời gian thực:</h3>
+          <div class="formula" style="display:flex; justify-content:space-between; align-items:center;">
+            <span>MK = <b id="measured-dist-val">${fmt(Math.sqrt(kX*kX + 16))}m</b></span>
+            <span style="color:var(--jade-dark); font-weight:700;">MH = 4,00m</span>
+          </div>
+          <p class="body-small">
+            Độ dài MK luôn lớn hơn hoặc bằng 4,00m và đạt giá trị <b>nhỏ nhất chính xác tại H</b> (khi đoạn MH vuông góc với đường a).
+          </p>
+        </div>
+
+        <div class="card" id="q1-card">
+          <h3><i class="ti ti-help-circle"></i> Câu hỏi tư duy:</h3>
+          <p class="body-small">Để tính khoảng cách từ một điểm đến một đường thẳng/mặt phẳng, bước ĐẦU TIÊN cần làm là gì?</p>
+          <button class="choice ${q1Done ? '' : ''}" onclick="lesson.answerQ1(0)">A. Nối điểm đó với 1 điểm bất kỳ trên đường/mặt rồi đo</button>
+          <button class="choice ${q1Done ? 'correct' : ''}" onclick="lesson.answerQ1(1)">B. Xác định đúng chân đường vuông góc H trước, rồi đo đoạn MH</button>
+          <button class="choice" onclick="lesson.answerQ1(2)">C. Ước lượng bằng mắt trên hình vẽ</button>
+          <div id="q1-feedback">
+            ${q1Done ? (q1Correct ? '<div class="feedback good">Chính xác! Khoảng cách được định nghĩa là độ dài đoạn vuông góc ngắn nhất.</div>' : '<div class="feedback warn">Đã hết lượt. Đáp án đúng là B: phải xác định chân đường vuông góc H trước.</div>') : ''}
+          </div>
+        </div>
+
+        <div class="notebook">
+          <b><i class="ti ti-notebook"></i> Sổ tay kiến thức</b><br>
+          Khoảng cách từ điểm M đến đường thẳng a (hoặc mặt phẳng (P)) là khoảng cách giữa M và <b>hình chiếu vuông góc H</b> của M. Với mọi điểm K khác H, ta luôn có: <b>MK > MH</b>.
+          <div class="mini-plane">
+            <svg viewBox="0 0 320 130" role="img" aria-label="Khoảng cách từ điểm M đến mặt phẳng P">
+              <polygon points="48,82 222,48 286,91 110,121" fill="var(--il-sand)" opacity=".48" stroke="var(--il-slate)" stroke-width="2"/>
+              <line x1="158" y1="18" x2="158" y2="83" stroke="var(--jade-deep)" stroke-width="4"/>
+              <path d="M158 83 h13 v-11" fill="none" stroke="var(--jade-deep)" stroke-width="2"/>
+              <circle cx="158" cy="18" r="5" fill="var(--il-slate)"/><circle cx="158" cy="83" r="5" fill="var(--jade)"/>
+              <text x="169" y="21" fill="var(--ink)" font-size="13" font-weight="700">M</text><text x="142" y="101" fill="var(--jade-dark)" font-size="13" font-weight="700">H</text><text x="249" y="84" fill="var(--ink-2)" font-size="13">(P)</text>
+            </svg>
+            <span class="body-small">Với mặt phẳng (P), cơ chế hoàn toàn tương tự: <b>MH ⊥ (P)</b> và MH là đoạn ngắn nhất.</span>
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-primary" ${!q1Done ? 'disabled' : ''} onclick="lesson.completeStep()">
+            Tiếp tục: Tính bằng hệ thức lượng →
+          </button>
+        </div>
+      `;
+    }
+
+    function renderStep2UI() {
+      sceneChip.textContent = 'Giá đỡ 3 chân · Tính chiều cao SO';
+      stepBody.innerHTML = `
+        <p class="eyebrow">Bước 2 · Hệ thức lượng</p>
+        <h2 class="step-title">Giá đỡ 3 chân trạm viễn thông</h2>
+        
+        <div class="athena">
+          <b>✦ Athena</b>
+          Giá đỡ trạm phát sóng có dạng chóp tam giác đều S.ABC: 3 chân dài SA = SB = SC = 150 cm, 3 điểm đế cách đều nhau AB = BC = CA = 90 cm trên mặt đất. Hãy tính chiều cao SO của giá đỡ.
+        </div>
+
+        <div class="stage-list" aria-label="Tiến trình tính chiều cao">
+          <div class="stage-item ${step2Stage > 0 ? 'done' : 'active'}">1. Xác định chân đường cao O</div>
+          <div class="stage-item ${step2Stage > 1 ? 'done' : step2Stage === 1 ? 'active' : ''}">2. Tính bán kính đáy OA</div>
+          <div class="stage-item ${step2Stage > 2 ? 'done' : step2Stage === 2 ? 'active' : ''}">3. Dùng Pythagore tính SO</div>
+        </div>
+
+        ${step2Stage === 0 ? `
+          <div class="card" id="step2-card">
+            <h3>Chọn chân đường vuông góc từ S xuống đáy</h3>
+            <p class="body-small">Bạn có thể chạm vào điểm dấu hỏi trên mô hình hoặc chọn đáp án:</p>
+            <button class="choice" onclick="lesson.selectFootO('A')">A. Đỉnh A của tam giác đáy</button>
+            <button class="choice" onclick="lesson.selectFootO('O')">B. Tâm O của tam giác đều ABC</button>
+            <button class="choice" onclick="lesson.selectFootO('AB')">C. Một điểm bất kỳ trên cạnh AB</button>
+            <div id="step2-feedback"></div>
+          </div>
+        ` : ''}
+
+        ${step2Stage === 1 ? `
+          <div class="card" id="step2-card">
+            <h3>Tính OA – bán kính ngoại tiếp tam giác đều cạnh 90cm</h3>
+            <button class="choice" onclick="lesson.answerOA(45)">A. OA = 45cm</button>
+            <button class="choice" onclick="lesson.answerOA(51.96)">B. OA = 30√3 ≈ 51,96cm</button>
+            <button class="choice" onclick="lesson.answerOA(90)">C. OA = 90cm</button>
+            <div id="step2-feedback"></div>
+          </div>
+        ` : ''}
+
+        ${step2Stage === 2 ? `
+          <div class="card" id="step2-card">
+            <h3>Áp dụng Pythagore trong tam giác vuông SOA</h3>
+            <div class="formula">SO = √(SA² − OA²)</div>
+            <button class="choice" onclick="lesson.answerSO(98.04)">A. SO ≈ 98,04cm</button>
+            <button class="choice" onclick="lesson.answerSO(140.71)">B. SO ≈ 140,71cm</button>
+            <button class="choice" onclick="lesson.answerSO(201.96)">C. SO ≈ 201,96cm</button>
+            <div id="step2-feedback"></div>
+          </div>
+        ` : ''}
+
+        ${step2Stage >= 3 ? `
+          <div class="card">
+            <h3>Quy trình đã hoàn tất</h3>
+            <div class="formula">OA = (90√3)/3 ≈ 51,96cm<br>SO = √(150² − 51,96²) ≈ 140,71cm</div>
+            <div class="feedback good">Chiều cao giá đỡ, cũng là khoảng cách từ S đến mặt đất, bằng <b>140,71cm</b>.</div>
+          </div>
+        ` : ''}
+
+        <div class="notebook">
+          <b><i class="ti ti-notebook"></i> Sổ tay kiến thức</b><br>
+          Để tính khoảng cách từ đỉnh chóp đều đến đáy: Xác định chân đường cao tại tâm đáy O → Tính bán kính đáy OA → Dùng hệ thức lượng trong tam giác vuông SOA.
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="lesson.prevStep()">← Quay lại</button>
+          <button class="btn btn-primary" ${step2Stage < 3 ? 'disabled' : ''} onclick="lesson.completeStep()">Tiếp tục: Kỹ thuật kẻ hai lần →</button>
+        </div>
+      `;
+    }
+
+    function renderStep3UI() {
+      sceneChip.textContent = 'Kỹ thuật kẻ hai lần · Khung hộp đứng';
+      stepBody.innerHTML = `
+        <p class="eyebrow">Bước 3 · Kỹ thuật kẻ hai lần</p>
+        <h2 class="step-title">Khoảng cách từ AA' đến mặt (BDD'B')</h2>
+        
+        <div class="athena">
+          <b>✦ Athena</b>
+          Khung hộp đứng ABCD.A'B'C'D' có đáy hình thoi cạnh a = 4m, góc BAD = 100°, cạnh bên AA' = 5m. Hãy thực hiện tuần tự kỹ thuật “kẻ hai lần”, không bỏ qua bước kiểm chứng.
+        </div>
+
+        <div class="stage-list" aria-label="Tiến trình kẻ hai lần">
+          <div class="stage-item ${step3Stage > 0 ? 'done' : 'active'}">1. Dựng AO trong mặt đáy</div>
+          <div class="stage-item ${step3Stage > 1 ? 'done' : step3Stage === 1 ? 'active' : ''}">2. Xác nhận AO ⊥ BD</div>
+          <div class="stage-item ${step3Stage > 2 ? 'done' : step3Stage === 2 ? 'active' : ''}">3. Xác nhận AO ⊥ BB'</div>
+        </div>
+
+        ${step3Stage === 0 ? `
+          <div class="card">
+            <h3>Kẻ lần 1 trong đáy hình thoi</h3>
+            <p class="body-small">O là giao điểm hai đường chéo. Hãy dựng đoạn từ A đến O.</p>
+            <button class="btn btn-primary" onclick="lesson.advanceStep3('construct')"><i class="ti ti-pencil"></i> Dựng đoạn AO</button>
+          </div>
+        ` : ''}
+
+        ${step3Stage === 1 ? `
+          <div class="card" id="step3-card">
+            <h3>Điều kiện thứ nhất</h3>
+            <p class="body-small">Trong hình thoi, hai đường chéo AC và BD có quan hệ gì?</p>
+            <button class="choice" onclick="lesson.verifyStep3(false)">AC ∥ BD</button>
+            <button class="choice" onclick="lesson.verifyStep3(true)">AC ⊥ BD, nên AO ⊥ BD</button>
+            <div id="step3-feedback"></div>
+          </div>
+        ` : ''}
+
+        ${step3Stage === 2 ? `
+          <div class="card" id="step3-card">
+            <h3>Điều kiện thứ hai</h3>
+            <p class="body-small">Vì hình hộp đứng có AA' ⊥ (ABCD) và BB' ∥ AA', ta suy ra điều gì?</p>
+            <button class="choice" onclick="lesson.verifyStep3(true)">AO ⊥ AA' và AO ⊥ BB'</button>
+            <button class="choice" onclick="lesson.verifyStep3(false)">AO ∥ BB'</button>
+            <div id="step3-feedback"></div>
+          </div>
+        ` : ''}
+
+        ${step3Stage >= 3 ? `
+          <div class="card">
+            <h3>Kết luận từ hai đường cắt nhau trong mặt</h3>
+            <p class="body-small">Ta có AO ⊥ BD. Mặt khác, AA' ⊥ (ABCD) nên AO ⊥ AA'; lại có BB' ∥ AA' nên AO ⊥ BB'. Vì BD và BB' cắt nhau tại B và cùng thuộc (BDD'B'), suy ra <b>AO ⊥ (BDD'B')</b>.</p>
+            <div class="formula">d(AA', (BDD'B')) = AO = AB · cos 50° ≈ 2,57m</div>
+          </div>
+
+          <div class="card" id="q3-card">
+            <h3><i class="ti ti-help-circle"></i> Kiểm tra tư duy:</h3>
+            <p class="body-small">Nếu chỉ kẻ AO ⊥ BD trong đáy mà chưa kiểm tra điều kiện thứ hai, có được kết luận ngay AO là khoảng cách không?</p>
+            <button class="choice" onclick="lesson.answerQ3(false)">Được, vì BD đã nằm trong mặt phẳng</button>
+            <button class="choice ${q3Done ? 'correct' : ''}" onclick="lesson.answerQ3(true)">Không, phải kiểm tra với hai đường cắt nhau trong mặt</button>
+            <div id="q3-feedback">${q3Done ? (q3Correct ? '<div class="feedback good">Chính xác: phải kiểm tra đủ hai điều kiện vuông góc.</div>' : '<div class="feedback warn">Đã hết lượt. Đáp án đúng: không thể dừng sau điều kiện AO ⊥ BD.</div>') : ''}</div>
+          </div>
+        ` : ''}
+
+        <div class="notebook">
+          <b><i class="ti ti-notebook"></i> Sổ tay kiến thức</b><br>
+          Kỹ thuật "kẻ hai lần" giúp tìm đoạn vuông góc với mặt phẳng đứng: (1) Kẻ vuông góc vào giao tuyến đáy, (2) Dùng tính chất cạnh bên vuông góc đáy để suy ra đoạn vuông góc chung.
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="lesson.prevStep()">← Quay lại</button>
+          <button class="btn btn-primary" ${step3Stage < 3 || !q3Done ? 'disabled' : ''} onclick="lesson.completeStep()">Tiếp tục: Kỹ thuật dời điểm →</button>
+        </div>
+      `;
+    }
+
+    function renderStep4UI() {
+      sceneChip.textContent = 'Dây giằng néo cột · Kỹ thuật dời điểm';
+      stepBody.innerHTML = `
+        <p class="eyebrow">Bước 4 · Kỹ thuật dời điểm</p>
+        <h2 class="step-title">Dây giằng từ đỉnh cột</h2>
+        
+        <div class="athena">
+          <b>✦ Athena</b>
+          Cột chính trạm phát sóng có chiều cao SA = 8m (SA ⊥ đáy). Điểm M là một khoen nối trượt trên đoạn SA. Đừng tính lại từ đầu — hãy quan sát khoảng cách từ M đến mặt đất biến đổi theo TỈ LỆ VỊ TRÍ!
+        </div>
+
+        <div class="control">
+          <label>Vị trí khoen M trên cột SA <output data-out="mratio">${fmt(8.0 * mRatio)}m (Tỉ lệ ${(mRatio).toFixed(2)})</output></label>
+          <input type="range" min="0" max="1" step="0.05" value="${mRatio}" oninput="lesson.setMRatio(this.value)">
+        </div>
+
+        <div class="card">
+          <h3>Công thức dời điểm tổng quát:</h3>
+          <p class="body-small">
+            Khi điểm M thuộc đoạn SA, khoảng cách từ M đến mặt đất (P) tỉ lệ trực tiếp theo độ dài đoạn MA:
+          </p>
+          <div class="formula">
+            d(M, (P)) = (MA / SA) · d(S, (P))
+          </div>
+          <p class="body-small">
+            Ví dụ: Khi M ở trung điểm (tỉ lệ 1/2), khoảng cách từ M đến đáy là: <b>(1/2) × 8m = 4m</b>.
+          </p>
+        </div>
+
+        <div class="card" id="q4-card">
+          <h3><i class="ti ti-help-circle"></i> Bài tập chốt hạ:</h3>
+          <p class="body-small">Nếu điểm M nằm trên đoạn SA sao cho <b>SM : MA = 1 : 3</b>, khoảng cách từ M đến mặt đất là bao nhiêu (biết SA = 8m)?</p>
+          <button class="choice" onclick="lesson.answerQ4(2)">A. 2m (lấy 1/4 × 8m)</button>
+          <button class="choice ${q4Done ? 'correct' : ''}" onclick="lesson.answerQ4(6)">B. 6m (lấy 3/4 × 8m)</button>
+          <button class="choice" onclick="lesson.answerQ4(4)">C. 4m</button>
+          <div id="q4-feedback">
+            ${q4Done ? (q4Correct ? '<div class="feedback good">Chính xác! SM : MA = 1 : 3 nên MA chiếm 3/4 đoạn SA và d(M, đáy) = (3/4) × 8 = 6m.</div>' : '<div class="feedback warn">Đã hết lượt. Đáp án đúng là 6m vì MA/SA = 3/4.</div>') : ''}
+          </div>
+        </div>
+
+        <div class="notebook">
+          <b><i class="ti ti-notebook"></i> Tổng kết Module 1:</b>
+          <ol class="summary-list">
+            <li><b>Định nghĩa:</b> Khoảng cách là độ dài đoạn vuông góc, luôn là khoảng cách NHỎ NHẤT.</li>
+            <li><b>Quy trình:</b> Tìm chân đường cao O → Áp dụng hệ thức lượng / Pythagore.</li>
+            <li><b>Kẻ hai lần:</b> Kiểm tra đủ 2 điều kiện vuông góc với 2 đường cắt nhau trong mặt.</li>
+            <li><b>Dời điểm:</b> Suy khoảng cách qua tỉ số đoạn thẳng (MA/SA), không tính lại từ đầu.</li>
+          </ol>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn btn-secondary" onclick="lesson.prevStep()">← Quay lại</button>
+          <button class="btn btn-primary" ${!q4Done || completed ? 'disabled' : ''} onclick="lesson.finish()">
+            ${completed ? 'Đã hoàn thành Module 1' : 'Hoàn thành Module 1 🎉'}
+          </button>
+        </div>
+        ${completed ? '<div class="feedback good"><b>Hoàn thành Module 1.</b> Bạn đã nắm đủ bốn kỹ thuật tính khoảng cách trong không gian.</div>' : ''}
+      `;
+    }
+
+    // 6. NAVIGATION & LESSON API
+    function goStep(n) {
+      if (n < 1 || n > unlocked) return;
+      currentStep = n;
+      window.scrollTo(0, 0);
+      const sb = document.querySelector('.sidebar');
+      if (sb) sb.scrollTop = 0;
+      if (n === 1) { buildStep1Scene(); setCamera('perspective'); }
+      if (n === 2) { buildStep2Scene(); setCamera('perspective'); }
+      if (n === 3) { buildStep3Scene(); setCamera('perspective'); }
+      if (n === 4) { buildStep4Scene(); setCamera('perspective'); }
+      renderStep();
+    }
+
+    function completeStep() {
+      if ((currentStep === 1 && !q1Done) || (currentStep === 2 && step2Stage < 3) || (currentStep === 3 && (step3Stage < 3 || !q3Done))) return;
+      unlocked = Math.max(unlocked, Math.min(4, currentStep + 1));
+      LMS().progress({ done: currentStep, total: 4 });
+      LMS().event('completed-section', { id: ['step1-definition', 'step2-trig-calc', 'step3-two-step-draw', 'step4-point-shift'][currentStep - 1] });
+      if (currentStep < 4) goStep(currentStep + 1);
+    }
+
+    function finish() {
+      if (completed || !q4Done) return;
+      completed = true;
+      saveState();
+      LMS().progress({ done: 4, total: 4 });
+      const q1Options = ['Nối với một điểm bất kỳ', 'Xác định chân đường vuông góc H', 'Ước lượng bằng mắt'];
+      const q3Options = ['Có thể kết luận ngay', 'Không, phải kiểm tra đủ hai đường cắt nhau'];
+      const q4Options = ['2m', '6m', '4m'];
+      LMS().complete({
+        summary: 'Đã hoàn thành xuất sắc Module 1: Định nghĩa khoảng cách, hệ thức lượng, kỹ thuật kẻ hai lần và dời điểm.',
+        score: 4,
+        max: 4,
+        items: [
+          { id: 'q1-definition', prompt: 'Bước đầu tiên để tính khoảng cách là gì?', options: q1Options, chosen: q1Chosen === null ? null : q1Options[q1Chosen], correct: q1Options[1], isCorrect: q1Correct, notes: q1Correct ? null : 'Hết 3 lượt; hệ thống đã mở đáp án.' },
+          { id: 'step2-foot-o', prompt: 'Xác định chân đường cao của chóp đều S.ABC', options: ['A', 'O', 'Một điểm trên AB'], chosen: step2FootChosen, correct: 'O', isCorrect: step2Stage >= 1 },
+          { id: 'step2-calculate-oa', prompt: 'Tính bán kính đáy OA', options: ['45cm', '51,96cm', '90cm'], chosen: step2OAChosen === null ? null : `${fmt(step2OAChosen)}cm`, correct: '51,96cm', isCorrect: step2Stage >= 2 },
+          { id: 'step2-calculate-so', prompt: 'Tính chiều cao SO', options: ['98,04cm', '140,71cm', '201,96cm'], chosen: step2SOChosen === null ? null : `${fmt(step2SOChosen)}cm`, correct: '140,71cm', isCorrect: step2Stage >= 3 },
+          { id: 'step3-construct-ao', prompt: 'Dựng AO trong mặt đáy', options: null, chosen: step3Stage >= 1 ? 'Đã dựng AO' : null, correct: 'Đã dựng AO', isCorrect: step3Stage >= 1 },
+          { id: 'step3-check-ao-bd', prompt: 'Kiểm tra AO vuông góc BD', options: ['Đúng', 'Sai'], chosen: step3CheckBD, correct: 'Đúng', isCorrect: step3Stage >= 2 },
+          { id: 'step3-check-ao-bb-prime', prompt: "Kiểm tra AO vuông góc BB'", options: ['Đúng', 'Sai'], chosen: step3CheckBB, correct: 'Đúng', isCorrect: step3Stage >= 3 },
+          { id: 'q3-two-step', prompt: 'Có thể kết luận sau một điều kiện vuông góc không?', options: q3Options, chosen: q3Chosen, correct: q3Options[1], isCorrect: q3Correct, notes: q3Correct ? null : 'Hết 3 lượt; hệ thống đã mở đáp án.' },
+          { id: 'q4-point-shift', prompt: 'SM:MA = 1:3, khoảng cách từ M đến đáy bằng bao nhiêu?', options: q4Options, chosen: q4Chosen === null ? null : `${q4Chosen}m`, correct: '6m', isCorrect: q4Correct, notes: q4Correct ? null : 'Hết 3 lượt; hệ thống đã mở đáp án.' }
+        ]
+      });
+      renderStep4UI();
+      reportHeight();
+    }
+
+    window.lesson = {
+      setKX(v) {
+        kX = +v;
+        updateStep1Geometry();
+        saveState();
+      },
+      setMRatio(v) {
+        mRatio = +v;
+        updateStep4Geometry();
+        saveState();
+      },
+      selectFootO(choice) {
+        if (step2Stage !== 0) return;
+        step2FootChosen = choice;
+        saveState();
+        if (choice === 'O') {
+          step2Stage = 1;
+          LMS().event('identified-foot', { id: 'step2-foot-o', chosen: choice, correct: true });
+          buildStep2Scene();
+          renderStep2UI();
+          saveState();
+        } else {
+          LMS().event('identified-foot', { id: 'step2-foot-o', chosen: choice, correct: false });
+          const fb = document.getElementById('step2-feedback');
+          if (fb) fb.innerHTML = '<div class="feedback bad">Chưa đúng. Với chóp đều, chân đường cao trùng tâm của đáy.</div>';
+        }
+      },
+      answerOA(value) {
+        if (step2Stage !== 1) return;
+        step2OAChosen = value;
+        saveState();
+        const correct = Math.abs(value - 51.96) < 0.02;
+        LMS().event('answered', { id: 'step2-calculate-oa', chosen: value, correct });
+        if (correct) {
+          step2Stage = 2;
+          buildStep2Scene();
+          renderStep2UI();
+          saveState();
+        } else {
+          const fb = document.getElementById('step2-feedback');
+          if (fb) fb.innerHTML = '<div class="feedback bad">Chưa đúng. Bán kính ngoại tiếp tam giác đều cạnh a là a√3/3.</div>';
+        }
+      },
+      answerSO(value) {
+        if (step2Stage !== 2) return;
+        step2SOChosen = value;
+        saveState();
+        const correct = Math.abs(value - 140.71) < 0.02;
+        LMS().event('answered', { id: 'step2-calculate-so', chosen: value, correct });
+        if (correct) {
+          step2Stage = 3;
+          buildStep2Scene();
+          renderStep2UI();
+          saveState();
+        } else {
+          const fb = document.getElementById('step2-feedback');
+          if (fb) fb.innerHTML = '<div class="feedback bad">Chưa đúng. Trong tam giác vuông SOA: SO² = SA² − OA².</div>';
+        }
+      },
+      advanceStep3(action) {
+        if (step3Stage !== 0 || action !== 'construct') return;
+        step3Stage = 1;
+        LMS().event('constructed', { id: 'step3-construct-ao', correct: true });
+        buildStep3Scene();
+        renderStep3UI();
+        saveState();
+      },
+      verifyStep3(correct) {
+        if (step3Stage !== 1 && step3Stage !== 2) return;
+        if (step3Stage === 1) step3CheckBD = correct ? 'Đúng' : 'Sai';
+        if (step3Stage === 2) step3CheckBB = correct ? 'Đúng' : 'Sai';
+        saveState();
+        const id = step3Stage === 1 ? 'step3-check-ao-bd' : 'step3-check-ao-bb-prime';
+        LMS().event('answered', { id, correct });
+        if (correct) {
+          step3Stage++;
+          buildStep3Scene();
+          renderStep3UI();
+          saveState();
+        } else {
+          const fb = document.getElementById('step3-feedback');
+          if (fb) fb.innerHTML = '<div class="feedback bad">Chưa đúng. Hãy dùng tính chất đường chéo hình thoi và các cạnh bên song song của hình hộp đứng.</div>';
+        }
+      },
+      answerQ1(choice) {
+        if (q1Done) return;
+        q1Chosen = choice;
+        if (choice === 1) {
+          q1Done = true;
+          q1Correct = true;
+          LMS().event('answered', { id: 'q1-definition', correct: true });
+          renderStep1UI();
+          saveState();
+        } else {
+          q1Strikes++;
+          saveState();
+          LMS().event('answered', { id: 'q1-definition', correct: false, strikes: q1Strikes });
+          const card = document.getElementById('q1-card');
+          if (card) {
+            card.classList.add('shake');
+            setTimeout(() => card.classList.remove('shake'), 320);
+          }
+          const fb = document.getElementById('q1-feedback');
+          if (fb) fb.innerHTML = '<div class="feedback bad">Chưa đúng. Gợi ý: Khoảng cách ngắn nhất chỉ đạt được khi đoạn nối vuông góc!</div>';
+          if (q1Strikes >= 3) {
+            q1Done = true;
+            q1Correct = false;
+            renderStep1UI();
+            saveState();
+          }
+        }
+      },
+      answerQ3(isCorrect) {
+        if (q3Done) return;
+        q3Chosen = isCorrect ? 'Không, phải kiểm tra đủ hai đường cắt nhau' : 'Có thể kết luận ngay';
+        if (isCorrect) {
+          q3Done = true;
+          q3Correct = true;
+          LMS().event('answered', { id: 'q3-two-step', correct: true });
+          renderStep3UI();
+          saveState();
+        } else {
+          q3Strikes++;
+          saveState();
+          LMS().event('answered', { id: 'q3-two-step', correct: false, strikes: q3Strikes });
+          const card = document.getElementById('q3-card');
+          if (card) {
+            card.classList.add('shake');
+            setTimeout(() => card.classList.remove('shake'), 320);
+          }
+          const fb = document.getElementById('q3-feedback');
+          if (fb) fb.innerHTML = '<div class="feedback bad">Chưa đúng. Một đường thẳng vuông góc với 1 đường trong mặt chưa đủ để vuông góc với cả mặt phẳng!</div>';
+          if (q3Strikes >= 3) {
+            q3Done = true;
+            q3Correct = false;
+            renderStep3UI();
+            saveState();
+          }
+        }
+      },
+      answerQ4(ans) {
+        if (q4Done) return;
+        q4Chosen = ans;
+        if (ans === 6) {
+          q4Done = true;
+          q4Correct = true;
+          mRatio = 0.75;
+          updateStep4Geometry();
+          LMS().event('answered', { id: 'q4-point-shift', correct: true });
+          renderStep4UI();
+          saveState();
+        } else {
+          q4Strikes++;
+          saveState();
+          LMS().event('answered', { id: 'q4-point-shift', correct: false, strikes: q4Strikes });
+          const card = document.getElementById('q4-card');
+          if (card) {
+            card.classList.add('shake');
+            setTimeout(() => card.classList.remove('shake'), 320);
+          }
+          const fb = document.getElementById('q4-feedback');
+          if (fb) fb.innerHTML = '<div class="feedback bad">Chưa đúng. Cẩn thận bẫy: SM : MA = 1 : 3 thì đoạn MA chiếm 3/4 chiều cao!</div>';
+          if (q4Strikes >= 3) {
+            q4Done = true;
+            q4Correct = false;
+            renderStep4UI();
+            saveState();
+          }
+        }
+      },
+      completeStep,
+      prevStep() { goStep(currentStep - 1); },
+      finish
+    };
+
+    // Tab clicks & Camera buttons
+    document.querySelectorAll('.step-tab').forEach(b => b.onclick = () => goStep(+b.dataset.step));
+    document.getElementById('btn-reset').onclick = () => setCamera('perspective');
+    document.getElementById('btn-top').onclick = () => setCamera('top');
+    document.getElementById('btn-side').onclick = () => setCamera('side');
+
+    // 7. RAYCASTING DIRECT DRAG INTERACTIONS
+    const raycaster = new THREE.Raycaster();
+    const pointer = new THREE.Vector2();
+
+    function pointerRay(e) {
+      const r = canvas.getBoundingClientRect();
+      pointer.set(((e.clientX - r.left) / r.width) * 2 - 1, -((e.clientY - r.top) / r.height) * 2 + 1);
+      raycaster.setFromCamera(pointer, camera);
+    }
+
+    canvas.addEventListener('pointerdown', e => {
+      pointerRay(e);
+      if (currentStep === 1 && objects.kMesh && raycaster.intersectObject(objects.kMesh).length) {
+        dragTarget = 'K';
+        controls.enabled = false;
+        canvas.setPointerCapture(e.pointerId);
+      } else if (currentStep === 2 && step2Stage === 0 && objects.step2OMesh && raycaster.intersectObject(objects.step2OMesh).length) {
+        lesson.selectFootO('O');
+      } else if (currentStep === 4 && objects.mMesh && raycaster.intersectObject(objects.mMesh).length) {
+        dragTarget = 'M';
+        controls.enabled = false;
+        canvas.setPointerCapture(e.pointerId);
+      }
+    });
+
+    canvas.addEventListener('pointermove', e => {
+      if (!dragTarget) return;
+      pointerRay(e);
+
+      if (dragTarget === 'K') {
+        const planeY0 = new THREE.Plane(V(0, 1, 0), 0);
+        const hit = V();
+        if (raycaster.ray.intersectPlane(planeY0, hit)) {
+          kX = Math.max(-5, Math.min(5, hit.x));
+          const slider = document.querySelector('input[type="range"]');
+          if (slider) slider.value = kX;
+          updateStep1Geometry();
+        }
+      } else if (dragTarget === 'M') {
+        const planeZ0 = new THREE.Plane(V(0, 0, 1), 0);
+        const hit = V();
+        if (raycaster.ray.intersectPlane(planeZ0, hit)) {
+          mRatio = Math.max(0, Math.min(1, hit.y / 5.0));
+          const slider = document.querySelector('input[type="range"]');
+          if (slider) slider.value = mRatio;
+          updateStep4Geometry();
+        }
+      }
+    });
+
+    function endDrag() {
+      const finishedTarget = dragTarget;
+      if (finishedTarget) LMS().event('dragged-point', { target: finishedTarget });
+      dragTarget = null;
+      controls.enabled = true;
+      if (finishedTarget === 'M') updateStep4Geometry();
+      if (finishedTarget) saveState();
+    }
+    canvas.addEventListener('pointerup', endDrag);
+    canvas.addEventListener('pointercancel', endDrag);
+
+    // 8. RENDER LOOP & RESIZING
+    function resize() {
+      const w = wrap.clientWidth;
+      const h = wrap.clientHeight;
+      camera.aspect = w / Math.max(1, h);
+      camera.updateProjectionMatrix();
+      renderer.setSize(w, h, false);
+    }
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(() => {
+        clearTimeout(window._canvasResizeTimer);
+        window._canvasResizeTimer = setTimeout(resize, 40);
+      }).observe(wrap);
+    }
+    window.addEventListener('resize', resize);
+
+    function updateLabels() {
+      labels.forEach(l => {
+        const p = l.pos.clone().project(camera);
+        const show = p.z > -1 && p.z < 1;
+        l.el.style.display = show ? 'block' : 'none';
+        if (show) {
+          l.el.style.transform = `translate(${(p.x * 0.5 + 0.5) * wrap.clientWidth}px, ${(-p.y * 0.5 + 0.5) * wrap.clientHeight}px) translate(-50%, -115%)`;
+        }
+      });
+    }
+
+    function animate() {
+      requestAnimationFrame(animate);
+      controls.update();
+      updateLabels();
+      renderer.render(scene, camera);
+    }
+
+    function reportHeight() {
+      LMS().resize({ height: document.documentElement.scrollHeight });
+    }
+    if (typeof ResizeObserver !== 'undefined') {
+      new ResizeObserver(() => {
+        clearTimeout(window._rh);
+        window._rh = setTimeout(reportHeight, 100);
+      }).observe(document.body);
+    } else {
+      setInterval(reportHeight, 800);
+    }
+
+    // Initial Execution
+    buildStep1Scene();
+    setCamera('perspective');
+    renderStep();
+    resize();
+    animate();
+    LMS().ready({ id: 'bai26-module1-khoang-cach-diem-den-duong-mat-phang' });
+
+    if (window.AiducationLMS) {
+      window.AiducationLMS.onResume = s => {
+        if (!s) return;
+        kX = Number.isFinite(s.kX) ? s.kX : kX;
+        mRatio = Number.isFinite(s.mRatio) ? s.mRatio : mRatio;
+        step2Stage = Number.isFinite(s.step2Stage) ? Math.max(0, Math.min(3, s.step2Stage)) : step2Stage;
+        step3Stage = Number.isFinite(s.step3Stage) ? Math.max(0, Math.min(3, s.step3Stage)) : step3Stage;
+        q1Strikes = Number.isFinite(s.q1Strikes) ? s.q1Strikes : q1Strikes;
+        q3Strikes = Number.isFinite(s.q3Strikes) ? s.q3Strikes : q3Strikes;
+        q4Strikes = Number.isFinite(s.q4Strikes) ? s.q4Strikes : q4Strikes;
+        q1Done = Boolean(s.q1Done); q1Correct = Boolean(s.q1Correct);
+        q3Done = Boolean(s.q3Done); q3Correct = Boolean(s.q3Correct);
+        q4Done = Boolean(s.q4Done); q4Correct = Boolean(s.q4Correct);
+        q1Chosen = Number.isFinite(s.q1Chosen) ? s.q1Chosen : q1Chosen;
+        q3Chosen = typeof s.q3Chosen === 'string' ? s.q3Chosen : q3Chosen;
+        q4Chosen = Number.isFinite(s.q4Chosen) ? s.q4Chosen : q4Chosen;
+        step2FootChosen = typeof s.step2FootChosen === 'string' ? s.step2FootChosen : step2FootChosen;
+        step2OAChosen = Number.isFinite(s.step2OAChosen) ? s.step2OAChosen : step2OAChosen;
+        step2SOChosen = Number.isFinite(s.step2SOChosen) ? s.step2SOChosen : step2SOChosen;
+        step3CheckBD = typeof s.step3CheckBD === 'string' ? s.step3CheckBD : step3CheckBD;
+        step3CheckBB = typeof s.step3CheckBB === 'string' ? s.step3CheckBB : step3CheckBB;
+        completed = Boolean(s.completed);
+        unlocked = Math.max(1, Math.min(4, s.unlocked || 1));
+        goStep(Math.min(unlocked, s.currentStep || 1));
+      };
+    }
+  })();
+  </script>
+</body>
+</html>
