@@ -1530,179 +1530,56 @@
       });
     }
 
-    /* ─ Robot Mascot Aiducation ─
-       Thân tròn teal+cream, tai tròn, mặt đen oval,
-       mắt xanh mint phát sáng, cánh tay trái duỗi giữ dây tại `tip`.
-       Đứng bên PHẢI xe, mặt nhìn sang TRÁI.
+    const athenaImg = new Image();
+    athenaImg.src = 'https://www.aiducation.edu.vn/athena/athena_idle.webp';
+    athenaImg.onload = () => { if (typeof redraw === 'function') redraw(); };
+
+    /* ─ Athena Mascot Aiducation ─
+       Đứng bên PHẢI xe, cầm dây kéo tại `tip`.
     */
     function drawPerson(tip, ground) {
-      const R = CH * 0.11;          // bán kính thân robot
-      const att = getAttach();
-      // Tâm robot: đủ xa tip để cánh tay trông tự nhiên
+      const R = CH * 0.11;
       const cx = tip.x + R * 2.2;
-      const cy = ground - R * 1.05; // ngồi trên mặt đất, đáy thân chạm ground
+      const cy = ground - R * 1.05;
 
       ctx.save();
 
       /* ── BÓNG ĐỔ ── */
-      ctx.fillStyle = 'rgba(0,0,0,0.10)';
+      ctx.fillStyle = 'rgba(0,0,0,0.12)';
       ctx.beginPath();
-      ctx.ellipse(cx + R * 0.1, ground + 3, R * 0.85, R * 0.22, 0, 0, Math.PI * 2);
+      ctx.ellipse(cx, ground + 3, R * 0.9, R * 0.22, 0, 0, Math.PI * 2);
       ctx.fill();
 
-      /* ── TAI TRÁI (nhìn từ phía chúng ta = tai bên phải robot) ── */
-      // Tai = hình tròn nhỏ teal, nép phía sau đầu
-      const earR = R * 0.28;
-      // Tai phải (xa chúng ta hơn — vẽ trước để bị đầu che)
-      ctx.fillStyle = '#1A7A5E';
-      ctx.beginPath();
-      ctx.arc(cx + R * 0.62, cy - R * 0.72, earR, 0, Math.PI * 2);
-      ctx.fill();
-
-      /* ── THÂN CHÍNH — hình tròn lớn cream ── */
-      // Gradient nhẹ để có khối
-      const bodyGr = ctx.createRadialGradient(cx - R * 0.25, cy - R * 0.3, R * 0.1, cx, cy, R * 1.1);
-      bodyGr.addColorStop(0, '#F5EDD8');   // cream sáng
-      bodyGr.addColorStop(1, '#E8D9BC');   // cream tối hơn
-      ctx.fillStyle = bodyGr;
+      // Dây kéo từ tip nối đến vị trí tay Athena
+      const handX = cx - R * 0.55;
+      const handY = ground - R * 1.1;
       ctx.strokeStyle = '#2D8B6F';
-      ctx.lineWidth = 2;
+      ctx.lineWidth = 3;
       ctx.beginPath();
-      ctx.arc(cx, cy, R, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-
-      /* ── VIỀN TEAL XUNG QUANH THÂN (vòng ngoài) ── */
-      ctx.strokeStyle = '#1A7A5E';
-      ctx.lineWidth = 3.5;
-      ctx.beginPath();
-      ctx.arc(cx, cy, R * 1.12, 0, Math.PI * 2);
+      ctx.moveTo(tip.x, tip.y);
+      ctx.lineTo(handX, handY);
       ctx.stroke();
 
-      /* ── TAI TRÁI (nhìn từ phía ta = bên trái robot, gần dây kéo) ── */
-      ctx.fillStyle = '#1A7A5E';
-      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(cx - R * 0.62, cy - R * 0.72, earR, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-      // Điểm sáng trong tai
-      ctx.fillStyle = '#4ECBA0';
-      ctx.beginPath();
-      ctx.arc(cx - R * 0.62, cy - R * 0.78, earR * 0.38, 0, Math.PI * 2);
-      ctx.fill();
-
-      /* ── MẶT — hình chữ nhật bo tròn màu đen ── */
-      const faceW = R * 1.1, faceH = R * 0.82;
-      const faceX = cx - faceW / 2, faceY = cy - R * 0.52;
-      ctx.fillStyle = '#111820';
-      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.roundRect(faceX, faceY, faceW, faceH, R * 0.28);
-      ctx.fill(); ctx.stroke();
-
-      /* ── MẮT — 2 oval xanh mint phát sáng ── */
-      const eyeW = faceW * 0.24, eyeH = faceH * 0.44;
-      const eyeY = faceY + faceH * 0.22;
-      [-0.28, 0.28].forEach(dx => {
-        const ex = cx + faceW * dx;
-        // Glow halo
-        ctx.fillStyle = 'rgba(78,203,160,0.20)';
+      if (athenaImg.complete && athenaImg.naturalWidth !== 0) {
+        const h = R * 2.6;
+        const w = h * (athenaImg.naturalWidth / athenaImg.naturalHeight || 1);
+        ctx.drawImage(athenaImg, cx - w * 0.5, ground - h + 4, w, h);
+      } else {
+        /* Fallback vẽ vector nếu ảnh chưa kịp tải */
+        ctx.fillStyle = '#F5EDD8';
+        ctx.strokeStyle = '#2D8B6F';
+        ctx.lineWidth = 2;
         ctx.beginPath();
-        ctx.ellipse(ex, eyeY + eyeH * 0.5, eyeW * 0.9, eyeH * 0.9, 0, 0, Math.PI * 2);
-        ctx.fill();
-        // Mắt chính
-        ctx.fillStyle = '#4ECBA0';
-        ctx.beginPath();
-        ctx.ellipse(ex, eyeY + eyeH * 0.5, eyeW * 0.62, eyeH * 0.62, 0, 0, Math.PI * 2);
-        ctx.fill();
-        // Highlight nhỏ
-        ctx.fillStyle = 'rgba(255,255,255,0.55)';
-        ctx.beginPath();
-        ctx.ellipse(ex - eyeW * 0.18, eyeY + eyeH * 0.22, eyeW * 0.18, eyeH * 0.18, 0, 0, Math.PI * 2);
-        ctx.fill();
-      });
-
-      /* ── MIỆNG — cung cười nhỏ ── */
-      ctx.strokeStyle = '#4ECBA0'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.arc(cx, faceY + faceH * 0.82, faceW * 0.14, 0.15, Math.PI - 0.15);
-      ctx.stroke();
-
-      /* ── CÁNH TAY TRÁI — duỗi sang trái giữ dây tại tip ── */
-      // Cánh tay = đường bo tròn từ vai (cạnh trái thân) đến bàn tay
-      const armStartX = cx - R * 0.88;
-      const armStartY = cy - R * 0.10;
-      // Bàn tay robot = hình tròn nhỏ tại tip
-      ctx.strokeStyle = '#1A7A5E'; ctx.lineWidth = R * 0.32; ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(armStartX, armStartY);
-      // Bezier nhẹ để tay cong tự nhiên
-      ctx.quadraticCurveTo(
-        (armStartX + tip.x) / 2, armStartY + R * 0.18,
-        tip.x, tip.y
-      );
-      ctx.stroke();
-      // Viền ngoài cánh tay
-      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = R * 0.32 + 2;
-      ctx.beginPath();
-      ctx.moveTo(armStartX, armStartY);
-      ctx.quadraticCurveTo(
-        (armStartX + tip.x) / 2, armStartY + R * 0.18,
-        tip.x, tip.y
-      );
-      // Vẽ viền trước (z-order)
-      // Thực ra ta vẽ tay màu đậm hơn rồi đè màu teal lên — đảo thứ tự:
-      ctx.restore(); ctx.save();
-
-      // Vẽ lại đúng thứ tự: viền → fill
-      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = R * 0.36 + 2; ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(armStartX, armStartY);
-      ctx.quadraticCurveTo((armStartX + tip.x) / 2, armStartY + R * 0.18, tip.x, tip.y);
-      ctx.stroke();
-
-      ctx.strokeStyle = '#1A7A5E'; ctx.lineWidth = R * 0.32; ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(armStartX, armStartY);
-      ctx.quadraticCurveTo((armStartX + tip.x) / 2, armStartY + R * 0.18, tip.x, tip.y);
-      ctx.stroke();
-
-      /* ── BÀN TAY — hình tròn nhỏ tại điểm cầm dây ── */
-      ctx.fillStyle = '#1A7A5E';
-      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(tip.x, tip.y, R * 0.18, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
-
-      /* ── CÁNH TAY PHẢI — ngắn, đưa ra sau ── */
-      const armRX = cx + R * 0.88, armRY = cy - R * 0.10;
-      const armREndX = armRX + R * 0.55, armREndY = armRY + R * 0.35;
-      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = R * 0.36 + 2; ctx.lineCap = 'round';
-      ctx.beginPath(); ctx.moveTo(armRX, armRY); ctx.lineTo(armREndX, armREndY); ctx.stroke();
-      ctx.strokeStyle = '#1A7A5E'; ctx.lineWidth = R * 0.32;
-      ctx.beginPath(); ctx.moveTo(armRX, armRY); ctx.lineTo(armREndX, armREndY); ctx.stroke();
-      ctx.fillStyle = '#1A7A5E'; ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.5;
-      ctx.beginPath(); ctx.arc(armREndX, armREndY, R * 0.16, 0, Math.PI * 2); ctx.fill(); ctx.stroke();
-
-      /* ── CHÂN / ĐẾ — 2 hình tròn nhỏ teal ── */
-      [-0.38, 0.38].forEach(dx => {
-        ctx.fillStyle = '#1A7A5E';
-        ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.5;
-        ctx.beginPath();
-        ctx.ellipse(cx + R * dx, ground - R * 0.06, R * 0.24, R * 0.17, 0, 0, Math.PI * 2);
+        ctx.arc(cx, cy, R, 0, Math.PI * 2);
         ctx.fill(); ctx.stroke();
-      });
 
-      /* ── ANTEN nhỏ trên đỉnh ── */
-      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.8; ctx.lineCap = 'round';
-      ctx.beginPath();
-      ctx.moveTo(cx, cy - R * 1.0);
-      ctx.lineTo(cx, cy - R * 1.38);
-      ctx.stroke();
-      ctx.fillStyle = '#4ECBA0';
-      ctx.strokeStyle = '#2D8B6F'; ctx.lineWidth = 1.5;
-      ctx.beginPath();
-      ctx.arc(cx, cy - R * 1.42, R * 0.10, 0, Math.PI * 2);
-      ctx.fill(); ctx.stroke();
+        const faceW = R * 1.1, faceH = R * 0.82;
+        const faceX = cx - faceW / 2, faceY = cy - R * 0.52;
+        ctx.fillStyle = '#111820';
+        ctx.beginPath();
+        ctx.roundRect(faceX, faceY, faceW, faceH, R * 0.28);
+        ctx.fill();
+      }
 
       ctx.restore();
     }

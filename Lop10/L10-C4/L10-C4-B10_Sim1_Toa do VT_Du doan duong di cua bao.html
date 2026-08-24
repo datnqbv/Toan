@@ -477,8 +477,15 @@
             justify-content: center;
             border: 2px solid var(--p5-gold);
             flex-shrink: 0;
-            font-size: 22px;
             margin-top: 2px;
+            overflow: hidden;
+        }
+
+        .ai-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .explanation-box {
@@ -780,7 +787,7 @@
             </div>
 
             <div class="ai-coach-panel">
-                <div class="ai-avatar">🤖</div>
+                <div class="ai-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena"></div>
                 <div class="explanation-box" id="aiCoachSpeech">
                     Chào em! Hãy quan sát chuyển động tự nhiên của cơn bão từ mốc 08:00 đến 10:00 trên bản đồ địa lý và thực hiện theo hướng dẫn phía trên.
                 </div>

@@ -185,7 +185,22 @@
         }
 
         .robot-avatar {
-            font-size: 48px;
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            overflow: hidden;
+            border: 2px solid var(--primary-teal);
+            background: var(--bg-cream);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .robot-avatar img {
+            width: 100%;
+            height: 100%;
+            object-fit: cover;
+            display: block;
         }
 
         .robot-coord {
@@ -488,7 +503,7 @@
                 <div class="sidebar-section">
                     <h3>Trạng thái Robot</h3>
                     <div class="robot-status">
-                        <div class="robot-avatar">🤖</div>
+                        <div class="robot-avatar"><img src="https://www.aiducation.edu.vn/athena/athena_idle.webp" alt="Athena"></div>
                         <div class="robot-coord" id="robot-pos-display">A(2 ; 1)</div>
                         <button class="btn"
                             style="width: 100%; background: #666; font-size: 11px; padding: 6px; margin-top: 8px; font-weight: 700;"
@@ -1132,12 +1147,21 @@
             ctx.fill();
         }
 
+        const athenaImg = new Image();
+        athenaImg.src = 'https://www.aiducation.edu.vn/athena/athena_idle.webp';
+        athenaImg.onload = () => { if (typeof render === 'function') render(); };
+
         function drawRobot(ctx, x, y) {
             ctx.save();
-            ctx.font = "28px 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif";
-            ctx.textAlign = 'center';
-            ctx.textBaseline = 'middle';
-            ctx.fillText('🤖', x, y);
+            if (athenaImg.complete && athenaImg.naturalWidth !== 0) {
+                const s = 44;
+                ctx.drawImage(athenaImg, x - s / 2, y - s / 2, s, s);
+            } else {
+                ctx.font = "28px 'Segoe UI Emoji', 'Apple Color Emoji', sans-serif";
+                ctx.textAlign = 'center';
+                ctx.textBaseline = 'middle';
+                ctx.fillText('🤖', x, y);
+            }
             ctx.restore();
         }
 
