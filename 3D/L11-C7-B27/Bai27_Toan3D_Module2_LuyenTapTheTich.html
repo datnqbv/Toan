@@ -628,14 +628,11 @@
         <svg viewBox="0 0 500 170" xmlns="http://www.w3.org/2000/svg">
           <rect width="500" height="170" fill="var(--cream)"/>
           <line x1="250" y1="20" x2="250" y2="150" stroke="var(--paper-line-2)" stroke-width="1.5" stroke-dasharray="3,3"/>
-          <!-- Nửa trái: Kỹ sư -->
           <g transform="translate(110,75)">
             <polygon points="-50,45 50,45 30,-35 -30,-35" fill="var(--il-slate)" opacity="0.45" stroke="var(--ink)" stroke-width="1.8"/>
             <text x="0" y="65" font-family="'Be Vietnam Pro'" font-size="11" font-weight="700" fill="var(--ink-2)" text-anchor="middle">Móng Bê Tông (m³)</text>
           </g>
-          <!-- Mũi tên kết nối -->
           <path d="M 210 75 Q 250 45 290 75" fill="none" stroke="var(--jade)" stroke-width="2.5" marker-end="url(#arrow)"/>
-          <!-- Nửa phải: Nhà thiết kế -->
           <g transform="translate(390,75)">
             <polygon points="-40,40 40,40 25,-30 -25,-30" fill="var(--il-ochre)" opacity="0.45" stroke="var(--ink)" stroke-width="1.8"/>
             <circle cx="0" cy="-35" r="5" fill="var(--il-olive)"/>
@@ -660,8 +657,8 @@
 
         <p class="body-small" style="font-weight:700;margin-top:10px">3-Strike Quiz: Đổi đơn vị thể tích đúng</p>
         <p class="body-small">Một bạn tính V = 3.920.000 cm³, rồi đổi sang m³ bằng cách CHIA CHO 100, ra 39.200 m³. Đúng hay Sai?</p>
-        <button class="choice ${quiz1Choice===1?'correct':''}" onclick="lesson.answerQ1(1)" ${quiz1Done?'disabled':''}>Sai — 1 m³ = 1.000.000 cm³, phải chia cho 1.000.000 ra 3,92 m³</button>
-        <button class="choice ${quiz1Choice===0?'wrong':''}" onclick="lesson.answerQ1(0)" ${quiz1Done?'disabled':''}>Đúng — 1 m = 100 cm nên chia cho 100</button>
+        <button class="choice ${quiz1Choice===1?'correct':''}" onclick="lesson.answerQ1(1)" ${quiz1Done?'disabled':''}>A. Sai — 1 m³ = 1.000.000 cm³, phải chia cho 1.000.000 ra 3,92 m³</button>
+        <button class="choice ${quiz1Choice===0?'wrong':''}" onclick="lesson.answerQ1(0)" ${quiz1Done?'disabled':''}>B. Đúng — 1 m = 100 cm nên chia cho 100</button>
         <div id="q1-fb">${quiz1Choice===1?'<div class="feedback good">Chính xác! Thể tích là đơn vị bậc 3: 1 m³ = 100³ = 1.000.000 cm³.</div>':quiz1Choice===0?'<div class="feedback bad">Chưa chính xác. Khi đổi đơn vị thể tích phải lập phương hệ số đổi độ dài: 100³ = 1.000.000.</div>':''}</div>
       </div>
       ${notebook('• V(chóp cụt) = (1/3) · (S + S\' + √(S · S\')) · h<br>• Đổi đơn vị: 1 m³ = 1.000.000 cm³ = 1.000 lít.')}
@@ -699,8 +696,8 @@
 
         <p class="body-small" style="font-weight:700;margin-top:10px">3-Strike Quiz: Bản chất công thức Simpson</p>
         <p class="body-small">Vì sao không áp dụng trực tiếp tích 4 tỉ số cho chóp tứ giác?</p>
-        <button class="choice ${quiz2Choice===1?'correct':''}" onclick="lesson.answerQ2(1)" ${quiz2Done?'disabled':''}>A. Vì Simpson chỉ chứng minh được cho TỨ DIỆN (3 cạnh từ 1 đỉnh độc lập)</button>
-        <button class="choice ${quiz2Choice===0?'wrong':''}" onclick="lesson.answerQ2(0)" ${quiz2Done?'disabled':''}>B. Vì đáy là hình vuông nên không nhân được</button>
+        <button class="choice ${quiz2Choice===0?'wrong':''}" onclick="lesson.answerQ2(0)" ${quiz2Done?'disabled':''}>A. Vì đáy là hình vuông nên không nhân được</button>
+        <button class="choice ${quiz2Choice===1?'correct':''}" onclick="lesson.answerQ2(1)" ${quiz2Done?'disabled':''}>B. Vì Simpson chỉ chứng minh được cho TỨ DIỆN (3 cạnh từ 1 đỉnh độc lập)</button>
         <div id="q2-fb">${quiz2Choice===1?'<div class="feedback good">Chính xác! Chóp tứ giác phải chia nhỏ thành 2 tứ diện qua đường chéo rồi tính riêng từng phần.</div>':quiz2Choice===0?'<div class="feedback bad">Chưa chính xác. Vấn đề không nằm ở đáy hình vuông mà ở việc công thức Simpson trực tiếp áp dụng cho tứ diện.</div>':''}</div>
       </div>
       ${notebook('Tỉ số Simpson CHỈ dùng trực tiếp cho CHÓP TAM GIÁC. Với chóp tứ giác, bắt buộc chia thành 2 tam giác trước khi tính.')}
@@ -762,13 +759,53 @@
         </table>
         
         <p class="body-small" style="font-weight:700;margin-top:8px">Phát hiện phản trực giác:</p>
-        <p class="body-small">Mẫu C có đáy lớn nhất (484 cm²) nhưng thể tích lại nhỏ hơn mẫu A (4.020 < 4.380 cm³) vì vách dốc thu hẹp quá nhanh!</p>
+        <p class="body-small">Mẫu C có đáy lớn nhất (484 cm²) nhưng thể tích lại nhỏ hơn mẫu A (4.020 &lt; 4.380 cm³) vì vách dốc thu hẹp quá nhanh!</p>
 
         <p class="body-small" style="font-weight:700;margin-top:10px">Chọn phương án tối ưu theo 2 tiêu chí:</p>
         <button class="choice ${optChosen==='A'?'selected':''}" onclick="lesson.chooseOpt('A')">✓ Chọn Phương án A: Thể tích LỚN NHẤT (4.380 cm³) và tiết kiệm đất nung hơn C</button>
         <button class="choice ${optChosen==='B'?'selected':''}" onclick="lesson.chooseOpt('B')">Phương án B: Tiết kiệm đất nung nhất nhưng thể tích nhỏ nhất</button>
         <button class="choice ${optChosen==='C'?'selected':''}" onclick="lesson.chooseOpt('C')">Phương án C: Tốn nhiều đất nung nhất mà thể tích không tối ưu</button>
       </div>
+
+      <div class="card" style="background:#ffffff;border:1.5px solid var(--jade-deep);margin-top:10px">
+        <h3 style="color:var(--jade-dark);display:flex;align-items:center;gap:6px">
+          <i class="ti ti-table"></i> TỔNG HỢP KIẾN THỨC BÀI 27 (MODULE 2)
+        </h3>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px;line-height:1.4">
+            <thead>
+              <tr style="background:var(--jade-pale);color:var(--jade-dark);border-bottom:1.5px solid var(--jade-deep);text-align:left">
+                <th style="padding:6px 8px">Phần</th>
+                <th style="padding:6px 8px">Nội dung trọng tâm</th>
+                <th style="padding:6px 8px">Nhắm sai lầm</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--paper-line)">
+                <td style="padding:6px 8px;font-weight:700">A.1 — Kỹ sư</td>
+                <td style="padding:6px 8px">Đổi đơn vị thể tích đúng: 1 m³ = 1.000.000 cm³ = 1.000 lít</td>
+                <td style="padding:6px 8px;color:var(--wrong)">G, J (Đơn vị)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--paper-line)">
+                <td style="padding:6px 8px;font-weight:700">A.2 — Kỹ sư</td>
+                <td style="padding:6px 8px">Tỉ số Simpson chỉ đúng cho tứ diện; chóp tứ giác phải chia nhỏ</td>
+                <td style="padding:6px 8px;color:var(--wrong)">I (Simpson)</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--paper-line)">
+                <td style="padding:6px 8px;font-weight:700">B.3 — Thiết kế</td>
+                <td style="padding:6px 8px">Không nhầm chóp cụt với lăng trụ (S·h luôn lớn hơn công thức đúng)</td>
+                <td style="padding:6px 8px;color:var(--wrong)">H (Lẫn lộn)</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 8px;font-weight:700">B.4 — Thiết kế</td>
+                <td style="padding:6px 8px">Bài toán đa tiêu chí: Đáy lớn nhất chưa chắc thể tích lớn nhất</td>
+                <td style="padding:6px 8px;color:var(--jade-text)">Tổng hợp</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       ${notebook('• Thể tích chóp: V = (1/3) · S · h<br>• Thể tích lăng trụ: V = S · h<br>• Thể tích chóp cụt: V = (1/3) · (S + S\' + √(S · S\')) · h<br>• Bài toán tối ưu đa tiêu chí: Đáy lớn không đồng nghĩa thể tích lớn nhất.')}
       ${navButtons('Hoàn thành toàn bộ Bài 27',optChosen!==null)}`;
     }

@@ -444,6 +444,16 @@
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pO1,pA1]),new THREE.LineBasicMaterial({color:C.accent,linewidth:3})));
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pS1,pO1]),new THREE.LineBasicMaterial({color:C.jade,linewidth:3})));
 
+      // Cung góc 50 độ tại A1 (Góc cạnh bên SAO)
+      const u1=pO1.clone().sub(pA1).normalize(), v1=pS1.clone().sub(pA1).normalize();
+      const arcPts1=[];
+      for(let i=0;i<=16;i++){
+        const t=i/16;
+        const dir=u1.clone().multiplyScalar(1-t).add(v1.clone().multiplyScalar(t)).normalize();
+        arcPts1.push(pA1.clone().add(dir.multiplyScalar(0.45)));
+      }
+      root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(arcPts1),new THREE.LineBasicMaterial({color:C.accent,linewidth:2})));
+
       // Dựng chóp 2 (Phải - TH2)
       const pyrGeo2=new THREE.ConeGeometry(a*0.707,h2,4);
       const pyrMesh2=new THREE.Mesh(pyrGeo2,new THREE.MeshStandardMaterial({color:C.dustyBlue,transparent:true,opacity:.28,side:THREE.DoubleSide,depthWrite:false}));
@@ -459,6 +469,16 @@
       const pO2=V(x2,0,0),pM2=V(x2,0,a/2);
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pO2,pM2]),new THREE.LineBasicMaterial({color:C.dustyBlue,linewidth:3})));
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pS2,pO2]),new THREE.LineBasicMaterial({color:C.jade,linewidth:3})));
+
+      // Cung góc 40 độ tại M2 (Góc mặt bên SMO)
+      const u2=pO2.clone().sub(pM2).normalize(), v2=pS2.clone().sub(pM2).normalize();
+      const arcPts2=[];
+      for(let i=0;i<=16;i++){
+        const t=i/16;
+        const dir=u2.clone().multiplyScalar(1-t).add(v2.clone().multiplyScalar(t)).normalize();
+        arcPts2.push(pM2.clone().add(dir.multiplyScalar(0.42)));
+      }
+      root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(arcPts2),new THREE.LineBasicMaterial({color:C.dustyBlue,linewidth:2})));
 
       addLabel('TH1: Cạnh bên 50°',V(x1,h1+0.4,0),'accent');
       addLabel('OA = 2,5√2 (Tâm → Đỉnh)',pA1.clone().add(V(0,-0.15,0.2)),'accent');
@@ -701,9 +721,9 @@
 
         <p class="body-small" style="font-weight:700;margin-top:10px">3-Strike Quiz: Nhận diện sai lầm</p>
         <p class="body-small">Nếu ở TH1 dùng nhầm OM thay vì OA để tính h, kết quả V sẽ thế nào?</p>
-        <button class="choice ${quiz3Choice===1?'correct':''}" onclick="lesson.answerQ3(1)" ${quiz3Done?'disabled':''}>A. Sai giảm hơn một nửa (17,48 so với 35,11) vì OM < OA</button>
-        <button class="choice ${quiz3Choice===0?'wrong':''}" onclick="lesson.answerQ3(0)" ${quiz3Done?'disabled':''}>B. Vẫn đúng vì cùng một khối chóp đáy cạnh 5</button>
-        <div id="q3-fb">${quiz3Choice===1?'<div class="feedback good">Chính xác! Góc cạnh bên gắn với bán kính OA, góc mặt bên gắn với trung đoạn OM.</div>':quiz3Choice===0?'<div class="feedback bad">Chưa chính xác. Dùng OM thay cho OA làm thay đổi chiều cao tính được nên thể tích không thể giữ nguyên.</div>':''}</div>
+        <button class="choice ${quiz3Choice===0?'wrong':''}" onclick="lesson.answerQ3(0)" ${quiz3Done?'disabled':''}>A. Vẫn đúng vì cùng một khối chóp tứ giác đều đáy cạnh 5</button>
+        <button class="choice ${quiz3Choice===1?'correct':''}" onclick="lesson.answerQ3(1)" ${quiz3Done?'disabled':''}>B. Sai giảm hơn một nửa (17,48 so với 35,11) vì OM &lt; OA</button>
+        <div id="q3-fb">${quiz3Choice===1?'<div class="feedback good">Chính xác! Góc cạnh bên gắn với bán kính OA, góc mặt bên gắn với trung đoạn OM. OM &lt; OA nên tính nhầm sẽ làm chiều cao và thể tích bị giảm hơn một nửa!</div>':quiz3Choice===0?'<div class="feedback bad">Chưa chính xác. Dùng OM thay cho OA làm thay đổi chiều cao tính được nên thể tích không thể giữ nguyên.</div>':''}</div>
       </div>
       ${notebook('• Góc cạnh bên-đáy: Gắn với đoạn OA (tâm → đỉnh đáy).<br>• Góc mặt bên-đáy: Gắn với đoạn OM (tâm → trung điểm cạnh).')}
       ${navButtons('Tiếp: Bài 4 (Lăng trụ xiên)',quiz3Done)}`;
@@ -737,9 +757,49 @@
         <p class="body-small" style="font-weight:700;margin-top:10px">Câu hỏi củng cố:</p>
         <p class="body-small">Kỹ thuật "cách đều 3 điểm đáy ⇒ hình chiếu là tâm" áp dụng cho những hình nào?</p>
         <button class="choice ${quiz4Choice===1?'correct':''}" onclick="lesson.answerQ4(1)" ${quiz4Done?'disabled':''}>A. Áp dụng cho MỌI trường hợp đỉnh cách đều 3 điểm đáy (cả chóp và lăng trụ xiên)</button>
-        <button class="choice ${quiz4Choice===0?'wrong':''}" onclick="lesson.answerQ4(0)" ${quiz4Done?'disabled':''}>B. Chỉ áp dụng cho hình chóp</button>
-        <div id="q4-fb">${quiz4Choice===1?'<div class="feedback good">Chính xác! Đây là nguyên lý hình chiếu tổng quát trong không gian.</div>':quiz4Choice===0?'<div class="feedback bad">Chưa chính xác. Nguyên lý hình chiếu này áp dụng cả cho hình chóp và lăng trụ xiên khi điểm đang xét cách đều ba đỉnh đáy.</div>':''}</div>
+        <button class="choice ${quiz4Choice===0?'wrong':''}" onclick="lesson.answerQ4(0)" ${quiz4Done?'disabled':''}>B. Chỉ áp dụng cho hình chóp, không áp dụng được cho lăng trụ</button>
+        <div id="q4-fb">${quiz4Choice===1?'<div class="feedback good">Chính xác! Đây là nguyên lý hình chiếu tổng quát trong không gian: điểm cách đều 3 đỉnh của đa giác đáy luôn có hình chiếu rơi vào tâm ngoại tiếp đáy.</div>':quiz4Choice===0?'<div class="feedback bad">Chưa chính xác. Nguyên lý hình chiếu này áp dụng cả cho hình chóp và lăng trụ xiên khi điểm đang xét cách đều ba đỉnh đáy.</div>':''}</div>
       </div>
+
+      <div class="card" style="background:#ffffff;border:1.5px solid var(--jade-deep);margin-top:10px">
+        <h3 style="color:var(--jade-dark);display:flex;align-items:center;gap:6px">
+          <i class="ti ti-table"></i> TỔNG HỢP KIẾN THỨC BÀI 27 (MODULE 3)
+        </h3>
+        <div style="overflow-x:auto">
+          <table style="width:100%;border-collapse:collapse;font-size:12.5px;margin-top:6px;line-height:1.4">
+            <thead>
+              <tr style="background:var(--jade-pale);color:var(--jade-dark);border-bottom:1.5px solid var(--jade-deep);text-align:left">
+                <th style="padding:6px 8px">Bài</th>
+                <th style="padding:6px 8px">Kỹ thuật trọng tâm</th>
+                <th style="padding:6px 8px">Liên hệ</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr style="border-bottom:1px solid var(--paper-line)">
+                <td style="padding:6px 8px;font-weight:700">Bài 1</td>
+                <td style="padding:6px 8px">Tứ diện đều là trường hợp riêng của chóp tam giác đều (khi b = a)</td>
+                <td style="padding:6px 8px;color:var(--ink-2)">Module 1</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--paper-line)">
+                <td style="padding:6px 8px;font-weight:700">Bài 2</td>
+                <td style="padding:6px 8px">Diện tích đáy tam giác tù: S = (1/2)·a·b·sin(C)</td>
+                <td style="padding:6px 8px;color:var(--ink-2)">Lượng giác</td>
+              </tr>
+              <tr style="border-bottom:1px solid var(--paper-line)">
+                <td style="padding:6px 8px;font-weight:700">Bài 3</td>
+                <td style="padding:6px 8px">Phân biệt góc cạnh bên-đáy (OA) ≠ góc mặt bên-đáy (OM)</td>
+                <td style="padding:6px 8px;color:var(--ink-2)">Bài 24, 25</td>
+              </tr>
+              <tr>
+                <td style="padding:6px 8px;font-weight:700">Bài 4</td>
+                <td style="padding:6px 8px">Cách đều 3 đỉnh đáy ⇒ Hình chiếu là tâm ngoại tiếp đáy</td>
+                <td style="padding:6px 8px;color:var(--ink-2)">Bài 25, 26</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+
       ${notebook('• Cách đều 3 đỉnh đáy ⇒ Hình chiếu là tâm ngoại tiếp đáy.<br>• Thể tích lăng trụ xiên: V = S_đáy · h (h là khoảng cách vuông góc thật, KHÔNG lấy cạnh bên).')}
       ${navButtons('Hoàn thành toàn bộ Bài 27',quiz4Done)}`;
     }
