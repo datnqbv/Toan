@@ -1,0 +1,727 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Bài 26 · Module 3: Dự án thiết kế cầu thang xoắn</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script type="application/json" id="athena-context">
+  {
+    "version":"1.0",
+    "subject":"Toán 11",
+    "lesson":"Bài 26 · Khoảng cách trong không gian",
+    "module":"Module 3 · Dự án thiết kế cầu thang xoắn",
+    "objectives":[
+      "Kiểm định chiều cao thông thuỷ cầu thang xoắn đối chiếu chuẩn QCXDVN 05:2008/BXD (khoảng cách 2 mặt phẳng song song)",
+      "Tính khoảng cách giữa 2 bậc thang liên tiếp chéo nhau và phát hiện tính chất bất ngờ độc lập với góc xoay",
+      "Tính khoảng cách từ lan can nghiêng đến trục thang và phân biệt với cấu hình bậc ngang",
+      "Tổng hợp hồ sơ kiểm định dự án kiến trúc kết cấu"
+    ],
+    "structure":[
+      {"id":"phase1-clearance","title":"Chiều cao thông thuỷ"},
+      {"id":"phase2-steps-distance","title":"Khoảng cách 2 bậc liên tiếp"},
+      {"id":"phase3-handrail-axis","title":"Lan can đến trục thang"},
+      {"id":"phase4-report-approval","title":"Hồ sơ kiểm định dự án"}
+    ],
+    "misconceptions":[
+      "Nhầm lẫn giữa các loại khoảng cách khi có nhiều đối tượng đan xen",
+      "Sai sót trong bước dựng hình phụ",
+      "Áp dụng sai Pytago khi nối 2 đầu ngoài của bậc mà không kiểm tra góc vuông",
+      "Áp dụng dập khuôn công thức của bậc ngang cho lan can nghiêng"
+    ],
+    "athenaGuidance":"Phase 1: Chiều cao thông thuỷ = 12 × 0,17 = 2,04m >= 2,0m (đạt chuẩn QCXDVN). Phase 2: Đoạn vuông góc chung trên trục = 0,17m cho mọi cặp bậc, độc lập góc xoay 30°. Phase 3: Lan can nghiêng đến trục = 0,7071m (khác 0,17m). Phase 4: Tổng kết hồ sơ và hoàn thành dự án."
+  }
+  </script>
+  <style>
+    :root{
+      --cream:#FAF7F0;--cream-2:#F0EADD;--cream-3:#E7DECC;--paper-line:#E5DECF;--paper-line-2:#D6CCB6;
+      --ink:#1A1A1A;--ink-2:#514C44;--ink-3:#7C756A;--ink-faint:#ABA396;
+      --jade:#3CA57A;--jade-deep:#2D8B6F;--jade-dark:#14432F;--jade-text:#1B5E48;--jade-soft:#A9D0BE;--jade-pale:#DCEAE1;
+      --sage:#A8C9B8;--sage-deep:#7CA792;--sage-text:#46685A;--sage-pale:#E1ECE4;
+      --accent:#E8A24A;--accent-deep:#CE8A33;--accent-text:#8A551A;--accent-pale:#F7E7CD;
+      --correct:#2D8B6F;--correct-bg:#DCEAE1;--wrong:#C15F3C;--wrong-bg:#F3E2D6;--warning:#C58A2E;--warning-bg:#F5E7CB;--info:#4E7F92;--info-bg:#DCE7EB;
+      --il-slate:#64748b;--il-terracotta:#C15F3C;--il-ochre:#D97706;--il-dusty-blue:#4E7F92;--il-sand:#94a3b8;
+      --white:#FFFFFF;--radius:10px;--radius-lg:14px;--radius-sm:6px;
+      --shadow:0 4px 12px rgba(45,139,111,.10);--shadow-sm:0 2px 6px rgba(26,26,26,.05);--canvas-bg:#0a1628;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--cream);color:var(--ink);font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:18px;line-height:1.7}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+    header{height:64px;padding:10px 20px;background:linear-gradient(135deg,var(--jade-dark),var(--jade-deep));color:var(--white);display:flex;align-items:center;gap:14px}
+    .header-badge{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.13);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+    header h1{margin:0;flex:1;font-size:18px;line-height:1.3}
+    .header-progress{font:700 12px 'JetBrains Mono',monospace;white-space:nowrap}
+    .app-shell{height:calc(100dvh - 64px);min-height:600px;display:flex;overflow:hidden}
+    .viewport{position:relative;flex:1;min-width:0;background:var(--canvas-bg);overflow:hidden}
+    .viewport canvas{width:100%;height:100%;display:block;touch-action:none}
+    .label-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+    .label{position:absolute;transform:translate(-50%,-115%);padding:2px 6px;border-radius:5px;background:rgba(10,22,40,.78);color:var(--white);font:700 13px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;text-shadow:0 1px 3px #000;white-space:nowrap;will-change:transform}
+    .label.result{color:#FAC775}
+    .label.jade{color:#34D399}
+    .label.accent{color:#FBBF24}
+    .canvas-top{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
+    .scene-chip{padding:6px 10px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:rgba(10,22,40,.78);color:rgba(255,255,255,.86);font-size:12px;font-weight:700;backdrop-filter:blur(6px)}
+    .distance-readout{padding:8px 11px;border:1px solid rgba(250,199,117,.4);border-radius:9px;background:rgba(10,22,40,.84);color:#FAC775;font:700 16px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+    .canvas-actions{position:absolute;left:14px;bottom:14px;display:flex;gap:8px}
+    .canvas-btn{min-height:40px;border:1px solid rgba(255,255,255,.2);border-radius:9px;background:rgba(10,22,40,.82);color:var(--white);padding:7px 11px;font-size:12px;font-weight:700}
+    .canvas-hint{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);padding:5px 12px;border:1px solid rgba(255,255,255,.15);border-radius:20px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.78);font-size:11.5px;white-space:nowrap;pointer-events:none}
+    .sidebar{width:370px;flex:0 0 370px;background:var(--white);border-left:1px solid var(--paper-line);display:flex;flex-direction:column;overflow:auto}
+    .step-tabs{position:sticky;top:0;z-index:8;display:flex;background:var(--white);border-bottom:1px solid var(--paper-line)}
+    .step-tab{flex:1;min-height:48px;border:0;border-bottom:3px solid transparent;background:var(--white);color:var(--ink-3);font-size:11px;font-weight:700;text-transform:uppercase}
+    .step-tab.active{color:var(--jade-dark);border-bottom-color:var(--jade-deep);background:var(--jade-pale)}
+    .step-tab.done{color:var(--jade-deep)}
+    .step-body{padding:16px}
+    .eyebrow{margin:0 0 5px;color:var(--ink-3);font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+    .step-title{margin:0 0 9px;color:var(--jade-dark);font-size:20px;line-height:1.35}
+    .athena{margin:10px 0;padding:11px 12px;border-left:4px solid var(--jade-deep);border-radius:0 9px 9px 0;background:var(--jade-pale);color:var(--jade-text);font-size:14px}
+    .athena b{display:block;margin-bottom:3px}
+    .card{margin:11px 0;padding:12px;border:1px solid var(--paper-line);border-radius:var(--radius);background:var(--cream)}
+    .card h3{margin:0 0 7px;color:var(--jade-dark);font-size:14px}
+    .body-small{margin:6px 0;color:var(--ink-3);font-size:13px}
+    .formula{padding:8px 10px;border:1px solid var(--info);border-radius:8px;background:var(--info-bg);font:700 13px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+    .control{margin:11px 0}
+    .control label{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:700}
+    .control output{color:var(--jade-deep);font-family:'JetBrains Mono',monospace}
+    .control input[type=range]{width:100%;min-height:34px;accent-color:var(--jade-deep)}
+    .btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:12px}
+    .btn{min-height:44px;border:0;border-radius:9px;padding:9px 13px;font-size:14px;font-weight:700}
+    .btn-primary{background:var(--jade-deep);color:var(--white)}
+    .btn-secondary{border:1px solid var(--jade-deep);background:var(--white);color:var(--jade-deep)}
+    .btn:disabled{opacity:.48;cursor:not-allowed}
+    .choice{display:block;width:100%;min-height:44px;margin:7px 0;padding:9px 11px;border:1px solid var(--paper-line-2);border-radius:9px;background:var(--white);color:var(--ink);text-align:left;font-size:13px}
+    .choice.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--jade-text);font-weight:700}
+    .choice.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:var(--wrong);font-weight:700}
+    .choice.selected{border-color:var(--jade-deep);background:var(--jade-pale);font-weight:700}
+    .feedback{margin-top:9px;padding:9px 11px;border-radius:8px;font-size:13px}
+    .feedback.info{background:var(--info-bg);color:var(--ink-2)}
+    .feedback.good{background:var(--correct-bg);color:var(--jade-text)}
+    .feedback.bad{background:var(--wrong-bg);color:var(--wrong)}
+    .feedback.warn{background:var(--warning-bg);color:var(--accent-text)}
+    .shake{animation:shake .28s}
+    @keyframes shake{25%{transform:translateX(-5px)}50%{transform:translateX(5px)}75%{transform:translateX(-3px)}}
+    .notebook{margin-top:12px;padding:11px;border:1px dashed var(--sage-deep);border-radius:9px;background:var(--sage-pale);color:var(--sage-text);font-size:13px}
+    .summary-table{width:100%;border-collapse:collapse;margin:10px 0;font-size:12.5px}
+    .summary-table th,.summary-table td{padding:8px;border:1px solid var(--paper-line-2);text-align:left}
+    .summary-table th{background:var(--cream-2);color:var(--jade-dark);font-weight:700}
+    .summary-table td.pass{color:var(--jade-text);font-weight:700;background:var(--jade-pale)}
+    .hidden{display:none!important}
+    @media(max-width:768px){
+      body{min-height:100vh;overflow-y:auto}
+      .app-shell{display:flex!important;width:100%;height:auto!important;min-height:auto!important;max-height:none!important;flex-direction:column!important;overflow:visible!important}
+      .viewport{position:sticky!important;top:0!important;z-index:50!important;flex:none!important;width:100%!important;height:calc((100vh - 58px)*.5)!important;height:calc((100dvh - 58px)*.5)!important;min-height:220px!important;border-bottom:1px solid var(--paper-line);box-shadow:0 4px 14px rgba(0,0,0,.4)}
+      .sidebar{width:100%!important;min-width:0;height:auto!important;max-height:none!important;flex:none!important;border-left:0;border-top:1px solid var(--paper-line);overflow:visible!important}
+      .step-tabs{position:static;width:100%;min-width:0;overflow-x:auto}
+      .step-tab{min-width:0}
+      .step-body{width:100%;min-width:0;overflow:visible}
+      .athena,.card,.notebook{max-width:100%;overflow-wrap:anywhere}
+      .formula{max-width:100%;overflow-x:auto}
+      .canvas-hint{display:none}
+    }
+    @media(max-width:560px){
+      header{height:58px;min-height:58px;padding:7px 10px;gap:7px;flex-wrap:nowrap}
+      .header-badge{font-size:9px;padding:2px 6px}
+      header h1{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .header-progress{display:none}
+      .sidebar,.step-tabs,.step-body{width:100%!important;max-width:100%!important}
+      .step-tab{flex:0 0 25%;width:25%;min-height:44px;font-size:9px}
+      .step-body{padding:12px;overflow:visible}
+      .step-title{font-size:18px}
+      .canvas-top{top:8px;left:8px;right:8px}
+      .scene-chip{font-size:10px;padding:4px 7px}
+      .distance-readout{font-size:13px;padding:5px 7px}
+      .canvas-actions{left:8px;bottom:8px}
+      .canvas-btn{min-height:36px;padding:6px 9px}
+      .card{padding:10px}
+    }
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <header>
+    <span class="header-badge">🧊 Hình học không gian</span>
+    <h1>Bài 26 · Module 3: Dự án thiết kế cầu thang xoắn</h1>
+    <span class="header-progress" id="header-progress">PHASE 1/4</span>
+  </header>
+  <main class="app-shell">
+    <section class="viewport" id="canvas-wrap" aria-label="Mô hình cầu thang xoắn 3D">
+      <canvas id="three-canvas"></canvas>
+      <div class="label-layer" id="label-layer"></div>
+      <div class="canvas-top">
+        <span class="scene-chip" id="scene-chip">Cầu thang xoắn 12 bậc · Bán kính 1,0m</span>
+        <span class="distance-readout" id="distance-readout">H = 2,04m</span>
+      </div>
+      <div class="canvas-actions">
+        <button class="canvas-btn" id="btn-reset"><i class="ti ti-refresh"></i> Phối cảnh</button>
+        <button class="canvas-btn" id="btn-top"><i class="ti ti-arrow-up"></i> Từ trên</button>
+        <button class="canvas-btn" id="btn-front"><i class="ti ti-eye"></i> Trực diện</button>
+      </div>
+      <div class="canvas-hint">Kéo nền để xoay · Cuộn để zoom</div>
+    </section>
+    <aside class="sidebar">
+      <nav class="step-tabs" aria-label="Các Phase kiểm định">
+        <button class="step-tab active" data-step="1">Phase 1</button>
+        <button class="step-tab" data-step="2">Phase 2</button>
+        <button class="step-tab" data-step="3">Phase 3</button>
+        <button class="step-tab" data-step="4">Phase 4</button>
+      </nav>
+      <div class="step-body" id="step-body"></div>
+    </aside>
+  </main>
+  <script>
+  (()=>{'use strict';
+    const LMS=()=>window.AiducationLMS||{ready(){},progress(){},event(){},state(){},complete(){},resize(){}};
+    const canvas=document.getElementById('three-canvas'),wrap=document.getElementById('canvas-wrap'),stepBody=document.getElementById('step-body');
+    const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
+    renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+    renderer.setClearColor(0x0a1628);
+    renderer.outputEncoding=THREE.sRGBEncoding;
+
+    const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(46,1,.1,100),controls=new THREE.OrbitControls(camera,canvas);
+    controls.enableDamping=true;controls.dampingFactor=.08;controls.minDistance=2;controls.maxDistance=20;
+
+    scene.add(new THREE.HemisphereLight(0xddeeff,0x172235,1.2));
+    const keyLight=new THREE.DirectionalLight(0xffffff,1.1);keyLight.position.set(6,10,8);scene.add(keyLight);
+    const backLight=new THREE.DirectionalLight(0x38bdf8,.4);backLight.position.set(-5,-3,-6);scene.add(backLight);
+
+    const C={
+      slate:0x64748b,terracotta:0xC15F3C,ochre:0xD97706,dustyBlue:0x4E7F92,sand:0x94a3b8,
+      jade:0x2D8B6F,jadePale:0xDCEAE1,accent:0xE8A24A,point:0xFAC775,grid:0x1e293b,paperLine:0xE5DECF
+    };
+
+    let currentStep=1,unlocked=1,root=null,labels=[],objects={};
+    let stepPairIdx=0; // Phase 2: cặp bậc đang xét (0: bậc 0-1, 1: bậc 1-2,...)
+    let p1Done=false,p1Strikes=0;
+    let p2PredChosen=null;
+    let p2Done=false,p2Strikes=0;
+    let p3Done=false;
+    let completed=false;
+
+    const V=(x=0,y=0,z=0)=>new THREE.Vector3(x,y,z),rad=d=>d*Math.PI/180,fmt=n=>n.toFixed(2).replace('.',',');
+    const R=1.0,RISE=0.17,TOTAL_STEPS=12,ANGLE_STEP=rad(30);
+
+    function dispose(obj){if(!obj)return;obj.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose())});if(obj.parent)obj.parent.remove(obj)}
+    function clearScene(){dispose(root);root=new THREE.Group();scene.add(root);labels.forEach(x=>x.el.remove());labels=[];objects={}}
+    function addLabel(text,pos,cls=''){const el=document.createElement('div');el.className='label '+cls;el.textContent=text;document.getElementById('label-layer').appendChild(el);const item={el,pos:pos.clone()};labels.push(item);return item}
+    function mkLine(a,b,color,lw=1.5,dashed=false){const g=new THREE.BufferGeometry().setFromPoints([a,b]);let m;if(dashed){m=new THREE.LineDashedMaterial({color,dashSize:.08,gapSize:.05,linewidth:lw})}else{m=new THREE.LineBasicMaterial({color,linewidth:lw,transparent:true,opacity:.95})}const l=new THREE.Line(g,m);if(dashed)l.computeLineDistances();root.add(l);return l}
+    function setLine(l,a,b){l.geometry.setFromPoints([a,b]);l.geometry.attributes.position.needsUpdate=true;if(l.material.isLineDashedMaterial)l.computeLineDistances()}
+    function dot(pos,color=C.point,r=.05,name=''){const m=new THREE.Mesh(new THREE.SphereGeometry(r,16,12),new THREE.MeshStandardMaterial({color,emissive:color,emissiveIntensity:.3}));m.position.copy(pos);m.userData.name=name;root.add(m);return m}
+    function cylinder(a,b,r=.03,color=C.slate){const dir=b.clone().sub(a),len=dir.length();const g=new THREE.CylinderGeometry(r,r,len,16);const m=new THREE.MeshStandardMaterial({color,metalness:.3,roughness:.5});const mesh=new THREE.Mesh(g,m);mesh.position.copy(a.clone().add(b).multiplyScalar(.5));mesh.quaternion.setFromUnitVectors(V(0,1,0),dir.clone().normalize());root.add(mesh);return mesh}
+    function rightAngle(vertex,d1,d2,sz=.1,color=C.jade){const u=d1.clone().normalize().multiplyScalar(sz),v=d2.clone().normalize().multiplyScalar(sz);const pts=[vertex.clone().add(u),vertex.clone().add(u).add(v),vertex.clone().add(v)];const g=new THREE.BufferGeometry().setFromPoints(pts);root.add(new THREE.Line(g,new THREE.LineBasicMaterial({color,linewidth:2})));return pts}
+
+    /* Tạo mô hình bậc thang thật dạng BoxGeometry */
+    function buildSpiralStaircase(highlightPair=-1,hideOthers=false){
+      // 1. Trục trung tâm Cylinder
+      const totalH=TOTAL_STEPS*RISE;
+      cylinder(V(0,-0.1,0),V(0,totalH+0.4,0),0.08,C.slate);
+
+      // 2. Lưới sàn tầng 1 & tầng 2
+      const floor1=new THREE.GridHelper(4,8,C.grid,C.grid);floor1.position.y=0;root.add(floor1);
+      const floor2=new THREE.GridHelper(4,8,C.paperLine,C.paperLine);floor2.position.y=totalH;floor2.material.opacity=0.3;floor2.material.transparent=true;root.add(floor2);
+
+      // 3. Dựng 13 bậc (từ bậc 0 đến bậc 12)
+      objects.stepMeshes=[];
+      objects.stepPoints=[]; // Đầu ngoài của mỗi bậc
+      const stepGeo=new THREE.BoxGeometry(R,0.035,0.24);
+
+      for(let i=0;i<=TOTAL_STEPS;i++){
+        const angle=i*ANGLE_STEP;
+        const y=i*RISE;
+        const isPair=(i===highlightPair||i===highlightPair+1);
+
+        if(hideOthers&&!isPair)continue;
+
+        const color=(i%2===0)?C.terracotta:C.ochre;
+        const opacity=isPair?1.0:(highlightPair===-1?0.9:0.35);
+        const mat=new THREE.MeshStandardMaterial({
+          color:color,roughness:0.5,metalness:0.1,
+          transparent:opacity<1.0,opacity:opacity
+        });
+        const mesh=new THREE.Mesh(stepGeo,mat);
+        mesh.position.set(Math.cos(angle)*(R/2),y,Math.sin(angle)*(R/2));
+        mesh.rotation.y=-angle;
+        root.add(mesh);
+        objects.stepMeshes.push(mesh);
+
+        // Đầu ngoài của bậc
+        const outerPt=V(Math.cos(angle)*R,y,Math.sin(angle)*R);
+        objects.stepPoints.push(outerPt);
+
+        // Cột lan can nhỏ ở đầu ngoài
+        if(i<TOTAL_STEPS){
+          const nextOuter=V(Math.cos((i+1)*ANGLE_STEP)*R,(i+1)*RISE,Math.sin((i+1)*ANGLE_STEP)*R);
+          cylinder(outerPt,outerPt.clone().add(V(0,0.4,0)),0.015,C.slate);
+        }
+      }
+    }
+
+    /* ===== PHASE 1: Chiều cao thông thuỷ ===== */
+    function buildPhase1Scene(){
+      clearScene();
+      buildSpiralStaircase(-1,false);
+      const totalH=TOTAL_STEPS*RISE;
+
+      // 2 mặt phẳng mờ ở bậc 0 và bậc 12
+      const pG=new THREE.CircleGeometry(1.3,32);
+      const pM1=new THREE.MeshPhongMaterial({color:C.terracotta,transparent:true,opacity:0.25,side:THREE.DoubleSide,depthWrite:false});
+      const plane0=new THREE.Mesh(pG,pM1);plane0.rotation.x=Math.PI/2;plane0.position.y=0;root.add(plane0);
+
+      const pM2=new THREE.MeshPhongMaterial({color:C.ochre,transparent:true,opacity:0.25,side:THREE.DoubleSide,depthWrite:false});
+      const plane12=new THREE.Mesh(pG,pM2);plane12.rotation.x=Math.PI/2;plane12.position.y=totalH;root.add(plane12);
+
+      // Đoạn đo chiều cao thông thuỷ thẳng đứng
+      const pt0=V(0.85,0,0),pt12=V(0.85,totalH,0);
+      mkLine(pt0,pt12,C.jade,3);
+      rightAngle(pt0,V(0,1,0),V(-1,0,0),0.15,C.jade);
+      rightAngle(pt12,V(0,-1,0),V(-1,0,0),0.15,C.jade);
+      dot(pt0,C.jade,0.06);dot(pt12,C.jade,0.06);
+
+      // Labels
+      addLabel('Bậc 0 (y = 0m)',V(0.8,0.05,0.25));
+      addLabel('Bậc 12 (y = 2,04m)',V(0.8,totalH+0.08,0.25),'result');
+      addLabel('H = 2,04m',V(0.95,totalH/2,0),'jade');
+      addLabel('Trục trung tâm',V(0,totalH+0.45,0));
+
+      document.getElementById('distance-readout').textContent='H = 2,04m (Thông thuỷ)';
+      document.getElementById('distance-readout').style.color='#34D399';
+      document.getElementById('scene-chip').textContent='Phase 1 · Chiều cao thông thuỷ 12 bậc';
+    }
+
+    /* ===== PHASE 2: Khoảng cách giữa 2 bậc liên tiếp ===== */
+    function buildPhase2Scene(){
+      clearScene();
+      const i=stepPairIdx;
+      buildSpiralStaircase(i,false);
+
+      const y0=i*RISE,y1=(i+1)*RISE;
+      const angle0=i*ANGLE_STEP,angle1=(i+1)*ANGLE_STEP;
+
+      // Đoạn vuông góc chung trên trục (đúng: jade, nét liền)
+      const axis0=V(0,y0,0),axis1=V(0,y1,0);
+      mkLine(axis0,axis1,C.jade,3.5);
+      dot(axis0,C.jade,0.06);dot(axis1,C.jade,0.06);
+
+      // Đoạn nối 2 đầu ngoài của 2 bậc (bẫy: accent, nét đứt)
+      const out0=V(Math.cos(angle0)*R,y0,Math.sin(angle0)*R);
+      const out1=V(Math.cos(angle1)*R,y1,Math.sin(angle1)*R);
+      const obliqueLine=mkLine(out0,out1,C.accent,2,true);
+      dot(out0,C.accent,0.05);dot(out1,C.accent,0.05);
+
+      const obliqueDist=out0.distanceTo(out1);
+
+      // Labels
+      addLabel(`Bậc ${i}`,out0.clone().add(V(0.1,0.05,0)));
+      addLabel(`Bậc ${i+1}`,out1.clone().add(V(0.1,0.05,0)));
+      addLabel('d = 0,17m (trên trục)',V(-0.25,(y0+y1)/2,0),'jade');
+      addLabel(`Đoạn xiên = ${fmt(obliqueDist)}m`,out0.clone().add(out1).multiplyScalar(0.5).add(V(0.15,0.05,0)),'accent');
+
+      document.getElementById('distance-readout').textContent='d = 0,17m · Đoạn xiên = '+fmt(obliqueDist)+'m';
+      document.getElementById('distance-readout').style.color='#34D399';
+      document.getElementById('scene-chip').textContent=`Phase 2 · Bậc ${i} và Bậc ${i+1} (lệch 30°)`;
+    }
+
+    /* ===== PHASE 3: Khoảng cách Lan can đến Trục thang ===== */
+    function buildPhase3Scene(){
+      clearScene();
+      buildSpiralStaircase(-1,false);
+
+      // Đoạn lan can từ đầu ngoài bậc 0 (góc 0, y=0.4) đến đầu ngoài bậc 3 (góc 90, y=0.51+0.4)
+      const rOuter=R;
+      const railA=V(rOuter,0.45,0);
+      const railB=V(0,3*RISE+0.45,rOuter); // Góc 90 độ
+
+      // Dựng ống lan can thẳng màu dusty-blue
+      cylinder(railA,railB,0.035,C.dustyBlue);
+      dot(railA,C.dustyBlue,0.06);dot(railB,C.dustyBlue,0.06);
+
+      // Đoạn vuông góc chung từ trục (0, y_mid, 0) đến đoạn lan can
+      // Phương trình lan can: L(t) = railA + t*(railB - railA), t in [0,1]
+      // Trục: x=0, z=0. Đoạn vuông góc chung trong mặt phẳng ngang x+z
+      // Bằng giải tích: khoảng cách = R * sqrt(2)/2 = 0.7071m tại t=0.5, y_mid = (0.45 + 3*RISE+0.45)/2
+      const tMid=0.5;
+      const ptRailMid=railA.clone().add(railB.clone().sub(railA).multiplyScalar(tMid));
+      const ptAxisMid=V(0,ptRailMid.y,0);
+
+      mkLine(ptAxisMid,ptRailMid,C.jade,3);
+      rightAngle(ptAxisMid,V(0,1,0),ptRailMid.clone().sub(ptAxisMid),0.12,C.jade);
+      rightAngle(ptRailMid,railB.clone().sub(railA),ptAxisMid.clone().sub(ptRailMid),0.12,C.jade);
+      dot(ptAxisMid,C.jade,0.06);dot(ptRailMid,C.jade,0.06);
+
+      // Labels
+      addLabel('Lan can nghiêng (Bậc 0 → 3)',railA.clone().add(railB).multiplyScalar(0.5).add(V(0.2,0.1,0.2)));
+      addLabel('d = 0,71m',ptAxisMid.clone().add(ptRailMid).multiplyScalar(0.5).add(V(-0.15,0.08,0.15)),'jade');
+      addLabel('Trục thang',V(0,2.2,0));
+
+      document.getElementById('distance-readout').textContent='d(Lan can, Trục) = 0,71m';
+      document.getElementById('distance-readout').style.color='#34D399';
+      document.getElementById('scene-chip').textContent='Phase 3 · Khoảng cách Lan can – Trục thang';
+    }
+
+    /* ===== PHASE 4: Hồ sơ kiểm định dự án ===== */
+    function buildPhase4Scene(){
+      clearScene();
+      buildSpiralStaircase(-1,false);
+
+      // Toàn bộ đường đo của 3 Phase cùng xuất hiện tôn vinh thiết kế
+      const totalH=TOTAL_STEPS*RISE;
+      mkLine(V(0.85,0,0),V(0.85,totalH,0),C.jade,2.5); // Phase 1
+
+      // Phase 3 lan can
+      const railA=V(R,0.45,0),railB=V(0,3*RISE+0.45,R);
+      cylinder(railA,railB,0.025,C.dustyBlue);
+      mkLine(V(0,(0.45+3*RISE+0.45)/2,0),V(R/2,(0.45+3*RISE+0.45)/2,R/2),C.jade,2.5);
+
+      addLabel('Thông thuỷ: 2,04m',V(0.9,totalH/2,0),'result');
+      addLabel('Lan can - Trục: 0,71m',V(0.2,0.7,0.2),'jade');
+      addLabel('2 bậc: 0,17m',V(-0.25,0.17/2,0),'accent');
+
+      document.getElementById('distance-readout').textContent='Bản vẽ ĐẠT CHUẨN ✅';
+      document.getElementById('distance-readout').style.color='#34D399';
+      document.getElementById('scene-chip').textContent='Phase 4 · Báo cáo kiểm định hoàn tất';
+    }
+
+    /* ===== CAMERA CONTROLS ===== */
+    function setCamera(mode){
+      if(currentStep===1){
+        if(mode==='top'){camera.position.set(0.01,5,0);controls.target.set(0,1,0)}
+        else if(mode==='front'){camera.position.set(0,1,4.5);controls.target.set(0,1,0)}
+        else{camera.position.set(3,2.5,3.5);controls.target.set(0,1,0)}
+      }else if(currentStep===2){
+        const yCenter=stepPairIdx*RISE+RISE/2;
+        if(mode==='top'){camera.position.set(0.01,yCenter+3,0);controls.target.set(0,yCenter,0)}
+        else if(mode==='front'){camera.position.set(1.5,yCenter,2.5);controls.target.set(0,yCenter,0)}
+        else{camera.position.set(2,yCenter+1.2,2.2);controls.target.set(0,yCenter,0)}
+      }else if(currentStep===3){
+        if(mode==='top'){camera.position.set(0.01,4.5,0);controls.target.set(0,0.6,0)}
+        else if(mode==='front'){camera.position.set(2.5,0.8,2.5);controls.target.set(0,0.6,0)}
+        else{camera.position.set(2.8,1.8,2.8);controls.target.set(0,0.6,0)}
+      }else{
+        if(mode==='top'){camera.position.set(0.01,5.5,0);controls.target.set(0,1,0)}
+        else if(mode==='front'){camera.position.set(0,1.2,4.8);controls.target.set(0,1,0)}
+        else{camera.position.set(3.2,2.8,3.6);controls.target.set(0,1,0)}
+      }
+      camera.up.set(0,1,0);controls.update();
+    }
+
+    /* ===== UI RENDERERS ===== */
+    function notebook(text){return`<div class="notebook"><b><i class="ti ti-notebook"></i> Sổ tay kiến thức</b><br>${text}</div>`}
+    function navButtons(nextLabel='Tiếp tục',needQuiz=null){
+      const dis=needQuiz!==null&&!needQuiz?'disabled':'';
+      return`<div class="btn-row">
+        ${currentStep>1?'<button class="btn btn-secondary" onclick="lesson.prevStep()">← Quay lại</button>':''}
+        <button class="btn btn-primary" ${dis} onclick="${currentStep<4?'lesson.completeStep()':'lesson.finish()'}">${nextLabel} →</button>
+      </div>`;
+    }
+
+    function renderStep(){
+      document.getElementById('header-progress').textContent=`PHASE ${currentStep}/4`;
+      document.querySelectorAll('.step-tab').forEach(b=>{
+        const n=+b.dataset.step;
+        b.classList.toggle('active',n===currentStep);
+        b.classList.toggle('done',n<unlocked);
+        b.disabled=n>unlocked;
+      });
+      if(currentStep===1)renderPhase1UI();
+      if(currentStep===2)renderPhase2UI();
+      if(currentStep===3)renderPhase3UI();
+      if(currentStep===4)renderPhase4UI();
+      reportHeight();
+    }
+
+    /* UI Phase 1 */
+    function renderPhase1UI(){
+      stepBody.innerHTML=`
+      <p class="eyebrow">Phase 1 · Kiểm định chiều cao thông thuỷ</p>
+      <h2 class="step-title">Quy chuẩn QCXDVN 05:2008/BXD</h2>
+      <div class="athena">
+        <b>✦ Athena (Kiến trúc sư trưởng)</b>
+        Chào kiến trúc sư! Dự án cầu thang xoắn nối tầng 1 và tầng 2 đã có bản phác thảo — bán kính 1m, mỗi bậc cao 17cm, xoay 30° mỗi bậc (12 bậc/vòng). Hãy kiểm định chiều cao thông thuỷ sau đúng 1 vòng xoắn (12 bậc).
+      </div>
+      <div class="card">
+        <h3>Tính toán chiều cao thông thuỷ:</h3>
+        <p class="body-small">Bậc 0 và bậc 12 có cùng góc xoay, nằm trên 2 mặt phẳng ngang song song. Khoảng cách giữa 2 mặt phẳng này chính là chiều cao thông thuỷ:</p>
+        <div class="formula">H = 12 × 0,17m = 2,04m</div>
+        <p class="body-small">Đối chiếu quy chuẩn <b>QCXDVN 05:2008/BXD</b>: Chiều cao thông thuỷ tối thiểu <b>≥ 2,0m</b>. Thiết kế đạt <b>2,04m > 2,0m</b> (vượt chuẩn 4cm, an toàn tuyệt đối cho người đi lại).</p>
+      </div>
+      <div class="card" id="p1-card">
+        <h3><i class="ti ti-help-circle"></i> Nhận diện bản chất hình học:</h3>
+        <p class="body-small">Chiều cao thông thuỷ là loại khoảng cách nào trong 4 loại đã học?</p>
+        <button class="choice" onclick="lesson.answerP1(0)">A. Khoảng cách từ một điểm đến một đường thẳng</button>
+        <button class="choice ${p1Done?'correct':''}" onclick="lesson.answerP1(1)">B. Khoảng cách giữa hai mặt phẳng song song</button>
+        <button class="choice" onclick="lesson.answerP1(2)">C. Khoảng cách giữa hai đường thẳng chéo nhau</button>
+        <div id="p1-feedback">${p1Done?'<div class="feedback good">Chính xác! Hai bậc cùng góc xoay nằm trong 2 mặt phẳng ngang song song ở 2 cao độ khác nhau.</div>':''}</div>
+      </div>
+      ${notebook('Khoảng cách giữa hai mặt phẳng song song (P) và (Q) bằng khoảng cách từ 1 điểm bất kỳ thuộc (P) đến mặt phẳng (Q). Ở đây là hiệu độ cao: |2,04 − 0| = 2,04m.')}
+      ${navButtons('Tiếp: Khoảng cách 2 bậc',p1Done)}`;
+    }
+
+    /* UI Phase 2 */
+    function renderPhase2UI(){
+      const y0=stepPairIdx*RISE,y1=(stepPairIdx+1)*RISE;
+      const angle0=stepPairIdx*ANGLE_STEP,angle1=(stepPairIdx+1)*ANGLE_STEP;
+      const out0=V(Math.cos(angle0)*R,y0,Math.sin(angle0)*R);
+      const out1=V(Math.cos(angle1)*R,y1,Math.sin(angle1)*R);
+      const obliqueDist=out0.distanceTo(out1);
+
+      stepBody.innerHTML=`
+      <p class="eyebrow">Phase 2 · Khoảng cách 2 bậc liên tiếp (Trọng tâm)</p>
+      <h2 class="step-title">Hai đường chéo nhau cùng gốc trục</h2>
+      <div class="athena">
+        <b>✦ Athena</b>
+        Xét hai bậc liên tiếp (Bậc ${stepPairIdx} và Bậc ${stepPairIdx+1}). Hai bậc này nằm trên hai đường thẳng chéo nhau, lệch góc 30° và lệch cao độ 17cm.
+      </div>
+      <div class="card">
+        <h3>1. Dự đoán trước khi tính:</h3>
+        <p class="body-small">Theo bạn, khoảng cách giữa 2 bậc liên tiếp này có PHỤ THUỘC vào góc xoay 30° không, hay chỉ phụ thuộc chiều cao mỗi bậc?</p>
+        <button class="choice ${p2PredChosen===0?'selected':''}" onclick="lesson.choosePred(0)">Dự đoán A: Có phụ thuộc — xoay góc khác thì khoảng cách đổi</button>
+        <button class="choice ${p2PredChosen===1?'selected':''}" onclick="lesson.choosePred(1)">Dự đoán B: Không phụ thuộc — chỉ bằng đúng chiều cao bậc (0,17m)</button>
+      </div>
+      <div class="card">
+        <h3>2. Phân tích & Dựng đoạn vuông góc chung:</h3>
+        <p class="body-small">
+          • Cả hai bậc đều NẰM NGANG (vuông góc trục đứng).<br>
+          • Vì trục đứng ⊥ CẢ HAI bậc, đoạn nối trên trục chính là <b>đoạn vuông góc chung</b>.
+        </p>
+        <div class="formula">d(Bậc ${stepPairIdx}, Bậc ${stepPairIdx+1}) = |h_${stepPairIdx+1} − h_${stepPairIdx}| = 0,17m</div>
+        <p class="body-small" style="color:var(--jade-dark);font-weight:700">
+          ✓ Kết quả bất ngờ: Khoảng cách LUÔN BẰNG ĐÚNG 0,17m cho mọi cặp bậc, hoàn toàn độc lập với góc xoay 30°!
+        </p>
+      </div>
+      <div class="control">
+        <label>Chọn cặp bậc kiểm chứng: <output>Bậc ${stepPairIdx} & Bậc ${stepPairIdx+1}</output></label>
+        <input type="range" min="0" max="11" step="1" value="${stepPairIdx}" oninput="lesson.setStepPair(this.value)">
+      </div>
+      <div class="card" id="p2-card">
+        <h3><i class="ti ti-help-circle"></i> Nhận diện bẫy sai lầm Pytago:</h3>
+        <p class="body-small">Một học sinh khác giải: "Nối 2 đầu ngoài của 2 bậc, tam giác tạo thành vuông tại đó, áp Pytago ra khoảng cách = ${fmt(obliqueDist)}m". Bước đó SAI ở đâu?</p>
+        <button class="choice" onclick="lesson.answerP2(0)">A. Tính sai số học khi bấm máy tính Pytago</button>
+        <button class="choice ${p2Done?'correct':''}" onclick="lesson.answerP2(1)">B. Sai — chưa kiểm tra tam giác có vuông hay không; đoạn nối 2 đầu ngoài chỉ là đoạn xiên bất kỳ, dài hơn khoảng cách thực</button>
+        <button class="choice" onclick="lesson.answerP2(2)">C. Đúng, không có lỗi sai nào</button>
+        <div id="p2-feedback">${p2Done?'<div class="feedback good">Đúng! Đoạn nối 2 đầu ngoài ('+fmt(obliqueDist)+'m) không vuông góc với bậc nào, chỉ là đoạn xiên dài hơn đoạn vuông góc chung (0,17m).</div>':''}</div>
+      </div>
+      ${notebook('Đoạn vuông góc chung của 2 đường chéo nhau a, b phải vuông góc với CẢ HAI đường. Đoạn nối 2 đầu mút bất kỳ luôn có độ dài lớn hơn hoặc bằng đoạn vuông góc chung.')}
+      ${navButtons('Tiếp: Lan can đến trục',p2Done)}`;
+    }
+
+    /* UI Phase 3 */
+    function renderPhase3UI(){
+      stepBody.innerHTML=`
+      <p class="eyebrow">Phase 3 · Chống nhầm loại khoảng cách</p>
+      <h2 class="step-title">Khoảng cách Lan can đến Trục thang</h2>
+      <div class="athena">
+        <b>✦ Athena (Cảnh báo quan trọng)</b>
+        Đội thi công cần đảm bảo tay vịn lan can không va vào trục trung tâm. Lan can nối từ đầu ngoài bậc 0 (y = 0,45m) đến bậc 3 (y = 0,96m). Chú ý: Lan can NGHIÊNG, KHÔNG nằm ngang — không được áp dập khuôn cách làm ở Phase 2!
+      </div>
+      <div class="card">
+        <h3>Phân tích hình học:</h3>
+        <p class="body-small">
+          • Vì lan can nghiêng, trục đứng KHÔNG tự động vuông góc với lan can.<br>
+          • Cần dựng đoạn vuông góc chung thực sự nối từ trục ra điểm giữa của đoạn lan can.<br>
+          • Trong mặt phẳng nằm ngang tại trung điểm cao độ, khoảng cách bằng:
+        </p>
+        <div class="formula">d(Lan can, Trục) = R · (√2 / 2) = 1,0 × 0,7071 ≈ 0,71m</div>
+        <p class="body-small">Khoảng cách là <b>0,71m</b> (khác hẳn kết quả 0,17m ở Phase 2). Không gian đủ rộng để người đi bám tay vịn an toàn.</p>
+      </div>
+      <div class="feedback good">
+        <b>Bài học rút ra:</b> Cùng là "2 đường thẳng chéo nhau", nhưng khi cấu hình thay đổi (đoạn ngang vs đoạn nghiêng), phương pháp dựng hình và kết quả hoàn toàn khác nhau. Luôn kiểm tra tính vuông góc!
+      </div>
+      ${notebook('Không áp dụng máy móc công thức khi điều kiện hình học không thoả mãn (trục không vuông góc với đường nghiêng).')}
+      ${navButtons('Xem Báo cáo kiểm định')}`;
+    }
+
+    /* UI Phase 4 */
+    function renderPhase4UI(){
+      stepBody.innerHTML=`
+      <p class="eyebrow">Phase 4 · Hồ sơ kiểm định dự án</p>
+      <h2 class="step-title">Trình duyệt bản vẽ thiết kế</h2>
+      <div class="athena">
+        <b>✦ Athena</b>
+        Chúc mừng kiến trúc sư! Bạn đã hoàn thành việc kiểm định 4 loại khoảng cách cốt lõi cho dự án cầu thang xoắn. Dưới đây là bảng tổng hợp trình duyệt:
+      </div>
+      <table class="summary-table">
+        <thead>
+          <tr>
+            <th>Hạng mục kiểm định</th>
+            <th>Loại khoảng cách</th>
+            <th>Kết quả đo</th>
+            <th>Đánh giá</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><b>Chiều cao thông thuỷ</b></td>
+            <td>2 mặt phẳng song song</td>
+            <td><b>2,04m</b></td>
+            <td class="pass">✅ Đạt chuẩn (≥ 2,0m)</td>
+          </tr>
+          <tr>
+            <td><b>2 bậc liên tiếp</b></td>
+            <td>2 đường chéo nhau (cùng gốc trục)</td>
+            <td><b>0,17m</b></td>
+            <td class="pass">✅ Chuẩn bước chân</td>
+          </tr>
+          <tr>
+            <td><b>Lan can – Trục thang</b></td>
+            <td>2 đường chéo nhau (nghiêng)</td>
+            <td><b>0,71m</b></td>
+            <td class="pass">✅ An toàn thao tác</td>
+          </tr>
+        </tbody>
+      </table>
+      <div class="card" style="border-color:var(--jade);background:var(--jade-pale)">
+        <h3 style="color:var(--jade-dark)"><i class="ti ti-certificate"></i> Tổng kết Chủ đề Khoảng cách (Bài 26):</h3>
+        <p class="body-small" style="color:var(--jade-text)">
+          <b>1. Điểm – Đường/Mặt:</b> Hình chiếu vuông góc luôn cho khoảng cách ngắn nhất.<br>
+          <b>2. Đối tượng song song:</b> Quy về khoảng cách từ 1 điểm bất kỳ.<br>
+          <b>3. Hai đường chéo nhau:</b> Tìm đoạn ⊥ CẢ HAI đường; tận dụng đường đã ⊥ mặt phẳng hoặc quy về đường–mặt song song.<br>
+          <b>4. Ứng dụng thực tế:</b> Luôn kiểm tra điều kiện hình học trước khi tính toán!
+        </p>
+      </div>
+      <div class="btn-row">
+        <button class="btn btn-secondary" onclick="lesson.prevStep()">← Quay lại</button>
+        <button class="btn btn-primary" onclick="lesson.finish()">Hoàn thành Dự án 🎉</button>
+      </div>`;
+    }
+
+    /* ===== NAVIGATION & STATE ===== */
+    function goStep(n){
+      if(n<1||n>unlocked)return;
+      currentStep=n;
+      window.scrollTo(0,0);
+      const sb=document.querySelector('.sidebar');if(sb)sb.scrollTop=0;
+      if(n===1){buildPhase1Scene();setCamera('perspective')}
+      if(n===2){buildPhase2Scene();setCamera('perspective')}
+      if(n===3){buildPhase3Scene();setCamera('perspective')}
+      if(n===4){buildPhase4Scene();setCamera('perspective')}
+      renderStep();
+    }
+
+    function completeStep(){
+      unlocked=Math.max(unlocked,Math.min(4,currentStep+1));
+      LMS().progress({done:currentStep,total:4});
+      LMS().event('completed-phase',{id:['phase1-clearance','phase2-steps-distance','phase3-handrail-axis','phase4-report-approval'][currentStep-1]});
+      if(currentStep<4)goStep(currentStep+1);
+    }
+
+    function finish(){
+      if(completed)return;
+      completed=true;
+      LMS().progress({done:4,total:4});
+      const sc=[p1Done,p2Done,true].filter(Boolean).length;
+      LMS().complete({summary:'Đã hoàn thành Module 3: Dự án thiết kế cầu thang xoắn, làm chủ toàn bộ các loại khoảng cách trong không gian.',score:sc,max:3});
+      stepBody.insertAdjacentHTML('beforeend','<div class="feedback good" style="margin-top:10px"><b>Chúc mừng!</b> Bạn đã xuất sắc hoàn thành toàn bộ Chủ đề Khoảng cách (Bài 26)!</div>');
+      reportHeight();
+    }
+
+    window.lesson={
+      setStepPair(v){
+        stepPairIdx=+v;
+        buildPhase2Scene();
+        renderPhase2UI();
+        LMS().state({stepPairIdx});
+      },
+      choosePred(idx){
+        p2PredChosen=idx;
+        renderPhase2UI();
+        LMS().event('predicted',{phase:2,choice:idx});
+      },
+      answerP1(idx){
+        if(p1Done)return;
+        if(idx===1){
+          p1Done=true;
+          LMS().event('answered',{id:'p1-clearance-type',correct:true});
+          renderPhase1UI();
+        }else{
+          p1Strikes++;
+          LMS().event('answered',{id:'p1-clearance-type',correct:false,strikes:p1Strikes});
+          const c=document.getElementById('p1-card');if(c){c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),320)}
+          const fb=document.getElementById('p1-feedback');
+          if(fb)fb.innerHTML='<div class="feedback bad">Chưa đúng. Hai bậc này nằm trong 2 mặt phẳng NGANG song song ở 2 độ cao khác nhau!</div>';
+          if(p1Strikes>=3){p1Done=true;renderPhase1UI()}
+        }
+      },
+      answerP2(idx){
+        if(p2Done)return;
+        if(idx===1){
+          p2Done=true;
+          LMS().event('answered',{id:'p2-pytago-trap',correct:true});
+          renderPhase2UI();
+        }else{
+          p2Strikes++;
+          LMS().event('answered',{id:'p2-pytago-trap',correct:false,strikes:p2Strikes});
+          const c=document.getElementById('p2-card');if(c){c.classList.add('shake');setTimeout(()=>c.classList.remove('shake'),320)}
+          const fb=document.getElementById('p2-feedback');
+          if(fb)fb.innerHTML='<div class="feedback bad">Chưa đúng. Đoạn nối 2 đầu ngoài không vuông góc với bậc nào, chỉ là đoạn xiên bất kỳ!</div>';
+          if(p2Strikes>=3){p2Done=true;renderPhase2UI()}
+        }
+      },
+      completeStep,prevStep(){goStep(currentStep-1)},finish
+    };
+
+    document.querySelectorAll('.step-tab').forEach(b=>b.onclick=()=>goStep(+b.dataset.step));
+    document.getElementById('btn-reset').onclick=()=>setCamera('perspective');
+    document.getElementById('btn-top').onclick=()=>setCamera('top');
+    document.getElementById('btn-front').onclick=()=>setCamera('front');
+
+    /* ===== RENDER LOOP ===== */
+    function resize(){
+      const w=wrap.clientWidth,h=wrap.clientHeight;
+      camera.aspect=w/Math.max(1,h);
+      camera.updateProjectionMatrix();
+      renderer.setSize(w,h,false);
+    }
+    new ResizeObserver(resize).observe(wrap);
+    window.addEventListener('resize',resize);
+
+    function updateLabels(){
+      labels.forEach(l=>{
+        const p=l.pos.clone().project(camera);
+        const show=p.z>-1&&p.z<1;
+        l.el.style.display=show?'block':'none';
+        if(show){
+          l.el.style.transform=`translate(${(p.x*.5+.5)*wrap.clientWidth}px,${(-p.y*.5+.5)*wrap.clientHeight}px) translate(-50%,-115%)`;
+        }
+      });
+    }
+
+    function animate(){
+      requestAnimationFrame(animate);
+      controls.update();
+      if(currentStep===4&&controls.autoRotate===false){
+        // Xoay nhẹ ở Phase 4 tôn vinh thiết kế
+        scene.rotation.y+=0.002;
+      }else{
+        scene.rotation.y=0;
+      }
+      updateLabels();
+      renderer.render(scene,camera);
+    }
+
+    function reportHeight(){
+      if(window.innerWidth<=768){
+        LMS().resize({height:document.documentElement.scrollHeight});
+      }else{
+        LMS().resize({height:window.innerHeight});
+      }
+    }
+    new ResizeObserver(()=>{clearTimeout(window._rh);window._rh=setTimeout(reportHeight,100)}).observe(document.body);
+
+    /* Init */
+    buildPhase1Scene();setCamera('perspective');renderStep();resize();animate();
+    LMS().ready({id:'bai26-module3-du-an-cau-thang-xoan'});
+    if(window.AiducationLMS)window.AiducationLMS.onResume=s=>{
+      if(!s)return;
+      unlocked=Math.max(1,Math.min(4,s.unlocked||1));
+      stepPairIdx=Number.isFinite(s.stepPairIdx)?s.stepPairIdx:0;
+      goStep(Math.min(unlocked,s.currentStep||1));
+    };
+  })();
+  </script>
+</body>
+</html>
