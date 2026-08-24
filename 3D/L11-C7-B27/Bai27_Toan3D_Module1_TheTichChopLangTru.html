@@ -138,6 +138,11 @@
     .notebook{margin-top:8px;padding:10px;border:1px dashed var(--sage-deep);border-radius:9px;background:var(--sage-pale);color:var(--sage-text);font-size:13px}
     .notebook b{color:var(--jade-dark)}
 
+    /* CELEBRATION VICTORY MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(10,22,40,0.82);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease}
+    .modal-overlay.show{opacity:1;pointer-events:auto}
+    .modal-card{background:var(--white);border:2px solid var(--jade-deep);border-radius:18px;padding:22px;max-width:540px;width:92%;color:var(--ink);box-shadow:0 20px 50px rgba(0,0,0,0.4);text-align:center}
+
     @media(max-width:768px){
       body{min-height:100vh;overflow-y:auto}
       .app-shell{display:flex!important;width:100%;height:auto!important;min-height:auto!important;max-height:none!important;flex-direction:column!important;overflow:visible!important}
@@ -175,6 +180,36 @@
     <h1>Bài 27 · Thể tích khối chóp và khối lăng trụ</h1>
     <span class="header-progress" id="header-progress">BƯỚC 1/4</span>
   </header>
+
+  <!-- CELEBRATION VICTORY MODAL -->
+  <div class="modal-overlay" id="celebration-modal">
+    <div class="modal-card">
+      <div style="background:var(--jade-pale);color:var(--jade-dark);padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;margin-bottom:12px">
+        <i class="ti ti-sparkles"></i> CHÚC MỪNG HOÀN THÀNH
+      </div>
+      <h2 style="margin:0 0 6px 0;font-size:20px;color:var(--jade-dark)">🎉 Xuất sắc! Bạn đã làm chủ Module 1</h2>
+      <div style="font-size:13.5px;color:var(--ink-2);margin-bottom:12px">Bài 27 — Khám phá thể tích khối chóp & lăng trụ</div>
+
+      <div style="background:var(--cream);border:1px solid var(--paper-line);border-radius:12px;padding:12px 14px;margin:12px 0;text-align:left;font-size:13px;line-height:1.6;max-height:54vh;overflow-y:auto">
+        <div style="display:flex;gap:8px;margin-bottom:6px;color:var(--ink)"><i class="ti ti-circle-check-filled" style="color:var(--jade-deep);font-size:16px;flex-shrink:0"></i> <div><b>Bước 1 (Cavalieri):</b> Khám phá nguyên lý Cavalieri qua cọc tiền xu: Cùng chiều cao và diện tích thiết diện ngang bằng nhau ở mọi độ cao thì thể tích luôn bằng nhau (V_đứng = V_xiên).</div></div>
+        <div style="display:flex;gap:8px;margin-bottom:6px;color:var(--ink)"><i class="ti ti-circle-check-filled" style="color:var(--jade-deep);font-size:16px;flex-shrink:0"></i> <div><b>Bước 2 (Thí nghiệm):</b> Rót nước trực quan 3 lần từ chóp đầy đúng 1 lăng trụ có cùng đáy và chiều cao ⇒ V_chóp = (1/3)·V_lăng trụ = (1/3)·S·h.</div></div>
+        <div style="display:flex;gap:8px;margin-bottom:6px;color:var(--ink)"><i class="ti ti-circle-check-filled" style="color:var(--jade-deep);font-size:16px;flex-shrink:0"></i> <div><b>Bước 3 (Khối chóp):</b> Phân biệt chính xác đường cao SO (vuông góc tâm đáy), cạnh bên SA và trung đoạn SM; tính đúng thể tích chóp tam giác đều.</div></div>
+        <div style="display:flex;gap:8px;color:var(--ink)"><i class="ti ti-circle-check-filled" style="color:var(--jade-deep);font-size:16px;flex-shrink:0"></i> <div><b>Bước 4 (Chóp cụt):</b> Dẫn xuất công thức thể tích chóp cụt: V = (1/3)·h·(S + S' + √(S·S')) từ hiệu thể tích hai khối chóp đồng dạng.</div></div>
+        
+        <hr style="border:0;border-top:1px solid var(--paper-line-2);margin:10px 0">
+        <div style="color:var(--jade-dark);font-weight:700;margin-bottom:4px">Kiến thức cốt lõi Bài 27</div>
+        <div style="color:var(--ink-2);font-size:12.5px">
+          • V(chóp) = (1/3) · S · h &nbsp;|&nbsp; V(lăng trụ) = S · h<br>
+          • V(chóp cụt) = (1/3) · (S + S' + √(S · S')) · h
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:14px">
+        <button class="btn btn-secondary" onclick="document.getElementById('celebration-modal').classList.remove('show')"><i class="ti ti-eye"></i> Xem tự do 3D</button>
+        <button class="btn btn-primary" onclick="location.reload()"><i class="ti ti-refresh"></i> Học lại từ đầu</button>
+      </div>
+    </div>
+  </div>
   
   <main class="app-shell">
     <!-- VIEWPORT 3D -->
@@ -887,7 +922,8 @@
       },
       finish(){
         LMS().complete({score:100});
-        alert('Chúc mừng bạn đã hoàn thành xuất sắc Module 1: Thể tích khối chóp và khối lăng trụ!');
+        const modal=document.getElementById('celebration-modal');
+        if(modal)modal.classList.add('show');
       }
     };
 

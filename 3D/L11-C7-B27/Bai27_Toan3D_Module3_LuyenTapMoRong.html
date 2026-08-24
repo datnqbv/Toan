@@ -118,6 +118,11 @@
     .notebook{margin-top:8px;padding:10px;border:1px dashed var(--sage-deep);border-radius:9px;background:var(--sage-pale);color:var(--sage-text);font-size:13px}
     .notebook b{color:var(--jade-dark)}
 
+    /* CELEBRATION VICTORY MODAL */
+    .modal-overlay{position:fixed;inset:0;background:rgba(10,22,40,0.82);backdrop-filter:blur(6px);z-index:1000;display:flex;align-items:center;justify-content:center;opacity:0;pointer-events:none;transition:opacity .3s ease}
+    .modal-overlay.show{opacity:1;pointer-events:auto}
+    .modal-card{background:var(--white);border:2px solid var(--jade-deep);border-radius:18px;padding:22px;max-width:540px;width:92%;color:var(--ink);box-shadow:0 20px 50px rgba(0,0,0,0.4);text-align:center}
+
     @media(max-width:768px){
       body{min-height:100vh;overflow-y:auto}
       .app-shell{display:flex!important;width:100%;height:auto!important;min-height:auto!important;max-height:none!important;flex-direction:column!important;overflow:visible!important}
@@ -155,6 +160,37 @@
     <h1>Bài 27 · Module 3: Luyện tập mở rộng (SGK 7.28–7.31)</h1>
     <span class="header-progress" id="header-progress">BÀI 1/4</span>
   </header>
+
+  <!-- CELEBRATION VICTORY MODAL -->
+  <div class="modal-overlay" id="celebration-modal">
+    <div class="modal-card">
+      <div style="background:var(--jade-pale);color:var(--jade-dark);padding:6px 16px;border-radius:20px;font-size:13px;font-weight:700;display:inline-flex;align-items:center;gap:6px;margin-bottom:12px">
+        <i class="ti ti-sparkles"></i> CHÚC MỪNG HOÀN THÀNH
+      </div>
+      <h2 style="margin:0 0 6px 0;font-size:20px;color:var(--jade-dark)">🎉 Xuất sắc! Bạn đã làm chủ Module 3</h2>
+      <div style="font-size:13.5px;color:var(--ink-2);margin-bottom:12px">Bài 27 — Luyện tập mở rộng (SGK 7.28–7.31)</div>
+
+      <div style="background:var(--cream);border:1px solid var(--paper-line);border-radius:12px;padding:12px 14px;margin:12px 0;text-align:left;font-size:13px;line-height:1.6;max-height:54vh;overflow-y:auto">
+        <div style="display:flex;gap:8px;margin-bottom:6px;color:var(--ink)"><i class="ti ti-circle-check-filled" style="color:var(--jade-deep);font-size:16px;flex-shrink:0"></i> <div><b>Bài 1:</b> Tứ diện đều là trường hợp riêng của chóp tam giác đều khi cạnh bên bằng cạnh đáy (b = a ⇒ V = a³√2 / 12).</div></div>
+        <div style="display:flex;gap:8px;margin-bottom:6px;color:var(--ink)"><i class="ti ti-circle-check-filled" style="color:var(--jade-deep);font-size:16px;flex-shrink:0"></i> <div><b>Bài 2:</b> Vận dụng công thức lượng giác S = (1/2)·a·b·sin(C) để tính diện tích đáy tam giác tù khi tính thể tích lăng trụ.</div></div>
+        <div style="display:flex;gap:8px;margin-bottom:6px;color:var(--ink)"><i class="ti ti-circle-check-filled" style="color:var(--jade-deep);font-size:16px;flex-shrink:0"></i> <div><b>Bài 3:</b> Phân biệt chính xác góc cạnh bên-đáy (gắn với OA) ≠ góc mặt bên-đáy (gắn với trung đoạn OM).</div></div>
+        <div style="display:flex;gap:8px;color:var(--ink)"><i class="ti ti-circle-check-filled" style="color:var(--jade-deep);font-size:16px;flex-shrink:0"></i> <div><b>Bài 4:</b> Điểm cách đều 3 đỉnh đáy ⇒ hình chiếu là tâm ngoại tiếp đáy (áp dụng cho cả lăng trụ xiên và chóp).</div></div>
+        
+        <hr style="border:0;border-top:1px solid var(--paper-line-2);margin:10px 0">
+        <div style="color:var(--jade-dark);font-weight:700;margin-bottom:4px">Kiến thức trọng tâm Bài 27</div>
+        <div style="color:var(--ink-2);font-size:12.5px">
+          • V(chóp) = (1/3) · S · h &nbsp;|&nbsp; V(lăng trụ) = S · h<br>
+          • V(chóp cụt) = (1/3) · (S + S' + √(S · S')) · h<br>
+          • Chiều cao h luôn là khoảng cách vuông góc thực tế từ đỉnh đến mặt đáy.
+        </div>
+      </div>
+
+      <div style="display:flex;gap:10px;margin-top:14px">
+        <button class="btn btn-secondary" onclick="document.getElementById('celebration-modal').classList.remove('show')"><i class="ti ti-eye"></i> Xem tự do 3D</button>
+        <button class="btn btn-primary" onclick="location.reload()"><i class="ti ti-refresh"></i> Ôn luyện lại</button>
+      </div>
+    </div>
+  </div>
   
   <main class="app-shell">
     <!-- VIEWPORT 3D -->
@@ -850,7 +886,8 @@
       },
       finish(){
         LMS().complete({score:100});
-        alert('Chúc mừng bạn đã hoàn thành xuất sắc toàn bộ 3 Module của Bài 27: Thể tích khối chóp và lăng trụ!');
+        const modal=document.getElementById('celebration-modal');
+        if(modal)modal.classList.add('show');
       }
     };
 
