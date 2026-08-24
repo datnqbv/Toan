@@ -1,0 +1,993 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Chương 7 · Mở rộng: Hình học không gian trong đời sống, kỹ thuật và vũ trụ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script type="application/json" id="athena-context">
+  {
+    "version":"1.0",
+    "subject":"Toán 11",
+    "lesson":"Chương 7 · Hình học không gian (Bài 22-26)",
+    "module":"Mở rộng: Đời sống, Kỹ thuật & Vũ trụ",
+    "objectives":[
+      "Khám phá ứng dụng của phương thẳng đứng và dây dọi từ kim tự tháp cổ đại đến máy cân mực laser",
+      "Hiểu hệ toạ độ chân trời và ứng dụng góc nâng thiên thể trong định vị hàng hải",
+      "Khám phá cơ chế 3 vòng gimbal con quay hồi chuyển trong dẫn đường quán tính vũ trụ",
+      "Hiểu bản chất hình học của 3 hình chiếu vuông góc trong bản vẽ kiến trúc",
+      "Phân biệt góc nghiêng do sự cố lún (Tháp Pisa) với góc nghiêng chủ đích có lõi chịu lực (Tháp Capital Gate)",
+      "Giải thích hiện tượng sinh học cảm ứng trọng lực giúp cây cối luôn mọc thẳng đứng trên sườn núi",
+      "Hiểu nguyên nhân hình học vì sao hiện tượng đứng bóng chỉ xảy ra trong vùng nội chí tuyến 23,5 độ"
+    ],
+    "structure":[
+      {"id":"tab1-surveying","title":"Lịch sử đo đạc"},
+      {"id":"tab2-astronomy","title":"Thiên văn định hướng"},
+      {"id":"tab3-gyroscope","title":"Con quay hồi chuyển"},
+      {"id":"tab4-architecture","title":"Kiến trúc & Bản vẽ"},
+      {"id":"tab5-leaning","title":"Công trình nghiêng"},
+      {"id":"tab6-nature","title":"Tự nhiên & Trọng lực"},
+      {"id":"tab7-zenith","title":"Đứng bóng & Vĩ độ"}
+    ]
+  }
+  </script>
+  <style>
+    :root {
+      --cream:#FAF7F0; --cream-2:#F0EADD; --cream-3:#E7DECC; --paper-line:#E5DECF; --paper-line-2:#D6CCB6;
+      --ink:#1A1A1A; --ink-2:#514C44; --ink-3:#7C756A; --ink-faint:#ABA396;
+      --jade:#3CA57A; --jade-deep:#2D8B6F; --jade-dark:#14432F; --jade-text:#1B5E48; --jade-pale:#DCEAE1;
+      --sage-deep:#7CA792; --sage-pale:#E1ECE4; --sage-text:#46685A;
+      --accent:#E8A24A; --accent-deep:#CE8A33; --accent-text:#8A551A; --accent-pale:#F7E7CD;
+      --correct:#2D8B6F; --correct-bg:#DCEAE1; --wrong:#C15F3C; --wrong-bg:#F3E2D6;
+      --info:#4E7F92; --info-bg:#DCE7EB;
+      --il-terracotta:#C1704B; --il-ochre:#C99A3C; --il-olive:#8A9A5B; --il-forest:#2E6B52;
+      --il-dusty-blue:#6E93A6; --il-slate:#4E6E7E; --il-sand:#D8C4A0;
+      --canvas-bg:#0a1628;
+      --radius:12px; --radius-lg:16px; --radius-sm:8px;
+      --shadow:0 4px 16px rgba(45,139,111,.10); --shadow-card:0 3px 10px rgba(26,26,26,.06);
+    }
+    * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; background: var(--cream); color: var(--ink); font-family: 'Be Vietnam Pro', system-ui, sans-serif; font-size: 17px; line-height: 1.7; }
+    button, input { font: inherit; }
+    button { cursor: pointer; }
+    button:focus-visible, input:focus-visible { outline: 3px solid var(--accent); outline-offset: 2px; }
+
+    /* Header */
+    header { height: 64px; padding: 10px 24px; background: linear-gradient(135deg, var(--jade-dark), var(--jade-deep)); color: #fff; display: flex; align-items: center; gap: 14px; position: sticky; top: 0; z-index: 50; box-shadow: 0 2px 8px rgba(0,0,0,.15); }
+    .header-badge { border: 1px solid rgba(255,255,255,.3); background: rgba(255,255,255,.14); padding: 4px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; letter-spacing: .06em; text-transform: uppercase; white-space: nowrap; }
+    header h1 { margin: 0; flex: 1; font-size: 18px; line-height: 1.3; font-weight: 700; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
+
+    /* Main Container */
+    .container { max-width: 1200px; margin: 0 auto; padding: 24px 20px 48px; }
+    .intro-card { background: #fff; border: 1px solid var(--paper-line); border-left: 5px solid var(--jade-deep); border-radius: var(--radius); padding: 16px 20px; margin-bottom: 24px; box-shadow: var(--shadow-card); }
+    .intro-card h2 { margin: 0 0 6px; font-size: 18px; color: var(--jade-dark); }
+    .intro-card p { margin: 0; font-size: 14.5px; color: var(--ink-2); line-height: 1.6; }
+
+    /* Desktop Card Grid */
+    .grid-hub { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; }
+    .hub-card { background: #fff; border: 1px solid var(--paper-line); border-radius: var(--radius-lg); overflow: hidden; transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease; cursor: pointer; display: flex; flex-direction: column; }
+    .hub-card:hover { transform: translateY(-4px); box-shadow: 0 8px 24px rgba(45,139,111,.15); border-color: var(--jade); }
+    .hub-card.card-featured { grid-column: span 3; display: grid; grid-template-columns: 320px 1fr; }
+    .card-thumb { background: var(--cream-2); height: 160px; display: flex; align-items: center; justify-content: center; padding: 12px; border-bottom: 1px solid var(--paper-line); }
+    .card-featured .card-thumb { height: 100%; border-bottom: 0; border-right: 1px solid var(--paper-line); }
+    .card-thumb svg { width: 100%; height: 100%; object-fit: contain; }
+    .card-body { padding: 18px; flex: 1; display: flex; flex-direction: column; }
+    .card-tag { font-size: 11px; font-weight: 800; letter-spacing: .06em; text-transform: uppercase; color: var(--jade-text); background: var(--jade-pale); padding: 3px 8px; border-radius: 4px; display: inline-block; margin-bottom: 8px; align-self: flex-start; }
+    .card-title { margin: 0 0 8px; font-size: 17px; color: var(--jade-dark); font-weight: 700; line-height: 1.35; }
+    .card-desc { margin: 0 0 16px; font-size: 13.5px; color: var(--ink-3); line-height: 1.55; flex: 1; }
+    .card-footer { display: flex; justify-content: space-between; align-items: center; font-size: 13px; font-weight: 700; color: var(--jade-deep); }
+    .card-footer i { transition: transform .2s ease; }
+    .hub-card:hover .card-footer i { transform: translateX(4px); }
+
+    /* Modal for Desktop */
+    .modal-backdrop { position: fixed; inset: 0; background: rgba(10,22,40,.65); backdrop-filter: blur(4px); z-index: 100; display: flex; align-items: center; justify-content: center; padding: 20px; opacity: 0; pointer-events: none; transition: opacity .25s ease; }
+    .modal-backdrop.active { opacity: 1; pointer-events: auto; }
+    .modal-dialog { background: var(--cream); width: 100%; max-width: 880px; max-height: 90vh; border-radius: var(--radius-lg); box-shadow: 0 16px 48px rgba(0,0,0,.3); display: flex; flex-direction: column; overflow: hidden; transform: scale(.96); transition: transform .25s ease; }
+    .modal-backdrop.active .modal-dialog { transform: scale(1); }
+    .modal-header { padding: 14px 20px; background: linear-gradient(135deg, var(--jade-dark), var(--jade-deep)); color: #fff; display: flex; justify-content: space-between; align-items: center; flex-shrink: 0; }
+    .modal-header h3 { margin: 0; font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 8px; }
+    .btn-close { background: rgba(255,255,255,.15); border: 0; color: #fff; width: 34px; height: 34px; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 18px; transition: background .15s ease; }
+    .btn-close:hover { background: rgba(255,255,255,.3); }
+    .modal-body { padding: 24px; overflow-y: auto; }
+
+    /* Content Layout inside Modal / Mobile Panel */
+    .svg-wrapper { background: #fff; border: 1px solid var(--paper-line); border-radius: var(--radius); padding: 16px; margin-bottom: 20px; text-align: center; box-shadow: var(--shadow-card); }
+    .svg-wrapper svg { max-width: 100%; height: auto; display: block; margin: 0 auto; }
+    .reading-box { background: #fff; border-left: 4px solid var(--jade-deep); border-radius: 0 var(--radius) var(--radius) 0; padding: 14px 18px; margin-bottom: 20px; font-size: 15px; color: var(--ink); line-height: 1.65; box-shadow: var(--shadow-card); }
+    .reading-box b { color: var(--jade-dark); }
+    
+    /* 3D Canvas Box */
+    .canvas-3d-box { position: relative; width: 100%; height: 360px; background: var(--canvas-bg); border-radius: var(--radius); overflow: hidden; margin-bottom: 20px; box-shadow: var(--shadow-card); }
+    .canvas-3d-box canvas { width: 100%; height: 100%; display: block; touch-action: none; }
+    .canvas-3d-top { position: absolute; top: 12px; left: 12px; right: 12px; display: flex; justify-content: space-between; pointer-events: none; }
+    .chip-3d { padding: 5px 10px; border-radius: 6px; background: rgba(10,22,40,.8); border: 1px solid rgba(255,255,255,.15); color: rgba(255,255,255,.9); font-size: 12px; font-weight: 700; backdrop-filter: blur(4px); }
+    .hint-3d { position: absolute; bottom: 10px; left: 50%; transform: translateX(-50%); padding: 4px 12px; border-radius: 20px; background: rgba(255,255,255,.12); color: rgba(255,255,255,.8); font-size: 11px; pointer-events: none; white-space: nowrap; }
+
+    /* Question & Hint Box */
+    .question-box { background: var(--sage-pale); border: 1px dashed var(--sage-deep); border-radius: var(--radius); padding: 16px 18px; margin-bottom: 16px; }
+    .question-box h4 { margin: 0 0 8px; font-size: 15px; color: var(--sage-text); display: flex; align-items: center; gap: 6px; }
+    .question-box p { margin: 0 0 12px; font-size: 14px; color: var(--ink); }
+    .btn-hint { background: #fff; border: 1px solid var(--sage-deep); color: var(--sage-text); padding: 7px 14px; border-radius: var(--radius-sm); font-size: 13px; font-weight: 700; display: inline-flex; align-items: center; gap: 6px; transition: all .15s ease; }
+    .btn-hint:hover { background: var(--sage-deep); color: #fff; }
+    .hint-text { margin-top: 10px; padding: 10px 14px; background: #fff; border-radius: var(--radius-sm); font-size: 13.5px; color: var(--jade-text); border-left: 3px solid var(--jade); display: none; }
+    .hint-text.show { display: block; animation: fadeIn .2s ease; }
+
+    /* Formula styling */
+    .formula { padding: 8px 12px; border: 1px solid var(--info); border-radius: 8px; background: var(--info-bg); font: 700 13.5px 'JetBrains Mono', monospace; color: var(--ink); margin: 10px 0; }
+
+    /* Mobile Standalone Tab Bar (Hidden on Desktop) */
+    .tab-bar-standalone { display: none; }
+    .mobile-panels { display: none; }
+
+    @keyframes fadeIn { from{opacity:0;transform:translateY(-4px)} to{opacity:1;transform:translateY(0)} }
+
+    /* Responsive Mobile Breakpoint (<= 767px) */
+    @media(max-width: 767px) {
+      header { height: 58px; padding: 8px 16px; }
+      header h1 { font-size: 15px; }
+      .header-badge { font-size: 9.5px; padding: 2px 7px; }
+      .container { padding: 12px 12px 36px; }
+      .intro-card { padding: 12px 14px; margin-bottom: 14px; }
+      .intro-card h2 { font-size: 16px; }
+      .intro-card p { font-size: 13.5px; }
+
+      /* Hide Desktop Grid & Modal */
+      .grid-hub { display: none !important; }
+      .modal-backdrop { display: none !important; }
+
+      /* Enable Mobile Standalone Tab Bar */
+      .tab-bar-standalone {
+        display: flex !important;
+        position: sticky;
+        top: 58px;
+        z-index: 40;
+        background: #fff;
+        border-bottom: 1px solid var(--paper-line);
+        overflow-x: auto;
+        -webkit-overflow-scrolling: touch;
+        scrollbar-width: none;
+        margin: -12px -12px 16px -12px;
+        padding: 6px 12px;
+        gap: 8px;
+      }
+      .tab-bar-standalone::-webkit-scrollbar { display: none; }
+      .tab-pill {
+        flex: 0 0 auto;
+        min-height: 44px;
+        padding: 8px 14px;
+        border: 1px solid var(--paper-line-2);
+        border-radius: 22px;
+        background: var(--cream-2);
+        color: var(--ink-2);
+        font-size: 13px;
+        font-weight: 700;
+        white-space: nowrap;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: all .15s ease;
+      }
+      .tab-pill.active {
+        background: var(--jade-pale);
+        border-color: var(--jade-deep);
+        color: var(--jade-dark);
+      }
+
+      /* Mobile Panels */
+      .mobile-panels { display: block !important; }
+      .tab-panel { display: none; }
+      .tab-panel.active { display: block; animation: fadeIn .2s ease; }
+      .canvas-3d-box { height: 280px; }
+      .reading-box { font-size: 14px; padding: 12px 14px; }
+      .btn-hint { width: 100%; min-height: 44px; justify-content: center; }
+    }
+  </style>
+</head>
+<body>
+  <!-- Header -->
+  <header>
+    <span class="header-badge">🧊 Hình học không gian</span>
+    <h1>Chương 7 · Mở rộng: Đời sống, Kỹ thuật & Vũ trụ</h1>
+  </header>
+
+  <div class="container">
+    <!-- Intro Card -->
+    <section class="intro-card">
+      <h2>✦ Khám phá Hình học không gian</h2>
+      <p>Hình học không gian không chỉ nằm trong sách giáo khoa mà hiện diện sống động trong lịch sử kim tự tháp, định vị thiên văn, con quay hồi chuyển vũ trụ, kết cấu tháp nghiêng và hiện tượng sinh học tự nhiên.</p>
+    </section>
+
+    <!-- MOBILE: Standalone Horizontal Tab Bar -->
+    <nav class="tab-bar-standalone" id="mobile-tab-bar" aria-label="Thanh chọn chủ đề">
+      <button class="tab-pill active" data-tab="tab1"><i class="ti ti-ruler-2"></i> Đo đạc</button>
+      <button class="tab-pill" data-tab="tab2"><i class="ti ti-compass"></i> Thiên văn</button>
+      <button class="tab-pill" data-tab="tab3"><i class="ti ti-rotate-360"></i> Con quay</button>
+      <button class="tab-pill" data-tab="tab4"><i class="ti ti-building"></i> Kiến trúc</button>
+      <button class="tab-pill" data-tab="tab5"><i class="ti ti-building-monument"></i> Nghiêng</button>
+      <button class="tab-pill" data-tab="tab6"><i class="ti ti-trees"></i> Tự nhiên</button>
+      <button class="tab-pill" data-tab="tab7"><i class="ti ti-sun"></i> Đứng bóng</button>
+    </nav>
+
+    <!-- DESKTOP: 3x2 Grid Hub + Featured Tab 7 -->
+    <main class="grid-hub" id="desktop-grid-hub">
+      <!-- Card 1 -->
+      <article class="hub-card" onclick="openTabModal('tab1')">
+        <div class="card-thumb" id="thumb-tab1"></div>
+        <div class="card-body">
+          <span class="card-tag">Chủ đề 1 · Lịch sử</span>
+          <h3 class="card-title">Từ dây dọi đến Laser Level</h3>
+          <p class="card-desc">Cách người Ai Cập xác định phương thẳng đứng xây Kim tự tháp và sự tiến hoá đến công nghệ cân mực laser.</p>
+          <div class="card-footer"><span>Khám phá</span> <i class="ti ti-arrow-right"></i></div>
+        </div>
+      </article>
+
+      <!-- Card 2 -->
+      <article class="hub-card" onclick="openTabModal('tab2')">
+        <div class="card-thumb" id="thumb-tab2"></div>
+        <div class="card-body">
+          <span class="card-tag">Chủ đề 2 · Thiên văn</span>
+          <h3 class="card-title">Hệ toạ độ chân trời</h3>
+          <p class="card-desc">Định vị hàng hải trên đại dương qua góc nâng của các thiên thể và mặt phẳng chân trời.</p>
+          <div class="card-footer"><span>Khám phá</span> <i class="ti ti-arrow-right"></i></div>
+        </div>
+      </article>
+
+      <!-- Card 3 -->
+      <article class="hub-card" onclick="openTabModal('tab3')">
+        <div class="card-thumb" id="thumb-tab3"></div>
+        <div class="card-body">
+          <span class="card-tag">Chủ đề 3 · Vũ trụ</span>
+          <h3 class="card-title">Con quay hồi chuyển</h3>
+          <p class="card-desc">Hệ 3 vòng gimbal bảo toàn phương trong không gian, trái tim của hệ thống dẫn đường quán tính.</p>
+          <div class="card-footer"><span>Khám phá</span> <i class="ti ti-arrow-right"></i></div>
+        </div>
+      </article>
+
+      <!-- Card 4 -->
+      <article class="hub-card" onclick="openTabModal('tab4')">
+        <div class="card-thumb" id="thumb-tab4"></div>
+        <div class="card-body">
+          <span class="card-tag">Chủ đề 4 · Kỹ thuật</span>
+          <h3 class="card-title">Kiến trúc & Bản vẽ</h3>
+          <p class="card-desc">Bản chất hình học của phép chiếu vuông góc tạo nên Mặt bằng, Mặt đứng và Mặt cắt công trình.</p>
+          <div class="card-footer"><span>Khám phá</span> <i class="ti ti-arrow-right"></i></div>
+        </div>
+      </article>
+
+      <!-- Card 5 -->
+      <article class="hub-card" onclick="openTabModal('tab5')">
+        <div class="card-thumb" id="thumb-tab5"></div>
+        <div class="card-body">
+          <span class="card-tag">Chủ đề 5 · Kết cấu</span>
+          <h3 class="card-title">Công trình nghiêng</h3>
+          <p class="card-desc">So sánh tháp Pisa (nghiêng do lún ngoài ý muốn) và Capital Gate (nghiêng 18° chủ đích có lõi chịu lực).</p>
+          <div class="card-footer"><span>Khám phá</span> <i class="ti ti-arrow-right"></i></div>
+        </div>
+      </article>
+
+      <!-- Card 6 -->
+      <article class="hub-card" onclick="openTabModal('tab6')">
+        <div class="card-thumb" id="thumb-tab6"></div>
+        <div class="card-body">
+          <span class="card-tag">Chủ đề 6 · Sinh học</span>
+          <h3 class="card-title">Tự nhiên & Trọng lực</h3>
+          <p class="card-desc">Hiện tượng cảm ứng trọng lực (Gravitropism) giúp cây cối luôn mọc thẳng đứng trên mọi sườn đồi dốc.</p>
+          <div class="card-footer"><span>Khám phá</span> <i class="ti ti-arrow-right"></i></div>
+        </div>
+      </article>
+
+      <!-- Card 7 (Featured) -->
+      <article class="hub-card card-featured" onclick="openTabModal('tab7')">
+        <div class="card-thumb" id="thumb-tab7"></div>
+        <div class="card-body">
+          <span class="card-tag">Chủ đề 7 · Địa lý & Bài 26</span>
+          <h3 class="card-title">Vì sao "đứng bóng" chỉ xảy ra trong vùng nội chí tuyến?</h3>
+          <p class="card-desc">Góc nghiêng 23,5° của trục Trái Đất tạo ra giới hạn hình học tuyệt đối: các vùng ngoài chí tuyến không bao giờ có tia nắng vuông góc mặt đất vào buổi trưa.</p>
+          <div class="card-footer"><span>Khám phá chuyên sâu</span> <i class="ti ti-arrow-right"></i></div>
+        </div>
+      </article>
+    </main>
+
+    <!-- MOBILE: Tab Panels Container -->
+    <div class="mobile-panels" id="mobile-panels"></div>
+  </div>
+
+  <!-- DESKTOP: Modal Dialog -->
+  <div class="modal-backdrop" id="modal-backdrop" onclick="handleBackdropClick(event)">
+    <div class="modal-dialog">
+      <div class="modal-header">
+        <h3 id="modal-title"><i class="ti ti-sparkles"></i> Chủ đề khám phá</h3>
+        <button class="btn-close" onclick="closeTabModal()" aria-label="Đóng"><i class="ti ti-x"></i></button>
+      </div>
+      <div class="modal-body" id="modal-body"></div>
+    </div>
+  </div>
+
+  <script>
+  (()=>{'use strict';
+    const LMS=()=>window.AiducationLMS||{ready(){},event(){},complete(){},resize(){}};
+
+    /* =========================================================================
+       1. SVG ASSETS (Vẽ thuần theo đúng design tokens Aiducation)
+       ========================================================================= */
+    const SVG_DATA = {
+      tab1: `<svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+        <rect width="600" height="280" fill="var(--cream)"/>
+        <!-- Nửa trái: Ngày xưa -->
+        <g transform="translate(0,0)">
+          <!-- Kim tự tháp -->
+          <polygon points="140,45 60,230 220,230" fill="var(--il-ochre)" stroke="var(--ink)" stroke-width="2"/>
+          <polygon points="140,45 160,230 220,230" fill="rgba(0,0,0,0.12)"/>
+          <!-- Người thợ + Dây dọi -->
+          <circle cx="240" cy="180" r="7" fill="var(--ink)"/>
+          <line x1="240" y1="187" x2="240" y2="215" stroke="var(--ink)" stroke-width="2.5"/>
+          <line x1="240" y1="215" x2="232" y2="230" stroke="var(--ink)" stroke-width="2"/>
+          <line x1="240" y1="215" x2="248" y2="230" stroke="var(--ink)" stroke-width="2"/>
+          <!-- Dây dọi thẳng đứng -->
+          <line x1="240" y1="195" x2="255" y2="195" stroke="var(--ink)" stroke-width="1.5"/>
+          <line x1="255" y1="195" x2="255" y2="228" stroke="var(--jade-dark)" stroke-width="1.5" stroke-dasharray="3,2"/>
+          <circle cx="255" cy="228" r="4.5" fill="var(--ink)"/>
+          <text x="140" y="260" font-family="'Be Vietnam Pro'" font-size="13" font-weight="700" fill="var(--ink-2)" text-anchor="middle">Ai Cập cổ đại (~2500 TCN)</text>
+        </g>
+        <!-- Mũi tên dòng thời gian -->
+        <path d="M 275 140 Q 300 115 325 140" fill="none" stroke="var(--ink-3)" stroke-width="2" marker-end="url(#arrow)"/>
+        <!-- Nửa phải: Hiện đại -->
+        <g transform="translate(320,0)">
+          <!-- Máy cân mực laser -->
+          <line x1="140" y1="180" x2="115" y2="230" stroke="var(--ink)" stroke-width="2"/>
+          <line x1="140" y1="180" x2="140" y2="230" stroke="var(--ink)" stroke-width="2"/>
+          <line x1="140" y1="180" x2="165" y2="230" stroke="var(--ink)" stroke-width="2"/>
+          <rect x="115" y="140" width="50" height="40" rx="4" fill="var(--il-slate)" stroke="var(--ink)" stroke-width="2"/>
+          <circle cx="140" cy="160" r="6" fill="var(--jade)"/>
+          <!-- 2 tia laser xanh -->
+          <line x1="20" y1="160" x2="260" y2="160" stroke="var(--jade)" stroke-width="2.5"/>
+          <line x1="140" y1="60" x2="140" y2="220" stroke="var(--jade)" stroke-width="2.5"/>
+          <!-- Dấu tick -->
+          <path d="M 190 145 L 200 155 L 215 135" fill="none" stroke="var(--jade)" stroke-width="3" stroke-linecap="round"/>
+          <text x="140" y="260" font-family="'Be Vietnam Pro'" font-size="13" font-weight="700" fill="var(--jade-dark)" text-anchor="middle">Công nghệ Laser hiện đại</text>
+        </g>
+      </svg>`,
+
+      tab2: `<svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+        <rect width="600" height="280" fill="var(--cream)"/>
+        <!-- Chân trời & Biển -->
+        <rect x="0" y="190" width="600" height="90" fill="var(--cream-2)"/>
+        <line x1="0" y1="190" x2="600" y2="190" stroke="var(--paper-line-2)" stroke-width="2"/>
+        <text x="560" y="180" font-family="'Be Vietnam Pro'" font-size="11" font-weight="700" fill="var(--ink-3)" text-anchor="end">Mặt phẳng chân trời</text>
+        <!-- Ngôi sao Polaris -->
+        <circle cx="420" cy="65" r="5" fill="var(--accent)"/>
+        <polygon points="420,52 423,62 433,65 423,68 420,78 417,68 407,65 417,62" fill="var(--accent)"/>
+        <text x="435" y="62" font-family="'Be Vietnam Pro'" font-size="12" font-weight="700" fill="var(--accent-text)">Sao Bắc Đẩu (Polaris)</text>
+        <!-- Thủy thủ & Kính lục phân Sextant -->
+        <g transform="translate(120, 190)">
+          <!-- Kính lục phân hình quạt -->
+          <path d="M 0 0 L 70 -60 A 90 90 0 0 1 90 -10 Z" fill="var(--il-dusty-blue)" stroke="var(--ink)" stroke-width="1.8"/>
+          <!-- Đường ngắm tới sao -->
+          <line x1="0" y1="0" x2="300" y2="-125" stroke="var(--jade)" stroke-width="2" stroke-dasharray="5,3"/>
+          <!-- Cung đo góc nâng -->
+          <path d="M 60 0 A 60 60 0 0 0 54 -24" fill="none" stroke="var(--accent)" stroke-width="2.5"/>
+          <text x="75" y="-12" font-family="'JetBrains Mono'" font-size="13" font-weight="700" fill="var(--accent-text)">Góc nâng θ = Vĩ độ</text>
+        </g>
+      </svg>`,
+
+      tab3: `<svg viewBox="0 0 400 300" xmlns="http://www.w3.org/2000/svg">
+        <rect width="400" height="300" fill="var(--cream)"/>
+        <g transform="translate(200,150)">
+          <!-- Vòng ngoài -->
+          <ellipse cx="0" cy="0" rx="140" ry="55" fill="none" stroke="var(--il-slate)" stroke-width="4"/>
+          <!-- Vòng giữa nghiêng -->
+          <ellipse cx="0" cy="0" rx="100" ry="85" fill="none" stroke="var(--il-dusty-blue)" stroke-width="4" transform="rotate(45)"/>
+          <!-- Vòng trong -->
+          <ellipse cx="0" cy="0" rx="65" ry="65" fill="none" stroke="var(--sage-deep)" stroke-width="4"/>
+          <!-- Đĩa rotor trung tâm -->
+          <ellipse cx="0" cy="0" rx="45" ry="18" fill="var(--il-ochre)" stroke="var(--ink)" stroke-width="2"/>
+          <!-- Trục cố định -->
+          <line x1="-30" y1="-95" x2="30" y2="95" stroke="var(--accent)" stroke-width="4"/>
+          <polygon points="30,95 40,80 20,85" fill="var(--accent)"/>
+          <text x="45" y="105" font-family="'Be Vietnam Pro'" font-size="11" font-weight="700" fill="var(--accent-text)">Trục quay cố định</text>
+        </g>
+      </svg>`,
+
+      tab4: `<svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+        <rect width="600" height="280" fill="var(--cream)"/>
+        <!-- 3 Màn chiếu -->
+        <!-- Màn chiếu Bằng (Dưới) -->
+        <rect x="50" y="160" width="130" height="95" fill="var(--cream-2)" stroke="var(--ink)" stroke-width="1.5"/>
+        <text x="115" y="240" font-family="'Be Vietnam Pro'" font-size="11" font-weight="700" fill="var(--ink-2)" text-anchor="middle">Hình chiếu Bằng (Top)</text>
+        <rect x="90" y="180" width="50" height="40" fill="var(--il-sand)" stroke="var(--ink)" stroke-width="1.2"/>
+        
+        <!-- Màn chiếu Đứng (Phải) -->
+        <rect x="420" y="40" width="130" height="110" fill="var(--cream-2)" stroke="var(--ink)" stroke-width="1.5"/>
+        <text x="485" y="138" font-family="'Be Vietnam Pro'" font-size="11" font-weight="700" fill="var(--ink-2)" text-anchor="middle">Hình chiếu Đứng (Front)</text>
+        <polygon points="485,55 460,75 510,75" fill="var(--il-terracotta)" stroke="var(--ink)" stroke-width="1.2"/>
+        <rect x="460" y="75" width="50" height="40" fill="var(--il-sand)" stroke="var(--ink)" stroke-width="1.2"/>
+
+        <!-- Khối nhà 3D trung tâm -->
+        <g transform="translate(240, 80)">
+          <!-- Thân nhà Isometric -->
+          <polygon points="40,40 90,15 90,65 40,90" fill="var(--il-sand)" stroke="var(--ink)" stroke-width="1.5"/>
+          <polygon points="40,40 -10,15 -10,65 40,90" fill="var(--il-sand)" stroke="var(--ink)" stroke-width="1.5"/>
+          <polygon points="40,0 90,-20 90,15 40,40" fill="var(--il-terracotta)" stroke="var(--ink)" stroke-width="1.5"/>
+          <polygon points="40,0 -10,-20 -10,15 40,40" fill="var(--il-terracotta)" stroke="var(--ink)" stroke-width="1.5"/>
+          <!-- Đường gióng chiếu nét đứt -->
+          <line x1="90" y1="40" x2="180" y2="40" stroke="var(--jade)" stroke-width="1.8" stroke-dasharray="4,3"/>
+          <line x1="40" y1="90" x2="-60" y2="100" stroke="var(--jade)" stroke-width="1.8" stroke-dasharray="4,3"/>
+        </g>
+      </svg>`,
+
+      tab5: `<svg viewBox="0 0 500 280" xmlns="http://www.w3.org/2000/svg">
+        <rect width="500" height="280" fill="var(--cream)"/>
+        <line x1="20" y1="230" x2="480" y2="230" stroke="var(--paper-line-2)" stroke-width="2"/>
+        <!-- Tháp Pisa -->
+        <g transform="translate(130, 230)">
+          <g transform="rotate(4.5)">
+            <rect x="-25" y="-170" width="50" height="170" fill="var(--il-terracotta)" stroke="var(--ink)" stroke-width="1.8"/>
+            <line x1="-25" y1="-130" x2="25" y2="-130" stroke="var(--ink)" stroke-width="1"/>
+            <line x1="-25" y1="-90" x2="25" y2="-90" stroke="var(--ink)" stroke-width="1"/>
+            <line x1="-25" y1="-50" x2="25" y2="-50" stroke="var(--ink)" stroke-width="1"/>
+          </g>
+          <!-- Trọng tâm thẳng đứng -->
+          <line x1="0" y1="-85" x2="0" y2="0" stroke="var(--wrong)" stroke-width="2" stroke-dasharray="3,2"/>
+          <circle cx="0" cy="-85" r="4" fill="var(--wrong)"/>
+          <text x="0" y="24" font-family="'Be Vietnam Pro'" font-size="13" font-weight="700" fill="var(--ink-2)" text-anchor="middle">Tháp Pisa (~4° lún đất)</text>
+        </g>
+        <!-- Tháp Capital Gate -->
+        <g transform="translate(360, 230)">
+          <!-- Khối tháp ngoài nghiêng 18 độ -->
+          <g transform="rotate(-18)">
+            <path d="M -30 0 L -15 -175 Q 15 -180 30 -170 L 30 0 Z" fill="var(--il-dusty-blue)" opacity="0.6" stroke="var(--ink)" stroke-width="1.8"/>
+          </g>
+          <!-- Lõi thẳng đứng chịu lực -->
+          <rect x="-10" y="-165" width="20" height="165" fill="var(--il-forest)" stroke="var(--ink)" stroke-width="1.5"/>
+          <text x="0" y="24" font-family="'Be Vietnam Pro'" font-size="13" font-weight="700" fill="var(--jade-dark)" text-anchor="middle">Capital Gate (18° có lõi đứng)</text>
+        </g>
+      </svg>`,
+
+      tab6: `<svg viewBox="0 0 500 280" xmlns="http://www.w3.org/2000/svg">
+        <rect width="500" height="280" fill="var(--cream)"/>
+        <!-- Sườn núi dốc -->
+        <polygon points="40,230 460,70 460,230" fill="var(--il-olive)" stroke="var(--ink)" stroke-width="2"/>
+        <line x1="40" y1="230" x2="460" y2="230" stroke="var(--paper-line-2)" stroke-width="1.5"/>
+        
+        <!-- 3 Cây thẳng đứng -->
+        <g transform="translate(180, 180)">
+          <rect x="-3" y="-55" width="6" height="55" fill="var(--il-terracotta)"/>
+          <polygon points="0,-75 -18,-40 18,-40" fill="var(--il-forest)" stroke="var(--ink)" stroke-width="1.2"/>
+        </g>
+        <g transform="translate(290, 140)">
+          <rect x="-3" y="-60" width="6" height="60" fill="var(--il-terracotta)"/>
+          <polygon points="0,-80 -20,-45 20,-45" fill="var(--il-forest)" stroke="var(--ink)" stroke-width="1.2"/>
+          <line x1="0" y1="-80" x2="0" y2="20" stroke="var(--jade)" stroke-width="1.5" stroke-dasharray="3,2"/>
+        </g>
+        <!-- Cây sai (nghiêng theo dốc) -->
+        <g transform="translate(380, 105) rotate(22)">
+          <rect x="-3" y="-55" width="6" height="55" fill="none" stroke="var(--ink-faint)" stroke-dasharray="2,2"/>
+          <polygon points="0,-75 -18,-40 18,-40" fill="none" stroke="var(--wrong)" stroke-dasharray="3,2" stroke-width="1.5"/>
+          <text x="25" y="-50" font-family="'Be Vietnam Pro'" font-size="11" font-weight="700" fill="var(--wrong)">Nghiêng theo dốc (Sai)</text>
+        </g>
+        <text x="250" y="255" font-family="'Be Vietnam Pro'" font-size="13" font-weight="700" fill="var(--jade-dark)" text-anchor="middle">Cây luôn mọc thẳng đứng theo phương dây dọi</text>
+      </svg>`,
+
+      tab7: `<svg viewBox="0 0 600 280" xmlns="http://www.w3.org/2000/svg">
+        <rect width="600" height="280" fill="var(--cream)"/>
+        <!-- Quả địa cầu -->
+        <g transform="translate(220, 140)">
+          <circle cx="0" cy="0" r="95" fill="var(--il-dusty-blue)" opacity="0.35" stroke="var(--ink)" stroke-width="2"/>
+          <!-- Trục Trái Đất nghiêng 23.5 độ -->
+          <line x1="-45" y1="-120" x2="45" y2="120" stroke="var(--ink)" stroke-width="2.5"/>
+          <!-- Xích đạo -->
+          <ellipse cx="0" cy="0" rx="95" ry="25" fill="none" stroke="var(--paper-line-2)" stroke-width="1.5" transform="rotate(-23.5)"/>
+          <!-- 2 đường Chí tuyến 23.5 độ -->
+          <ellipse cx="-15" cy="-38" rx="85" ry="22" fill="none" stroke="var(--accent)" stroke-width="2" transform="rotate(-23.5)"/>
+          <ellipse cx="15" cy="38" rx="85" ry="22" fill="none" stroke="var(--accent)" stroke-width="2" transform="rotate(-23.5)"/>
+          <text x="-95" y="-45" font-family="'JetBrains Mono'" font-size="11" font-weight="700" fill="var(--accent-text)">Chí tuyến Bắc (23,5°N)</text>
+          <text x="-95" y="65" font-family="'JetBrains Mono'" font-size="11" font-weight="700" fill="var(--accent-text)">Chí tuyến Nam (23,5°S)</text>
+        </g>
+        <!-- Tia nắng mặt trời -->
+        <g transform="translate(420, 60)">
+          <!-- Tia vuông góc vào nội chí tuyến -->
+          <line x1="120" y1="60" x2="-90" y2="60" stroke="var(--il-ochre)" stroke-width="3" marker-end="url(#arrow)"/>
+          <text x="125" y="55" font-family="'Be Vietnam Pro'" font-size="12" font-weight="700" fill="var(--accent-text)">Tia nắng ⊥ Mặt đất (Đứng bóng)</text>
+          <!-- Tia xiên vào vùng cực -->
+          <line x1="120" y1="-20" x2="-140" y2="-20" stroke="var(--ink-faint)" stroke-width="1.8" stroke-dasharray="4,3"/>
+          <text x="125" y="-25" font-family="'Be Vietnam Pro'" font-size="11" font-weight="700" fill="var(--ink-3)">Tia nắng xiên (Không đứng bóng)</text>
+        </g>
+      </svg>`
+    };
+
+    /* =========================================================================
+       2. TAB DATA DEFINITIONS
+       ========================================================================= */
+    const TABS_DATA = {
+      tab1: {
+        id: 'tab1',
+        title: 'Lịch sử đo đạc: Từ dây dọi đến Laser Level',
+        tag: 'Chủ đề 1 · Lịch sử & Công nghệ',
+        icon: 'ti-ruler-2',
+        summary: 'Cách người Ai Cập xác định phương thẳng đứng xây Kim tự tháp và sự tiến hoá đến công nghệ cân mực laser.',
+        read: `Từ thời Ai Cập cổ đại (~2500 TCN), các kỹ sư đã nhận ra: <b>trọng lực luôn cung cấp một phương thẳng đứng chuẩn tuyệt đối</b> thông qua quả dọi. Bằng cách kết hợp dây dọi và tam giác vuông tỉ lệ 3:4:5, họ đã tạo ra nền móng kim tự tháp với đáy phẳng và các cạnh thẳng góc đạt độ chuẩn xác đáng kinh ngạc.<br><br>Ngày nay, máy cân mực laser (Laser Level) thay thế dây dọi bằng chùm ánh sáng quang học nhưng vẫn dựa trên nguyên lý cơ bản: <b>xác định phương vuông góc với mặt phẳng nằm ngang chuẩn</b>.`,
+        chip: 'Mô hình Kim tự tháp & Dây dọi ảo',
+        question: 'Khi quan sát một kim tự tháp từ các góc nhìn 3D khác nhau, liệu góc nhị diện giữa các mặt bên có bị thay đổi không?',
+        hint: 'Góc nhị diện thực tế là một đại lượng cố định trong không gian. Khi xoay góc nhìn, hình chiếu 2D của góc bị thay đổi tạo ra ảo giác quang học, nhưng góc 3D thực tế luôn bảo toàn.',
+        build3D(scene) {
+          const pyrGeo = new THREE.ConeGeometry(2.5, 3.2, 4);
+          const pyrMat = new THREE.MeshStandardMaterial({ color: 0xC99A3C, roughness: 0.6, metalness: 0.1 });
+          const pyramid = new THREE.Mesh(pyrGeo, pyrMat);
+          pyramid.rotation.y = Math.PI / 4;
+          pyramid.position.y = 1.6;
+          scene.add(pyramid);
+
+          const grid = new THREE.GridHelper(8, 8, 0x334155, 0x1e293b);
+          scene.add(grid);
+
+          // Dây dọi ảo
+          const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 3.2, 0), new THREE.Vector3(0, 0.4, 0)]);
+          const line = new THREE.Line(lineGeo, new THREE.LineDashedMaterial({ color: 0x3CA57A, dashSize: 0.15, gapSize: 0.08 }));
+          line.computeLineDistances();
+          scene.add(line);
+
+          // Quả dọi
+          const plumb = new THREE.Mesh(new THREE.ConeGeometry(0.15, 0.35, 16), new THREE.MeshStandardMaterial({ color: 0x1A1A1A }));
+          plumb.rotation.x = Math.PI;
+          plumb.position.y = 0.25;
+          scene.add(plumb);
+        }
+      },
+
+      tab2: {
+        id: 'tab2',
+        title: 'Thiên văn định hướng: Hệ toạ độ chân trời',
+        tag: 'Chủ đề 2 · Thiên văn & Hàng hải',
+        icon: 'ti-compass',
+        summary: 'Định vị hàng hải trên đại dương qua góc nâng của các thiên thể và mặt phẳng chân trời.',
+        read: `Trước khi có GPS, các nhà hàng hải sử dụng <b>kính lục phân (sextant)</b> để đo góc giữa đường ngắm tới một ngôi sao (như Sao Bắc Đẩu) và mặt phẳng tiếp tuyến với bề mặt Trái Đất (đường chân trời).<br><br>Góc nâng của Sao Bắc Đẩu so với mặt phẳng chân trời <b>chính bằng vĩ độ địa lý</b> của vị trí con tàu. Phép đo góc giữa một đường thẳng (tia sáng) và một mặt phẳng (mặt biển) là nền tảng sống còn của ngành hàng hải thế giới.`,
+        chip: 'Thiên cầu & Góc nâng thiên thể',
+        question: 'Nếu người quan sát đứng chính xác tại Cực Bắc Trái Đất, Sao Bắc Đẩu sẽ tạo với mặt phẳng chân trời một góc bao nhiêu độ?',
+        hint: 'Tại Cực Bắc (vĩ độ 90°N), Sao Bắc Đẩu nằm ngay trên đỉnh đầu (thiên đỉnh), tạo với mặt phẳng chân trời một góc vuông đúng 90°.',
+        build3D(scene) {
+          const sphereGeo = new THREE.SphereGeometry(2.6, 24, 16, 0, Math.PI * 2, 0, Math.PI / 2);
+          const sphereMat = new THREE.MeshBasicMaterial({ color: 0x6E93A6, wireframe: true, transparent: true, opacity: 0.25 });
+          const dome = new THREE.Mesh(sphereGeo, sphereMat);
+          scene.add(dome);
+
+          const seaGeo = new THREE.CircleGeometry(3.5, 32);
+          const seaMat = new THREE.MeshStandardMaterial({ color: 0x1E293B, side: THREE.DoubleSide });
+          const sea = new THREE.Mesh(seaGeo, seaMat);
+          sea.rotation.x = Math.PI / 2;
+          scene.add(sea);
+
+          // Tia ngắm tới sao
+          const starPos = new THREE.Vector3(1.8, 1.8, 1.0);
+          const lineGeo = new THREE.BufferGeometry().setFromPoints([new THREE.Vector3(0, 0, 0), starPos]);
+          const line = new THREE.Line(lineGeo, new THREE.LineBasicMaterial({ color: 0x3CA57A, linewidth: 2 }));
+          scene.add(line);
+
+          // Ngôi sao
+          const star = new THREE.Mesh(new THREE.SphereGeometry(0.12, 16, 12), new THREE.MeshBasicMaterial({ color: 0xE8A24A }));
+          star.position.copy(starPos);
+          scene.add(star);
+        }
+      },
+
+      tab3: {
+        id: 'tab3',
+        title: 'Con quay hồi chuyển: Giữ hướng trong không gian',
+        tag: 'Chủ đề 3 · Cơ học Vũ trụ',
+        icon: 'ti-rotate-360',
+        summary: 'Hệ 3 vòng gimbal bảo toàn phương trong không gian, trái tim của hệ thống dẫn đường quán tính.',
+        read: `Dựa trên định luật bảo toàn mô-men động lượng, một đĩa quay tốc độ cao (rotor) được gắn bên trong <b>hệ thống 3 khung treo Cardan (Gimbal)</b> có khả năng duy trì trục quay theo một phương cố định trong không gian quán tính, bất kể khung máy bay hay tàu vũ trụ nhào lộn như thế nào.<br><br>Hệ thống dẫn đường quán tính trên tàu con thoi vũ trụ, tên lửa và vệ tinh đều sử dụng con quay hồi chuyển để thiết lập hệ quy chiếu toạ độ 3D không đổi.`,
+        chip: 'Hệ 3 vòng Gimbal & Trục Rotor',
+        question: 'Tại sao cần ít nhất 3 vòng gimbal lồng nhau để trục con quay được tự do hoàn toàn?',
+        hint: 'Trong không gian 3 chiều có đúng 3 bậc tự do quay (Roll, Pitch, Yaw quanh 3 trục Ox, Oy, Oz). Mỗi vòng gimbal triệt tiêu 1 bậc tự do quay, do đó cần đủ 3 vòng.',
+        build3D(scene) {
+          // 3 vòng gimbal
+          const r1 = new THREE.Mesh(new THREE.TorusGeometry(2.4, 0.06, 12, 48), new THREE.MeshStandardMaterial({ color: 0x4E6E7E, metalness: 0.5 }));
+          scene.add(r1);
+
+          const r2 = new THREE.Mesh(new THREE.TorusGeometry(1.8, 0.06, 12, 48), new THREE.MeshStandardMaterial({ color: 0x6E93A6, metalness: 0.5 }));
+          r2.rotation.x = Math.PI / 3;
+          scene.add(r2);
+
+          const r3 = new THREE.Mesh(new THREE.TorusGeometry(1.2, 0.06, 12, 48), new THREE.MeshStandardMaterial({ color: 0x7CA792, metalness: 0.5 }));
+          r3.rotation.y = Math.PI / 4;
+          scene.add(r3);
+
+          // Trục rotor
+          const axisGeo = new THREE.CylinderGeometry(0.04, 0.04, 2.8, 16);
+          const axisMat = new THREE.MeshStandardMaterial({ color: 0xE8A24A, metalness: 0.6 });
+          const axis = new THREE.Mesh(axisGeo, axisMat);
+          axis.rotation.z = Math.PI / 4;
+          scene.add(axis);
+
+          // Đĩa quay
+          const rotor = new THREE.Mesh(new THREE.CylinderGeometry(0.7, 0.7, 0.12, 24), new THREE.MeshStandardMaterial({ color: 0xC99A3C, metalness: 0.4 }));
+          rotor.rotation.z = Math.PI / 4;
+          scene.add(rotor);
+        }
+      },
+
+      tab4: {
+        id: 'tab4',
+        title: 'Kiến trúc & Bản vẽ: Phép chiếu vuông góc',
+        tag: 'Chủ đề 4 · Kỹ thuật Xây dựng',
+        icon: 'ti-building',
+        summary: 'Bản chất hình học của phép chiếu vuông góc tạo nên Mặt bằng, Mặt đứng và Mặt cắt công trình.',
+        read: `Mọi công trình xây dựng thực tế đều là vật thể 3 chiều phức tạp. Để biểu diễn chính xác trên giấy hoặc màn hình 2D, các kiến trúc sư sử dụng <b>phép chiếu vuông góc</b> lên 3 mặt phẳng toạ độ cơ bản:<br><br>
+        • <b>Mặt bằng (Top View):</b> Chiếu vuông góc lên mặt phẳng nằm ngang $(Oxy)$.<br>
+        • <b>Mặt đứng (Front View):</b> Chiếu vuông góc lên mặt phẳng thẳng đứng chính diện $(Oxz)$.<br>
+        • <b>Mặt cắt (Section View):</b> Cắt công trình bằng một mặt phẳng thẳng đứng để thấy kết cấu bên trong.`,
+        chip: 'Khối nhà 3D & 3 Màn chiếu vuông góc',
+        question: 'Nếu một đoạn thẳng trong công trình song song với mặt phẳng chiếu, hình chiếu vuông góc của nó sẽ có tính chất gì?',
+        hint: 'Đoạn thẳng song song với mặt phẳng chiếu sẽ có hình chiếu vuông góc bằng đúng độ dài thật của đoạn thẳng đó (tỉ lệ 1:1).',
+        build3D(scene) {
+          // Khối nhà
+          const house = new THREE.Group();
+          const base = new THREE.Mesh(new THREE.BoxGeometry(1.6, 1.2, 1.6), new THREE.MeshStandardMaterial({ color: 0xD8C4A0, roughness: 0.5 }));
+          base.position.y = 0.6;
+          house.add(base);
+
+          const roof = new THREE.Mesh(new THREE.ConeGeometry(1.3, 0.8, 4), new THREE.MeshStandardMaterial({ color: 0xC1704B, roughness: 0.4 }));
+          roof.rotation.y = Math.PI / 4;
+          roof.position.y = 1.6;
+          house.add(roof);
+          scene.add(house);
+
+          // 3 Mặt phẳng chiếu
+          const pMat = new THREE.MeshBasicMaterial({ color: 0x64748B, transparent: true, opacity: 0.18, side: THREE.DoubleSide });
+          // Mặt bằng
+          const pFloor = new THREE.Mesh(new THREE.PlaneGeometry(4, 4), pMat);
+          pFloor.rotation.x = Math.PI / 2;
+          scene.add(pFloor);
+
+          // Mặt đứng
+          const pFront = new THREE.Mesh(new THREE.PlaneGeometry(4, 3), pMat);
+          pFront.position.set(0, 1.5, -2);
+          scene.add(pFront);
+
+          // Mặt cạnh
+          const pSide = new THREE.Mesh(new THREE.PlaneGeometry(4, 3), pMat);
+          pSide.rotation.y = Math.PI / 2;
+          pSide.position.set(-2, 1.5, 0);
+          scene.add(pSide);
+        }
+      },
+
+      tab5: {
+        id: 'tab5',
+        title: 'Công trình nghiêng: Lỗi ngoài ý muốn vs Chủ đích',
+        tag: 'Chủ đề 5 · Kết cấu Hiện đại',
+        icon: 'ti-building-monument',
+        summary: 'So sánh tháp Pisa (nghiêng do lún ngoài ý muốn) và Capital Gate (nghiêng 18° chủ đích có lõi chịu lực).',
+        read: `<b>Tháp nghiêng Pisa (Ý):</b> Xây dựng từ năm 1173, tháp bị nghiêng ~4° do nền đất sét yếu bị lún không đều. Tháp đứng vững được là nhờ trọng tâm của toàn khối vẫn rơi vào bên trong chu vi đáy móng.<br><br>
+        <b>Tháp Capital Gate (Abu Dhabi):</b> Nghiêng kỷ lục <b>18°</b> (gấp hơn 4 lần tháp Pisa). Đây là kiệt tác có chủ đích: bên trong tháp có một <b>lõi bê tông cốt thép thẳng đứng uốn ngược chiều</b> và 490 cọc khoan nhồi sâu 30m neo giữ lực kéo.`,
+        chip: 'Tháp Pisa (4°) vs Capital Gate (18°)',
+        question: 'Điều kiện hình học then chốt để một toà tháp nghiêng không bị đổ sập là gì?',
+        hint: 'Đường thẳng đứng (phương của trọng lực) đi qua khối tâm của toà tháp phải cắt mặt phẳng chân đế tại một điểm nằm hoàn toàn bên trong diện tích đa giác đáy móng.',
+        build3D(scene) {
+          const grid = new THREE.GridHelper(8, 8, 0x334155, 0x1e293b);
+          scene.add(grid);
+
+          // Tháp Pisa nghiêng 4.5 độ
+          const pisa = new THREE.Group();
+          const pisaMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.5, 0.5, 3.2, 24), new THREE.MeshStandardMaterial({ color: 0xC1704B, roughness: 0.6 }));
+          pisaMesh.position.y = 1.6;
+          pisa.add(pisaMesh);
+          pisa.rotation.z = -0.08; // ~4.5 độ
+          pisa.position.x = -1.8;
+          scene.add(pisa);
+
+          // Tháp Capital Gate nghiêng 18 độ
+          const cap = new THREE.Group();
+          // Khối ngoài trong suốt
+          const capMesh = new THREE.Mesh(new THREE.CylinderGeometry(0.4, 0.7, 3.4, 24), new THREE.MeshStandardMaterial({ color: 0x6E93A6, transparent: true, opacity: 0.6 }));
+          capMesh.position.y = 1.7;
+          cap.add(capMesh);
+          cap.rotation.z = 0.31; // ~18 độ
+          cap.position.x = 1.8;
+
+          // Lõi thẳng đứng chịu lực
+          const core = new THREE.Mesh(new THREE.CylinderGeometry(0.12, 0.12, 3.2, 16), new THREE.MeshStandardMaterial({ color: 0x2E6B52 }));
+          core.position.set(1.8, 1.6, 0);
+          scene.add(core);
+          scene.add(cap);
+        }
+      },
+
+      tab6: {
+        id: 'tab6',
+        title: 'Tự nhiên & Trọng lực: Cây mọc theo phương thẳng đứng',
+        tag: 'Chủ đề 6 · Sinh học & Hình học',
+        icon: 'ti-trees',
+        summary: 'Hiện tượng cảm ứng trọng lực (Gravitropism) giúp cây cối luôn mọc thẳng đứng trên mọi sườn đồi dốc.',
+        read: `Khi leo núi, bạn sẽ thấy dù sườn dốc nghiêng 30° hay 45°, thân cây thông vẫn mọc <b>hoàn toàn thẳng đứng</b> (vuông góc với mặt phẳng nằm ngang, không vuông góc với mặt dốc).<br><br>Hiện tượng này được gọi là <b>cảm ứng trọng lực (Gravitropism)</b>: các hạt statolith trong tế bào chóp rễ và thân cây cảm nhận lực hút Trái Đất, điều khiển hormone auxin để thân cây sinh trưởng ngược hướng trọng lực.`,
+        chip: 'Sườn núi dốc 30° & Cây thẳng đứng',
+        question: 'Nếu bị lạc trong rừng trên một sườn dốc mù sương, làm sao xác định mặt phẳng nằm ngang chỉ bằng quan sát cây cối?',
+        hint: 'Phương của thân cây chính là phương thẳng đứng (phương pháp tuyến). Mặt phẳng vuông góc với thân cây chính là mặt phẳng nằm ngang chuẩn.',
+        build3D(scene) {
+          // Sườn dốc núi
+          const slope = new THREE.Mesh(new THREE.BoxGeometry(6, 0.4, 4), new THREE.MeshStandardMaterial({ color: 0x8A9A5B, roughness: 0.8 }));
+          slope.rotation.z = -0.45; // ~26 độ
+          slope.position.set(0, 0.5, 0);
+          scene.add(slope);
+
+          // 3 Cây thông thẳng đứng
+          [-1.5, 0, 1.5].forEach((xOffset, idx) => {
+            const tree = new THREE.Group();
+            const trunk = new THREE.Mesh(new THREE.CylinderGeometry(0.06, 0.08, 0.9, 12), new THREE.MeshStandardMaterial({ color: 0xC1704B }));
+            trunk.position.y = 0.45;
+            tree.add(trunk);
+
+            const foliage = new THREE.Mesh(new THREE.ConeGeometry(0.45, 1.2, 12), new THREE.MeshStandardMaterial({ color: 0x2E6B52, roughness: 0.7 }));
+            foliage.position.y = 1.3;
+            tree.add(foliage);
+
+            const yPos = 0.5 + Math.tan(0.45) * (-xOffset);
+            tree.position.set(xOffset, yPos + 0.15, 0);
+            scene.add(tree);
+          });
+        }
+      },
+
+      tab7: {
+        id: 'tab7',
+        title: 'Vì sao "đứng bóng" chỉ xảy ra trong vùng nội chí tuyến?',
+        tag: 'Chủ đề 7 · Địa lý & Bài 26',
+        icon: 'ti-sun',
+        summary: 'Góc nghiêng 23,5° của trục Trái Đất tạo ra giới hạn hình học tuyệt đối: các vùng ngoài chí tuyến không bao giờ có tia nắng vuông góc mặt đất vào buổi trưa.',
+        read: `Hiện tượng <b>"đứng bóng thực sự"</b> (khi cọc dựng thẳng đứng không tạo ra bóng vào giữa trưa) chỉ xảy ra khi tia sáng Mặt Trời vuông góc với mặt tiếp diện của Trái Đất.<br><br>
+        Vì trục tự quay của Trái Đất nghiêng <b>23,5°</b> so với trục vuông góc mặt phẳng quỹ đạo, điểm mà tia nắng Mặt Trời có thể chiếu thẳng đứng góc 90° chỉ di chuyển tuần hoàn trong dải vĩ độ từ <b>Chí tuyến Bắc (23,5°N)</b> đến <b>Chí tuyến Nam (23,5°S)</b>.<br><br>
+        Các quốc gia nằm ngoài vùng nội chí tuyến (như châu Âu, Canada, Nhật Bản) <b>không bao giờ</b> có hiện tượng đứng bóng.`,
+        chip: 'Mô hình Quả địa cầu & Chí tuyến 23,5°',
+        question: 'Tại Hà Nội (vĩ độ ~21°N) và TP.HCM (vĩ độ ~10,8°N), hiện tượng mặt trời đi qua thiên đỉnh (đứng bóng) xảy ra mấy lần trong một năm?',
+        hint: 'Cả Hà Nội và TP.HCM đều nằm trong vùng nội chí tuyến (vĩ độ < 23,5°N), do đó Mặt Trời sẽ đi qua thiên đỉnh đúng 2 lần trong 1 năm (lúc đi lên phía Bắc và lúc quay về phía Nam).',
+        build3D(scene) {
+          // Quả địa cầu
+          const globe = new THREE.Mesh(new THREE.SphereGeometry(1.8, 32, 24), new THREE.MeshStandardMaterial({ color: 0x6E93A6, roughness: 0.6, transparent: true, opacity: 0.5 }));
+          scene.add(globe);
+
+          // Trục nghiêng 23.5 độ
+          const axis = new THREE.Mesh(new THREE.CylinderGeometry(0.03, 0.03, 4.4, 16), new THREE.MeshStandardMaterial({ color: 0x1A1A1A }));
+          axis.rotation.z = -0.41; // ~23.5 độ
+          scene.add(axis);
+
+          // 2 Vòng chí tuyến nổi bật màu accent
+          const rTropic = 1.8 * Math.cos(0.41);
+          const yTropic = 1.8 * Math.sin(0.41);
+
+          // Chí tuyến Bắc
+          const trNorth = new THREE.Mesh(new THREE.TorusGeometry(rTropic, 0.025, 12, 48), new THREE.MeshBasicMaterial({ color: 0xE8A24A }));
+          trNorth.position.set(-yTropic * Math.sin(0.41), yTropic * Math.cos(0.41), 0);
+          trNorth.rotation.x = Math.PI / 2;
+          trNorth.rotation.y = 0.41;
+          scene.add(trNorth);
+
+          // Chí tuyến Nam
+          const trSouth = new THREE.Mesh(new THREE.TorusGeometry(rTropic, 0.025, 12, 48), new THREE.MeshBasicMaterial({ color: 0xE8A24A }));
+          trSouth.position.set(yTropic * Math.sin(0.41), -yTropic * Math.cos(0.41), 0);
+          trSouth.rotation.x = Math.PI / 2;
+          trSouth.rotation.y = 0.41;
+          scene.add(trSouth);
+
+          // Tia sáng Mặt Trời
+          const sunRay = new THREE.Mesh(new THREE.CylinderGeometry(0.02, 0.02, 3.5, 12), new THREE.MeshBasicMaterial({ color: 0xC99A3C }));
+          sunRay.rotation.z = Math.PI / 2;
+          sunRay.position.set(2.2, 0, 0);
+          scene.add(sunRay);
+        }
+      }
+    };
+
+    /* =========================================================================
+       3. RENDER THUMBNAILS ON DESKTOP GRID
+       ========================================================================= */
+    function initThumbnails() {
+      Object.keys(SVG_DATA).forEach(key => {
+        const el = document.getElementById(`thumb-${key}`);
+        if (el) el.innerHTML = SVG_DATA[key];
+      });
+    }
+
+    /* =========================================================================
+       4. MOBILE PANELS GENERATOR
+       ========================================================================= */
+    function initMobilePanels() {
+      const container = document.getElementById('mobile-panels');
+      if (!container) return;
+
+      container.innerHTML = Object.keys(TABS_DATA).map((key, idx) => {
+        const t = TABS_DATA[key];
+        const isActive = idx === 0 ? 'active' : '';
+        return `
+        <section class="tab-panel ${isActive}" id="panel-${t.id}">
+          <div class="svg-wrapper">${SVG_DATA[t.id]}</div>
+          <div class="reading-box">
+            <b>✦ ${t.title}</b><br>${t.read}
+          </div>
+          <div class="canvas-3d-box" id="canvas-box-mobile-${t.id}">
+            <div class="canvas-3d-top"><span class="chip-3d">${t.chip}</span></div>
+            <div class="hint-3d">Kéo để xoay 3D · 2 ngón để zoom</div>
+          </div>
+          <div class="question-box">
+            <h4><i class="ti ti-bulb"></i> Câu hỏi khám phá:</h4>
+            <p>${t.question}</p>
+            <button class="btn-hint" onclick="toggleHint('hint-mob-${t.id}')"><i class="ti ti-eye"></i> Xem gợi ý</button>
+            <div class="hint-text" id="hint-mob-${t.id}"><b>Gợi ý:</b> ${t.hint}</div>
+          </div>
+        </section>`;
+      }).join('');
+    }
+
+    /* =========================================================================
+       5. 3D SCENE MANAGER (Three.js Lifecycle)
+       ========================================================================= */
+    let current3D = { renderer: null, scene: null, camera: null, controls: null, animId: null };
+
+    function stop3D() {
+      if (current3D.animId) cancelAnimationFrame(current3D.animId);
+      if (current3D.renderer) {
+        current3D.renderer.dispose();
+        if (current3D.renderer.domElement && current3D.renderer.domElement.parentNode) {
+          current3D.renderer.domElement.parentNode.removeChild(current3D.renderer.domElement);
+        }
+      }
+      current3D = { renderer: null, scene: null, camera: null, controls: null, animId: null };
+    }
+
+    function start3D(tabId, targetEl) {
+      stop3D();
+      if (!targetEl) return;
+
+      const width = targetEl.clientWidth || 360;
+      const height = targetEl.clientHeight || 280;
+
+      const renderer = new THREE.WebGLRenderer({ antialias: true, alpha: false });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio || 1, 2));
+      renderer.setClearColor(0x0a1628);
+      renderer.outputEncoding = THREE.sRGBEncoding;
+      targetEl.appendChild(renderer.domElement);
+
+      const scene = new THREE.Scene();
+      const camera = new THREE.PerspectiveCamera(45, width / height, 0.1, 100);
+      camera.position.set(4, 3, 5);
+
+      const controls = new THREE.OrbitControls(camera, renderer.domElement);
+      controls.enableDamping = true;
+      controls.dampingFactor = 0.08;
+      controls.minDistance = 2;
+      controls.maxDistance = 16;
+
+      // Lights
+      scene.add(new THREE.HemisphereLight(0xddeeff, 0x172235, 1.2));
+      const dl = new THREE.DirectionalLight(0xffffff, 1.0);
+      dl.position.set(5, 8, 6);
+      scene.add(dl);
+
+      // Build specific scene
+      if (TABS_DATA[tabId] && TABS_DATA[tabId].build3D) {
+        TABS_DATA[tabId].build3D(scene);
+      }
+
+      function animate() {
+        current3D.animId = requestAnimationFrame(animate);
+        controls.update();
+        renderer.render(scene, camera);
+      }
+      animate();
+
+      current3D.renderer = renderer;
+      current3D.scene = scene;
+      current3D.camera = camera;
+      current3D.controls = controls;
+
+      // Resize
+      const ro = new ResizeObserver(() => {
+        if (!targetEl.clientWidth || !targetEl.clientHeight) return;
+        camera.aspect = targetEl.clientWidth / targetEl.clientHeight;
+        camera.updateProjectionMatrix();
+        renderer.setSize(targetEl.clientWidth, targetEl.clientHeight);
+      });
+      ro.observe(targetEl);
+    }
+
+    /* =========================================================================
+       6. DESKTOP MODAL INTERACTION
+       ========================================================================= */
+    window.openTabModal = function(tabId) {
+      const t = TABS_DATA[tabId];
+      if (!t) return;
+
+      const backdrop = document.getElementById('modal-backdrop');
+      const titleEl = document.getElementById('modal-title');
+      const bodyEl = document.getElementById('modal-body');
+
+      titleEl.innerHTML = `<i class="ti ${t.icon}"></i> ${t.title}`;
+      bodyEl.innerHTML = `
+        <div class="svg-wrapper">${SVG_DATA[t.id]}</div>
+        <div class="reading-box"><b>✦ Bản chất khoa học:</b><br>${t.read}</div>
+        <div class="canvas-3d-box" id="canvas-box-modal">
+          <div class="canvas-3d-top"><span class="chip-3d">${t.chip}</span></div>
+          <div class="hint-3d">Kéo để xoay mô hình 3D · Cuộn để zoom</div>
+        </div>
+        <div class="question-box">
+          <h4><i class="ti ti-bulb"></i> Câu hỏi khám phá:</h4>
+          <p>${t.question}</p>
+          <button class="btn-hint" onclick="toggleHint('hint-modal-${t.id}')"><i class="ti ti-eye"></i> Xem gợi ý</button>
+          <div class="hint-text" id="hint-modal-${t.id}"><b>Gợi ý:</b> ${t.hint}</div>
+        </div>
+      `;
+
+      backdrop.classList.add('active');
+      document.body.style.overflow = 'hidden';
+
+      setTimeout(() => {
+        start3D(tabId, document.getElementById('canvas-box-modal'));
+      }, 50);
+
+      LMS().event('explored-topic', { tab: tabId });
+    };
+
+    window.closeTabModal = function() {
+      stop3D();
+      const backdrop = document.getElementById('modal-backdrop');
+      if (backdrop) backdrop.classList.remove('active');
+      document.body.style.overflow = '';
+    };
+
+    window.handleBackdropClick = function(e) {
+      if (e.target && e.target.id === 'modal-backdrop') {
+        closeTabModal();
+      }
+    };
+
+    /* =========================================================================
+       7. MOBILE TAB SWITCHING
+       ========================================================================= */
+    function initMobileTabs() {
+      const pills = document.querySelectorAll('#mobile-tab-bar .tab-pill');
+      pills.forEach(pill => {
+        pill.onclick = () => {
+          const tabId = pill.dataset.tab;
+          pills.forEach(p => p.classList.remove('active'));
+          pill.classList.add('active');
+
+          document.querySelectorAll('.tab-panel').forEach(panel => panel.classList.remove('active'));
+          const targetPanel = document.getElementById(`panel-${tabId}`);
+          if (targetPanel) {
+            targetPanel.classList.add('active');
+            const box = document.getElementById(`canvas-box-mobile-${tabId}`);
+            setTimeout(() => start3D(tabId, box), 50);
+          }
+          LMS().event('explored-topic-mobile', { tab: tabId });
+        };
+      });
+    }
+
+    window.toggleHint = function(hintId) {
+      const el = document.getElementById(hintId);
+      if (el) el.classList.toggle('show');
+    };
+
+    /* Init */
+    initThumbnails();
+    initMobilePanels();
+    initMobileTabs();
+
+    // Start 3D on first mobile panel if mobile
+    if (window.innerWidth <= 767) {
+      setTimeout(() => {
+        const box = document.getElementById('canvas-box-mobile-tab1');
+        if (box) start3D('tab1', box);
+      }, 100);
+    }
+
+    LMS().ready({ id: 'morong-hinh-hoc-khong-gian-doi-song-ky-thuat-vu-tru' });
+  })();
+  </script>
+</body>
+</html>
