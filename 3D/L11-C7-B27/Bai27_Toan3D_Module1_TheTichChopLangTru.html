@@ -119,6 +119,12 @@
     .pour-dot.filled{background:var(--jade)}
     .pour-status{font-size:12.5px;font-weight:700;color:var(--ink-2)}
     .pour-status span{color:var(--jade-deep);font-family:'JetBrains Mono',monospace}
+    .water-readout{margin:8px 0;padding:8px 10px;border:1px solid var(--paper-line);border-radius:var(--radius-sm);background:var(--white)}
+    .water-readout-label{display:flex;justify-content:space-between;color:var(--ink-2);font-size:11.5px;font-weight:700}
+    .water-meter{height:7px;margin:4px 0 7px;border-radius:4px;background:var(--paper-line-2);overflow:hidden}
+    .water-meter-fill{height:100%;width:0;background:var(--water);transition:width .08s linear}
+    .water-meter-fill.pyramid{background:var(--accent)}
+    #pour-live-status{color:var(--info);font:700 11.5px 'JetBrains Mono',monospace;text-align:center}
 
     .toggle-group{display:flex;flex-direction:column;gap:6px;margin:8px 0}
     .toggle-item{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--white);border:1px solid var(--paper-line);border-radius:var(--radius-sm);font-size:12.5px;font-weight:600;cursor:pointer}
@@ -248,6 +254,7 @@
     renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
     renderer.setClearColor(0x0a1628);
     renderer.outputEncoding=THREE.sRGBEncoding;
+    renderer.localClippingEnabled=true;
 
     const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(46,1,.1,100),controls=new THREE.OrbitControls(camera,canvas);
     controls.enableDamping=true;controls.dampingFactor=.08;controls.minDistance=3;controls.maxDistance=25;
@@ -268,17 +275,22 @@
     let currentStep=1,unlocked=1,root=null,labels=[],particlesGroup=null,occlusionSets=[];
     let tiltAngle=90;
     let pourCount=0,isPouring=false;
-    let pyrWaterMesh=null,prismWaterMesh=null;
+    let pyrWaterMesh=null,prismWaterMesh=null,pyrHinge=null,prismRippleCap=null,waterStream=null;
+    let pyrClipPlane=null,prismClipPlane=null,pourAnimationId=0;
     let lineSO=null,lineSA=null,lineSM=null;
     let quiz1Done=false,quiz2Done=false;
     let quiz1Choice=null,quiz2Choice=null;
 
     function dispose(obj){if(!obj)return;obj.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose())});if(obj.parent)obj.parent.remove(obj)}
     function clearScene(){
+      pourAnimationId++;
+      isPouring=false;
       dispose(root);root=new THREE.Group();scene.add(root);
       dispose(particlesGroup);particlesGroup=new THREE.Group();scene.add(particlesGroup);
       labels.forEach(x=>x.el.remove());labels=[];
       occlusionSets=[];
+      pyrWaterMesh=prismWaterMesh=pyrHinge=prismRippleCap=waterStream=null;
+      pyrClipPlane=prismClipPlane=null;
     }
     function addOccludedEdgeSet(edgePairs,solidMesh,solidColor=C.edgeSolid,hiddenColor=C.edgeHidden){
       const edges=edgePairs.map(([a,b])=>{
@@ -353,6 +365,7 @@
     function animate(){
       requestAnimationFrame(animate);
       controls.update();
+      if(currentStep===2&&prismRippleCap)updateRipple(prismRippleCap,performance.now());
       updateEdgeOcclusion();
       updateLabels();
       renderer.render(scene,camera);
@@ -418,30 +431,40 @@
       const sSize=2.4,h=3.6;
       const pyrPos=V(-2.2,0,0),prismPos=V(2.2,0,0);
 
-      // Vỏ chóp
-      const pyrGeo=new THREE.ConeGeometry(sSize*0.707,h,4,1,true);
-      const pyrMesh=new THREE.Mesh(pyrGeo,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:0.25,roughness:0.1,side:THREE.DoubleSide,depthWrite:false}));
-      pyrMesh.rotation.y=Math.PI/4;pyrMesh.position.set(pyrPos.x,h/2,pyrPos.z);root.add(pyrMesh);
-      const pyrTip=V(pyrPos.x,h,pyrPos.z);
-      const pyrBase=[
-        V(pyrPos.x-sSize/2,0,pyrPos.z-sSize/2),V(pyrPos.x+sSize/2,0,pyrPos.z-sSize/2),
-        V(pyrPos.x+sSize/2,0,pyrPos.z+sSize/2),V(pyrPos.x-sSize/2,0,pyrPos.z+sSize/2)
-      ];
-      addOccludedEdgeSet([
-        ...pyrBase.map((p,i)=>[p,pyrBase[(i+1)%4]]),...pyrBase.map(p=>[p,pyrTip])
-      ],pyrMesh);
+      // Chóp rỗng, miệng mở phía trên. Hệ hai group tạo bản lề tại mép miệng gần lăng trụ.
+      const radius=sSize*0.707;
+      function openPyramidGeometry(scale=1){
+        const geo=new THREE.ConeGeometry(radius*scale,h*scale,4,1,true);
+        geo.translate(0,h*scale/2,0);
+        geo.rotateX(Math.PI);
+        geo.translate(0,h*scale,0);
+        geo.rotateY(Math.PI/4);
+        return geo;
+      }
+      const pivotLocal=V(radius,h,0);
+      const originalPivot=V(pyrPos.x+radius,h,0);
+      pyrHinge=new THREE.Group();
+      pyrHinge.position.copy(originalPivot);
+      const pyrInner=new THREE.Group();
+      pyrInner.position.set(-pivotLocal.x,-pivotLocal.y,-pivotLocal.z);
+      pyrHinge.add(pyrInner);root.add(pyrHinge);
 
-      // Nước chóp (Xanh nước biển trong suốt)
-      const waterMat=new THREE.MeshStandardMaterial({color:0x38bdf8,transparent:true,opacity:0.80,roughness:0.1,metalness:0.1,side:THREE.DoubleSide});
-      pyrWaterMesh=new THREE.Mesh(new THREE.ConeGeometry(sSize*0.707*0.96,h*0.98,4,1),waterMat);
-      pyrWaterMesh.rotation.y=Math.PI/4;
-      pyrWaterMesh.position.set(pyrPos.x,(h*0.98)/2,pyrPos.z);
-      pyrWaterMesh.visible=(pourCount<3);
-      root.add(pyrWaterMesh);
+      const pyrGeo=openPyramidGeometry();
+      const pyrMesh=new THREE.Mesh(pyrGeo,new THREE.MeshStandardMaterial({
+        color:0xcfe8f0,transparent:true,opacity:0.18,roughness:0.18,side:THREE.FrontSide,depthWrite:false
+      }));
+      pyrMesh.renderOrder=0;pyrInner.add(pyrMesh);
+      pyrInner.add(new THREE.LineSegments(new THREE.EdgesGeometry(pyrGeo),new THREE.LineBasicMaterial({color:0x4E6E7E})));
+
+      pyrClipPlane=new THREE.Plane(V(0,-1,0),pourCount<3?h:0);
+      pyrWaterMesh=new THREE.Mesh(openPyramidGeometry(0.97),new THREE.MeshStandardMaterial({
+        color:0x6fb3dd,transparent:true,opacity:0.78,roughness:0.2,side:THREE.FrontSide,depthWrite:false,clippingPlanes:[pyrClipPlane]
+      }));
+      pyrWaterMesh.renderOrder=1;pyrInner.add(pyrWaterMesh);
 
       // Vỏ lăng trụ
       const prismGeo=new THREE.BoxGeometry(sSize,h,sSize);
-      const prismMesh=new THREE.Mesh(prismGeo,new THREE.MeshStandardMaterial({color:C.slate,transparent:true,opacity:0.22,roughness:0.1,side:THREE.DoubleSide,depthWrite:false}));
+      const prismMesh=new THREE.Mesh(prismGeo,new THREE.MeshStandardMaterial({color:0xcfe8f0,transparent:true,opacity:0.16,roughness:0.18,side:THREE.FrontSide,depthWrite:false}));
       prismMesh.position.set(prismPos.x,h/2,prismPos.z);root.add(prismMesh);
       const prismBottom=[
         V(prismPos.x-sSize/2,0,prismPos.z-sSize/2),V(prismPos.x+sSize/2,0,prismPos.z-sSize/2),
@@ -462,25 +485,64 @@
         addLabel(`${idx+1}/3`,V(prismPos.x+sSize/2+0.35,mY,prismPos.z+sSize/2),'jade');
       });
 
-      // Nước lăng trụ: Giữ nguyên mực nước theo pourCount hiện tại
-      prismWaterMesh=new THREE.Mesh(new THREE.BoxGeometry(sSize*0.98,h,sSize*0.98),waterMat);
+      // Khối nước dùng mặt cắt để mực nước dâng liên tục.
       const curRatio=pourCount/3;
-      if(pourCount===0){
-        prismWaterMesh.scale.set(1,0.001,1);
-        prismWaterMesh.position.set(prismPos.x,0,prismPos.z);
-        prismWaterMesh.visible=false;
-      }else{
-        prismWaterMesh.scale.set(1,curRatio,1);
-        prismWaterMesh.position.set(prismPos.x,(h*curRatio)/2,prismPos.z);
-        prismWaterMesh.visible=true;
-      }
+      prismClipPlane=new THREE.Plane(V(0,-1,0),curRatio*h);
+      const prismWaterGeo=new THREE.BoxGeometry(sSize*0.98,h,sSize*0.98);
+      prismWaterGeo.translate(0,h/2,0);
+      prismWaterMesh=new THREE.Mesh(prismWaterGeo,new THREE.MeshStandardMaterial({
+        color:0x6fb3dd,transparent:true,opacity:0.78,roughness:0.2,side:THREE.FrontSide,depthWrite:false,clippingPlanes:[prismClipPlane]
+      }));
+      prismWaterMesh.position.copy(prismPos);prismWaterMesh.renderOrder=1;
       root.add(prismWaterMesh);
+
+      prismRippleCap=createRippleCap(sSize*0.98,sSize*0.98);
+      prismRippleCap.position.set(prismPos.x,curRatio*h,prismPos.z);
+      prismRippleCap.visible=curRatio>0;root.add(prismRippleCap);
 
       addLabel('Khối Chóp (V = 20)',V(pyrPos.x,h+0.3,pyrPos.z),'accent');
       addLabel('Khối Lăng Trụ (V = 60)',V(prismPos.x,h+0.3,prismPos.z),'result');
 
       document.getElementById('scene-chip').textContent='Bước 2 · Thí nghiệm đong nước tỉ lệ 1:3';
       updatePourReadout();
+    }
+
+    function createRippleCap(width,depth){
+      const geo=new THREE.PlaneGeometry(width,depth,14,14);geo.rotateX(-Math.PI/2);
+      const mat=new THREE.MeshStandardMaterial({color:0xbfe0f2,transparent:true,opacity:0.85,side:THREE.DoubleSide,depthWrite:false});
+      const mesh=new THREE.Mesh(geo,mat);mesh.renderOrder=2;return mesh;
+    }
+
+    function updateRipple(mesh,time){
+      const pos=mesh.geometry.attributes.position;
+      for(let i=0;i<pos.count;i++){
+        const x=pos.getX(i),z=pos.getZ(i);
+        pos.setY(i,Math.sin(x*2.2+time*0.0025)*0.035+Math.sin(z*2.6+time*0.0018)*0.022);
+      }
+      pos.needsUpdate=true;
+    }
+
+    function fallingPoint(p0,p2,sag,t){
+      const mid=p0.clone().add(p2).multiplyScalar(0.5);mid.y-=sag;
+      const inv=1-t;
+      return V(inv*inv*p0.x+2*inv*t*mid.x+t*t*p2.x,inv*inv*p0.y+2*inv*t*mid.y+t*t*p2.y,inv*inv*p0.z+2*inv*t*mid.z+t*t*p2.z);
+    }
+
+    function updateWaterStream(p0,p2,grow){
+      const points=[];
+      for(let i=0;i<=24;i++)points.push(fallingPoint(p0,p2,0.28,(i/24)*Math.max(0.02,grow)));
+      const geo=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),24,0.045,6,false);
+      if(!waterStream){
+        waterStream=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x9ecbe8,transparent:true,opacity:0.8}));
+        root.add(waterStream);
+      }else{
+        waterStream.geometry.dispose();waterStream.geometry=geo;
+      }
+    }
+
+    function removeWaterStream(){
+      if(!waterStream)return;
+      root.remove(waterStream);waterStream.geometry.dispose();waterStream.material.dispose();waterStream=null;
     }
 
     function updatePourReadout(){
@@ -490,79 +552,71 @@
     }
 
     function runPourAnimation(targetCount){
-      if(!pyrWaterMesh||!prismWaterMesh)return;
+      if(!pyrWaterMesh||!prismWaterMesh||!pyrHinge)return;
       isPouring=true;
+      const animationId=++pourAnimationId;
       const btn=document.getElementById('btn-pour-act');
       if(btn)btn.disabled=true;
 
-      const h=3.6;
-      const startTime=performance.now(),duration=1200;
+      const h=3.6,radius=2.4*0.707;
+      const originalPivot=V(-2.2+radius,h,0),pourPivot=V(2.2-0.28,h+0.75,0);
+      const startTime=performance.now(),duration=2400;
       const startPrismRatio=(targetCount-1)/3;
-      prismWaterMesh.visible=true;
-
-      // Hạt nước bay theo Bezier
-      const particles=[];
-      const pCount=26;
-      const pGeo=new THREE.SphereGeometry(0.06,8,8),pMat=new THREE.MeshBasicMaterial({color:0x38bdf8});
-      for(let i=0;i<pCount;i++){
-        const p=new THREE.Mesh(pGeo,pMat);p.visible=false;
-        particlesGroup.add(p);
-        particles.push({mesh:p,delay:i*(duration/pCount)*0.6});
-      }
-
-      const p0=V(-2.2,3.6,0),pMid=V(0,4.6,0),p1=V(2.2,3.6,0);
 
       function stepPour(now){
+        if(animationId!==pourAnimationId||currentStep!==2)return;
         const elapsed=now-startTime;
-        const progress=Math.min(1,elapsed/duration);
-        const ease=0.5-Math.cos(progress*Math.PI)/2;
+        const progress=Math.min(1,elapsed/duration),ease=t=>t<.5?2*t*t:-1+(4-2*t)*t;
+        let tilt,fill=1,prismRatio=startPrismRatio;
+        if(progress<.22){
+          const p=ease(progress/.22);tilt=78*p;pyrHinge.position.lerpVectors(originalPivot,pourPivot,p);
+        }else if(progress<.82){
+          const p=ease((progress-.22)/.60);tilt=78;fill=1-p;prismRatio=startPrismRatio+p/3;pyrHinge.position.copy(pourPivot);
+        }else{
+          const p=ease((progress-.82)/.18);tilt=78*(1-p);fill=0;prismRatio=targetCount/3;pyrHinge.position.lerpVectors(pourPivot,originalPivot,p);
+        }
+        pyrHinge.rotation.z=-tilt*Math.PI/180;
+        pyrClipPlane.constant=fill*h;prismClipPlane.constant=prismRatio*h;
+        prismRippleCap.position.y=prismRatio*h;prismRippleCap.visible=prismRatio>0;
 
-        // 1. Hạ nước chóp
-        const curScale=Math.max(0.001,1-ease);
-        pyrWaterMesh.scale.set(curScale,curScale,curScale);
-        pyrWaterMesh.position.y=(h*0.98*curScale)/2;
+        if(progress>.20&&progress<.85){
+          let grow=1;
+          if(progress<.30)grow=(progress-.20)/.10;
+          else if(progress>.75)grow=(.85-progress)/.10;
+          updateWaterStream(pyrHinge.position.clone(),V(2.2,h*.96,0),Math.max(.02,grow));
+        }else removeWaterStream();
 
-        // 2. Dâng nước lăng trụ
-        const curRatio=startPrismRatio+(1/3)*ease;
-        prismWaterMesh.scale.y=Math.max(0.001,curRatio);
-        prismWaterMesh.position.y=(h*curRatio)/2;
-
-        // 3. Bay hạt nước
-        particles.forEach(pt=>{
-          const pElapsed=elapsed-pt.delay;
-          if(pElapsed>0&&pElapsed<500){
-            pt.mesh.visible=true;
-            const t=pElapsed/500,inv=1-t;
-            pt.mesh.position.x=inv*inv*p0.x+2*inv*t*pMid.x+t*t*p1.x;
-            pt.mesh.position.y=inv*inv*p0.y+2*inv*t*pMid.y+t*t*p1.y;
-            pt.mesh.position.z=inv*inv*p0.z+2*inv*t*pMid.z+t*t*p1.z;
-          }else{
-            pt.mesh.visible=false;
-          }
-        });
+        updatePourAnimationUI(fill,prismRatio,tilt);
 
         if(progress<1){
           requestAnimationFrame(stepPour);
         }else{
-          while(particlesGroup.children.length>0)particlesGroup.remove(particlesGroup.children[0]);
+          removeWaterStream();
           isPouring=false;
           if(targetCount<3){
-            pyrWaterMesh.scale.set(1,1,1);
-            pyrWaterMesh.position.y=(h*0.98)/2;
-            pyrWaterMesh.visible=true;
+            pyrClipPlane.constant=h;
           }else{
-            pyrWaterMesh.visible=false;
+            pyrClipPlane.constant=0;
           }
-          const finalRatio=targetCount/3;
-          prismWaterMesh.scale.y=finalRatio;
-          prismWaterMesh.position.y=(h*finalRatio)/2;
-          prismWaterMesh.visible=true;
-
+          prismClipPlane.constant=(targetCount/3)*h;
           updatePourReadout();
           renderStep();
         }
       }
       requestAnimationFrame(stepPour);
+    }
+
+    function updatePourAnimationUI(chopRatio,prismRatio,tilt){
+      const status=document.getElementById('pour-live-status');
+      if(status)status.textContent=`Chóp ${(chopRatio*100).toFixed(0)}% · Lăng trụ ${(prismRatio*100).toFixed(0)}% · Góc ${tilt.toFixed(0)}°`;
+      const pyrBar=document.getElementById('pyr-water-bar'),prismBar=document.getElementById('prism-water-bar');
+      const pyrValue=document.getElementById('pyr-water-value'),prismValue=document.getElementById('prism-water-value');
+      if(pyrBar)pyrBar.style.width=`${chopRatio*100}%`;
+      if(prismBar)prismBar.style.width=`${prismRatio*100}%`;
+      if(pyrValue)pyrValue.textContent=`${(chopRatio*100).toFixed(0)}%`;
+      if(prismValue)prismValue.textContent=`${(prismRatio*100).toFixed(0)}%`;
+      const readout=document.getElementById('distance-readout');
+      if(readout)readout.textContent=`Đang rót · Lăng trụ ${(prismRatio*60).toFixed(1)}/60 cm³`;
     }
 
     /* STEP 3: Chiều cao h vs Cạnh bên SA vs Trung đoạn SM */
@@ -773,6 +827,13 @@
             <div class="pour-dot ${pourCount>=3?'filled':''}"></div>
           </div>
           <div class="pour-status">Mực nước: <span>${pourCount}/3 chiều cao</span> ${isFull?'— <b>ĐẦY TRÀN!</b>':''}</div>
+        </div>
+        <div class="water-readout">
+          <div class="water-readout-label"><span>Nước trong chóp</span><span id="pyr-water-value">${pourCount<3?'100%':'0%'}</span></div>
+          <div class="water-meter"><div class="water-meter-fill pyramid" id="pyr-water-bar" style="width:${pourCount<3?100:0}%"></div></div>
+          <div class="water-readout-label"><span>Nước trong lăng trụ</span><span id="prism-water-value">${(pourCount/3*100).toFixed(0)}%</span></div>
+          <div class="water-meter"><div class="water-meter-fill" id="prism-water-bar" style="width:${pourCount/3*100}%"></div></div>
+          <div id="pour-live-status">Chóp ${pourCount<3?'100':'0'}% · Lăng trụ ${(pourCount/3*100).toFixed(0)}% · Góc 0°</div>
         </div>
         <button class="${btnClass}" id="btn-pour-act" onclick="lesson.onPour()" ${isPouring?'disabled':''}>
           <i class="ti ${isFull?'ti-rotate':'ti-cup'}"></i> ${btnText}

@@ -1,0 +1,396 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Prototype v2 — Nghiêng chóp đổ nước (tilt thật + dòng rơi cong xuống)</title>
+<style>
+  html, body { margin:0; padding:0; overflow:hidden; background:#0f1720; font-family:'Segoe UI', Arial, sans-serif; }
+  #canvas-container { width:100vw; height:100vh; }
+  .panel {
+    position:absolute; background:rgba(15,23,32,0.9); color:#e8f0f5;
+    border:1px solid #2d4a5e; border-radius:10px; padding:14px 16px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.4); font-size:13px; line-height:1.6;
+  }
+  .panel h3 { margin:0 0 8px 0; font-size:14px; color:#7ee0c9; }
+  #hud { top:16px; left:16px; width:280px; }
+  #fpsBox { top:16px; right:16px; width:180px; text-align:center; }
+  #fpsVal { font-size:32px; font-weight:700; font-family:Consolas,monospace; }
+  .fps-good { color:#5ee6b8; } .fps-warn { color:#ffcf5c; } .fps-bad { color:#ff8a80; }
+  button {
+    background:#3CA57A; color:#fff; border:none; border-radius:8px;
+    padding:10px 18px; font-size:14px; font-weight:600; cursor:pointer;
+    width:100%; margin-top:8px;
+  }
+  button:disabled { background:#516b63; cursor:not-allowed; }
+  .readout { font-family:Consolas,monospace; color:#ffd479; }
+  .bar-bg { background:#2d3a45; border-radius:4px; height:10px; margin-top:4px; overflow:hidden; }
+  .bar-fill { height:100%; background:#7fb5d9; }
+  #legend { bottom:16px; left:16px; width:680px; font-size:12px; }
+</style>
+</head>
+<body>
+<div id="canvas-container"></div>
+
+<div class="panel" id="hud">
+  <h3>🪣 Đong nước v2 — Nghiêng thật + dòng rơi</h3>
+  S = 10, h = 6 &nbsp;·&nbsp; V_chóp=20, V_lăng trụ=60, tỉ lệ = 3<br>
+  <div style="margin-top:10px;">
+    Chóp — fillRatio: <span class="readout" id="chopRatioVal">1.000</span> &nbsp;
+    Góc nghiêng: <span class="readout" id="tiltVal">0°</span>
+    <div class="bar-bg"><div class="bar-fill" id="chopBar" style="width:100%; background:#e8a24a;"></div></div>
+  </div>
+  <div style="margin-top:8px;">
+    Lăng trụ — fillRatio: <span class="readout" id="prismRatioVal">0.000</span>
+    <div class="bar-bg"><div class="bar-fill" id="prismBar" style="width:0%;"></div></div>
+  </div>
+  <button id="pourBtn" onclick="onPourClick()">Đổ nước (lần 1/3)</button>
+  <button onclick="resetAll()" style="background:#6E93A6; margin-top:6px;">Đặt lại</button>
+</div>
+
+<div class="panel" id="fpsBox">
+  <div style="font-size:11px; opacity:0.7;">FPS</div>
+  <div id="fpsVal" class="fps-good">60</div>
+</div>
+
+<div class="panel" id="legend">
+  <b>Sửa theo góp ý:</b> (1) Chóp NGHIÊNG THẬT quanh mép miệng gần lăng
+  trụ (dùng lại pattern bản lề PHẦN 2.7), không còn "bắn nước" từ chóp
+  đứng yên. (2) Dòng nước rơi CONG XUỐNG theo trọng lực (control point
+  bên DƯỚI, không phải bên trên như bản trước — bản trước sai vật lý,
+  trông như pháo hoa). (3) Bỏ hẳn các "viên nước" bay rời rạc gây cảm
+  giác "bắn vèo vèo" — chỉ còn 1 dòng liên tục duy nhất.
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+if (typeof THREE === 'undefined') {
+  document.body.innerHTML = '<div style="color:#ff9a80;padding:24px;font-family:monospace">❌ Không tải được THREE.js.</div>';
+  throw new Error('THREE is not defined');
+}
+if (typeof THREE.OrbitControls === 'undefined') {
+  document.body.innerHTML = '<div style="color:#ff9a80;padding:24px;font-family:monospace">❌ OrbitControls tải lỗi.</div>';
+  throw new Error('OrbitControls is not defined');
+}
+</script>
+<script>
+// ============================================================
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0f1720);
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 100);
+camera.position.set(9, 9, 13);
+camera.lookAt(0, 3, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+renderer.localClippingEnabled = true;
+container.appendChild(renderer.domElement);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 3, 0); controls.update();
+scene.add(new THREE.AmbientLight(0xffffff, 0.65));
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+dirLight.position.set(8, 12, 6); scene.add(dirLight);
+scene.add(new THREE.GridHelper(20, 20, 0x2d4a5e, 0x1a2a35));
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+const Ease = { easeInOut: t => t < 0.5 ? 2*t*t : -1+(4-2*t)*t };
+const lerp = (a,b,t) => a + (b-a)*Math.min(1,Math.max(0,t));
+
+const S = 10, H = 6;
+const baseHalfWidth = Math.sqrt(S)/2;
+const circumRadius = baseHalfWidth * Math.SQRT2;
+const CHOP_X = -3, PRISM_X = 3;
+
+// ============================================================
+// KHỐI CHÓP — ĐỈNH DƯỚI (y=0), MIỆNG MỞ TRÊN (y=H) — đúng hướng 1 cái
+// ly hình chóp thật, đổ nước vào từ miệng trên. Verify Node đã xác nhận
+// hướng dựng đúng.
+// ============================================================
+function buildChopGeometry() {
+  const geo = new THREE.ConeGeometry(circumRadius, H, 4, 1, true);
+  geo.translate(0, H/2, 0);
+  geo.rotateX(Math.PI);
+  geo.translate(0, H, 0);
+  geo.rotateY(Math.PI/4); // xoay 45 độ để 1 mặt bên hướng thẳng về lăng trụ
+  return geo;
+}
+const chopContainerGeom = buildChopGeometry();
+const chopWaterBodyGeom = buildChopGeometry();
+
+// Hệ 2 Group lồng nhau để NGHIÊNG quanh 1 điểm PIVOT (mép miệng, phía
+// hướng về lăng trụ — KHÔNG phải quanh gốc toạ độ) — đã verify bằng Node.
+const chopHinge = new THREE.Group();      // đặt ĐÚNG tại vị trí pivot world
+const chopInner = new THREE.Group();      // chứa mesh, offset ngược lại pivot
+chopHinge.add(chopInner);
+scene.add(chopHinge);
+
+// Điểm pivot: mép miệng (y=H) phía +X (hướng về lăng trụ)
+const pivotLocal = new THREE.Vector3(circumRadius, H, 0); // trong hệ toạ độ gốc trước dịch
+chopHinge.position.set(CHOP_X + pivotLocal.x, pivotLocal.y, pivotLocal.z); // = originalPivot, khai báo đủ ở PHẦN điều phối bên dưới
+chopInner.position.set(-pivotLocal.x, -pivotLocal.y, -pivotLocal.z);
+
+const chopContainerMat = new THREE.MeshStandardMaterial({
+  color: 0xcfe8f0, transparent: true, opacity: 0.18, side: THREE.FrontSide, depthWrite: false
+  // ⚠️ SỬA: bỏ DoubleSide (mặt trước+sau cùng vẽ chồng làm tường bình
+  // trông XÁM ĐỤC, không "trong" như kính thật) → chỉ FrontSide. Thêm
+  // depthWrite:false để tường bình KHÔNG che mất khối nước phía trong
+  // (lỗi kinh điển: vật trong suốt vẫn ghi độ sâu theo mặc định, khiến
+  // vật ở sau bị loại bỏ dù đáng lẽ phải nhìn xuyên qua được).
+});
+const chopContainerMesh = new THREE.Mesh(chopContainerGeom, chopContainerMat);
+chopContainerMesh.renderOrder = 0; // vẽ trước
+chopInner.add(chopContainerMesh);
+chopInner.add(new THREE.LineSegments(new THREE.EdgesGeometry(chopContainerGeom), new THREE.LineBasicMaterial({ color: 0x4E6E7E })));
+
+const chopClipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), H); // world space
+const chopWaterBodyMat = new THREE.MeshStandardMaterial({
+  color: 0x6fb3dd, transparent: true, opacity: 0.78, side: THREE.FrontSide, depthWrite: false,
+  clippingPlanes: [chopClipPlane]
+});
+const chopWaterBodyMesh = new THREE.Mesh(chopWaterBodyGeom, chopWaterBodyMat);
+chopWaterBodyMesh.renderOrder = 1; // vẽ SAU tường bình, để luôn hiện rõ phía trên
+chopInner.add(chopWaterBodyMesh);
+
+// ⚠️ ĐÃ BỎ "màng mỏng" mặt nước (chopCap) cho khối chóp — theo góp ý
+// thực tế: mặt phẳng phẳng đặt tại miệng chóp (đa giác xiên do hình chóp
+// nghiêng) tạo hình ảnh chồng chéo trông giả, không tự nhiên. Chỉ giữ
+// lại KHỐI ĐẶC màu xanh lam nhạt (chopWaterBodyMesh, đã dựng ở trên qua
+// clipping) — đơn giản và trực quan hơn hẳn, không cần thêm lớp mặt cắt
+// riêng.
+
+// ⚠️ Lưu ý quan trọng: khi chóp NGHIÊNG, mực nước thật (world-horizontal)
+// rất phức tạp để mô phỏng chính xác 100%. Ở đây đơn giản hoá: mặt cắt
+// nước vẫn tính trong HỆ TOẠ ĐỘ CỤC BỘ của chóp (nghiêng theo chóp), coi
+// như "nước dồn về phía miệng đang nghiêng xuống" một cách xấp xỉ — đủ
+// thuyết phục về mặt hình ảnh cho mục đích minh hoạ, không phải mô
+// phỏng vật lý chất lỏng chính xác.
+
+// ============================================================
+// KHỐI LĂNG TRỤ — giữ nguyên như bản trước (đứng yên, không nghiêng)
+// ============================================================
+const prismGroup = new THREE.Group();
+prismGroup.position.set(PRISM_X, 0, 0);
+scene.add(prismGroup);
+const prismWidth = baseHalfWidth * 2;
+const prismGeom = new THREE.BoxGeometry(prismWidth, H, prismWidth);
+prismGeom.translate(0, H/2, 0);
+const prismMat = new THREE.MeshStandardMaterial({
+  color: 0xcfe8f0, transparent: true, opacity: 0.16, side: THREE.FrontSide, depthWrite: false
+});
+const prismMesh = new THREE.Mesh(prismGeom, prismMat);
+prismMesh.renderOrder = 0;
+prismGroup.add(prismMesh);
+prismGroup.add(new THREE.LineSegments(new THREE.EdgesGeometry(prismGeom), new THREE.LineBasicMaterial({ color: 0x4E6E7E })));
+
+const prismClipPlane = new THREE.Plane(new THREE.Vector3(0, -1, 0), 0);
+const prismWaterBodyGeom = new THREE.BoxGeometry(prismWidth*0.98, H, prismWidth*0.98);
+prismWaterBodyGeom.translate(0, H/2, 0);
+// SỬA LỖI 2 — mực nước không rõ, phải xoay mới thấy: tăng opacity
+// 0.45→0.68 VÀ đổi màu đậm/bão hoà hơn (0x6fb3dd, khác hẳn màu tường
+// bình 0xcfe8f0 rất nhạt) — để "màng nước" rõ ngay từ góc nhìn mặc định,
+// không cần xoay camera.
+const prismWaterBodyMat = new THREE.MeshStandardMaterial({
+  color: 0x6fb3dd, transparent: true, opacity: 0.78, side: THREE.FrontSide, depthWrite: false,
+  clippingPlanes: [prismClipPlane]
+});
+const prismWaterBodyMesh = new THREE.Mesh(prismWaterBodyGeom, prismWaterBodyMat);
+prismWaterBodyMesh.renderOrder = 1;
+prismGroup.add(prismWaterBodyMesh);
+
+// Mặt nước gợn sóng (cap) cho lăng trụ — giữ hiệu ứng đẹp mắt
+function createRippleCap(width, depth, segments=14) {
+  const geo = new THREE.PlaneGeometry(width, depth, segments, segments);
+  geo.rotateX(-Math.PI/2);
+  // "Màng mỏng" báo hiệu mặt nước — màu sáng hơn thân nước 1 chút (giống
+  // ánh phản chiếu mặt nước thật), opacity cao (0.85) để LUÔN thấy rõ,
+  // không cần xoay camera mới nhận ra.
+  const mat = new THREE.MeshStandardMaterial({ color: 0xbfe0f2, transparent: true, opacity: 0.85, side: THREE.DoubleSide, depthWrite: false });
+  return new THREE.Mesh(geo, mat);
+}
+function updateRipple(mesh, t) {
+  const pa = mesh.geometry.attributes.position;
+  for (let i=0;i<pa.count;i++){
+    const x=pa.getX(i), z=pa.getZ(i);
+    pa.setY(i, Math.sin(x*0.9+t*0.0025)*0.05 + Math.sin(z*1.1+t*0.0018)*0.03);
+  }
+  pa.needsUpdate = true;
+}
+const prismCap = createRippleCap(prismWidth, prismWidth);
+prismCap.renderOrder = 2; // vẽ SAU CÙNG (mặt gợn sóng luôn hiện rõ nhất)
+prismGroup.add(prismCap);
+
+// ============================================================
+// DÒNG NƯỚC RƠI — CONG XUỐNG theo trọng lực (SỬA lỗi cung bay lên cũ)
+// ============================================================
+function fallingBezierPoint(p0, p2, sagDepth, t) {
+  const mid = p0.clone().add(p2).multiplyScalar(0.5);
+  mid.y -= sagDepth; // VÕNG XUỐNG — khác hẳn bản cũ (nhô lên)
+  const x=(1-t)*(1-t)*p0.x+2*(1-t)*t*mid.x+t*t*p2.x;
+  const y=(1-t)*(1-t)*p0.y+2*(1-t)*t*mid.y+t*t*p2.y;
+  const z=(1-t)*(1-t)*p0.z+2*(1-t)*t*mid.z+t*t*p2.z;
+  return new THREE.Vector3(x,y,z);
+}
+
+let streamMesh = null;
+function updateStreamGeometry(p0, p2, sagDepth, growFrac) {
+  // growFrac 0->1: dòng nước "mọc dài" từ điểm rót ra tới đích, rồi giữ
+  // nguyên toàn bộ trong lúc rót, KHÔNG dùng nhiều đối tượng rời rạc.
+  const segments = 24;
+  const pts = [];
+  const visibleLen = Math.max(0.02, growFrac);
+  for (let i=0;i<=segments;i++){
+    const t = (i/segments) * visibleLen;
+    pts.push(fallingBezierPoint(p0, p2, sagDepth, t));
+  }
+  if (streamMesh) { scene.remove(streamMesh); streamMesh.geometry.dispose(); }
+  if (pts.length < 2) return;
+  const curve = new THREE.CatmullRomCurve3(pts);
+  const geo = new THREE.TubeGeometry(curve, segments, 0.045, 6, false);
+  if (!streamMesh) {
+    streamMesh = new THREE.Mesh(geo, new THREE.MeshStandardMaterial({ color: 0x9ecbe8, transparent: true, opacity: 0.75 }));
+  } else {
+    streamMesh.geometry = geo;
+  }
+  scene.add(streamMesh);
+}
+function removeStream() {
+  if (streamMesh) { scene.remove(streamMesh); streamMesh.geometry.dispose(); streamMesh.material.dispose(); streamMesh = null; }
+}
+
+// ============================================================
+// ĐIỀU PHỐI 1 LẦN ĐỔ — 3 pha: (A) nghiêng lên, (B) giữ nghiêng + rót +
+// dòng chảy + lăng trụ dâng, (C) nghiêng trả về thẳng đứng
+// ============================================================
+let chopFillRatio = 1.0, prismFillRatio = 0.0, tiltDeg = 0, pourIndex = 0, pouring = false;
+const TILT_MAX_DEG = 78;
+
+// SỬA LỖI 1 — quỹ đạo rót phi vật lý (lướt chéo xa) — CHÓP phải DI
+// CHUYỂN lại gần miệng lăng trụ khi nghiêng, để dòng nước rơi NGẮN và
+// GẦN THẲNG ĐỨNG (giống rót thật), không lướt chéo cả quãng xa 2 khối.
+const originalPivot = new THREE.Vector3(CHOP_X + circumRadius, H, 0);
+const pourPivot = new THREE.Vector3(PRISM_X - 0.3, H + 1.2, 0); // ngay
+// phía trên, sát cạnh miệng lăng trụ — verify Node: tỉ lệ ngang/dọc quỹ
+// đạo rơi chỉ 0,2 (gần thẳng đứng), so với ~1,4 của bản trước (lướt chéo)
+
+function localClipConstantForChop(fillRatio) {
+  return fillRatio * H;
+}
+
+function runOnePour(pourIdx, totalMs = 2400) {
+  pouring = true;
+  document.getElementById('pourBtn').disabled = true;
+  const prismFrom = (pourIdx - 1) / 3, prismTo = pourIdx / 3;
+  const start = performance.now();
+
+  function frame(now) {
+    const elapsed = now - start;
+    const t = Math.min(1, elapsed / totalMs);
+
+    // 3 pha theo tỉ lệ thời gian: [0,0.22] nghiêng lên + DI CHUYỂN lại
+    // gần lăng trụ, [0.22,0.82] giữ nghiêng+vị trí, rót, [0.82,1] nghiêng
+    // về + DI CHUYỂN trở lại vị trí gốc
+    let phaseTilt, phaseFill;
+    if (t < 0.22) {
+      const pt = Ease.easeInOut(t/0.22);
+      tiltDeg = lerp(0, TILT_MAX_DEG, pt);
+      chopHinge.position.lerpVectors(originalPivot, pourPivot, pt);
+      chopFillRatio = 1.0;
+      prismFillRatio = prismFrom;
+    } else if (t < 0.82) {
+      tiltDeg = TILT_MAX_DEG;
+      chopHinge.position.copy(pourPivot);
+      const pf = Ease.easeInOut((t-0.22)/0.60);
+      chopFillRatio = lerp(1.0, 0.0, pf);
+      prismFillRatio = lerp(prismFrom, prismTo, pf);
+    } else {
+      const pt = Ease.easeInOut((t-0.82)/0.18);
+      tiltDeg = lerp(TILT_MAX_DEG, 0, pt);
+      chopHinge.position.lerpVectors(pourPivot, originalPivot, pt);
+      chopFillRatio = 0.0;
+      prismFillRatio = prismTo;
+    }
+
+    chopHinge.rotation.z = -tiltDeg * Math.PI/180; // nghiêng quanh trục Z tại pivot (đã di chuyển)
+
+    chopClipPlane.constant = localClipConstantForChop(chopFillRatio);
+    prismClipPlane.constant = prismFillRatio * H;
+    prismCap.position.y = prismFillRatio * H;
+
+    // Dòng nước: CHỈ hiện trong pha giữ nghiêng+rót [0.20, 0.85]. ĐIỂM
+    // RÓT (p0) = đúng vị trí pivot HIỆN TẠI (đã di chuyển gần lăng trụ),
+    // ĐIỂM NHẬN (p2) = ngay miệng lăng trụ — quỹ đạo giờ NGẮN, gần thẳng
+    // đứng, đúng cảm giác "rót từ miệng bình này sang miệng bình kia".
+    if (t > 0.20 && t < 0.85) {
+      const p0 = chopHinge.position.clone();
+      const p2 = new THREE.Vector3(PRISM_X, H*0.95, 0); // ngay mép miệng lăng trụ
+      const growWindow = 0.10;
+      let growFrac = 1;
+      if (t < 0.20+growWindow) growFrac = (t-0.20)/growWindow;
+      else if (t > 0.85-growWindow) growFrac = (0.85-t)/growWindow;
+      updateStreamGeometry(p0, p2, 0.35, Math.max(0.02, Math.min(1, growFrac))); // sag NHỎ (0,35) vì quãng rơi ngắn
+    } else {
+      removeStream();
+    }
+
+    updateHUD();
+    if (t < 1) requestAnimationFrame(frame);
+    else { pouring = false; removeStream(); finishPour(pourIdx); }
+  }
+  requestAnimationFrame(frame);
+}
+
+function finishPour(pourIdx) {
+  const btn = document.getElementById('pourBtn');
+  if (pourIdx >= 3) { btn.textContent = 'Đã đầy! Bấm "Đặt lại" để xem lại'; btn.disabled = true; }
+  else {
+    chopFillRatio = 1.0;
+    chopClipPlane.constant = localClipConstantForChop(chopFillRatio);
+    btn.disabled = false; btn.textContent = `Đổ nước (lần ${pourIdx+1}/3)`;
+  }
+}
+function onPourClick(){ if(pouring) return; pourIndex++; runOnePour(pourIndex); }
+function resetAll(){
+  pourIndex=0; chopFillRatio=1.0; prismFillRatio=0.0; tiltDeg=0;
+  chopHinge.rotation.z = 0;
+  chopHinge.position.copy(originalPivot);
+  chopClipPlane.constant = localClipConstantForChop(chopFillRatio);
+  prismClipPlane.constant = 0; prismCap.position.y = 0;
+  removeStream();
+  const btn = document.getElementById('pourBtn'); btn.disabled=false; btn.textContent='Đổ nước (lần 1/3)';
+  updateHUD();
+}
+function updateHUD(){
+  document.getElementById('chopRatioVal').textContent = chopFillRatio.toFixed(3);
+  document.getElementById('prismRatioVal').textContent = prismFillRatio.toFixed(3);
+  document.getElementById('chopBar').style.width = (chopFillRatio*100).toFixed(1)+'%';
+  document.getElementById('prismBar').style.width = (prismFillRatio*100).toFixed(1)+'%';
+  document.getElementById('tiltVal').textContent = tiltDeg.toFixed(0)+'°';
+}
+chopClipPlane.constant = localClipConstantForChop(chopFillRatio);
+prismClipPlane.constant = 0;
+updateHUD();
+
+let fpsFrames=0, fpsLast=performance.now();
+function updateFPS(now){
+  fpsFrames++;
+  if (now-fpsLast>=500){
+    const v = Math.round(fpsFrames*1000/(now-fpsLast)); fpsFrames=0; fpsLast=now;
+    const el = document.getElementById('fpsVal'); el.textContent=v;
+    el.className = v>=50?'fps-good':(v>=30?'fps-warn':'fps-bad');
+  }
+}
+function animate(){
+  const now = performance.now();
+  requestAnimationFrame(animate);
+  controls.update();
+  updateRipple(prismCap, now);
+  updateFPS(now);
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>
