@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+<meta charset="UTF-8">
+<title>Prototype — Khai triển phẳng khuôn bánh (chóp cụt)</title>
+<style>
+  html, body { margin:0; padding:0; overflow:hidden; background:#0f1720; font-family:'Segoe UI', Arial, sans-serif; }
+  #canvas-container { width:100vw; height:100vh; }
+  .panel {
+    position:absolute; background:rgba(15,23,32,0.9); color:#e8f0f5;
+    border:1px solid #2d4a5e; border-radius:10px; padding:14px 16px;
+    box-shadow:0 4px 20px rgba(0,0,0,0.4); font-size:13px; line-height:1.6;
+  }
+  .panel h3 { margin:0 0 8px 0; font-size:14px; color:#7ee0c9; }
+  #hud { top:16px; left:16px; width:300px; }
+  #legend { bottom:16px; left:16px; width:680px; font-size:12px; }
+  input[type=range] { width:100%; }
+  button {
+    background:#3CA57A; color:#fff; border:none; border-radius:8px;
+    padding:10px 18px; font-size:14px; font-weight:600; cursor:pointer;
+    width:100%; margin-top:8px;
+  }
+  .readout { font-family:Consolas,monospace; color:#ffd479; }
+</style>
+</head>
+<body>
+<div id="canvas-container"></div>
+
+<div class="panel" id="hud">
+  <h3>🥧 Khai triển khuôn bánh (chóp cụt đều)</h3>
+  Đáy nhỏ a'=10cm, đáy lớn a=18cm, cao h=8cm<br>
+  <div style="margin-top:10px;">
+    Trạng thái: <span class="readout" id="unfoldVal">0.00</span> (0=gấp/3D, 1=trải phẳng)
+    <input type="range" id="unfoldSlider" min="0" max="1" step="0.01" value="0" oninput="onSliderChange(this.value)">
+  </div>
+  <button id="animBtn" onclick="toggleAutoAnimate()">▶ Tự động gấp/mở</button>
+</div>
+
+<div class="panel" id="legend">
+  <b>Mục đích prototype:</b> kiểm tra animation "khai triển phẳng" cho
+  Bài 27 Module 2 Bước 3 — dùng đúng kỹ thuật xoay quanh bản lề (giống
+  PHẦN 2.6/2.7 đã có) áp cho 4 mặt bên đồng thời, mỗi mặt xoay quanh 1
+  cạnh đáy nhỏ riêng. Đã verify góc gấp 63,435° bằng Node trước khi build
+  — cả 4 mặt đều dùng chung độ lớn góc này (khuôn đều).
+</div>
+
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+<script>
+if (typeof THREE === 'undefined') {
+  document.body.innerHTML = '<div style="color:#ff9a80;padding:24px;font-family:monospace">❌ Không tải được THREE.js.</div>';
+  throw new Error('THREE is not defined');
+}
+if (typeof THREE.OrbitControls === 'undefined') {
+  document.body.innerHTML = '<div style="color:#ff9a80;padding:24px;font-family:monospace">❌ OrbitControls tải lỗi.</div>';
+  throw new Error('OrbitControls is not defined');
+}
+</script>
+<script>
+const container = document.getElementById('canvas-container');
+const scene = new THREE.Scene();
+scene.background = new THREE.Color(0x0f1720);
+const camera = new THREE.PerspectiveCamera(50, window.innerWidth/window.innerHeight, 0.1, 100);
+camera.position.set(14, 14, 18);
+camera.lookAt(0, 2, 0);
+const renderer = new THREE.WebGLRenderer({ antialias: true });
+renderer.setSize(window.innerWidth, window.innerHeight);
+container.appendChild(renderer.domElement);
+const controls = new THREE.OrbitControls(camera, renderer.domElement);
+controls.target.set(0, 2, 0); controls.update();
+scene.add(new THREE.AmbientLight(0xffffff, 0.7));
+const dirLight = new THREE.DirectionalLight(0xffffff, 0.7);
+dirLight.position.set(10, 14, 8); scene.add(dirLight);
+scene.add(new THREE.GridHelper(30, 30, 0x2d4a5e, 0x1a2a35));
+window.addEventListener('resize', () => {
+  camera.aspect = window.innerWidth/window.innerHeight; camera.updateProjectionMatrix();
+  renderer.setSize(window.innerWidth, window.innerHeight);
+});
+
+// ============================================================
+// THÔNG SỐ KHUÔN BÁNH
+// ============================================================
+const ap = 10, a = 18, h = 8; // đáy nhỏ, đáy lớn, chiều cao
+const halfAp = ap/2, halfA = a/2;
+
+// Góc gấp CHUNG cho cả 4 mặt (khuôn đều) — đã verify bằng Node = 63.435°
+const foldedAngleRad = Math.atan2(h, halfA - halfAp);
+console.log('Goc gap (rad, deg):', foldedAngleRad, foldedAngleRad*180/Math.PI);
+
+// ============================================================
+// ĐÁY NHỎ (cố định, không tham gia khai triển)
+// ============================================================
+const baseShape = new THREE.Shape();
+baseShape.moveTo(-halfAp, -halfAp);
+baseShape.lineTo(halfAp, -halfAp);
+baseShape.lineTo(halfAp, halfAp);
+baseShape.lineTo(-halfAp, halfAp);
+baseShape.closePath();
+const baseGeom = new THREE.ShapeGeometry(baseShape);
+baseGeom.rotateX(-Math.PI/2); // đặt nằm ngang tại y=0
+const baseMesh = new THREE.Mesh(baseGeom, new THREE.MeshStandardMaterial({
+  color: 0xc7ccd1, side: THREE.DoubleSide
+}));
+scene.add(baseMesh);
+
+// ============================================================
+// 4 MẶT BÊN — mỗi mặt là 1 hinge Group riêng, xoay quanh đúng cạnh đáy
+// nhỏ tương ứng. Toạ độ LOCAL đặt tại trạng thái TRẢI PHẲNG (rotation=0);
+// animation áp dụng rotation = lerp(foldedAngleRad, 0, unfoldProgress).
+// ============================================================
+const slantLen = Math.sqrt((halfA-halfAp)**2 + h*h); // cạnh bên trải phẳng — đã verify khoảng cách không đổi khi xoay
+
+// === Cách làm THỰC TẾ (đơn giản, tường minh từng mặt — không tổng quát
+// hoá quá mức để dễ đối chiếu số liệu đã verify) ===
+function buildFlap(hingeAxis, hingeSign) {
+  // hingeAxis: 'x' | 'z' (trục mà bản lề CHẠY DỌC THEO)
+  // hingeSign: +1 | -1 (bản lề ở phía +trục kia hay -trục kia)
+  const hinge = new THREE.Group();
+  if (hingeAxis === 'z') {
+    hinge.position.set(hingeSign*halfAp, 0, 0);
+  } else {
+    hinge.position.set(0, 0, hingeSign*halfAp);
+  }
+  scene.add(hinge);
+
+  // Toạ độ LOCAL ở trạng thái TRẢI PHẲNG (rotation=0):
+  // 2 điểm bản lề tại local (0,0,±halfAp) hoặc (±halfAp,0,0)
+  // 2 điểm ngoài tại local (hingeSign*slantLen, 0, ±halfA) hoặc (±halfA,0,hingeSign*slantLen)
+  const geo = new THREE.BufferGeometry();
+  let pos;
+  if (hingeAxis === 'z') {
+    pos = new Float32Array([
+      0,0,-halfAp,  0,0,halfAp,  hingeSign*slantLen,0,halfA,
+      0,0,-halfAp,  hingeSign*slantLen,0,halfA,  hingeSign*slantLen,0,-halfA,
+    ]);
+  } else {
+    pos = new Float32Array([
+      -halfAp,0,0,  halfAp,0,0,  halfA,0,hingeSign*slantLen,
+      -halfAp,0,0,  halfA,0,hingeSign*slantLen,  -halfA,0,hingeSign*slantLen,
+    ]);
+  }
+  geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+  geo.computeVertexNormals();
+  const mat = new THREE.MeshStandardMaterial({ color: 0xe8d9a0, side: THREE.DoubleSide });
+  const mesh = new THREE.Mesh(geo, mat);
+  hinge.add(mesh);
+
+  return { hinge, axis: hingeAxis, hingeSign };
+}
+
+const flapPX = buildFlap('z', +1); // mặt +X, bản lề dọc z tại x=+halfAp
+const flapNX = buildFlap('z', -1); // mặt -X, bản lề dọc z tại x=-halfAp
+const flapPZ = buildFlap('x', +1); // mặt +Z, bản lề dọc x tại z=+halfAp
+const flapNZ = buildFlap('x', -1); // mặt -Z, bản lề dọc x tại z=-halfAp
+const allFlaps = [flapPX, flapNX, flapPZ, flapNZ];
+
+// ============================================================
+// CẬP NHẬT THEO unfoldProgress (0=gấp/3D thật, 1=trải phẳng)
+// ============================================================
+function updateUnfold(progress) {
+  const angle = (1 - progress) * foldedAngleRad; // progress=0 -> full angle (gấp); progress=1 -> 0 (trải phẳng)
+  allFlaps.forEach(f => {
+    // ⚠️ Đã verify bằng Node: quy tắc dấu ĐÚNG là rotSign=hingeSign cho
+    // trục 'z', rotSign=-hingeSign cho trục 'x' — bản đầu dùng sai dấu
+    // (cố định -angle cho mọi mặt trục z) khiến 2 mặt gập XUỐNG DƯỚI
+    // thay vì LÊN TRÊN. Đã sửa.
+    const rotSign = (f.axis === 'z') ? f.hingeSign : -f.hingeSign;
+    if (f.axis === 'z') f.hinge.rotation.z = rotSign * angle;
+    else f.hinge.rotation.x = rotSign * angle;
+  });
+  document.getElementById('unfoldVal').textContent = progress.toFixed(2);
+}
+updateUnfold(0); // mặc định: trạng thái GẤP (hình chóp cụt thật)
+
+function onSliderChange(v) {
+  updateUnfold(parseFloat(v));
+}
+
+// ============================================================
+// TỰ ĐỘNG GẤP/MỞ
+// ============================================================
+let autoAnimating = false, autoDirection = 1, autoT = 0;
+function toggleAutoAnimate() {
+  autoAnimating = !autoAnimating;
+  document.getElementById('animBtn').textContent = autoAnimating ? '⏸ Dừng' : '▶ Tự động gấp/mở';
+}
+function animate() {
+  requestAnimationFrame(animate);
+  controls.update();
+  if (autoAnimating) {
+    autoT += 0.006 * autoDirection;
+    if (autoT >= 1) { autoT = 1; autoDirection = -1; }
+    if (autoT <= 0) { autoT = 0; autoDirection = 1; }
+    updateUnfold(autoT);
+    document.getElementById('unfoldSlider').value = autoT;
+  }
+  renderer.render(scene, camera);
+}
+animate();
+</script>
+</body>
+</html>

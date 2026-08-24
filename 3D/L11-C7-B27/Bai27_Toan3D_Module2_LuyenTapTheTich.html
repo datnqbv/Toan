@@ -250,7 +250,9 @@
 
     let currentStep=1,unlocked=1,root=null,labels=[],occlusionSets=[];
     let showSplit=true;       // Step 2: Bật/tắt chia 2 tứ diện
-    let isUnfolded=false;     // Step 3: Mở bung trải phẳng khuôn bánh
+    let unfoldProgress=0.0;   // Step 3: Tiến trình khai triển phẳng (0.0 = Gấp 3D, 1.0 = Trải phẳng 2D)
+    let autoUnfolding=false,autoUnfoldDir=1;
+    let step3Flaps=[],doughMesh=null;
     let optChosen=null;       // Step 4: Chọn phương án chậu bonsai (A, B, C)
     let quiz1Done=false,quiz2Done=false,quiz3Done=false;
     let quiz1Choice=null,quiz2Choice=null,quiz3Choice=null;
@@ -260,6 +262,7 @@
       dispose(root);root=new THREE.Group();scene.add(root);
       labels.forEach(x=>x.el.remove());labels=[];
       occlusionSets=[];
+      step3Flaps=[];doughMesh=null;
     }
     function squareFrustumEdges(cx,cz,bottomSize,topSize,h){
       const bottom=[
@@ -349,6 +352,22 @@
     function animate(){
       requestAnimationFrame(animate);
       controls.update();
+
+      if(currentStep===3 && autoUnfolding){
+        unfoldProgress += 0.008 * autoUnfoldDir;
+        if(unfoldProgress >= 1){ unfoldProgress = 1; autoUnfoldDir = -1; }
+        if(unfoldProgress <= 0){ unfoldProgress = 0; autoUnfoldDir = 1; }
+        updateStep3Unfold(unfoldProgress);
+        const slider = document.getElementById('unfold-slider');
+        if(slider) slider.value = unfoldProgress;
+        const out = document.getElementById('unfold-out');
+        if(out) out.textContent = `${(unfoldProgress*100).toFixed(0)}% (${unfoldProgress===0?'Gấp 3D':unfoldProgress===1?'Trải phẳng 2D':'Đang mở'})`;
+        const presetBtn = document.getElementById('btn-preset-toggle');
+        if(presetBtn) presetBtn.innerHTML = `<i class="ti ${unfoldProgress>0.5?'ti-box':'ti-layout-board-split'}"></i> ${unfoldProgress>0.5?'Gập kín 3D':'Mở bung 100%'}`;
+        const readout = document.getElementById('distance-readout');
+        if(readout) readout.textContent = unfoldProgress === 0 ? 'Dung tích = 1,61 lít' : unfoldProgress === 1 ? 'Khai triển phẳng (Phôi 27,89 cm)' : 'Góc nghiêng: ' + ((1 - unfoldProgress)*63.435).toFixed(1) + '°';
+      }
+
       updateEdgeOcclusion();
       updateLabels();
       renderer.render(scene,camera);
@@ -486,67 +505,113 @@
       document.getElementById('distance-readout').style.color='#34D399';
     }
 
-    /* STEP 3: Khuôn bánh kim loại (Trải phẳng / Gập lại) */
+    /* STEP 3: Khuôn bánh kim loại (Khai triển phẳng 4 cánh bản lề) */
+    const foldedAngleRad = Math.atan2(1.28, 0.64); // atan(2) ≈ 63.435° (1.10715 rad)
+
+    function updateStep3Unfold(progress){
+      const angle = (1 - progress) * foldedAngleRad;
+      step3Flaps.forEach(f => {
+        const rotSign = (f.axis === 'z') ? f.hingeSign : -f.hingeSign;
+        if(f.axis === 'z') f.hinge.rotation.z = rotSign * angle;
+        else f.hinge.rotation.x = rotSign * angle;
+      });
+      if(doughMesh){
+        doughMesh.visible = progress < 0.25;
+        if(doughMesh.material) doughMesh.material.opacity = Math.max(0, (1 - progress * 4) * 0.85);
+      }
+    }
+
     function buildStep3Scene(){
       clearScene();
-      const a=3.2,b=1.8,h=1.8; // 18cm miệng -> 10cm đáy -> cao 8cm
-      const pO=V(0,0,0);
+      const ap = 1.6, a = 2.88, h = 1.28; // Tỉ lệ đáy nhỏ 10cm, miệng 18cm, cao 8cm
+      const halfAp = ap / 2, halfA = a / 2;
+      const slantLen = Math.sqrt(Math.pow(halfA - halfAp, 2) + h * h); // ≈ 1.431
 
-      // Đáy khuôn nhỏ
-      const baseGeo=new THREE.PlaneGeometry(b,b);
-      const metalMat=new THREE.MeshStandardMaterial({color:0xc7ccd1,metalness:0.4,roughness:0.3,side:THREE.DoubleSide});
-      const baseMesh=new THREE.Mesh(baseGeo,metalMat);
-      baseMesh.rotation.x=-Math.PI/2;baseMesh.position.y=0;root.add(baseMesh);
+      // 1. Đáy nhỏ cố định tại y = 0
+      const baseGeo = new THREE.PlaneGeometry(ap, ap);
+      const metalMat = new THREE.MeshStandardMaterial({
+        color: 0xc7ccd1, metalness: 0.35, roughness: 0.3, side: THREE.DoubleSide
+      });
+      const baseMesh = new THREE.Mesh(baseGeo, metalMat);
+      baseMesh.rotation.x = -Math.PI / 2;
+      baseMesh.position.y = 0;
+      root.add(baseMesh);
 
-      if(!isUnfolded){
-        // Khuôn dạng 3D chóp cụt
-        const moldGeo=new THREE.CylinderGeometry(a*0.707,b*0.707,h,4,1,true);
-        const moldMat=metalMat.clone();moldMat.transparent=true;moldMat.opacity=.30;moldMat.depthWrite=false;
-        const moldMesh=new THREE.Mesh(moldGeo,moldMat);
-        moldMesh.rotation.y=Math.PI/4;moldMesh.position.y=h/2;root.add(moldMesh);
+      // Viền cạnh đáy nhỏ
+      const baseEdges = new THREE.LineSegments(
+        new THREE.EdgesGeometry(baseGeo),
+        new THREE.LineBasicMaterial({ color: 0xffffff, linewidth: 2 })
+      );
+      baseEdges.rotation.x = -Math.PI / 2;
+      root.add(baseEdges);
 
-        addOccludedEdgeSet(squareFrustumEdges(0,0,b,a,h),moldMesh);
+      // 2. Hàm dựng từng cánh bản lề mặt bên
+      function buildStep3Flap(hingeAxis, hingeSign){
+        const hinge = new THREE.Group();
+        if(hingeAxis === 'z') hinge.position.set(hingeSign * halfAp, 0, 0);
+        else hinge.position.set(0, 0, hingeSign * halfAp);
+        root.add(hinge);
 
-        // Lớp bột bánh vàng nhạt rót đầy khuôn
-        const doughGeo=new THREE.CylinderGeometry(a*0.707*0.96,b*0.707*0.96,h*0.92,4);
-        const dough=new THREE.Mesh(doughGeo,new THREE.MeshStandardMaterial({color:0xF7E7CD,roughness:0.8}));
-        dough.rotation.y=Math.PI/4;dough.position.y=(h*0.92)/2;root.add(dough);
+        const geo = new THREE.BufferGeometry();
+        let pos;
+        if(hingeAxis === 'z'){
+          pos = new Float32Array([
+            0, 0, -halfAp,   0, 0, halfAp,   hingeSign * slantLen, 0, halfA,
+            0, 0, -halfAp,   hingeSign * slantLen, 0, halfA,   hingeSign * slantLen, 0, -halfA
+          ]);
+        } else {
+          pos = new Float32Array([
+            -halfAp, 0, 0,   halfAp, 0, 0,   halfA, 0, hingeSign * slantLen,
+            -halfAp, 0, 0,   halfA, 0, hingeSign * slantLen,   -halfA, 0, hingeSign * slantLen
+          ]);
+        }
+        geo.setAttribute('position', new THREE.BufferAttribute(pos, 3));
+        geo.computeVertexNormals();
 
-        addLabel('Miệng khuôn 18cm',V(0,h+0.2,a/2+0.2),'result');
-        addLabel('Đáy khuôn 10cm',V(0,-0.1,b/2+0.25));
-        addLabel('Cạnh bên ≈ 9,24cm',V(a/2*0.707+0.2,h/2,0),'jade');
-
-        document.getElementById('distance-readout').textContent='Dung tích = 1,61 lít';
-      }else{
-        // Khai triển phẳng 4 mặt bên mở ra như 4 cánh hoa
-        const slantHeight=Math.sqrt(h*h+Math.pow((a-b)/2,2));
-        [0,1,2,3].forEach(idx=>{
-          const angle=idx*Math.PI/2;
-          const trapPts=[
-            V(-b/2,0,0), V(b/2,0,0),
-            V(a/2,0,slantHeight), V(-a/2,0,slantHeight)
-          ];
-          const flapGeo=new THREE.BufferGeometry();
-          flapGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array([
-            trapPts[0].x,0,trapPts[0].z,  trapPts[1].x,0,trapPts[1].z,  trapPts[2].x,0,trapPts[2].z,
-            trapPts[0].x,0,trapPts[0].z,  trapPts[2].x,0,trapPts[2].z,  trapPts[3].x,0,trapPts[3].z
-          ]),3));
-          flapGeo.computeVertexNormals();
-
-          const flap=new THREE.Mesh(flapGeo,metalMat);
-          const pivot=new THREE.Group();
-          pivot.rotation.y=angle;
-          pivot.position.set(0,0,0);
-          flap.position.z=b/2;
-          pivot.add(flap);
-          root.add(pivot);
+        const flapMat = new THREE.MeshStandardMaterial({
+          color: 0xe8d9a0, metalness: 0.25, roughness: 0.4, side: THREE.DoubleSide
         });
-        addLabel('Tấm kim loại trải phẳng',V(0,0.1,0),'result');
-        document.getElementById('distance-readout').textContent='Khai triển phẳng';
+        const flapMesh = new THREE.Mesh(geo, flapMat);
+        hinge.add(flapMesh);
+
+        // Viền cạnh từng cánh
+        const flapEdges = new THREE.LineSegments(
+          new THREE.EdgesGeometry(geo),
+          new THREE.LineBasicMaterial({ color: 0x4a6572, linewidth: 1.5 })
+        );
+        hinge.add(flapEdges);
+
+        return { hinge, axis: hingeAxis, hingeSign };
       }
 
-      document.getElementById('scene-chip').textContent='Bước 3 · Nhà thiết kế: Khuôn bánh kim loại';
-      document.getElementById('distance-readout').style.color='#34D399';
+      step3Flaps = [
+        buildStep3Flap('z', +1), // Cánh +X
+        buildStep3Flap('z', -1), // Cánh -X
+        buildStep3Flap('x', +1), // Cánh +Z
+        buildStep3Flap('x', -1)  // Cánh -Z
+      ];
+
+      // 3. Khối bột bánh trong lòng khuôn (hiện khi gấp 3D)
+      const doughGeo = new THREE.CylinderGeometry(a * 0.707 * 0.95, ap * 0.707 * 0.95, h * 0.90, 4);
+      const doughMat = new THREE.MeshStandardMaterial({
+        color: 0xF7E7CD, roughness: 0.7, transparent: true, opacity: 0.85
+      });
+      doughMesh = new THREE.Mesh(doughGeo, doughMat);
+      doughMesh.rotation.y = Math.PI / 4;
+      doughMesh.position.y = (h * 0.90) / 2;
+      root.add(doughMesh);
+
+      // Cập nhật trạng thái xoay ban đầu
+      updateStep3Unfold(unfoldProgress);
+
+      // Nhãn chú thích 3D
+      addLabel('Miệng khuôn 18cm', V(0, h + 0.15, halfA + 0.15), 'result');
+      addLabel('Đáy khuôn 10cm', V(0, -0.05, halfAp + 0.18));
+      addLabel('Cạnh nghiêng d ≈ 8,94cm', V(halfA + 0.15, h / 2, 0), 'jade');
+
+      document.getElementById('scene-chip').textContent = 'Bước 3 · Nhà thiết kế: Khuôn bánh kim loại';
+      document.getElementById('distance-readout').textContent = unfoldProgress === 0 ? 'Dung tích = 1,61 lít' : unfoldProgress === 1 ? 'Khai triển phẳng (Phôi 27,89 cm)' : 'Góc nghiêng: ' + ((1 - unfoldProgress)*63.435).toFixed(1) + '°';
+      document.getElementById('distance-readout').style.color = '#34D399';
     }
 
     /* STEP 4: Xưởng gốm bonsai so sánh 3 chậu */
@@ -752,17 +817,27 @@
       <div class="card">
         <h3>Tính toán độ dài & Dung tích khuôn:</h3>
         <p class="body-small">
-          • Độ dài cạnh bên tấm kim loại cần cắt:<br>
-          <span style="font-family:'JetBrains Mono';color:var(--jade-deep);font-weight:700">c = √(8² + (18−10)²/2) = √(64 + 32) = √96 ≈ 9,80 cm (hoặc góc đáy ≈ 9,24cm)</span>
+          • Độ dài cạnh nghiêng tấm kim loại cần cắt:<br>
+          <span style="font-family:'JetBrains Mono';color:var(--jade-deep);font-weight:700">d = √(8² + ((18−10)/2)²) = √(64 + 16) = √80 = 4√5 ≈ 8,94 cm</span>
         </p>
         <div class="formula">
           <span>V = (1/3) · (18² + 10² + 18·10) · 8 = 1.610,67 cm³</span>
           <span class="formula-badge">≈ 1,61 lít</span>
         </div>
         
-        <button class="btn btn-secondary" style="width:100%;margin:6px 0" onclick="lesson.toggleUnfold()">
-          <i class="ti ${isUnfolded?'ti-box':'ti-sparkles'}"></i> ${isUnfolded?'Gập lại thành Khuôn 3D':'Mở bung xem tấm kim loại phẳng'}
-        </button>
+        <div class="control" style="margin:10px 0">
+          <label>Trạng thái khai triển: <output id="unfold-out">${(unfoldProgress*100).toFixed(0)}% (${unfoldProgress===0?'Gấp 3D':unfoldProgress===1?'Trải phẳng 2D':'Đang mở'})</output></label>
+          <input type="range" id="unfold-slider" min="0" max="1" step="0.01" value="${unfoldProgress}" oninput="lesson.onUnfoldSlider(this.value)">
+        </div>
+
+        <div class="btn-row" style="margin-bottom:10px">
+          <button class="btn btn-secondary" onclick="lesson.toggleAutoUnfold()" id="btn-auto-anim">
+            <i class="ti ${autoUnfolding?'ti-player-pause':'ti-player-play'}"></i> ${autoUnfolding?'Tạm dừng':'▶ Tự động gấp/mở'}
+          </button>
+          <button class="btn btn-secondary" onclick="lesson.togglePresetUnfold()" id="btn-preset-toggle">
+            <i class="ti ${unfoldProgress>0.5?'ti-box':'ti-layout-board-split'}"></i> ${unfoldProgress>0.5?'Gập kín 3D':'Mở bung 100%'}
+          </button>
+        </div>
 
         <p class="body-small" style="font-weight:700;margin-top:10px">3-Strike Quiz: Bẫy lăng trụ</p>
         <p class="body-small">Nếu cô Mai dùng nhầm công thức V = S_lớn · h (lăng trụ), kết quả sẽ sai thế nào?</p>
@@ -770,7 +845,7 @@
         <button class="choice ${quiz3Choice===0?'wrong':''}" onclick="lesson.answerQ3(0)" ${quiz3Done?'disabled':''}>B. Sai giảm đi vì đáy lớn</button>
         <div id="q3-fb">${quiz3Choice===1?'<div class="feedback good">Chính xác! Khối chóp cụt thu nhỏ dần về đáy nên thể tích luôn nhỏ hơn lăng trụ cùng đáy lớn.</div>':quiz3Choice===0?'<div class="feedback bad">Chưa chính xác. Dùng toàn bộ diện tích đáy lớn trên suốt chiều cao sẽ làm kết quả tăng quá mức.</div>':''}</div>
       </div>
-      ${notebook('Khuôn chóp cụt thu nhỏ dần, không được dùng công thức V = S · h của khối lăng trụ.')}
+      ${notebook('Khuôn chóp cụt thu nhỏ dần, không được dùng công thức V = S · h của khối lăng trụ.<br>Khi trải phẳng, 4 mặt bên xoay quanh 4 cạnh đáy nhỏ với góc nghiêng arctan(2) ≈ 63,435°.')}
       ${navButtons('Tiếp: Xưởng gốm bonsai',quiz3Done)}`;
     }
 
@@ -850,6 +925,7 @@
        ========================================================================= */
     window.lesson={
       goToStep(n){
+        if(currentStep===3 && autoUnfolding) autoUnfolding=false;
         currentStep=n;
         renderStep();
         LMS().event('step-change',{step:n});
@@ -882,8 +958,27 @@
         renderStep();
         LMS().event('quiz2-answered',{correct:choice===1});
       },
-      toggleUnfold(){
-        isUnfolded=!isUnfolded;
+      onUnfoldSlider(val){
+        autoUnfolding=false;
+        unfoldProgress=+val;
+        updateStep3Unfold(unfoldProgress);
+        const out=document.getElementById('unfold-out');
+        if(out)out.textContent=`${(unfoldProgress*100).toFixed(0)}% (${unfoldProgress===0?'Gấp 3D':unfoldProgress===1?'Trải phẳng 2D':'Đang mở'})`;
+        const animBtn=document.getElementById('btn-auto-anim');
+        if(animBtn)animBtn.innerHTML='<i class="ti ti-player-play"></i> ▶ Tự động gấp/mở';
+        const presetBtn=document.getElementById('btn-preset-toggle');
+        if(presetBtn)presetBtn.innerHTML=`<i class="ti ${unfoldProgress>0.5?'ti-box':'ti-layout-board-split'}"></i> ${unfoldProgress>0.5?'Gập kín 3D':'Mở bung 100%'}`;
+        const readout=document.getElementById('distance-readout');
+        if(readout)readout.textContent=unfoldProgress===0?'Dung tích = 1,61 lít':unfoldProgress===1?'Khai triển phẳng (Phôi 27,89 cm)':'Góc nghiêng: '+((1-unfoldProgress)*63.435).toFixed(1)+'°';
+      },
+      toggleAutoUnfold(){
+        autoUnfolding=!autoUnfolding;
+        const animBtn=document.getElementById('btn-auto-anim');
+        if(animBtn)animBtn.innerHTML=`<i class="ti ${autoUnfolding?'ti-player-pause':'ti-player-play'}"></i> ${autoUnfolding?'Tạm dừng':'▶ Tự động gấp/mở'}`;
+      },
+      togglePresetUnfold(){
+        autoUnfolding=false;
+        unfoldProgress=unfoldProgress>0.5?0:1;
         buildStep3Scene();
         renderStep();
       },
