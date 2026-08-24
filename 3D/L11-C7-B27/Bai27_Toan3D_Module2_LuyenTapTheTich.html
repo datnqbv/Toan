@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Bài 27 · Module 2: Luyện tập tính thể tích</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script type="application/json" id="athena-context">
+  {
+    "version":"1.0",
+    "subject":"Toán 11",
+    "lesson":"Bài 27 · Thể tích",
+    "module":"Module 2: Luyện tập tổng hợp tính thể tích",
+    "objectives":[
+      "Vận dụng công thức thể tích chóp cụt đều tính khối lượng bê tông móng cột công trình xây dựng",
+      "Nắm vững kỹ thuật tỉ số thể tích Simpson cho chóp tứ giác bằng cách chia thành 2 tứ diện",
+      "Tính cạnh bên và dung tích khuôn bánh kim loại hình chóp cụt đều",
+      "Giải quyết bài toán mô hình hoá tối ưu đa tiêu chí trong dự án xưởng gốm bonsai"
+    ],
+    "steps":[
+      {"step":1,"title":"Kỹ sư: Khối lượng bê tông móng"},
+      {"step":2,"title":"Kỹ sư: Tỉ số thể tích Simpson"},
+      {"step":3,"title":"Thiết kế: Khuôn bánh kim loại"},
+      {"step":4,"title":"Thiết kế: Xưởng gốm bonsai"}
+    ]
+  }
+  </script>
+  <style>
+    :root{
+      --cream:#FAF7F0;--cream-2:#F0EADD;--cream-3:#E7DECC;--paper-line:#E5DECF;--paper-line-2:#D6CCB6;
+      --ink:#1A1A1A;--ink-2:#514C44;--ink-3:#7C756A;--ink-faint:#ABA396;
+      --jade:#3CA57A;--jade-deep:#2D8B6F;--jade-dark:#14432F;--jade-text:#1B5E48;--jade-soft:#A9D0BE;--jade-pale:#DCEAE1;
+      --sage:#A8C9B8;--sage-deep:#7CA792;--sage-text:#46685A;--sage-pale:#E1ECE4;
+      --accent:#E8A24A;--accent-deep:#CE8A33;--accent-text:#8A551A;--accent-pale:#F7E7CD;
+      --correct:#2D8B6F;--correct-bg:#DCEAE1;--wrong:#C15F3C;--wrong-bg:#F3E2D6;--warning:#C58A2E;--warning-bg:#F5E7CB;--info:#4E7F92;--info-bg:#DCE7EB;
+      --il-slate:#64748b;--il-terracotta:#C15F3C;--il-ochre:#D97706;--il-dusty-blue:#4E7F92;--il-sand:#94a3b8;--il-olive:#557A46;
+      --white:#FFFFFF;--radius:10px;--radius-lg:14px;--radius-sm:6px;
+      --shadow:0 4px 12px rgba(45,139,111,.10);--shadow-sm:0 2px 6px rgba(26,26,26,.05);--canvas-bg:#0a1628;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--cream);color:var(--ink);font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:17px;line-height:1.65}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+    header{height:64px;padding:10px 20px;background:linear-gradient(135deg,var(--jade-dark),var(--jade-deep));color:var(--white);display:flex;align-items:center;gap:14px}
+    .header-badge{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.13);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+    header h1{margin:0;flex:1;font-size:18px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .header-progress{font:700 12px 'JetBrains Mono',monospace;white-space:nowrap}
+    
+    .app-shell{height:calc(100dvh - 64px);min-height:600px;display:flex;overflow:hidden}
+    .viewport{position:relative;flex:1;min-width:0;background:var(--canvas-bg);overflow:hidden}
+    .viewport canvas{width:100%;height:100%;display:block;touch-action:none}
+    
+    .label-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+    .label{position:absolute;transform:translate(-50%,-115%);padding:2px 6px;border-radius:5px;background:rgba(10,22,40,.82);color:var(--white);font:700 13px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;text-shadow:0 1px 3px #000;white-space:nowrap;will-change:transform}
+    .label.result{color:#FAC775}
+    .label.jade{color:#34D399}
+    .label.accent{color:#FBBF24}
+    .label.blue{color:#7DD3FC}
+    .label.olive{color:#A3E635}
+
+    .canvas-top{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
+    .scene-chip{padding:6px 10px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:rgba(10,22,40,.78);color:rgba(255,255,255,.86);font-size:12px;font-weight:700;backdrop-filter:blur(6px)}
+    .distance-readout{padding:8px 11px;border:1px solid rgba(250,199,117,.4);border-radius:9px;background:rgba(10,22,40,.84);color:#FAC775;font:700 15px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+    
+    .canvas-actions{position:absolute;left:14px;bottom:14px;display:flex;gap:8px}
+    .canvas-btn{min-height:40px;border:1px solid rgba(255,255,255,.2);border-radius:9px;background:rgba(10,22,40,.82);color:var(--white);padding:7px 11px;font-size:12px;font-weight:700;transition:all .15s ease}
+    .canvas-btn:hover{background:var(--jade-deep);color:#fff}
+    .canvas-hint{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);padding:5px 12px;border:1px solid rgba(255,255,255,.15);border-radius:20px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.78);font-size:11.5px;white-space:nowrap;pointer-events:none}
+    
+    .sidebar{width:390px;flex:0 0 390px;background:var(--white);border-left:1px solid var(--paper-line);display:flex;flex-direction:column;overflow:auto}
+    .step-tabs{position:sticky;top:0;z-index:8;display:flex;background:var(--white);border-bottom:1px solid var(--paper-line)}
+    .step-tab{flex:1;min-height:48px;border:0;border-bottom:3px solid transparent;background:var(--white);color:var(--ink-3);font-size:11px;font-weight:700;text-transform:uppercase}
+    .step-tab.active{color:var(--jade-dark);border-bottom-color:var(--jade-deep);background:var(--jade-pale)}
+    .step-tab.done{color:var(--jade-deep)}
+    .step-body{padding:16px;display:flex;flex-direction:column;gap:12px}
+    
+    .eyebrow{margin:0 0 4px;color:var(--ink-3);font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+    .step-title{margin:0 0 8px;color:var(--jade-dark);font-size:19px;line-height:1.35}
+    .athena{margin:6px 0;padding:11px 12px;border-left:4px solid var(--jade-deep);border-radius:0 9px 9px 0;background:var(--jade-pale);color:var(--jade-text);font-size:14px}
+    .athena b{display:block;margin-bottom:3px;color:var(--jade-dark)}
+    
+    .card{margin:6px 0;padding:12px;border:1px solid var(--paper-line);border-radius:var(--radius);background:var(--cream)}
+    .card h3{margin:0 0 7px;color:var(--jade-dark);font-size:14px}
+    .body-small{margin:6px 0;color:var(--ink-2);font-size:13.5px;line-height:1.55}
+    
+    .hook-svg-box{background:#fff;border:1px solid var(--paper-line);border-radius:var(--radius);padding:8px;margin:4px 0;box-shadow:var(--shadow-sm);text-align:center}
+    .hook-svg-box svg{width:100%;max-height:150px;display:block;margin:0 auto}
+
+    .formula{padding:8px 10px;border:1px solid var(--info);border-radius:8px;background:var(--info-bg);font:700 13px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;display:flex;justify-content:space-between;align-items:center;margin:6px 0}
+    .formula-badge{font-size:10.5px;padding:2px 6px;border-radius:4px;background:#fff;color:var(--info);border:1px solid var(--info);font-family:'Be Vietnam Pro',sans-serif;font-weight:700}
+
+    .comparison-table{width:100%;border-collapse:collapse;margin:8px 0;font-size:12.5px}
+    .comparison-table th,.comparison-table td{padding:6px 8px;border:1px solid var(--paper-line-2);text-align:left}
+    .comparison-table th{background:var(--cream-2);color:var(--jade-dark);font-weight:700}
+    .comparison-table tr.highlight{background:var(--jade-pale);font-weight:700;color:var(--jade-text)}
+    .comparison-table tr.wrong-row{background:var(--wrong-bg);color:var(--wrong)}
+
+    .btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .btn{min-height:44px;border:0;border-radius:9px;padding:9px 13px;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:1}
+    .btn-primary{background:var(--jade-deep);color:var(--white);box-shadow:0 3px 8px rgba(45,139,111,.2)}
+    .btn-primary:hover:not(:disabled){background:var(--jade-dark)}
+    .btn-secondary{border:1px solid var(--jade-deep);background:var(--white);color:var(--jade-deep)}
+    .btn-secondary:hover:not(:disabled){background:var(--jade-pale)}
+    .btn:disabled{opacity:.48;cursor:not-allowed}
+
+    .choice{display:block;width:100%;min-height:44px;margin:6px 0;padding:8px 10px;border:1px solid var(--paper-line-2);border-radius:9px;background:var(--white);color:var(--ink);text-align:left;font-size:13px}
+    .choice.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--jade-text);font-weight:700}
+    .choice.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:var(--wrong);font-weight:700;text-decoration:line-through}
+    .choice.selected{border-color:var(--jade-deep);background:var(--jade-pale);font-weight:700}
+
+    .feedback{margin-top:6px;padding:8px 10px;border-radius:8px;font-size:12.5px;line-height:1.5}
+    .feedback.good{background:var(--correct-bg);color:var(--jade-text);border-left:3px solid var(--correct)}
+    .feedback.bad{background:var(--wrong-bg);color:var(--wrong);border-left:3px solid var(--wrong)}
+    
+    .notebook{margin-top:8px;padding:10px;border:1px dashed var(--sage-deep);border-radius:9px;background:var(--sage-pale);color:var(--sage-text);font-size:13px}
+    .notebook b{color:var(--jade-dark)}
+
+    @media(max-width:768px){
+      body{min-height:100vh;overflow-y:auto}
+      .app-shell{display:flex!important;width:100%;height:auto!important;min-height:auto!important;max-height:none!important;flex-direction:column!important;overflow:visible!important}
+      .viewport{position:sticky!important;top:0!important;z-index:50!important;flex:none!important;width:100%!important;height:calc((100vh - 58px)*.5)!important;height:calc((100dvh - 58px)*.5)!important;min-height:240px!important;border-bottom:1px solid var(--paper-line);box-shadow:0 4px 14px rgba(0,0,0,.4)}
+      .sidebar{width:100%!important;min-width:0;height:auto!important;max-height:none!important;flex:none!important;border-left:0;border-top:1px solid var(--paper-line);overflow:visible!important}
+      .step-tabs{position:static;width:100%;min-width:0;overflow-x:auto}
+      .step-tab{min-width:0}
+      .step-body{width:100%;min-width:0;overflow:visible}
+      .athena,.card,.notebook{max-width:100%;overflow-wrap:anywhere}
+      .formula{max-width:100%;overflow-x:auto}
+      .canvas-hint{display:none}
+    }
+    @media(max-width:560px){
+      header{height:58px;min-height:58px;padding:7px 10px;gap:7px;flex-wrap:nowrap}
+      .header-badge{font-size:9px;padding:2px 6px}
+      header h1{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .header-progress{display:none}
+      .sidebar,.step-tabs,.step-body{width:100%!important;max-width:100%!important}
+      .step-tab{flex:0 0 25%;width:25%;min-height:44px;font-size:9.5px}
+      .step-body{padding:12px;overflow:visible}
+      .step-title{font-size:17.5px}
+      .canvas-top{top:8px;left:8px;right:8px}
+      .scene-chip{font-size:10px;padding:4px 7px}
+      .distance-readout{font-size:12px;padding:5px 7px}
+      .canvas-actions{left:8px;bottom:8px}
+      .canvas-btn{min-height:36px;padding:6px 9px}
+      .card{padding:10px}
+    }
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <header>
+    <span class="header-badge">🧊 Hình học không gian</span>
+    <h1>Bài 27 · Module 2: Luyện tập tính thể tích</h1>
+    <span class="header-progress" id="header-progress">BƯỚC 1/4</span>
+  </header>
+  
+  <main class="app-shell">
+    <!-- VIEWPORT 3D -->
+    <section class="viewport" id="canvas-wrap" aria-label="Mô hình luyện tập thể tích 3D">
+      <canvas id="three-canvas"></canvas>
+      <div class="label-layer" id="label-layer"></div>
+      <div class="canvas-top">
+        <span class="scene-chip" id="scene-chip">Móng cột bê tông chóp cụt</span>
+        <span class="distance-readout" id="distance-readout">V = 3,92 m³</span>
+      </div>
+      <div class="canvas-actions">
+        <button class="canvas-btn" onclick="setCamera('iso')" title="Phối cảnh 3D"><i class="ti ti-rotate-3d"></i> 3D</button>
+        <button class="canvas-btn" onclick="setCamera('front')" title="Trực diện"><i class="ti ti-border-all"></i> Front</button>
+        <button class="canvas-btn" onclick="setCamera('top')" title="Từ trên"><i class="ti ti-layout-grid"></i> Top</button>
+      </div>
+      <div class="canvas-hint">Kéo chuột để xoay · Cuộn để zoom</div>
+    </section>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <nav class="step-tabs" aria-label="Các bước bài học">
+        <button class="step-tab active" data-step="1" onclick="lesson.goToStep(1)">Bước 1</button>
+        <button class="step-tab" data-step="2" onclick="lesson.goToStep(2)">Bước 2</button>
+        <button class="step-tab" data-step="3" onclick="lesson.goToStep(3)">Bước 3</button>
+        <button class="step-tab" data-step="4" onclick="lesson.goToStep(4)">Bước 4</button>
+      </nav>
+      <div class="step-body" id="step-body"></div>
+    </aside>
+  </main>
+
+  <script>
+  (()=>{'use strict';
+    const LMS=()=>window.AiducationLMS||{ready(){},event(){},complete(){},resize(){}};
+    const canvas=document.getElementById('three-canvas'),wrap=document.getElementById('canvas-wrap'),stepBody=document.getElementById('step-body');
+    const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
+    renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+    renderer.setClearColor(0x0a1628);
+    renderer.outputEncoding=THREE.sRGBEncoding;
+
+    const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(46,1,.1,100),controls=new THREE.OrbitControls(camera,canvas);
+    controls.enableDamping=true;controls.dampingFactor=.08;controls.minDistance=3;controls.maxDistance=25;
+
+    scene.add(new THREE.HemisphereLight(0xddeeff,0x172235,1.1));
+    const keyLight=new THREE.DirectionalLight(0xffffff,1.0);keyLight.position.set(6,10,8);scene.add(keyLight);
+    const backLight=new THREE.DirectionalLight(0x38bdf8,.35);backLight.position.set(-5,-3,-6);scene.add(backLight);
+
+    const C={
+      slate:0x64748b,terracotta:0xC15F3C,ochre:0xD97706,dustyBlue:0x4E7F92,sand:0x94a3b8,
+      jade:0x3CA57A,jadeDeep:0x2D8B6F,accent:0xE8A24A,point:0xFAC775,grid:0x1e293b,olive:0x8A9A5B
+    };
+
+    const V=(x=0,y=0,z=0)=>new THREE.Vector3(x,y,z);
+
+    let currentStep=1,unlocked=1,root=null,labels=[];
+    let showSplit=true;       // Step 2: Bật/tắt chia 2 tứ diện
+    let isUnfolded=false;     // Step 3: Mở bung trải phẳng khuôn bánh
+    let optChosen=null;       // Step 4: Chọn phương án chậu bonsai (A, B, C)
+    let quiz1Done=false,quiz2Done=false,quiz3Done=false;
+
+    function dispose(obj){if(!obj)return;obj.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose())});if(obj.parent)obj.parent.remove(obj)}
+    function clearScene(){
+      dispose(root);root=new THREE.Group();scene.add(root);
+      labels.forEach(x=>x.el.remove());labels=[];
+    }
+    function addLabel(text,pos,cls=''){
+      const el=document.createElement('div');el.className='label '+cls;el.textContent=text;
+      document.getElementById('label-layer').appendChild(el);
+      const item={el,pos:pos.clone()};labels.push(item);return item;
+    }
+    function updateLabels(){
+      const w=wrap.clientWidth,h=wrap.clientHeight;
+      labels.forEach(l=>{
+        const p=l.pos.clone().project(camera);
+        if(p.z>1||Math.abs(p.x)>1.1||Math.abs(p.y)>1.1){l.el.style.display='none';return}
+        l.el.style.display='block';
+        l.el.style.left=((p.x*.5+.5)*w)+'px';
+        l.el.style.top=((-p.y*.5+.5)*h)+'px';
+      });
+    }
+
+    // Grid sàn
+    const floorGrid=new THREE.GridHelper(14,14,0x27354a,0x172235);
+    floorGrid.position.y=-0.01;
+    scene.add(floorGrid);
+
+    // Resize
+    const ro=new ResizeObserver(()=>{
+      if(!wrap.clientWidth||!wrap.clientHeight)return;
+      camera.aspect=wrap.clientWidth/wrap.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(wrap.clientWidth,wrap.clientHeight);
+    });
+    ro.observe(wrap);
+
+    /* Animation Loop */
+    function animate(){
+      requestAnimationFrame(animate);
+      controls.update();
+      updateLabels();
+      renderer.render(scene,camera);
+    }
+    animate();
+
+    /* =========================================================================
+       STEP 3D BUILDERS
+       ========================================================================= */
+
+    /* STEP 1: Khối bê tông móng cột (Chóp cụt đều) */
+    function buildStep1Scene(){
+      clearScene();
+      const a=3.0,b=1.8,h=2.25; // Tỉ lệ 2m -> 1.2m -> cao 1.5m
+
+      // Hố móng đất nền bao quanh
+      const pitGeo=new THREE.RingGeometry(2.4,4.2,4);
+      const pitMat=new THREE.MeshStandardMaterial({color:0xD8C4A0,roughness:0.9,side:THREE.DoubleSide});
+      const pit=new THREE.Mesh(pitGeo,pitMat);
+      pit.rotation.x=Math.PI/2;pit.rotation.z=Math.PI/4;pit.position.y=0.01;root.add(pit);
+
+      // Khối bê tông chóp cụt
+      const pyrGeo=new THREE.CylinderGeometry(b*0.707,a*0.707,h,4);
+      const pyrMat=new THREE.MeshStandardMaterial({color:0x8a9199,roughness:0.6,metalness:0.1,transparent:true,opacity:0.8});
+      const pyrMesh=new THREE.Mesh(pyrGeo,pyrMat);
+      pyrMesh.rotation.y=Math.PI/4;pyrMesh.position.y=h/2;root.add(pyrMesh);
+
+      const edges=new THREE.LineSegments(new THREE.EdgesGeometry(pyrGeo),new THREE.LineBasicMaterial({color:0xffffff,linewidth:1.5}));
+      edges.rotation.y=Math.PI/4;edges.position.y=h/2;root.add(edges);
+
+      // 4 Đường thép cốt móng nét đứt
+      const dBottom=a/2*0.75,dTop=b/2*0.75;
+      [[-1,-1],[1,-1],[1,1],[-1,1]].forEach(([sx,sz])=>{
+        const p1=V(sx*dBottom,0.1,sz*dBottom),p2=V(sx*dTop,h-0.1,sz*dTop);
+        const rebar=new THREE.Line(new THREE.BufferGeometry().setFromPoints([p1,p2]),new THREE.LineDashedMaterial({color:C.ochre,dashSize:0.12,gapSize:0.08,linewidth:2}));
+        rebar.computeLineDistances();root.add(rebar);
+      });
+
+      // Đoạn chiều cao h
+      const hLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints([V(0,0,0),V(0,h,0)]),new THREE.LineBasicMaterial({color:C.jade,linewidth:3}));
+      root.add(hLine);
+
+      addLabel('Đáy dưới S = 4 m²',V(0,0.1,a/2+0.35),'jade');
+      addLabel('Đáy trên S\' = 1,44 m²',V(0,h+0.25,b/2+0.25),'accent');
+      addLabel('h = 1,5m',V(0.25,h/2,0),'jade');
+
+      document.getElementById('scene-chip').textContent='Bước 1 · Kỹ sư: Tính khối lượng bê tông móng';
+      document.getElementById('distance-readout').textContent='V = 3,92 m³ (9,408 tấn)';
+      document.getElementById('distance-readout').style.color='#34D399';
+    }
+
+    /* STEP 2: Tỉ số thể tích Simpson cho chóp tứ giác */
+    function buildStep2Scene(){
+      clearScene();
+      const a=3.6,h=4.2;
+      const pS=V(0,h,0),pO=V(0,0,0);
+      const pA=V(-a/2,0,a/2),pB=V(a/2,0,a/2),pC=V(a/2,0,-a/2),pD=V(-a/2,0,-a/2);
+
+      // Điểm M, N, P, Q trên SA, SB, SC, SD
+      const pM=pS.clone().add(pA.clone().sub(pS).multiplyScalar(0.5));
+      const pN=pS.clone().add(pB.clone().sub(pS).multiplyScalar(0.7));
+      const pP=pS.clone().add(pC.clone().sub(pS).multiplyScalar(0.5));
+      const pQ=pS.clone().add(pD.clone().sub(pS).multiplyScalar(0.3));
+
+      // Khung chóp lớn
+      const pyrEdges=new THREE.BufferGeometry().setFromPoints([
+        pA,pB, pB,pC, pC,pD, pD,pA,
+        pS,pA, pS,pB, pS,pC, pS,pD
+      ]);
+      root.add(new THREE.LineSegments(pyrEdges,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.4})));
+
+      // Đường chéo đáy AC
+      root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pA,pC]),new THREE.LineBasicMaterial({color:C.jade,linewidth:3})));
+      // Đường chéo MP tầng trên
+      const lineMP=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pM,pP]),new THREE.LineDashedMaterial({color:C.jade,dashSize:0.12,gapSize:0.08,linewidth:3}));
+      lineMP.computeLineDistances();root.add(lineMP);
+
+      // Khối S.MNPQ nhỏ
+      const smallEdges=new THREE.BufferGeometry().setFromPoints([
+        pM,pN, pN,pP, pP,pQ, pQ,pM
+      ]);
+      root.add(new THREE.LineSegments(smallEdges,new THREE.LineBasicMaterial({color:C.accent,linewidth:2.5})));
+
+      if(showSplit){
+        // Tứ diện 1: S.ABC tô màu dusty-blue
+        const geo1=new THREE.BufferGeometry();
+        geo1.setAttribute('position',new THREE.BufferAttribute(new Float32Array([
+          pS.x,pS.y,pS.z, pA.x,pA.y,pA.z, pB.x,pB.y,pB.z,
+          pS.x,pS.y,pS.z, pB.x,pB.y,pB.z, pC.x,pC.y,pC.z,
+          pS.x,pS.y,pS.z, pC.x,pC.y,pC.z, pA.x,pA.y,pA.z,
+          pA.x,pA.y,pA.z, pC.x,pC.y,pC.z, pB.x,pB.y,pB.z
+        ]),3));
+        geo1.computeVertexNormals();
+        root.add(new THREE.Mesh(geo1,new THREE.MeshStandardMaterial({color:0x4E7F92,transparent:true,opacity:0.35,side:THREE.DoubleSide})));
+
+        // Tứ diện 2: S.ACD tô màu olive
+        const geo2=new THREE.BufferGeometry();
+        geo2.setAttribute('position',new THREE.BufferAttribute(new Float32Array([
+          pS.x,pS.y,pS.z, pA.x,pA.y,pA.z, pC.x,pC.y,pC.z,
+          pS.x,pS.y,pS.z, pC.x,pC.y,pC.z, pD.x,pD.y,pD.z,
+          pS.x,pS.y,pS.z, pD.x,pD.y,pD.z, pA.x,pA.y,pA.z,
+          pA.x,pA.y,pA.z, pD.x,pD.y,pD.z, pC.x,pC.y,pC.z
+        ]),3));
+        geo2.computeVertexNormals();
+        root.add(new THREE.Mesh(geo2,new THREE.MeshStandardMaterial({color:0x8A9A5B,transparent:true,opacity:0.35,side:THREE.DoubleSide})));
+      }
+
+      // Điểm M, N, P, Q
+      [pM,pN,pP,pQ].forEach((pt,i)=>{
+        const dot=new THREE.Mesh(new THREE.SphereGeometry(0.08,12,12),new THREE.MeshBasicMaterial({color:C.accent}));
+        dot.position.copy(pt);root.add(dot);
+      });
+      [pS,pA,pB,pC,pD].forEach(pt=>{
+        const dot=new THREE.Mesh(new THREE.SphereGeometry(0.06,12,12),new THREE.MeshBasicMaterial({color:0xffffff}));
+        dot.position.copy(pt);root.add(dot);
+      });
+
+      addLabel('S (Đỉnh)',pS.clone().add(V(0,0.18,0)));
+      addLabel('M (0,5)',pM.clone().add(V(-0.25,0.05,0.25)),'accent');
+      addLabel('N (0,7)',pN.clone().add(V(0.25,0.05,0.25)),'accent');
+      addLabel('P (0,5)',pP.clone().add(V(0.25,0.05,-0.25)),'accent');
+      addLabel('Q (0,3)',pQ.clone().add(V(-0.25,0.05,-0.25)),'accent');
+      addLabel('Mặt phẳng chia (SAC)',V(0,h/2,0),'jade');
+
+      document.getElementById('scene-chip').textContent='Bước 2 · Kỹ sư: Tỉ số Simpson chóp tứ giác';
+      document.getElementById('distance-readout').textContent='V(S.MNPQ) = 4,00 (Đúng)';
+      document.getElementById('distance-readout').style.color='#34D399';
+    }
+
+    /* STEP 3: Khuôn bánh kim loại (Trải phẳng / Gập lại) */
+    function buildStep3Scene(){
+      clearScene();
+      const a=3.2,b=1.8,h=1.8; // 18cm miệng -> 10cm đáy -> cao 8cm
+      const pO=V(0,0,0);
+
+      // Đáy khuôn nhỏ
+      const baseGeo=new THREE.PlaneGeometry(b,b);
+      const metalMat=new THREE.MeshStandardMaterial({color:0xc7ccd1,metalness:0.4,roughness:0.3,side:THREE.DoubleSide});
+      const baseMesh=new THREE.Mesh(baseGeo,metalMat);
+      baseMesh.rotation.x=-Math.PI/2;baseMesh.position.y=0;root.add(baseMesh);
+
+      if(!isUnfolded){
+        // Khuôn dạng 3D chóp cụt
+        const moldGeo=new THREE.CylinderGeometry(a*0.707,b*0.707,h,4,1,true);
+        const moldMesh=new THREE.Mesh(moldGeo,metalMat);
+        moldMesh.rotation.y=Math.PI/4;moldMesh.position.y=h/2;root.add(moldMesh);
+
+        const edges=new THREE.LineSegments(new THREE.EdgesGeometry(moldGeo),new THREE.LineBasicMaterial({color:0xffffff}));
+        edges.rotation.y=Math.PI/4;edges.position.y=h/2;root.add(edges);
+
+        // Lớp bột bánh vàng nhạt rót đầy khuôn
+        const doughGeo=new THREE.CylinderGeometry(a*0.707*0.96,b*0.707*0.96,h*0.92,4);
+        const dough=new THREE.Mesh(doughGeo,new THREE.MeshStandardMaterial({color:0xF7E7CD,roughness:0.8}));
+        dough.rotation.y=Math.PI/4;dough.position.y=(h*0.92)/2;root.add(dough);
+
+        addLabel('Miệng khuôn 18cm',V(0,h+0.2,a/2+0.2),'result');
+        addLabel('Đáy khuôn 10cm',V(0,-0.1,b/2+0.25));
+        addLabel('Cạnh bên ≈ 9,24cm',V(a/2*0.707+0.2,h/2,0),'jade');
+
+        document.getElementById('distance-readout').textContent='Dung tích = 1,61 lít';
+      }else{
+        // Khai triển phẳng 4 mặt bên mở ra như 4 cánh hoa
+        const slantHeight=Math.sqrt(h*h+Math.pow((a-b)/2,2));
+        [0,1,2,3].forEach(idx=>{
+          const angle=idx*Math.PI/2;
+          const trapPts=[
+            V(-b/2,0,0), V(b/2,0,0),
+            V(a/2,0,slantHeight), V(-a/2,0,slantHeight)
+          ];
+          const flapGeo=new THREE.BufferGeometry();
+          flapGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array([
+            trapPts[0].x,0,trapPts[0].z,  trapPts[1].x,0,trapPts[1].z,  trapPts[2].x,0,trapPts[2].z,
+            trapPts[0].x,0,trapPts[0].z,  trapPts[2].x,0,trapPts[2].z,  trapPts[3].x,0,trapPts[3].z
+          ]),3));
+          flapGeo.computeVertexNormals();
+
+          const flap=new THREE.Mesh(flapGeo,metalMat);
+          const pivot=new THREE.Group();
+          pivot.rotation.y=angle;
+          pivot.position.set(0,0,0);
+          flap.position.z=b/2;
+          pivot.add(flap);
+          root.add(pivot);
+        });
+        addLabel('Tấm kim loại trải phẳng',V(0,0.1,0),'result');
+        document.getElementById('distance-readout').textContent='Khai triển phẳng';
+      }
+
+      document.getElementById('scene-chip').textContent='Bước 3 · Nhà thiết kế: Khuôn bánh kim loại';
+      document.getElementById('distance-readout').style.color='#34D399';
+    }
+
+    /* STEP 4: Xưởng gốm bonsai so sánh 3 chậu */
+    function buildStep4Scene(){
+      clearScene();
+      const h=2.5; // cao 15cm
+
+      // Mặt bàn xưởng gốm
+      const tableGeo=new THREE.BoxGeometry(10,0.2,4);
+      const table=new THREE.Mesh(tableGeo,new THREE.MeshStandardMaterial({color:0xD8C4A0,roughness:0.7}));
+      table.position.y=-0.1;root.add(table);
+
+      // Chậu A: Chóp cụt đều 20 -> 14 (V = 4.380)
+      const potAGeo=new THREE.CylinderGeometry(2.0*0.707,1.4*0.707,h,4);
+      const potAMat=new THREE.MeshStandardMaterial({color:C.terracotta,roughness:0.5});
+      const potA=new THREE.Mesh(potAGeo,potAMat);
+      potA.rotation.y=Math.PI/4;potA.position.set(-3.0,h/2,0);root.add(potA);
+
+      // Chậu B: Lăng trụ đứng 16 (V = 3.840)
+      const potBGeo=new THREE.BoxGeometry(1.6,h,1.6);
+      const potBMat=new THREE.MeshStandardMaterial({color:C.dustyBlue,roughness:0.5});
+      const potB=new THREE.Mesh(potBGeo,potBMat);
+      potB.position.set(0,h/2,0);root.add(potB);
+
+      // Chậu C: Chóp cụt dốc 22 -> 10 (V = 4.020)
+      const potCGeo=new THREE.CylinderGeometry(2.2*0.707,1.0*0.707,h,4);
+      const potCMat=new THREE.MeshStandardMaterial({color:C.ochre,roughness:0.5});
+      const potC=new THREE.Mesh(potCGeo,potCMat);
+      potC.rotation.y=Math.PI/4;potC.position.set(3.0,h/2,0);root.add(potC);
+
+      // 3 Cây bonsai tí hon
+      [-3.0,0,3.0].forEach(x=>{
+        const plant=new THREE.Mesh(new THREE.ConeGeometry(0.25,0.7,8),new THREE.MeshStandardMaterial({color:C.olive,roughness:0.8}));
+        plant.position.set(x,h+0.35,0);root.add(plant);
+      });
+
+      // Viền sáng xác nhận nếu chọn phương án A
+      if(optChosen==='A'){
+        const highGeo=new THREE.LineSegments(new THREE.EdgesGeometry(potAGeo),new THREE.LineBasicMaterial({color:C.jade,linewidth:4}));
+        highGeo.rotation.y=Math.PI/4;highGeo.position.copy(potA.position);root.add(highGeo);
+      }
+
+      addLabel('A: 4.380 cm³ (Tối ưu)',V(-3.0,h+0.85,0),'result');
+      addLabel('B: 3.840 cm³',V(0,h+0.85,0),'blue');
+      addLabel('C: 4.020 cm³ (Đáy lớn nhất)',V(3.0,h+0.85,0),'ochre');
+
+      document.getElementById('scene-chip').textContent='Bước 4 · Nhà thiết kế: Xưởng gốm bonsai';
+      document.getElementById('distance-readout').textContent=optChosen==='A'?'Phương án A: TỐI ƯU 🏆':'So sánh 3 phương án';
+      document.getElementById('distance-readout').style.color=optChosen==='A'?'#34D399':'#FAC775';
+    }
+
+    /* =========================================================================
+       CAMERA CONTROLS
+       ========================================================================= */
+    window.setCamera=function(mode){
+      if(currentStep===1){
+        if(mode==='top'){camera.position.set(0.01,6.5,0);controls.target.set(0,1,0)}
+        else if(mode==='front'){camera.position.set(0,1.5,6);controls.target.set(0,1,0)}
+        else{camera.position.set(5,3.5,5.5);controls.target.set(0,1,0)}
+      }else if(currentStep===2){
+        if(mode==='top'){camera.position.set(0.01,7.5,0);controls.target.set(0,1.8,0)}
+        else if(mode==='front'){camera.position.set(0,2.2,7);controls.target.set(0,2,0)}
+        else{camera.position.set(5.5,4,6.5);controls.target.set(0,1.8,0)}
+      }else if(currentStep===3){
+        if(mode==='top'){camera.position.set(0.01,6.5,0);controls.target.set(0,0.8,0)}
+        else if(mode==='front'){camera.position.set(0,1.5,5.5);controls.target.set(0,0.8,0)}
+        else{camera.position.set(4.5,3.2,5);controls.target.set(0,0.8,0)}
+      }else{
+        if(mode==='top'){camera.position.set(0.01,9,0);controls.target.set(0,1,0)}
+        else if(mode==='front'){camera.position.set(0,1.8,8.5);controls.target.set(0,1,0)}
+        else{camera.position.set(0,4.5,8);controls.target.set(0,1,0)}
+      }
+      camera.up.set(0,1,0);controls.update();
+    };
+
+    /* =========================================================================
+       UI RENDERERS & NAVIGATION
+       ========================================================================= */
+    function notebook(text){
+      return`<div class="notebook"><b><i class="ti ti-notebook"></i> Sổ tay kiến thức</b><br>${text}</div>`;
+    }
+    function navButtons(nextLabel='Tiếp tục',canNext=true){
+      const dis=!canNext?'disabled':'';
+      return`<div class="btn-row">
+        ${currentStep>1?'<button class="btn btn-secondary" onclick="lesson.prevStep()">← Quay lại</button>':''}
+        <button class="btn btn-primary" ${dis} onclick="${currentStep<4?'lesson.completeStep()':'lesson.finish()'}">${nextLabel} →</button>
+      </div>`;
+    }
+
+    function renderStep(){
+      document.getElementById('header-progress').textContent=`BƯỚC ${currentStep}/4`;
+      document.querySelectorAll('.step-tab').forEach(b=>{
+        const n=+b.dataset.step;
+        b.classList.toggle('active',n===currentStep);
+        b.classList.toggle('done',n<unlocked);
+        b.disabled=n>unlocked;
+      });
+
+      if(currentStep===1)renderStep1UI();
+      else if(currentStep===2)renderStep2UI();
+      else if(currentStep===3)renderStep3UI();
+      else if(currentStep===4)renderStep4UI();
+    }
+
+    /* STEP 1 UI */
+    function renderStep1UI(){
+      buildStep1Scene();
+      stepBody.innerHTML=`
+      <p class="eyebrow">Phần A · Kỹ sư xây dựng (Bước 1/4)</p>
+      <h2 class="step-title">Khối lượng bê tông móng cột</h2>
+      <div class="athena">
+        <b>✦ Athena (Chỉ huy công trường)</b>
+        Chào kỹ sư! Móng cột bê tông cốt thép có dạng chóp cụt đều: đáy dưới 2m × 2m, đáy trên 1,2m × 1,2m, cao 1,5m. Hãy tính thể tích bê tông và khối lượng móng (biết D ≈ 2.400 kg/m³).
+      </div>
+      <div class="hook-svg-box">
+        <svg viewBox="0 0 500 170" xmlns="http://www.w3.org/2000/svg">
+          <rect width="500" height="170" fill="var(--cream)"/>
+          <line x1="250" y1="20" x2="250" y2="150" stroke="var(--paper-line-2)" stroke-width="1.5" stroke-dasharray="3,3"/>
+          <!-- Nửa trái: Kỹ sư -->
+          <g transform="translate(110,75)">
+            <polygon points="-50,45 50,45 30,-35 -30,-35" fill="var(--il-slate)" opacity="0.45" stroke="var(--ink)" stroke-width="1.8"/>
+            <text x="0" y="65" font-family="'Be Vietnam Pro'" font-size="11" font-weight="700" fill="var(--ink-2)" text-anchor="middle">Móng Bê Tông (m³)</text>
+          </g>
+          <!-- Mũi tên kết nối -->
+          <path d="M 210 75 Q 250 45 290 75" fill="none" stroke="var(--jade)" stroke-width="2.5" marker-end="url(#arrow)"/>
+          <!-- Nửa phải: Nhà thiết kế -->
+          <g transform="translate(390,75)">
+            <polygon points="-40,40 40,40 25,-30 -25,-30" fill="var(--il-ochre)" opacity="0.45" stroke="var(--ink)" stroke-width="1.8"/>
+            <circle cx="0" cy="-35" r="5" fill="var(--il-olive)"/>
+            <text x="0" y="65" font-family="'Be Vietnam Pro'" font-size="11" font-weight="700" fill="var(--ink-2)" text-anchor="middle">Khuôn & Chậu Gốm (lít)</text>
+          </g>
+        </svg>
+      </div>
+      <div class="card">
+        <h3>Tính toán thể tích & khối lượng:</h3>
+        <p class="body-small">
+          • Đáy dưới: S = 2 × 2 = 4 m²<br>
+          • Đáy trên: S' = 1,2 × 1,2 = 1,44 m²<br>
+          • √(S · S') = √(4 × 1,44) = 2,4 m²
+        </p>
+        <div class="formula">
+          <span>V = (1/3) · (4 + 1,44 + 2,4) · 1,5 = 3,92 m³</span>
+          <span class="formula-badge">Chóp Cụt</span>
+        </div>
+        <div class="formula">
+          <span>Khối lượng m = 3,92 · 2.400 = 9.408 kg ≈ 9,408 tấn</span>
+        </div>
+
+        <p class="body-small" style="font-weight:700;margin-top:10px">3-Strike Quiz: Đổi đơn vị thể tích đúng</p>
+        <p class="body-small">Một bạn tính V = 3.920.000 cm³, rồi đổi sang m³ bằng cách CHIA CHO 100, ra 39.200 m³. Đúng hay Sai?</p>
+        <button class="choice ${quiz1Done?'correct':''}" onclick="lesson.answerQ1(1)" ${quiz1Done?'disabled':''}>Sai — 1 m³ = 1.000.000 cm³, phải chia cho 1.000.000 ra 3,92 m³</button>
+        <button class="choice ${quiz1Done?'wrong':''}" onclick="lesson.answerQ1(0)" ${quiz1Done?'disabled':''}>Đúng — 1 m = 100 cm nên chia cho 100</button>
+        <div id="q1-fb">${quiz1Done?'<div class="feedback good">Chính xác! Thể tích là đơn vị bậc 3: 1 m³ = 100³ = 1.000.000 cm³.</div>':''}</div>
+      </div>
+      ${notebook('• V(chóp cụt) = (1/3) · (S + S\' + √(S · S\')) · h<br>• Đổi đơn vị: 1 m³ = 1.000.000 cm³ = 1.000 lít.')}
+      ${navButtons('Tiếp: Tỉ số thể tích Simpson',quiz1Done)}`;
+    }
+
+    /* STEP 2 UI */
+    function renderStep2UI(){
+      buildStep2Scene();
+      stepBody.innerHTML=`
+      <p class="eyebrow">Phần A · Kỹ sư xây dựng (Bước 2/4)</p>
+      <h2 class="step-title">Tỉ số thể tích Simpson chóp tứ giác</h2>
+      <div class="athena">
+        <b>✦ Athena</b>
+        Cho chóp tứ giác đều S.ABCD (đáy 4×4, cao 6 ⇒ V = 32). Các điểm M, N, P, Q có tỉ lệ: SM/SA=0,5; SN/SB=0,7; SP/SC=0,5; SQ/SD=0,3. Hãy xem vì sao <b>KHÔNG ĐƯỢC nhân trực tiếp 4 tỉ số</b>!
+      </div>
+      <div class="card">
+        <h3>So sánh 2 cách tính (Bẫy lệch tới 58%):</h3>
+        <table class="comparison-table">
+          <tr><th>Phương pháp</th><th>Cách tính toán</th><th>Kết quả</th></tr>
+          <tr class="highlight">
+            <td>✓ Cách ĐÚNG<br>(Chia 2 tứ diện)</td>
+            <td>V(S.MNP) = 0,5·0,7·0,5·16 = 2,8<br>V(S.MPQ) = 0,5·0,5·0,3·16 = 1,2</td>
+            <td><b>4,00</b></td>
+          </tr>
+          <tr class="wrong-row">
+            <td>✗ Cách SAI<br>(Nhân 4 tỉ số)</td>
+            <td>0,5 · 0,7 · 0,5 · 0,3 · 32 = 1,68</td>
+            <td>1,68 (Lệch 58%)</td>
+          </tr>
+        </table>
+        <button class="btn btn-secondary" style="width:100%;margin:6px 0" onclick="lesson.toggleSplit()">
+          <i class="ti ti-layers-intersect"></i> ${showSplit?'Ẩn mặt phẳng chia tứ diện':'Hiện 2 tứ diện (Xanh & Olive)'}
+        </button>
+
+        <p class="body-small" style="font-weight:700;margin-top:10px">3-Strike Quiz: Bản chất công thức Simpson</p>
+        <p class="body-small">Vì sao không áp dụng trực tiếp tích 4 tỉ số cho chóp tứ giác?</p>
+        <button class="choice ${quiz2Done?'correct':''}" onclick="lesson.answerQ2(1)" ${quiz2Done?'disabled':''}>A. Vì Simpson chỉ chứng minh được cho TỨ DIỆN (3 cạnh từ 1 đỉnh độc lập)</button>
+        <button class="choice ${quiz2Done?'wrong':''}" onclick="lesson.answerQ2(0)" ${quiz2Done?'disabled':''}>B. Vì đáy là hình vuông nên không nhân được</button>
+        <div id="q2-fb">${quiz2Done?'<div class="feedback good">Chính xác! Chóp tứ giác phải chia nhỏ thành 2 tứ diện qua đường chéo rồi tính riêng từng phần.</div>':''}</div>
+      </div>
+      ${notebook('Tỉ số Simpson CHỈ dùng trực tiếp cho CHÓP TAM GIÁC. Với chóp tứ giác, bắt buộc chia thành 2 tam giác trước khi tính.')}
+      ${navButtons('Tiếp: Khuôn bánh kim loại',quiz2Done)}`;
+    }
+
+    /* STEP 3 UI */
+    function renderStep3UI(){
+      buildStep3Scene();
+      stepBody.innerHTML=`
+      <p class="eyebrow">Phần B · Nhà thiết kế (Bước 3/4)</p>
+      <h2 class="step-title">Khuôn bánh kim loại chóp cụt đều</h2>
+      <div class="athena">
+        <b>✦ Athena</b>
+        Cô Mai làm khuôn bánh kim loại hình chóp cụt đều: miệng khuôn a = 18cm, đáy khuôn b = 10cm, cao h = 8cm. Hãy tính dung tích khuôn (lít) và độ dài cạnh bên khi cắt gấp kim loại.
+      </div>
+      <div class="card">
+        <h3>Tính toán độ dài & Dung tích khuôn:</h3>
+        <p class="body-small">
+          • Độ dài cạnh bên tấm kim loại cần cắt:<br>
+          <span style="font-family:'JetBrains Mono';color:var(--jade-deep);font-weight:700">c = √(8² + (18−10)²/2) = √(64 + 32) = √96 ≈ 9,80 cm (hoặc góc đáy ≈ 9,24cm)</span>
+        </p>
+        <div class="formula">
+          <span>V = (1/3) · (18² + 10² + 18·10) · 8 = 1.610,67 cm³</span>
+          <span class="formula-badge">≈ 1,61 lít</span>
+        </div>
+        
+        <button class="btn btn-secondary" style="width:100%;margin:6px 0" onclick="lesson.toggleUnfold()">
+          <i class="ti ${isUnfolded?'ti-box':'ti-sparkles'}"></i> ${isUnfolded?'Gập lại thành Khuôn 3D':'Mở bung xem tấm kim loại phẳng'}
+        </button>
+
+        <p class="body-small" style="font-weight:700;margin-top:10px">3-Strike Quiz: Bẫy lăng trụ</p>
+        <p class="body-small">Nếu cô Mai dùng nhầm công thức V = S_lớn · h (lăng trụ), kết quả sẽ sai thế nào?</p>
+        <button class="choice ${quiz3Done?'correct':''}" onclick="lesson.answerQ3(1)" ${quiz3Done?'disabled':''}>A. Sai tăng quá mức (18² × 8 = 2.592 cm³ > 1.610 cm³)</button>
+        <button class="choice ${quiz3Done?'wrong':''}" onclick="lesson.answerQ3(0)" ${quiz3Done?'disabled':''}>B. Sai giảm đi vì đáy lớn</button>
+        <div id="q3-fb">${quiz3Done?'<div class="feedback good">Chính xác! Khối chóp cụt thu nhỏ dần về đáy nên thể tích luôn nhỏ hơn lăng trụ cùng đáy lớn.</div>':''}</div>
+      </div>
+      ${notebook('Khuôn chóp cụt thu nhỏ dần, không được dùng công thức V = S · h của khối lăng trụ.')}
+      ${navButtons('Tiếp: Xưởng gốm bonsai',quiz3Done)}`;
+    }
+
+    /* STEP 4 UI */
+    function renderStep4UI(){
+      buildStep4Scene();
+      stepBody.innerHTML=`
+      <p class="eyebrow">Phần B · Nhà thiết kế (Bước 4/4)</p>
+      <h2 class="step-title">Dự án Xưởng gốm bonsai: So sánh 3 phương án</h2>
+      <div class="athena">
+        <b>✦ Athena</b>
+        Xưởng gốm cần chọn 1 trong 3 mẫu chậu (cùng cao 15cm) để sản xuất: cần <b>chứa nhiều đất trồng nhất</b> (V lớn nhất) nhưng <b>tốn ít đất nung nhất</b> (đáy lớn nhỏ nhất).
+      </div>
+      <div class="card">
+        <h3>Bảng so sánh 3 phương án thiết kế:</h3>
+        <table class="comparison-table">
+          <tr><th>Mẫu</th><th>Hình dạng</th><th>Đáy lớn (cm)</th><th>Thể tích V</th></tr>
+          <tr class="${optChosen==='A'?'highlight':''}"><td><b>A</b></td><td>Chóp cụt (20→14)</td><td>400 cm²</td><td><b>4.380 cm³ 🏆</b></td></tr>
+          <tr class="${optChosen==='B'?'highlight':''}"><td><b>B</b></td><td>Lăng trụ (16)</td><td>256 cm²</td><td>3.840 cm³</td></tr>
+          <tr class="${optChosen==='C'?'highlight':''}"><td><b>C</b></td><td>Chóp cụt dốc (22→10)</td><td>484 cm² (Lớn nhất)</td><td>4.020 cm³</td></tr>
+        </table>
+        
+        <p class="body-small" style="font-weight:700;margin-top:8px">Phát hiện phản trực giác:</p>
+        <p class="body-small">Mẫu C có đáy lớn nhất (484 cm²) nhưng thể tích lại nhỏ hơn mẫu A (4.020 < 4.380 cm³) vì vách dốc thu hẹp quá nhanh!</p>
+
+        <p class="body-small" style="font-weight:700;margin-top:10px">Chọn phương án tối ưu theo 2 tiêu chí:</p>
+        <button class="choice ${optChosen==='A'?'selected':''}" onclick="lesson.chooseOpt('A')">✓ Chọn Phương án A: Thể tích LỚN NHẤT (4.380 cm³) và tiết kiệm đất nung hơn C</button>
+        <button class="choice ${optChosen==='B'?'selected':''}" onclick="lesson.chooseOpt('B')">Phương án B: Tiết kiệm đất nung nhất nhưng thể tích nhỏ nhất</button>
+        <button class="choice ${optChosen==='C'?'selected':''}" onclick="lesson.chooseOpt('C')">Phương án C: Tốn nhiều đất nung nhất mà thể tích không tối ưu</button>
+      </div>
+      ${notebook('• Thể tích chóp: V = (1/3) · S · h<br>• Thể tích lăng trụ: V = S · h<br>• Thể tích chóp cụt: V = (1/3) · (S + S\' + √(S · S\')) · h<br>• Bài toán tối ưu đa tiêu chí: Đáy lớn không đồng nghĩa thể tích lớn nhất.')}
+      ${navButtons('Hoàn thành toàn bộ Bài 27',optChosen!==null)}`;
+    }
+
+    /* =========================================================================
+       LESSON CONTROLLER
+       ========================================================================= */
+    window.lesson={
+      goToStep(n){
+        currentStep=n;
+        renderStep();
+        LMS().event('step-change',{step:n});
+      },
+      completeStep(){
+        if(currentStep<4){
+          unlocked=Math.max(unlocked,currentStep+1);
+          this.goToStep(currentStep+1);
+        }
+      },
+      prevStep(){
+        if(currentStep>1){
+          this.goToStep(currentStep-1);
+        }
+      },
+      answerQ1(choice){
+        quiz1Done=true;
+        renderStep();
+        LMS().event('quiz1-answered',{correct:choice===1});
+      },
+      toggleSplit(){
+        showSplit=!showSplit;
+        buildStep2Scene();
+        renderStep();
+      },
+      answerQ2(choice){
+        quiz2Done=true;
+        renderStep();
+        LMS().event('quiz2-answered',{correct:choice===1});
+      },
+      toggleUnfold(){
+        isUnfolded=!isUnfolded;
+        buildStep3Scene();
+        renderStep();
+      },
+      answerQ3(choice){
+        quiz3Done=true;
+        renderStep();
+        LMS().event('quiz3-answered',{correct:choice===1});
+      },
+      chooseOpt(opt){
+        optChosen=opt;
+        buildStep4Scene();
+        renderStep();
+        LMS().event('opt-chosen',{option:opt});
+      },
+      finish(){
+        LMS().complete({score:100});
+        alert('Chúc mừng bạn đã hoàn thành xuất sắc Module 2: Luyện tập tổng hợp tính thể tích!');
+      }
+    };
+
+    /* Init */
+    renderStep();
+    setCamera('iso');
+    LMS().ready({id:'bai27-module2-luyen-tap-the-tich'});
+  })();
+  </script>
+</body>
+</html>
