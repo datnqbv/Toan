@@ -528,12 +528,49 @@
       return V(inv*inv*p0.x+2*inv*t*mid.x+t*t*p2.x,inv*inv*p0.y+2*inv*t*mid.y+t*t*p2.y,inv*inv*p0.z+2*inv*t*mid.z+t*t*p2.z);
     }
 
+    function updatePyramidWaterLevel(fillRatio,h){
+      if(!pyrWaterMesh||!pyrClipPlane)return;
+      // Với hình chóp, V tỉ lệ với lập phương chiều cao phần nước còn lại.
+      const level=h*Math.cbrt(Math.max(0,Math.min(1,fillRatio)));
+      pyrWaterMesh.parent.updateWorldMatrix(true,false);
+      const point=pyrWaterMesh.parent.localToWorld(V(0,level,0));
+      const normal=V(0,-1,0).transformDirection(pyrWaterMesh.parent.matrixWorld);
+      pyrClipPlane.setFromNormalAndCoplanarPoint(normal,point);
+    }
+
     function updateWaterStream(p0,p2,grow){
-      const points=[];
-      for(let i=0;i<=24;i++)points.push(fallingPoint(p0,p2,0.28,(i/24)*Math.max(0.02,grow)));
-      const geo=new THREE.TubeGeometry(new THREE.CatmullRomCurve3(points),24,0.045,6,false);
+      // Dải nước dạng màn luôn hướng về camera, rộng và có mép dao động như thác nhỏ.
+      const segments=28,visible=Math.max(0.02,grow),time=performance.now()*0.006;
+      const centers=[];
+      for(let i=0;i<=segments;i++)centers.push(fallingPoint(p0,p2,0.28,(i/segments)*visible));
+      const positions=[],indices=[];
+      for(let i=0;i<=segments;i++){
+        const center=centers[i];
+        const prev=centers[Math.max(0,i-1)],next=centers[Math.min(segments,i+1)];
+        const tangent=next.clone().sub(prev).normalize();
+        const view=camera.position.clone().sub(center).normalize();
+        const side=new THREE.Vector3().crossVectors(tangent,view).normalize();
+        if(side.lengthSq()<0.01)side.set(0,0,1);
+        const u=i/segments;
+        const taper=Math.min(1,u*7,Math.max(0.25,(1-u)*8));
+        const width=(0.17+0.035*Math.sin(time+i*1.37))*taper;
+        const edgeWave=0.025*Math.sin(time*1.4+i*2.1);
+        const left=center.clone().addScaledVector(side,-width+edgeWave);
+        const right=center.clone().addScaledVector(side,width+edgeWave);
+        positions.push(left.x,left.y,left.z,right.x,right.y,right.z);
+        if(i<segments){
+          const a=i*2,b=a+1,c=a+2,d=a+3;
+          indices.push(a,b,c,b,d,c);
+        }
+      }
+      const geo=new THREE.BufferGeometry();
+      geo.setAttribute('position',new THREE.Float32BufferAttribute(positions,3));
+      geo.setIndex(indices);geo.computeVertexNormals();
       if(!waterStream){
-        waterStream=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:0x9ecbe8,transparent:true,opacity:0.8}));
+        waterStream=new THREE.Mesh(geo,new THREE.MeshBasicMaterial({
+          color:0x9ed9f5,transparent:true,opacity:0.68,side:THREE.DoubleSide,depthWrite:false,blending:THREE.AdditiveBlending
+        }));
+        waterStream.renderOrder=3;
         root.add(waterStream);
       }else{
         waterStream.geometry.dispose();waterStream.geometry=geo;
@@ -576,7 +613,9 @@
           const p=ease((progress-.82)/.18);tilt=78*(1-p);fill=0;prismRatio=targetCount/3;pyrHinge.position.lerpVectors(pourPivot,originalPivot,p);
         }
         pyrHinge.rotation.z=-tilt*Math.PI/180;
-        pyrClipPlane.constant=fill*h;prismClipPlane.constant=prismRatio*h;
+        pyrHinge.updateMatrixWorld(true);
+        updatePyramidWaterLevel(fill,h);
+        prismClipPlane.constant=prismRatio*h;
         prismRippleCap.position.y=prismRatio*h;prismRippleCap.visible=prismRatio>0;
 
         if(progress>.20&&progress<.85){
@@ -594,9 +633,9 @@
           removeWaterStream();
           isPouring=false;
           if(targetCount<3){
-            pyrClipPlane.constant=h;
+            updatePyramidWaterLevel(1,h);
           }else{
-            pyrClipPlane.constant=0;
+            updatePyramidWaterLevel(0,h);
           }
           prismClipPlane.constant=(targetCount/3)*h;
           updatePourReadout();
