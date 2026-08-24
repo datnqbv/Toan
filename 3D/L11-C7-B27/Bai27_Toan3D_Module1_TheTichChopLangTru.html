@@ -1,0 +1,812 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <title>Bài 27 · Module 1: Thể tích khối chóp và khối lăng trụ</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Be+Vietnam+Pro:ital,wght@0,400;0,500;0,600;0,700;0,800;1,400&family=JetBrains+Mono:wght@500;700&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@tabler/icons-webfont@3.19.0/dist/tabler-icons.min.css">
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/build/three.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/three@0.128.0/examples/js/controls/OrbitControls.js"></script>
+  <script type="application/json" id="athena-context">
+  {
+    "version":"1.0",
+    "subject":"Toán 11",
+    "lesson":"Bài 27 · Thể tích",
+    "module":"Module 1: Thể tích khối chóp và khối lăng trụ",
+    "objectives":[
+      "Mở rộng công thức thể tích V = S · h cho mọi lăng trụ đứng đáy đa giác bất kỳ",
+      "Khám phá trực quan tỉ lệ 1:3 giữa khối chóp và lăng trụ cùng đáy cùng chiều cao qua thí nghiệm đong nước 3 lần",
+      "Phân biệt rõ ràng chiều cao h với độ dài cạnh bên và trung đoạn mặt bên",
+      "Tính diện tích đa giác đáy không quen thuộc (lục giác đều) bằng cách chia nhỏ thành tam giác đều",
+      "Khắc sâu công thức V = (1/3) · S · h cho khối chóp và V = S · h cho khối lăng trụ"
+    ],
+    "steps":[
+      {"step":1,"title":"Khởi động: Lăng trụ V = S · h"},
+      {"step":2,"title":"Thí nghiệm đong nước: Tỉ lệ 1:3"},
+      {"step":3,"title":"Xác định đúng chiều cao h"},
+      {"step":4,"title":"Áp dụng trên đáy lục giác đều"}
+    ]
+  }
+  </script>
+  <style>
+    :root{
+      --cream:#FAF7F0;--cream-2:#F0EADD;--cream-3:#E7DECC;--paper-line:#E5DECF;--paper-line-2:#D6CCB6;
+      --ink:#1A1A1A;--ink-2:#514C44;--ink-3:#7C756A;--ink-faint:#ABA396;
+      --jade:#3CA57A;--jade-deep:#2D8B6F;--jade-dark:#14432F;--jade-text:#1B5E48;--jade-soft:#A9D0BE;--jade-pale:#DCEAE1;
+      --sage:#A8C9B8;--sage-deep:#7CA792;--sage-text:#46685A;--sage-pale:#E1ECE4;
+      --accent:#E8A24A;--accent-deep:#CE8A33;--accent-text:#8A551A;--accent-pale:#F7E7CD;
+      --correct:#2D8B6F;--correct-bg:#DCEAE1;--wrong:#C15F3C;--wrong-bg:#F3E2D6;--warning:#C58A2E;--warning-bg:#F5E7CB;--info:#4E7F92;--info-bg:#DCE7EB;
+      --il-slate:#64748b;--il-terracotta:#C15F3C;--il-ochre:#D97706;--il-dusty-blue:#4E7F92;--il-sand:#94a3b8;
+      --water:#7fb5d9;
+      --white:#FFFFFF;--radius:10px;--radius-lg:14px;--radius-sm:6px;
+      --shadow:0 4px 12px rgba(45,139,111,.10);--shadow-sm:0 2px 6px rgba(26,26,26,.05);--canvas-bg:#0a1628;
+    }
+    *{box-sizing:border-box}
+    html,body{margin:0;min-height:100%;background:var(--cream);color:var(--ink);font-family:'Be Vietnam Pro',system-ui,sans-serif;font-size:17px;line-height:1.65}
+    button,input{font:inherit}
+    button{cursor:pointer}
+    button:focus-visible,input:focus-visible{outline:3px solid var(--accent);outline-offset:2px}
+    header{height:64px;padding:10px 20px;background:linear-gradient(135deg,var(--jade-dark),var(--jade-deep));color:var(--white);display:flex;align-items:center;gap:14px}
+    .header-badge{border:1px solid rgba(255,255,255,.3);background:rgba(255,255,255,.13);padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;white-space:nowrap}
+    header h1{margin:0;flex:1;font-size:18px;line-height:1.3;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+    .header-progress{font:700 12px 'JetBrains Mono',monospace;white-space:nowrap}
+    
+    .app-shell{height:calc(100dvh - 64px);min-height:600px;display:flex;overflow:hidden}
+    .viewport{position:relative;flex:1;min-width:0;background:var(--canvas-bg);overflow:hidden}
+    .viewport canvas{width:100%;height:100%;display:block;touch-action:none}
+    
+    .label-layer{position:absolute;inset:0;pointer-events:none;overflow:hidden}
+    .label{position:absolute;transform:translate(-50%,-115%);padding:2px 6px;border-radius:5px;background:rgba(10,22,40,.82);color:var(--white);font:700 13px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;text-shadow:0 1px 3px #000;white-space:nowrap;will-change:transform}
+    .label.result{color:#FAC775}
+    .label.jade{color:#34D399}
+    .label.accent{color:#FBBF24}
+    .label.ochre{color:#F59E0B}
+
+    .canvas-top{position:absolute;top:14px;left:14px;right:14px;display:flex;justify-content:space-between;align-items:flex-start;pointer-events:none}
+    .scene-chip{padding:6px 10px;border:1px solid rgba(255,255,255,.15);border-radius:9px;background:rgba(10,22,40,.78);color:rgba(255,255,255,.86);font-size:12px;font-weight:700;backdrop-filter:blur(6px)}
+    .distance-readout{padding:8px 11px;border:1px solid rgba(250,199,117,.4);border-radius:9px;background:rgba(10,22,40,.84);color:#FAC775;font:700 15px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums}
+    
+    .canvas-actions{position:absolute;left:14px;bottom:14px;display:flex;gap:8px}
+    .canvas-btn{min-height:40px;border:1px solid rgba(255,255,255,.2);border-radius:9px;background:rgba(10,22,40,.82);color:var(--white);padding:7px 11px;font-size:12px;font-weight:700;transition:all .15s ease}
+    .canvas-btn:hover{background:var(--jade-deep);color:#fff}
+    .canvas-hint{position:absolute;bottom:15px;left:50%;transform:translateX(-50%);padding:5px 12px;border:1px solid rgba(255,255,255,.15);border-radius:20px;background:rgba(255,255,255,.1);color:rgba(255,255,255,.78);font-size:11.5px;white-space:nowrap;pointer-events:none}
+    
+    .sidebar{width:380px;flex:0 0 380px;background:var(--white);border-left:1px solid var(--paper-line);display:flex;flex-direction:column;overflow:auto}
+    .step-tabs{position:sticky;top:0;z-index:8;display:flex;background:var(--white);border-bottom:1px solid var(--paper-line)}
+    .step-tab{flex:1;min-height:48px;border:0;border-bottom:3px solid transparent;background:var(--white);color:var(--ink-3);font-size:11px;font-weight:700;text-transform:uppercase}
+    .step-tab.active{color:var(--jade-dark);border-bottom-color:var(--jade-deep);background:var(--jade-pale)}
+    .step-tab.done{color:var(--jade-deep)}
+    .step-body{padding:16px;display:flex;flex-direction:column;gap:12px}
+    
+    .eyebrow{margin:0 0 4px;color:var(--ink-3);font-size:11px;font-weight:800;letter-spacing:.07em;text-transform:uppercase}
+    .step-title{margin:0 0 8px;color:var(--jade-dark);font-size:19px;line-height:1.35}
+    .athena{margin:6px 0;padding:11px 12px;border-left:4px solid var(--jade-deep);border-radius:0 9px 9px 0;background:var(--jade-pale);color:var(--jade-text);font-size:14px}
+    .athena b{display:block;margin-bottom:3px;color:var(--jade-dark)}
+    
+    .card{margin:6px 0;padding:12px;border:1px solid var(--paper-line);border-radius:var(--radius);background:var(--cream)}
+    .card h3{margin:0 0 7px;color:var(--jade-dark);font-size:14px}
+    .body-small{margin:6px 0;color:var(--ink-2);font-size:13.5px;line-height:1.55}
+    
+    .hook-svg-box{background:#fff;border:1px solid var(--paper-line);border-radius:var(--radius);padding:8px;margin:4px 0;box-shadow:var(--shadow-sm);text-align:center}
+    .hook-svg-box svg{width:100%;max-height:150px;display:block;margin:0 auto}
+
+    .formula{padding:8px 10px;border:1px solid var(--info);border-radius:8px;background:var(--info-bg);font:700 13px 'JetBrains Mono',monospace;font-variant-numeric:tabular-nums;display:flex;justify-content:space-between;align-items:center}
+    .formula-badge{font-size:10.5px;padding:2px 6px;border-radius:4px;background:#fff;color:var(--info);border:1px solid var(--info);font-family:'Be Vietnam Pro',sans-serif;font-weight:700}
+    
+    .control{margin:8px 0}
+    .control label{display:flex;justify-content:space-between;gap:8px;font-size:13px;font-weight:700}
+    .control output{color:var(--jade-deep);font-family:'JetBrains Mono',monospace}
+    .control input[type=range]{width:100%;min-height:34px;accent-color:var(--jade-deep)}
+    
+    .btn-row{display:flex;flex-wrap:wrap;gap:8px;margin-top:10px}
+    .btn{min-height:44px;border:0;border-radius:9px;padding:9px 13px;font-size:14px;font-weight:700;display:inline-flex;align-items:center;justify-content:center;gap:6px;flex:1}
+    .btn-primary{background:var(--jade-deep);color:var(--white);box-shadow:0 3px 8px rgba(45,139,111,.2)}
+    .btn-primary:hover:not(:disabled){background:var(--jade-dark)}
+    .btn-secondary{border:1px solid var(--jade-deep);background:var(--white);color:var(--jade-deep)}
+    .btn-secondary:hover:not(:disabled){background:var(--jade-pale)}
+    .btn:disabled{opacity:.48;cursor:not-allowed}
+
+    .btn-pour{width:100%;min-height:44px;background:linear-gradient(135deg,var(--jade),var(--jade-deep));color:#fff;border:0;border-radius:var(--radius-sm);padding:10px 14px;font-size:14px;font-weight:700;display:flex;align-items:center;justify-content:center;gap:6px;transition:all .15s ease}
+    .btn-pour:hover:not(:disabled){transform:translateY(-1px);box-shadow:0 4px 12px rgba(60,165,122,.3)}
+    .btn-pour.reset{background:var(--cream-3);color:var(--ink);border:1px solid var(--paper-line-2)}
+
+    .pour-dots-row{display:flex;align-items:center;justify-content:space-between;background:var(--white);padding:8px 12px;border:1px solid var(--paper-line);border-radius:var(--radius-sm);margin:8px 0}
+    .pour-dots{display:flex;gap:6px}
+    .pour-dot{width:12px;height:12px;border-radius:50%;background:var(--paper-line-2);border:2px solid #fff;transition:background .2s ease}
+    .pour-dot.filled{background:var(--jade)}
+    .pour-status{font-size:12.5px;font-weight:700;color:var(--ink-2)}
+    .pour-status span{color:var(--jade-deep);font-family:'JetBrains Mono',monospace}
+
+    .toggle-group{display:flex;flex-direction:column;gap:6px;margin:8px 0}
+    .toggle-item{display:flex;align-items:center;justify-content:space-between;padding:7px 10px;background:var(--white);border:1px solid var(--paper-line);border-radius:var(--radius-sm);font-size:12.5px;font-weight:600;cursor:pointer}
+    .toggle-left{display:flex;align-items:center;gap:6px}
+    .color-swatch{width:10px;height:10px;border-radius:3px}
+    .swatch-so{background:var(--jade)}
+    .swatch-sa{background:var(--accent)}
+    .swatch-sm{background:var(--il-ochre)}
+
+    .choice{display:block;width:100%;min-height:44px;margin:6px 0;padding:8px 10px;border:1px solid var(--paper-line-2);border-radius:9px;background:var(--white);color:var(--ink);text-align:left;font-size:13px}
+    .choice.correct{border-color:var(--correct);background:var(--correct-bg);color:var(--jade-text);font-weight:700}
+    .choice.wrong{border-color:var(--wrong);background:var(--wrong-bg);color:var(--wrong);font-weight:700;text-decoration:line-through}
+    
+    .feedback{margin-top:6px;padding:8px 10px;border-radius:8px;font-size:12.5px;line-height:1.5}
+    .feedback.good{background:var(--correct-bg);color:var(--jade-text);border-left:3px solid var(--correct)}
+    
+    .notebook{margin-top:8px;padding:10px;border:1px dashed var(--sage-deep);border-radius:9px;background:var(--sage-pale);color:var(--sage-text);font-size:13px}
+    .notebook b{color:var(--jade-dark)}
+
+    @media(max-width:768px){
+      body{min-height:100vh;overflow-y:auto}
+      .app-shell{display:flex!important;width:100%;height:auto!important;min-height:auto!important;max-height:none!important;flex-direction:column!important;overflow:visible!important}
+      .viewport{position:sticky!important;top:0!important;z-index:50!important;flex:none!important;width:100%!important;height:calc((100vh - 58px)*.5)!important;height:calc((100dvh - 58px)*.5)!important;min-height:240px!important;border-bottom:1px solid var(--paper-line);box-shadow:0 4px 14px rgba(0,0,0,.4)}
+      .sidebar{width:100%!important;min-width:0;height:auto!important;max-height:none!important;flex:none!important;border-left:0;border-top:1px solid var(--paper-line);overflow:visible!important}
+      .step-tabs{position:static;width:100%;min-width:0;overflow-x:auto}
+      .step-tab{min-width:0}
+      .step-body{width:100%;min-width:0;overflow:visible}
+      .athena,.card,.notebook{max-width:100%;overflow-wrap:anywhere}
+      .formula{max-width:100%;overflow-x:auto}
+      .canvas-hint{display:none}
+    }
+    @media(max-width:560px){
+      header{height:58px;min-height:58px;padding:7px 10px;gap:7px;flex-wrap:nowrap}
+      .header-badge{font-size:9px;padding:2px 6px}
+      header h1{font-size:14px;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+      .header-progress{display:none}
+      .sidebar,.step-tabs,.step-body{width:100%!important;max-width:100%!important}
+      .step-tab{flex:0 0 25%;width:25%;min-height:44px;font-size:9.5px}
+      .step-body{padding:12px;overflow:visible}
+      .step-title{font-size:17.5px}
+      .canvas-top{top:8px;left:8px;right:8px}
+      .scene-chip{font-size:10px;padding:4px 7px}
+      .distance-readout{font-size:12px;padding:5px 7px}
+      .canvas-actions{left:8px;bottom:8px}
+      .canvas-btn{min-height:36px;padding:6px 9px}
+      .card{padding:10px}
+    }
+    @media(prefers-reduced-motion:reduce){*,*:before,*:after{animation-duration:.01ms!important;transition-duration:.01ms!important}}
+  </style>
+</head>
+<body>
+  <header>
+    <span class="header-badge">🧊 Hình học không gian</span>
+    <h1>Bài 27 · Thể tích khối chóp và khối lăng trụ</h1>
+    <span class="header-progress" id="header-progress">BƯỚC 1/4</span>
+  </header>
+  
+  <main class="app-shell">
+    <!-- VIEWPORT 3D -->
+    <section class="viewport" id="canvas-wrap" aria-label="Mô hình thể tích 3D">
+      <canvas id="three-canvas"></canvas>
+      <div class="label-layer" id="label-layer"></div>
+      <div class="canvas-top">
+        <span class="scene-chip" id="scene-chip">Khối lăng trụ tam giác · V = S · h</span>
+        <span class="distance-readout" id="distance-readout">V = 60 cm³</span>
+      </div>
+      <div class="canvas-actions">
+        <button class="canvas-btn" onclick="setCamera('iso')" title="Phối cảnh 3D"><i class="ti ti-rotate-3d"></i> 3D</button>
+        <button class="canvas-btn" onclick="setCamera('front')" title="Trực diện"><i class="ti ti-border-all"></i> Front</button>
+        <button class="canvas-btn" onclick="setCamera('top')" title="Từ trên"><i class="ti ti-layout-grid"></i> Top</button>
+      </div>
+      <div class="canvas-hint">Kéo chuột để xoay · Cuộn để zoom</div>
+    </section>
+
+    <!-- SIDEBAR -->
+    <aside class="sidebar">
+      <nav class="step-tabs" aria-label="Các bước bài học">
+        <button class="step-tab active" data-step="1" onclick="lesson.goToStep(1)">Bước 1</button>
+        <button class="step-tab" data-step="2" onclick="lesson.goToStep(2)">Bước 2</button>
+        <button class="step-tab" data-step="3" onclick="lesson.goToStep(3)">Bước 3</button>
+        <button class="step-tab" data-step="4" onclick="lesson.goToStep(4)">Bước 4</button>
+      </nav>
+      <div class="step-body" id="step-body"></div>
+    </aside>
+  </main>
+
+  <script>
+  (()=>{'use strict';
+    const LMS=()=>window.AiducationLMS||{ready(){},event(){},complete(){},resize(){}};
+    const canvas=document.getElementById('three-canvas'),wrap=document.getElementById('canvas-wrap'),stepBody=document.getElementById('step-body');
+    const renderer=new THREE.WebGLRenderer({canvas,antialias:true,alpha:false});
+    renderer.setPixelRatio(Math.min(devicePixelRatio||1,2));
+    renderer.setClearColor(0x0a1628);
+    renderer.outputEncoding=THREE.sRGBEncoding;
+
+    const scene=new THREE.Scene(),camera=new THREE.PerspectiveCamera(46,1,.1,100),controls=new THREE.OrbitControls(camera,canvas);
+    controls.enableDamping=true;controls.dampingFactor=.08;controls.minDistance=3;controls.maxDistance=25;
+
+    scene.add(new THREE.HemisphereLight(0xddeeff,0x172235,1.1));
+    const keyLight=new THREE.DirectionalLight(0xffffff,1.0);keyLight.position.set(6,10,8);scene.add(keyLight);
+    const backLight=new THREE.DirectionalLight(0x38bdf8,.35);backLight.position.set(-5,-3,-6);scene.add(backLight);
+
+    const C={
+      slate:0x4E6E7E,terracotta:0xC1704B,ochre:0xD97706,dustyBlue:0x6E93A6,sand:0xD8C4A0,
+      jade:0x3CA57A,jadeDeep:0x2D8B6F,accent:0xE8A24A,point:0xFAC775,grid:0x1e293b,water:0x7fb5d9
+    };
+
+    const V=(x=0,y=0,z=0)=>new THREE.Vector3(x,y,z);
+
+    let currentStep=1,unlocked=1,root=null,labels=[],particlesGroup=null;
+    let tiltAngle=90;
+    let pourCount=0,isPouring=false;
+    let pyrWaterMesh=null,prismWaterMesh=null;
+    let lineSO=null,lineSA=null,lineSM=null;
+    let quiz1Done=false,quiz2Done=false;
+
+    function dispose(obj){if(!obj)return;obj.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose())});if(obj.parent)obj.parent.remove(obj)}
+    function clearScene(){
+      dispose(root);root=new THREE.Group();scene.add(root);
+      dispose(particlesGroup);particlesGroup=new THREE.Group();scene.add(particlesGroup);
+      labels.forEach(x=>x.el.remove());labels=[];
+    }
+    function addLabel(text,pos,cls=''){
+      const el=document.createElement('div');el.className='label '+cls;el.textContent=text;
+      document.getElementById('label-layer').appendChild(el);
+      const item={el,pos:pos.clone()};labels.push(item);return item;
+    }
+    function updateLabels(){
+      const w=wrap.clientWidth,h=wrap.clientHeight;
+      labels.forEach(l=>{
+        const p=l.pos.clone().project(camera);
+        if(p.z>1||Math.abs(p.x)>1.1||Math.abs(p.y)>1.1){l.el.style.display='none';return}
+        l.el.style.display='block';
+        l.el.style.left=((p.x*.5+.5)*w)+'px';
+        l.el.style.top=((-p.y*.5+.5)*h)+'px';
+      });
+    }
+
+    // Grid sàn
+    const floorGrid=new THREE.GridHelper(14,14,0x27354a,0x172235);
+    floorGrid.position.y=-0.01;
+    scene.add(floorGrid);
+
+    // Resize
+    const ro=new ResizeObserver(()=>{
+      if(!wrap.clientWidth||!wrap.clientHeight)return;
+      camera.aspect=wrap.clientWidth/wrap.clientHeight;
+      camera.updateProjectionMatrix();
+      renderer.setSize(wrap.clientWidth,wrap.clientHeight);
+    });
+    ro.observe(wrap);
+
+    /* Animation Loop */
+    function animate(){
+      requestAnimationFrame(animate);
+      controls.update();
+      updateLabels();
+      renderer.render(scene,camera);
+    }
+    animate();
+
+    /* =========================================================================
+       STEP 3D BUILDERS
+       ========================================================================= */
+
+    /* STEP 1: Lăng trụ tam giác nghiêng -> đứng */
+    function buildStep1Scene(){
+      clearScene();
+      const rad=(tiltAngle*Math.PI)/180;
+      const h=3.0;
+      const dx=(h/Math.tan(rad))*(tiltAngle<90?1:0);
+
+      const pA=V(-1.2,0,-1.0),pB=V(1.3,0,-1.0),pC=V(-0.4,0,1.0);
+      const pA2=V(pA.x+dx,h,pA.z),pB2=V(pB.x+dx,h,pB.z),pC2=V(pC.x+dx,h,pC.z);
+
+      const vertices=new Float32Array([
+        pA.x,pA.y,pA.z, pB.x,pB.y,pB.z, pC.x,pC.y,pC.z,
+        pA2.x,pA2.y,pA2.z, pC2.x,pC2.y,pC2.z, pB2.x,pB2.y,pB2.z,
+        pA.x,pA.y,pA.z, pA2.x,pA2.y,pA2.z, pB2.x,pB2.y,pB2.z,
+        pA.x,pA.y,pA.z, pB2.x,pB2.y,pB2.z, pB.x,pB.y,pB.z,
+        pB.x,pB.y,pB.z, pB2.x,pB2.y,pB2.z, pC2.x,pC2.y,pC2.z,
+        pB.x,pB.y,pB.z, pC2.x,pC2.y,pC2.z, pC.x,pC.y,pC.z,
+        pC.x,pC.y,pC.z, pC2.x,pC2.y,pC2.z, pA2.x,pA2.y,pA2.z,
+        pC.x,pC.y,pC.z, pA2.x,pA2.y,pA2.z, pA.x,pA.y,pA.z
+      ]);
+      const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(vertices,3));geo.computeVertexNormals();
+      const mesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:C.slate,transparent:true,opacity:0.75,roughness:0.4,side:THREE.DoubleSide}));
+      root.add(mesh);
+
+      const wireGeo=new THREE.BufferGeometry().setFromPoints([pA,pB,pB,pC,pC,pA,pA2,pB2,pB2,pC2,pC2,pA2,pA,pA2,pB,pB2,pC,pC2]);
+      root.add(new THREE.LineSegments(wireGeo,new THREE.LineBasicMaterial({color:0xffffff,linewidth:2})));
+
+      // Đường chiều cao h
+      const hFoot=V(pC2.x,0,pC2.z);
+      const hLine=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pC2,hFoot]),new THREE.LineDashedMaterial({color:C.jade,dashSize:0.15,gapSize:0.08,linewidth:2}));
+      hLine.computeLineDistances();root.add(hLine);
+
+      // Chân vuông góc
+      const sqGeo=new THREE.BufferGeometry().setFromPoints([V(hFoot.x,hFoot.y+0.25,hFoot.z),V(hFoot.x+0.25,hFoot.y+0.25,hFoot.z),V(hFoot.x+0.25,hFoot.y,hFoot.z)]);
+      root.add(new THREE.Line(sqGeo,new THREE.LineBasicMaterial({color:C.jade})));
+
+      // Labels
+      addLabel('Đáy tam giác S = 12',V(0,0.05,0));
+      addLabel('Chiều cao h = 5.0',V(hFoot.x+0.35,h/2,hFoot.z),'jade');
+      addLabel(tiltAngle===90?'Lăng trụ đứng':'Lăng trụ xiên',V(pC2.x,h+0.25,pC2.z),'result');
+
+      document.getElementById('scene-chip').textContent='Bước 1 · Khối lăng trụ tam giác V = S · h';
+      document.getElementById('distance-readout').textContent='V = S · h = 60 cm³';
+      document.getElementById('distance-readout').style.color='#FAC775';
+    }
+
+    /* STEP 2: Thí nghiệm đong nước 1:3 */
+    function buildStep2Scene(){
+      clearScene();
+      const sSize=2.4,h=3.6;
+      const pyrPos=V(-2.2,0,0),prismPos=V(2.2,0,0);
+
+      // Vỏ chóp
+      const pyrGeo=new THREE.ConeGeometry(sSize*0.707,h,4,1,true);
+      const pyrMesh=new THREE.Mesh(pyrGeo,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:0.25,roughness:0.1,side:THREE.DoubleSide}));
+      pyrMesh.rotation.y=Math.PI/4;pyrMesh.position.set(pyrPos.x,h/2,pyrPos.z);root.add(pyrMesh);
+      const pyrEdge=new THREE.LineSegments(new THREE.EdgesGeometry(pyrGeo),new THREE.LineBasicMaterial({color:C.terracotta}));
+      pyrEdge.rotation.y=Math.PI/4;pyrEdge.position.copy(pyrMesh.position);root.add(pyrEdge);
+
+      // Nước chóp
+      const waterMat=new THREE.MeshStandardMaterial({color:C.water,transparent:true,opacity:0.85,roughness:0.2,side:THREE.DoubleSide});
+      pyrWaterMesh=new THREE.Mesh(new THREE.ConeGeometry(sSize*0.707*0.96,h*0.98,4,1),waterMat);
+      pyrWaterMesh.rotation.y=Math.PI/4;pyrWaterMesh.position.set(pyrPos.x,(h*0.98)/2,pyrPos.z);root.add(pyrWaterMesh);
+
+      // Vỏ lăng trụ
+      const prismGeo=new THREE.BoxGeometry(sSize,h,sSize);
+      const prismMesh=new THREE.Mesh(prismGeo,new THREE.MeshStandardMaterial({color:C.slate,transparent:true,opacity:0.22,roughness:0.1,side:THREE.DoubleSide}));
+      prismMesh.position.set(prismPos.x,h/2,prismPos.z);root.add(prismMesh);
+      const prismEdge=new THREE.LineSegments(new THREE.EdgesGeometry(prismGeo),new THREE.LineBasicMaterial({color:C.slate}));
+      prismEdge.position.copy(prismMesh.position);root.add(prismEdge);
+
+      // 3 Vạch mốc 1/3, 2/3, 1
+      [1/3,2/3,1].forEach((r,idx)=>{
+        const mY=h*r;
+        const markPts=[V(prismPos.x-sSize/2-0.1,mY,prismPos.z+sSize/2+0.05),V(prismPos.x+sSize/2+0.1,mY,prismPos.z+sSize/2+0.05)];
+        root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints(markPts),new THREE.LineBasicMaterial({color:C.jade,linewidth:2})));
+        addLabel(`${idx+1}/3`,V(prismPos.x+sSize/2+0.35,mY,prismPos.z+sSize/2),'jade');
+      });
+
+      // Nước lăng trụ
+      prismWaterMesh=new THREE.Mesh(new THREE.BoxGeometry(sSize*0.98,h,sSize*0.98),waterMat);
+      prismWaterMesh.position.set(prismPos.x,0,prismPos.z);
+      prismWaterMesh.scale.set(1,0.001,1);
+      root.add(prismWaterMesh);
+
+      addLabel('Khối Chóp (V = 20)',V(pyrPos.x,h+0.3,pyrPos.z),'accent');
+      addLabel('Khối Lăng Trụ (V = 60)',V(prismPos.x,h+0.3,prismPos.z),'result');
+
+      document.getElementById('scene-chip').textContent='Bước 2 · Thí nghiệm đong nước tỉ lệ 1:3';
+      updatePourReadout();
+    }
+
+    function updatePourReadout(){
+      const vCur=pourCount*20;
+      document.getElementById('distance-readout').textContent=`Lăng trụ: ${pourCount}/3 (${vCur}/60 cm³)`;
+      document.getElementById('distance-readout').style.color=pourCount===3?'#34D399':'#FAC775';
+    }
+
+    function runPourAnimation(targetCount){
+      if(!pyrWaterMesh||!prismWaterMesh)return;
+      isPouring=true;
+      const btn=document.getElementById('btn-pour-act');
+      if(btn)btn.disabled=true;
+
+      const h=3.6;
+      const startTime=performance.now(),duration=1200;
+      const startPrismRatio=(targetCount-1)/3;
+
+      // Hạt nước bay theo Bezier
+      const particles=[];
+      const pCount=26;
+      const pGeo=new THREE.SphereGeometry(0.06,8,8),pMat=new THREE.MeshBasicMaterial({color:C.water});
+      for(let i=0;i<pCount;i++){
+        const p=new THREE.Mesh(pGeo,pMat);p.visible=false;
+        particlesGroup.add(p);
+        particles.push({mesh:p,delay:i*(duration/pCount)*0.6});
+      }
+
+      const p0=V(-2.2,3.6,0),pMid=V(0,4.6,0),p1=V(2.2,3.6,0);
+
+      function stepPour(now){
+        const elapsed=now-startTime;
+        const progress=Math.min(1,elapsed/duration);
+        const ease=0.5-Math.cos(progress*Math.PI)/2;
+
+        // 1. Hạ nước chóp
+        const curScale=Math.max(0.001,1-ease);
+        pyrWaterMesh.scale.set(curScale,curScale,curScale);
+        pyrWaterMesh.position.y=(h*0.98*curScale)/2;
+
+        // 2. Dâng nước lăng trụ
+        const curRatio=startPrismRatio+(1/3)*ease;
+        prismWaterMesh.scale.y=Math.max(0.001,curRatio);
+        prismWaterMesh.position.y=(h*curRatio)/2;
+
+        // 3. Bay hạt nước
+        particles.forEach(pt=>{
+          const pElapsed=elapsed-pt.delay;
+          if(pElapsed>0&&pElapsed<500){
+            pt.mesh.visible=true;
+            const t=pElapsed/500,inv=1-t;
+            pt.mesh.position.x=inv*inv*p0.x+2*inv*t*pMid.x+t*t*p1.x;
+            pt.mesh.position.y=inv*inv*p0.y+2*inv*t*pMid.y+t*t*p1.y;
+            pt.mesh.position.z=inv*inv*p0.z+2*inv*t*pMid.z+t*t*p1.z;
+          }else{
+            pt.mesh.visible=false;
+          }
+        });
+
+        if(progress<1){
+          requestAnimationFrame(stepPour);
+        }else{
+          while(particlesGroup.children.length>0)particlesGroup.remove(particlesGroup.children[0]);
+          isPouring=false;
+          if(targetCount<3){
+            pyrWaterMesh.scale.set(1,1,1);
+            pyrWaterMesh.position.y=(h*0.98)/2;
+          }else{
+            pyrWaterMesh.visible=false;
+          }
+          updatePourReadout();
+          renderStep();
+        }
+      }
+      requestAnimationFrame(stepPour);
+    }
+
+    /* STEP 3: Chiều cao h vs Cạnh bên SA vs Trung đoạn SM */
+    function buildStep3Scene(){
+      clearScene();
+      const a=3.6,hVal=3.8;
+      const pO=V(0,0,0),pS=V(0,hVal,0);
+      const pA=V(-a/2,0,a/2),pB=V(a/2,0,a/2),pC=V(a/2,0,-a/2),pD=V(-a/2,0,-a/2);
+      const pM=V(0,0,a/2);
+
+      // Chóp mờ
+      const pyrGeo=new THREE.ConeGeometry(a*0.707,hVal,4);
+      const pyr=new THREE.Mesh(pyrGeo,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:0.35,roughness:0.5,side:THREE.DoubleSide}));
+      pyr.rotation.y=Math.PI/4;pyr.position.y=hVal/2;root.add(pyr);
+      const edges=new THREE.LineSegments(new THREE.EdgesGeometry(pyrGeo),new THREE.LineBasicMaterial({color:0xffffff,opacity:0.5,transparent:true}));
+      edges.rotation.y=Math.PI/4;edges.position.y=hVal/2;root.add(edges);
+
+      // 1. SO (Chiều cao h - Jade)
+      lineSO=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pS,pO]),new THREE.LineBasicMaterial({color:C.jade,linewidth:4}));
+      root.add(lineSO);
+      const sqO=new THREE.BufferGeometry().setFromPoints([V(0,0.3,0),V(0.3,0.3,0),V(0.3,0,0)]);
+      root.add(new THREE.Line(sqO,new THREE.LineBasicMaterial({color:C.jade})));
+
+      // 2. SA (Cạnh bên - Accent)
+      lineSA=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pS,pA]),new THREE.LineBasicMaterial({color:C.accent,linewidth:3}));
+      root.add(lineSA);
+
+      // 3. SM (Trung đoạn - Ochre)
+      lineSM=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pS,pM]),new THREE.LineDashedMaterial({color:C.ochre,dashSize:0.15,gapSize:0.08,linewidth:3}));
+      lineSM.computeLineDistances();root.add(lineSM);
+
+      const lineOM=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pO,pM]),new THREE.LineDashedMaterial({color:C.dustyBlue,dashSize:0.1,gapSize:0.06}));
+      lineOM.computeLineDistances();root.add(lineOM);
+
+      // Points & Labels
+      [pS,pO,pA,pB,pC,pD,pM].forEach(pos=>{
+        const pt=new THREE.Mesh(new THREE.SphereGeometry(0.07,12,12),new THREE.MeshBasicMaterial({color:0xffffff}));
+        pt.position.copy(pos);root.add(pt);
+      });
+
+      addLabel('S (Đỉnh)',pS.clone().add(V(0,0.15,0)));
+      addLabel('O (Tâm)',pO.clone().add(V(0,-0.12,0.15)));
+      addLabel('A',pA.clone().add(V(-0.15,0,0.15)));
+      addLabel('M',pM.clone().add(V(0,-0.1,0.2)));
+      addLabel('h = SO ≈ 4,12',V(0.2,hVal/2,0),'jade');
+      addLabel('SA = 5,00',pS.clone().add(pA).multiplyScalar(0.5).add(V(-0.2,0.1,0.2)),'accent');
+      addLabel('SM ≈ 4,58',pS.clone().add(pM).multiplyScalar(0.5).add(V(0.2,0.1,0.2)),'ochre');
+
+      document.getElementById('scene-chip').textContent='Bước 3 · Chóp đều S.ABCD: Chiều cao h vs Cạnh bên';
+      document.getElementById('distance-readout').textContent='SO ≈ 4,12cm · SA = 5,00cm';
+      document.getElementById('distance-readout').style.color='#34D399';
+    }
+
+    /* STEP 4: Đáy lục giác đều */
+    function buildStep4Scene(){
+      clearScene();
+      const r=2.4,h=4.2;
+      const pS=V(0,h,0),pO=V(0,0,0);
+      const hexPts=[];
+      for(let i=0;i<6;i++){
+        const ang=(i*Math.PI)/3;
+        hexPts.push(V(r*Math.cos(ang),0,r*Math.sin(ang)));
+      }
+
+      const hexPyrGeo=new THREE.ConeGeometry(r,h,6);
+      const hexPyr=new THREE.Mesh(hexPyrGeo,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:0.4,roughness:0.5,side:THREE.DoubleSide}));
+      hexPyr.position.y=h/2;root.add(hexPyr);
+      const hexEdges=new THREE.LineSegments(new THREE.EdgesGeometry(hexPyrGeo),new THREE.LineBasicMaterial({color:0xffffff}));
+      hexEdges.position.y=h/2;root.add(hexEdges);
+
+      hexPts.forEach(pt=>{
+        const ray=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pO,pt]),new THREE.LineDashedMaterial({color:C.jade,dashSize:0.12,gapSize:0.08}));
+        ray.computeLineDistances();root.add(ray);
+      });
+      root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pS,pO]),new THREE.LineBasicMaterial({color:C.jade,linewidth:3})));
+
+      addLabel('Đỉnh S',pS.clone().add(V(0,0.15,0)));
+      addLabel('h = 6.0',V(0.2,h/2,0),'jade');
+      addLabel('6 tam giác đều (a = 3)',V(0,-0.12,0),'result');
+
+      document.getElementById('scene-chip').textContent='Bước 4 · Chóp lục giác đều: Đáy đa giác lạ';
+      document.getElementById('distance-readout').textContent='V ≈ 46,77 cm³';
+      document.getElementById('distance-readout').style.color='#34D399';
+    }
+
+    /* =========================================================================
+       CAMERA CONTROLS
+       ========================================================================= */
+    window.setCamera=function(mode){
+      if(currentStep===1){
+        if(mode==='top'){camera.position.set(0.01,7,0);controls.target.set(0,1.2,0)}
+        else if(mode==='front'){camera.position.set(0,2,7.5);controls.target.set(0,1.5,0)}
+        else{camera.position.set(5.5,4,6.5);controls.target.set(0,1.2,0)}
+      }else if(currentStep===2){
+        if(mode==='top'){camera.position.set(0.01,8,0);controls.target.set(0,1.8,0)}
+        else if(mode==='front'){camera.position.set(0,2.5,8);controls.target.set(0,1.8,0)}
+        else{camera.position.set(6,4.5,7.5);controls.target.set(0,1.8,0)}
+      }else if(currentStep===3){
+        if(mode==='top'){camera.position.set(0.01,7,0);controls.target.set(0,1.5,0)}
+        else if(mode==='front'){camera.position.set(0,2,6.5);controls.target.set(0,1.8,0)}
+        else{camera.position.set(5,3.8,6);controls.target.set(0,1.5,0)}
+      }else{
+        if(mode==='top'){camera.position.set(0.01,7.5,0);controls.target.set(0,1.8,0)}
+        else if(mode==='front'){camera.position.set(0,2.2,7);controls.target.set(0,2,0)}
+        else{camera.position.set(5.2,4.2,6.5);controls.target.set(0,1.8,0)}
+      }
+      camera.up.set(0,1,0);controls.update();
+    };
+
+    /* =========================================================================
+       UI RENDERERS & NAVIGATION
+       ========================================================================= */
+    function notebook(text){
+      return`<div class="notebook"><b><i class="ti ti-notebook"></i> Sổ tay kiến thức</b><br>${text}</div>`;
+    }
+    function navButtons(nextLabel='Tiếp tục',canNext=true){
+      const dis=!canNext?'disabled':'';
+      return`<div class="btn-row">
+        ${currentStep>1?'<button class="btn btn-secondary" onclick="lesson.prevStep()">← Quay lại</button>':''}
+        <button class="btn btn-primary" ${dis} onclick="${currentStep<4?'lesson.completeStep()':'lesson.finish()'}">${nextLabel} →</button>
+      </div>`;
+    }
+
+    function renderStep(){
+      document.getElementById('header-progress').textContent=`BƯỚC ${currentStep}/4`;
+      document.querySelectorAll('.step-tab').forEach(b=>{
+        const n=+b.dataset.step;
+        b.classList.toggle('active',n===currentStep);
+        b.classList.toggle('done',n<unlocked);
+        b.disabled=n>unlocked;
+      });
+
+      if(currentStep===1)renderStep1UI();
+      else if(currentStep===2)renderStep2UI();
+      else if(currentStep===3)renderStep3UI();
+      else if(currentStep===4)renderStep4UI();
+    }
+
+    /* STEP 1 UI */
+    function renderStep1UI(){
+      buildStep1Scene();
+      stepBody.innerHTML=`
+      <p class="eyebrow">Bước 1 · Khởi động</p>
+      <h2 class="step-title">Khối lăng trụ đứng: V = S · h</h2>
+      <div class="athena">
+        <b>✦ Athena</b>
+        Từ THCS, bạn đã biết thể tích hình hộp chữ nhật = <b>dài × rộng × cao = S · h</b>. Với khối <b>LĂNG TRỤ ĐỨNG</b> có đáy tam giác hay đa giác bất kỳ, công thức này vẫn đúng tuyệt đối: <b>V = S · h</b>!
+      </div>
+      <div class="hook-svg-box">
+        <svg viewBox="0 0 500 180" xmlns="http://www.w3.org/2000/svg">
+          <rect width="500" height="180" fill="var(--cream)"/>
+          <line x1="30" y1="145" x2="470" y2="145" stroke="var(--paper-line-2)" stroke-width="1.5"/>
+          <line x1="80" y1="35" x2="420" y2="35" stroke="var(--jade)" stroke-width="1.5" stroke-dasharray="4,3"/>
+          <text x="250" y="26" font-family="'Be Vietnam Pro'" font-size="11" font-weight="700" fill="var(--jade-deep)" text-anchor="middle">CÙNG CHIỀU CAO (h = 6 cm) · CÙNG ĐÁY S</text>
+          <polygon points="130,35 60,145 200,145" fill="var(--il-terracotta)" opacity="0.4" stroke="var(--ink)" stroke-width="1.8"/>
+          <text x="130" y="165" font-family="'Be Vietnam Pro'" font-size="12" font-weight="700" fill="var(--ink-2)" text-anchor="middle">Khối Chóp (V = 20)</text>
+          <circle cx="235" cy="65" r="4.5" fill="var(--jade)"/>
+          <circle cx="265" cy="85" r="5" fill="var(--jade)"/>
+          <circle cx="295" cy="110" r="4.5" fill="var(--jade)"/>
+          <path d="M 170 50 Q 260 55 330 90" fill="none" stroke="var(--water)" stroke-width="2" stroke-dasharray="3,2"/>
+          <polygon points="340,35 440,35 440,145 340,145" fill="var(--il-slate)" opacity="0.35" stroke="var(--ink)" stroke-width="1.8"/>
+          <text x="390" y="165" font-family="'Be Vietnam Pro'" font-size="12" font-weight="700" fill="var(--ink-2)" text-anchor="middle">Khối Lăng Trụ (V = 60)</text>
+        </svg>
+      </div>
+      <div class="card">
+        <h3>Điều chỉnh độ nghiêng Lăng trụ:</h3>
+        <div class="control">
+          <label>Góc nghiêng đáy: <output id="slider-out">${tiltAngle}° ${tiltAngle===90?'(Đứng)':'(Xiên)'}</output></label>
+          <input type="range" min="30" max="90" step="1" value="${tiltAngle}" oninput="lesson.onTilt(this.value)">
+        </div>
+        <div class="formula">
+          <span>V = S_đáy · h = 12 · 5.0 = 60 cm³</span>
+          <span class="formula-badge">Khối Lăng Trụ</span>
+        </div>
+      </div>
+      ${notebook('V = S · h đúng cho MỌI lăng trụ đứng, không chỉ hình hộp chữ nhật — đây là bước mở rộng tự nhiên từ kiến thức đã biết.')}
+      ${navButtons('Tiếp: Thí nghiệm đong nước',true)}`;
+    }
+
+    /* STEP 2 UI */
+    function renderStep2UI(){
+      buildStep2Scene();
+      const isFull=pourCount===3;
+      const btnText=isFull?'Làm lại thí nghiệm đong nước':`Đổ nước vào lăng trụ (Lần ${pourCount+1}/3)`;
+      const btnClass=isFull?'btn-pour reset':'btn-pour';
+
+      stepBody.innerHTML=`
+      <p class="eyebrow">Bước 2 · Thí nghiệm đong nước (Trọng tâm)</p>
+      <h2 class="step-title">Khám phá trực quan tỉ lệ 1:3</h2>
+      <div class="athena">
+        <b>✦ Athena</b>
+        Đây là 1 khối chóp và 1 khối lăng trụ CÙNG đáy (S = 10), CÙNG chiều cao (h = 6). Hãy bấm <b>"Đổ nước"</b> để đong đầy khối chóp rồi trút vào lăng trụ — quan sát mực nước trong lăng trụ dâng đến đâu!
+      </div>
+      <div class="card">
+        <h3>Thao tác đong nước:</h3>
+        <div class="pour-dots-row">
+          <div class="pour-dots">
+            <div class="pour-dot ${pourCount>=1?'filled':''}"></div>
+            <div class="pour-dot ${pourCount>=2?'filled':''}"></div>
+            <div class="pour-dot ${pourCount>=3?'filled':''}"></div>
+          </div>
+          <div class="pour-status">Mực nước: <span>${pourCount}/3 chiều cao</span> ${isFull?'— <b>ĐẦY TRÀN!</b>':''}</div>
+        </div>
+        <button class="${btnClass}" id="btn-pour-act" onclick="lesson.onPour()" ${isPouring?'disabled':''}>
+          <i class="ti ${isFull?'ti-rotate':'ti-cup'}"></i> ${btnText}
+        </button>
+        <div class="formula" style="margin-top:8px">
+          <span>V_chóp = (1/3) · V_lăng trụ = (1/3) · S · h</span>
+          <span class="formula-badge">Tỉ lệ 1:3</span>
+        </div>
+      </div>
+      ${notebook('Thể tích khối chóp LUÔN bằng 1/3 thể tích lăng trụ cùng đáy, cùng chiều cao — đây chính là lý do có hệ số (1/3). Đừng bao giờ quên hệ số này!')}
+      ${navButtons('Tiếp: Xác định chiều cao h',pourCount>=1)}`;
+    }
+
+    /* STEP 3 UI */
+    function renderStep3UI(){
+      buildStep3Scene();
+      stepBody.innerHTML=`
+      <p class="eyebrow">Bước 3 · Chống nhầm lẫn chiều cao</p>
+      <h2 class="step-title">Phân biệt h vs Cạnh bên SA vs Trung đoạn SM</h2>
+      <div class="athena">
+        <b>✦ Athena</b>
+        Chóp đều S.ABCD này có cạnh bên SA = 5.0. <b>SA KHÔNG PHẢI chiều cao h</b>! Hãy quan sát mô hình 3D và trả lời 2 câu hỏi bên dưới.
+      </div>
+      <div class="card">
+        <h3>3 Đoạn thẳng trong không gian:</h3>
+        <div class="toggle-group">
+          <div class="toggle-item" onclick="lesson.toggleLine('so')">
+            <div class="toggle-left"><span class="color-swatch swatch-so"></span><span>Chiều cao khối SO (Đỉnh ⊥ Tâm đáy)</span></div>
+            <span style="font-family:'JetBrains Mono';color:var(--jade-deep);font-weight:700">h = √17 ≈ 4,12</span>
+          </div>
+          <div class="toggle-item" onclick="lesson.toggleLine('sa')">
+            <div class="toggle-left"><span class="color-swatch swatch-sa"></span><span>Cạnh bên SA (Đoạn xiên đỉnh → góc đáy)</span></div>
+            <span style="font-family:'JetBrains Mono';color:var(--accent-text);font-weight:700">SA = 5,00</span>
+          </div>
+          <div class="toggle-item" onclick="lesson.toggleLine('sm')">
+            <div class="toggle-left"><span class="color-swatch swatch-sm"></span><span>Trung đoạn SM (Chiều cao mặt bên)</span></div>
+            <span style="font-family:'JetBrains Mono';color:var(--il-ochre);font-weight:700">SM = √21 ≈ 4,58</span>
+          </div>
+        </div>
+
+        <p class="body-small" style="font-weight:700;margin-top:10px">Câu 1: Chiều cao h của chóp CHỈ bằng cạnh bên khi nào?</p>
+        <button class="choice ${quiz1Done?'wrong':''}" onclick="lesson.answerQ1(0)" ${quiz1Done?'disabled':''}>A. Luôn luôn bằng nhau</button>
+        <button class="choice ${quiz1Done?'correct':''}" onclick="lesson.answerQ1(1)" ${quiz1Done?'disabled':''}>B. Chỉ khi cạnh bên đó vuông góc với đáy</button>
+        <div id="q1-fb">${quiz1Done?'<div class="feedback good">Chính xác! Cạnh bên chỉ bằng h khi nó chính là đường vuông góc hạ xuống đáy.</div>':''}</div>
+
+        <p class="body-small" style="font-weight:700;margin-top:10px">Câu 2: Trung đoạn SM (4,58 cm) có dùng tính thể tích không?</p>
+        <button class="choice ${quiz2Done?'correct':''}" onclick="lesson.answerQ2(0)" ${quiz2Done?'disabled':''}>A. Không — SM chỉ dùng tính diện tích xung quanh</button>
+        <button class="choice ${quiz2Done?'wrong':''}" onclick="lesson.answerQ2(1)" ${quiz2Done?'disabled':''}>B. Có — lấy SM làm chiều cao khối</button>
+        <div id="q2-fb">${quiz2Done?'<div class="feedback good">Chính xác! Thể tích chỉ dùng duy nhất chiều cao SO hạ vuông góc xuống tâm đáy.</div>':''}</div>
+
+        <div class="formula" style="margin-top:10px">
+          <span>V = (1/3) · 16 · 4,1231 ≈ 21,99 cm³</span>
+        </div>
+      </div>
+      ${notebook('• h CHỈ bằng cạnh bên khi cạnh bên ⊥ đáy.<br>• h KHÁC trung đoạn (chiều cao mặt bên dùng tính diện tích xung quanh, KHÔNG dùng tính thể tích).')}
+      ${navButtons('Tiếp: Đáy lục giác đều',quiz1Done&&quiz2Done)}`;
+    }
+
+    /* STEP 4 UI */
+    function renderStep4UI(){
+      buildStep4Scene();
+      stepBody.innerHTML=`
+      <p class="eyebrow">Bước 4 · Ứng dụng nâng cao</p>
+      <h2 class="step-title">Khối chóp đáy Lục giác đều (a = 3, h = 6)</h2>
+      <div class="athena">
+        <b>✦ Athena</b>
+        Đáy lục giác đều không quen thuộc như tam giác/tứ giác — hãy chia nhỏ đáy thành <b>6 tam giác đều</b> từ tâm O để tính diện tích một cách chuẩn xác!
+      </div>
+      <div class="card">
+        <h3>Các bước tính toán hoàn chỉnh:</h3>
+        <p class="body-small">
+          1. Diện tích 1 tam giác đều cạnh a = 3:<br>
+          <span style="font-family:'JetBrains Mono';font-weight:700;color:var(--jade-dark)">S_1 = (√3 / 4) · a² = (√3 / 4) · 9 ≈ 3,8971 cm²</span>
+        </p>
+        <p class="body-small">
+          2. Diện tích cả đáy lục giác đều:<br>
+          <span style="font-family:'JetBrains Mono';font-weight:700;color:var(--jade-dark)">S = 6 · S_1 = (27√3 / 2) ≈ 23,3827 cm²</span>
+        </p>
+        <div class="formula">
+          <span>S_đáy = (27√3)/2 ≈ 23,3827 cm²</span>
+          <span class="formula-badge">Diện tích đáy</span>
+        </div>
+        <div class="formula" style="margin-top:8px">
+          <span>V = (1/3) · 23,3827 · 6.0 = 46,7654 cm³</span>
+          <span class="formula-badge">Thể tích khối chóp</span>
+        </div>
+      </div>
+      ${notebook('• Thể tích lăng trụ: V = S · h<br>• Thể tích khối chóp: V = (1/3) · S · h<br>• Đáy lạ: Chia nhỏ thành các tam giác đều để tính S.')}
+      ${navButtons('Hoàn thành bài học',true)}`;
+    }
+
+    /* =========================================================================
+       LESSON CONTROLLER
+       ========================================================================= */
+    window.lesson={
+      goToStep(n){
+        if(isPouring)return;
+        currentStep=n;
+        renderStep();
+        LMS().event('step-change',{step:n});
+      },
+      completeStep(){
+        if(currentStep<4){
+          unlocked=Math.max(unlocked,currentStep+1);
+          this.goToStep(currentStep+1);
+        }
+      },
+      prevStep(){
+        if(currentStep>1){
+          this.goToStep(currentStep-1);
+        }
+      },
+      onTilt(val){
+        tiltAngle=+val;
+        const out=document.getElementById('slider-out');
+        if(out)out.textContent=`${tiltAngle}° ${tiltAngle===90?'(Đứng)':'(Xiên)'}`;
+        buildStep1Scene();
+      },
+      onPour(){
+        if(isPouring)return;
+        if(pourCount>=3){
+          pourCount=0;
+          buildStep2Scene();
+          renderStep();
+        }else{
+          pourCount++;
+          runPourAnimation(pourCount);
+        }
+        LMS().event('pour-water',{count:pourCount});
+      },
+      toggleLine(type){
+        if(type==='so'&&lineSO)lineSO.visible=!lineSO.visible;
+        if(type==='sa'&&lineSA)lineSA.visible=!lineSA.visible;
+        if(type==='sm'&&lineSM)lineSM.visible=!lineSM.visible;
+      },
+      answerQ1(idx){
+        quiz1Done=true;
+        renderStep();
+        LMS().event('quiz1-answered',{correct:idx===1});
+      },
+      answerQ2(idx){
+        quiz2Done=true;
+        renderStep();
+        LMS().event('quiz2-answered',{correct:idx===0});
+      },
+      finish(){
+        LMS().complete({score:100});
+        alert('Chúc mừng bạn đã hoàn thành xuất sắc Module 1: Thể tích khối chóp và khối lăng trụ!');
+      }
+    };
+
+    /* Init */
+    renderStep();
+    setCamera('iso');
+    LMS().ready({id:'bai27-module1-the-tich-chop-lang-tru'});
+  })();
+  </script>
+</body>
+</html>
