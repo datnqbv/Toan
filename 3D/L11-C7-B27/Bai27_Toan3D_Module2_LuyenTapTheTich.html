@@ -206,12 +206,14 @@
 
     const C={
       slate:0x64748b,terracotta:0xC15F3C,ochre:0xD97706,dustyBlue:0x4E7F92,sand:0x94a3b8,
-      jade:0x3CA57A,jadeDeep:0x2D8B6F,accent:0xE8A24A,point:0xFAC775,grid:0x1e293b,olive:0x8A9A5B
+      jade:0x3CA57A,jadeDeep:0x2D8B6F,accent:0xE8A24A,point:0xFAC775,grid:0x1e293b,olive:0x8A9A5B,
+      edgeSolid:0xe6edf3,edgeHidden:0x444d56
     };
 
     const V=(x=0,y=0,z=0)=>new THREE.Vector3(x,y,z);
+    const edgeRaycaster=new THREE.Raycaster(),edgeMid=V(),edgeDir=V(),edgeTest=V();
 
-    let currentStep=1,unlocked=1,root=null,labels=[];
+    let currentStep=1,unlocked=1,root=null,labels=[],occlusionSets=[];
     let showSplit=true;       // Step 2: Bật/tắt chia 2 tứ diện
     let isUnfolded=false;     // Step 3: Mở bung trải phẳng khuôn bánh
     let optChosen=null;       // Step 4: Chọn phương án chậu bonsai (A, B, C)
@@ -221,6 +223,61 @@
     function clearScene(){
       dispose(root);root=new THREE.Group();scene.add(root);
       labels.forEach(x=>x.el.remove());labels=[];
+      occlusionSets=[];
+    }
+    function squareFrustumEdges(cx,cz,bottomSize,topSize,h){
+      const bottom=[
+        V(cx+bottomSize/2,0,cz+bottomSize/2),V(cx+bottomSize/2,0,cz-bottomSize/2),
+        V(cx-bottomSize/2,0,cz-bottomSize/2),V(cx-bottomSize/2,0,cz+bottomSize/2)
+      ];
+      const top=[
+        V(cx+topSize/2,h,cz+topSize/2),V(cx+topSize/2,h,cz-topSize/2),
+        V(cx-topSize/2,h,cz-topSize/2),V(cx-topSize/2,h,cz+topSize/2)
+      ];
+      return [
+        ...bottom.map((p,i)=>[p,bottom[(i+1)%4]]),
+        ...top.map((p,i)=>[p,top[(i+1)%4]]),
+        ...bottom.map((p,i)=>[p,top[i]])
+      ];
+    }
+    function addOccludedEdgeSet(edgePairs,solidMesh,solidColor=C.edgeSolid,hiddenColor=C.edgeHidden){
+      const edges=edgePairs.map(([a,b])=>{
+        const p1=a.clone(),p2=b.clone();
+        const solid=new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints([p1,p2]),
+          new THREE.LineBasicMaterial({color:solidColor,transparent:true,opacity:.98,depthTest:false})
+        );
+        const dashed=new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints([p1,p2]),
+          new THREE.LineDashedMaterial({color:hiddenColor,dashSize:.15,gapSize:.10,transparent:true,opacity:.60,depthTest:false})
+        );
+        dashed.computeLineDistances();dashed.visible=false;
+        solid.renderOrder=3;dashed.renderOrder=2;root.add(solid,dashed);
+        return {p1,p2,solid,dashed,hidden:false,candidate:null,candidateFrames:0};
+      });
+      occlusionSets.push({solidMesh,edges});
+    }
+    function updateEdgeOcclusion(){
+      if(!occlusionSets.length)return;
+      root.updateMatrixWorld(true);
+      occlusionSets.forEach(({solidMesh,edges})=>{
+        solidMesh.updateMatrixWorld(true);
+        edges.forEach(edge=>{
+          edgeMid.addVectors(edge.p1,edge.p2).multiplyScalar(.5);
+          edgeDir.subVectors(camera.position,edgeMid).normalize();
+          edgeTest.copy(edgeMid).addScaledVector(edgeDir,.018);
+          const distance=edgeTest.distanceTo(camera.position);
+          edgeRaycaster.set(edgeTest,edgeDir);edgeRaycaster.near=.01;edgeRaycaster.far=Math.max(.01,distance-.035);
+          const hidden=edgeRaycaster.intersectObject(solidMesh,false).length>0;
+          if(hidden===edge.hidden){edge.candidate=null;edge.candidateFrames=0;return}
+          if(edge.candidate===hidden)edge.candidateFrames++;
+          else{edge.candidate=hidden;edge.candidateFrames=1}
+          if(edge.candidateFrames>=2){
+            edge.hidden=hidden;edge.candidate=null;edge.candidateFrames=0;
+            edge.solid.visible=!hidden;edge.dashed.visible=hidden;
+          }
+        });
+      });
     }
     function addLabel(text,pos,cls=''){
       const el=document.createElement('div');el.className='label '+cls;el.textContent=text;
@@ -256,6 +313,7 @@
     function animate(){
       requestAnimationFrame(animate);
       controls.update();
+      updateEdgeOcclusion();
       updateLabels();
       renderer.render(scene,camera);
     }
@@ -278,12 +336,11 @@
 
       // Khối bê tông chóp cụt
       const pyrGeo=new THREE.CylinderGeometry(b*0.707,a*0.707,h,4);
-      const pyrMat=new THREE.MeshStandardMaterial({color:0x8a9199,roughness:0.6,metalness:0.1,transparent:true,opacity:0.8});
+      const pyrMat=new THREE.MeshStandardMaterial({color:0x8a9199,roughness:0.6,metalness:0.1,transparent:true,opacity:0.30,side:THREE.DoubleSide,depthWrite:false});
       const pyrMesh=new THREE.Mesh(pyrGeo,pyrMat);
       pyrMesh.rotation.y=Math.PI/4;pyrMesh.position.y=h/2;root.add(pyrMesh);
 
-      const edges=new THREE.LineSegments(new THREE.EdgesGeometry(pyrGeo),new THREE.LineBasicMaterial({color:0xffffff,linewidth:1.5}));
-      edges.rotation.y=Math.PI/4;edges.position.y=h/2;root.add(edges);
+      addOccludedEdgeSet(squareFrustumEdges(0,0,a,b,h),pyrMesh);
 
       // 4 Đường thép cốt móng nét đứt
       const dBottom=a/2*0.75,dTop=b/2*0.75;
@@ -320,11 +377,21 @@
       const pQ=pS.clone().add(pD.clone().sub(pS).multiplyScalar(0.3));
 
       // Khung chóp lớn
-      const pyrEdges=new THREE.BufferGeometry().setFromPoints([
-        pA,pB, pB,pC, pC,pD, pD,pA,
-        pS,pA, pS,pB, pS,pC, pS,pD
-      ]);
-      root.add(new THREE.LineSegments(pyrEdges,new THREE.LineBasicMaterial({color:0xffffff,transparent:true,opacity:0.4})));
+      const shellGeo=new THREE.BufferGeometry();
+      shellGeo.setAttribute('position',new THREE.BufferAttribute(new Float32Array([
+        pS.x,pS.y,pS.z,pA.x,pA.y,pA.z,pB.x,pB.y,pB.z,
+        pS.x,pS.y,pS.z,pB.x,pB.y,pB.z,pC.x,pC.y,pC.z,
+        pS.x,pS.y,pS.z,pC.x,pC.y,pC.z,pD.x,pD.y,pD.z,
+        pS.x,pS.y,pS.z,pD.x,pD.y,pD.z,pA.x,pA.y,pA.z,
+        pA.x,pA.y,pA.z,pD.x,pD.y,pD.z,pC.x,pC.y,pC.z,
+        pA.x,pA.y,pA.z,pC.x,pC.y,pC.z,pB.x,pB.y,pB.z
+      ]),3));
+      const shellMesh=new THREE.Mesh(shellGeo,new THREE.MeshBasicMaterial({color:C.slate,transparent:true,opacity:0,side:THREE.DoubleSide,depthWrite:false}));
+      root.add(shellMesh);
+      addOccludedEdgeSet([
+        [pA,pB],[pB,pC],[pC,pD],[pD,pA],
+        [pS,pA],[pS,pB],[pS,pC],[pS,pD]
+      ],shellMesh);
 
       // Đường chéo đáy AC
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pA,pC]),new THREE.LineBasicMaterial({color:C.jade,linewidth:3})));
@@ -333,10 +400,9 @@
       lineMP.computeLineDistances();root.add(lineMP);
 
       // Khối S.MNPQ nhỏ
-      const smallEdges=new THREE.BufferGeometry().setFromPoints([
-        pM,pN, pN,pP, pP,pQ, pQ,pM
-      ]);
-      root.add(new THREE.LineSegments(smallEdges,new THREE.LineBasicMaterial({color:C.accent,linewidth:2.5})));
+      addOccludedEdgeSet([
+        [pM,pN],[pN,pP],[pP,pQ],[pQ,pM]
+      ],shellMesh,C.accent);
 
       if(showSplit){
         // Tứ diện 1: S.ABC tô màu dusty-blue
@@ -348,7 +414,7 @@
           pA.x,pA.y,pA.z, pC.x,pC.y,pC.z, pB.x,pB.y,pB.z
         ]),3));
         geo1.computeVertexNormals();
-        root.add(new THREE.Mesh(geo1,new THREE.MeshStandardMaterial({color:0x4E7F92,transparent:true,opacity:0.35,side:THREE.DoubleSide})));
+        root.add(new THREE.Mesh(geo1,new THREE.MeshStandardMaterial({color:0x4E7F92,transparent:true,opacity:0.28,side:THREE.DoubleSide,depthWrite:false})));
 
         // Tứ diện 2: S.ACD tô màu olive
         const geo2=new THREE.BufferGeometry();
@@ -359,7 +425,7 @@
           pA.x,pA.y,pA.z, pD.x,pD.y,pD.z, pC.x,pC.y,pC.z
         ]),3));
         geo2.computeVertexNormals();
-        root.add(new THREE.Mesh(geo2,new THREE.MeshStandardMaterial({color:0x8A9A5B,transparent:true,opacity:0.35,side:THREE.DoubleSide})));
+        root.add(new THREE.Mesh(geo2,new THREE.MeshStandardMaterial({color:0x8A9A5B,transparent:true,opacity:0.28,side:THREE.DoubleSide,depthWrite:false})));
       }
 
       // Điểm M, N, P, Q
@@ -399,11 +465,11 @@
       if(!isUnfolded){
         // Khuôn dạng 3D chóp cụt
         const moldGeo=new THREE.CylinderGeometry(a*0.707,b*0.707,h,4,1,true);
-        const moldMesh=new THREE.Mesh(moldGeo,metalMat);
+        const moldMat=metalMat.clone();moldMat.transparent=true;moldMat.opacity=.30;moldMat.depthWrite=false;
+        const moldMesh=new THREE.Mesh(moldGeo,moldMat);
         moldMesh.rotation.y=Math.PI/4;moldMesh.position.y=h/2;root.add(moldMesh);
 
-        const edges=new THREE.LineSegments(new THREE.EdgesGeometry(moldGeo),new THREE.LineBasicMaterial({color:0xffffff}));
-        edges.rotation.y=Math.PI/4;edges.position.y=h/2;root.add(edges);
+        addOccludedEdgeSet(squareFrustumEdges(0,0,b,a,h),moldMesh);
 
         // Lớp bột bánh vàng nhạt rót đầy khuôn
         const doughGeo=new THREE.CylinderGeometry(a*0.707*0.96,b*0.707*0.96,h*0.92,4);
@@ -459,21 +525,24 @@
 
       // Chậu A: Chóp cụt đều 20 -> 14 (V = 4.380)
       const potAGeo=new THREE.CylinderGeometry(2.0*0.707,1.4*0.707,h,4);
-      const potAMat=new THREE.MeshStandardMaterial({color:C.terracotta,roughness:0.5});
+      const potAMat=new THREE.MeshStandardMaterial({color:C.terracotta,roughness:0.5,transparent:true,opacity:.30,side:THREE.DoubleSide,depthWrite:false});
       const potA=new THREE.Mesh(potAGeo,potAMat);
       potA.rotation.y=Math.PI/4;potA.position.set(-3.0,h/2,0);root.add(potA);
+      addOccludedEdgeSet(squareFrustumEdges(-3,0,1.4,2.0,h),potA,optChosen==='A'?C.jade:C.edgeSolid,optChosen==='A'?C.jade:C.edgeHidden);
 
       // Chậu B: Lăng trụ đứng 16 (V = 3.840)
       const potBGeo=new THREE.BoxGeometry(1.6,h,1.6);
-      const potBMat=new THREE.MeshStandardMaterial({color:C.dustyBlue,roughness:0.5});
+      const potBMat=new THREE.MeshStandardMaterial({color:C.dustyBlue,roughness:0.5,transparent:true,opacity:.30,side:THREE.DoubleSide,depthWrite:false});
       const potB=new THREE.Mesh(potBGeo,potBMat);
       potB.position.set(0,h/2,0);root.add(potB);
+      addOccludedEdgeSet(squareFrustumEdges(0,0,1.6,1.6,h),potB);
 
       // Chậu C: Chóp cụt dốc 22 -> 10 (V = 4.020)
       const potCGeo=new THREE.CylinderGeometry(2.2*0.707,1.0*0.707,h,4);
-      const potCMat=new THREE.MeshStandardMaterial({color:C.ochre,roughness:0.5});
+      const potCMat=new THREE.MeshStandardMaterial({color:C.ochre,roughness:0.5,transparent:true,opacity:.30,side:THREE.DoubleSide,depthWrite:false});
       const potC=new THREE.Mesh(potCGeo,potCMat);
       potC.rotation.y=Math.PI/4;potC.position.set(3.0,h/2,0);root.add(potC);
+      addOccludedEdgeSet(squareFrustumEdges(3,0,1.0,2.2,h),potC);
 
       // 3 Cây bonsai tí hon
       [-3.0,0,3.0].forEach(x=>{
@@ -482,11 +551,6 @@
       });
 
       // Viền sáng xác nhận nếu chọn phương án A
-      if(optChosen==='A'){
-        const highGeo=new THREE.LineSegments(new THREE.EdgesGeometry(potAGeo),new THREE.LineBasicMaterial({color:C.jade,linewidth:4}));
-        highGeo.rotation.y=Math.PI/4;highGeo.position.copy(potA.position);root.add(highGeo);
-      }
-
       addLabel('A: 4.380 cm³ (Tối ưu)',V(-3.0,h+0.85,0),'result');
       addLabel('B: 3.840 cm³',V(0,h+0.85,0),'blue');
       addLabel('C: 4.020 cm³ (Đáy lớn nhất)',V(3.0,h+0.85,0),'ochre');

@@ -203,19 +203,21 @@
 
     const C={
       slate:0x64748b,terracotta:0xC15F3C,ochre:0xD97706,dustyBlue:0x4E7F92,sand:0xD8C4A0,
-      jade:0x3CA57A,jadeDeep:0x2D8B6F,accent:0xE8A24A,point:0xFAC775,grid:0x1e293b
+      jade:0x3CA57A,jadeDeep:0x2D8B6F,accent:0xE8A24A,point:0xFAC775,grid:0x1e293b,
+      edgeSolid:0xe6edf3,edgeHidden:0x444d56
     };
 
     const V=(x=0,y=0,z=0)=>new THREE.Vector3(x,y,z);
+    const edgeRaycaster=new THREE.Raycaster(),edgeMid=V(),edgeDir=V(),edgeTest=V();
 
-    let currentStep=1,unlocked=1,root=null,labels=[];
+    let currentStep=1,unlocked=1,root=null,labels=[],occlusionSets=[];
     let edgeB=5.0;            // Step 1: Cạnh bên b biến thiên (5 -> 6)
     let quiz2Done=false,quiz3Done=false,quiz4Done=false;
 
     function dispose(obj){if(!obj)return;obj.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose())});if(obj.parent)obj.parent.remove(obj)}
     function clearScene(){
       dispose(root);root=new THREE.Group();scene.add(root);
-      labels.forEach(x=>x.el.remove());labels=[];
+      labels.forEach(x=>x.el.remove());labels=[];occlusionSets=[];
     }
     function addLabel(text,pos,cls=''){
       const el=document.createElement('div');el.className='label '+cls;el.textContent=text;
@@ -230,6 +232,51 @@
         l.el.style.display='block';
         l.el.style.left=((p.x*.5+.5)*w)+'px';
         l.el.style.top=((-p.y*.5+.5)*h)+'px';
+      });
+    }
+
+    // Mỗi cạnh thật có hai bản: liền khi nhìn thấy, đứt khi bị chính khối che.
+    function addOccludedEdgeSet(edgePairs,solidMesh){
+      const edges=edgePairs.map(([a,b])=>{
+        const p1=a.clone(),p2=b.clone();
+        const solid=new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints([p1,p2]),
+          new THREE.LineBasicMaterial({color:C.edgeSolid,transparent:true,opacity:.98})
+        );
+        const dashed=new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints([p1,p2]),
+          new THREE.LineDashedMaterial({color:C.edgeHidden,dashSize:.15,gapSize:.10,transparent:true,opacity:.60})
+        );
+        dashed.computeLineDistances();
+        dashed.visible=false;
+        solid.renderOrder=3;dashed.renderOrder=2;
+        root.add(solid,dashed);
+        return{p1,p2,solid,dashed,hidden:false,candidate:null,candidateFrames:0};
+      });
+      occlusionSets.push({solidMesh,edges});
+    }
+
+    function updateEdgeOcclusion(){
+      if(!occlusionSets.length)return;
+      root.updateMatrixWorld(true);
+      occlusionSets.forEach(({solidMesh,edges})=>{
+        solidMesh.updateMatrixWorld(true);
+        edges.forEach(edge=>{
+          edgeMid.addVectors(edge.p1,edge.p2).multiplyScalar(.5);
+          edgeDir.subVectors(camera.position,edgeMid).normalize();
+          edgeTest.copy(edgeMid).addScaledVector(edgeDir,.018);
+          const distance=edgeTest.distanceTo(camera.position);
+          edgeRaycaster.set(edgeTest,edgeDir);edgeRaycaster.near=.01;edgeRaycaster.far=Math.max(.01,distance-.035);
+          const hidden=edgeRaycaster.intersectObject(solidMesh,false).length>0;
+          if(hidden===edge.hidden){edge.candidate=null;edge.candidateFrames=0;return}
+          if(edge.candidate===hidden)edge.candidateFrames++;
+          else{edge.candidate=hidden;edge.candidateFrames=1}
+          // Hai frame liên tiếp tránh nhấp nháy khi cạnh nằm đúng đường silhouette.
+          if(edge.candidateFrames>=2){
+            edge.hidden=hidden;edge.candidate=null;edge.candidateFrames=0;
+            edge.solid.visible=!hidden;edge.dashed.visible=hidden;
+          }
+        });
       });
     }
 
@@ -251,6 +298,7 @@
     function animate(){
       requestAnimationFrame(animate);
       controls.update();
+      updateEdgeOcclusion();
       updateLabels();
       renderer.render(scene,camera);
     }
@@ -283,15 +331,15 @@
         pA.x,pA.y,pA.z, pC.x,pC.y,pC.z, pB.x,pB.y,pB.z
       ]),3));
       pyrGeo.computeVertexNormals();
-      const pyrMesh=new THREE.Mesh(pyrGeo,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:0.45,side:THREE.DoubleSide}));
+      const pyrMesh=new THREE.Mesh(pyrGeo,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:.30,side:THREE.DoubleSide,depthWrite:false}));
       root.add(pyrMesh);
 
-      // Cạnh khung
-      const edgeGeo=new THREE.BufferGeometry().setFromPoints([pA,pB,pB,pC,pC,pA,pS,pA,pS,pB,pS,pC]);
-      root.add(new THREE.LineSegments(edgeGeo,new THREE.LineBasicMaterial({color:0xffffff,linewidth:1.5})));
+      // Cạnh khung tự đổi liền/đứt theo góc nhìn.
+      addOccludedEdgeSet([[pA,pB],[pB,pC],[pC,pA],[pS,pA],[pS,pB],[pS,pC]],pyrMesh);
 
       // Đoạn OA (bán kính đáy) và SO (chiều cao)
-      root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pO,pA]),new THREE.LineDashedMaterial({color:C.jade,dashSize:0.12,gapSize:0.08,linewidth:2.5})));
+      const oaGuide=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pO,pA]),new THREE.LineDashedMaterial({color:C.jade,dashSize:0.12,gapSize:0.08,linewidth:2.5}));
+      oaGuide.computeLineDistances();root.add(oaGuide);
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pS,pO]),new THREE.LineBasicMaterial({color:C.jade,linewidth:3})));
 
       // Điểm
@@ -336,11 +384,15 @@
         pC.x,pC.y,pC.z, pA2.x,pA2.y,pA2.z, pA.x,pA.y,pA.z
       ]),3));
       prismGeo.computeVertexNormals();
-      root.add(new THREE.Mesh(prismGeo,new THREE.MeshStandardMaterial({color:C.slate,transparent:true,opacity:0.45,side:THREE.DoubleSide})));
+      const prismMesh=new THREE.Mesh(prismGeo,new THREE.MeshStandardMaterial({color:C.slate,transparent:true,opacity:.30,side:THREE.DoubleSide,depthWrite:false}));
+      root.add(prismMesh);
 
-      // Khung viền
-      const edgeGeo=new THREE.BufferGeometry().setFromPoints([pA,pB,pB,pC,pC,pA,pA2,pB2,pB2,pC2,pC2,pA2,pA,pA2,pB,pB2,pC,pC2]);
-      root.add(new THREE.LineSegments(edgeGeo,new THREE.LineBasicMaterial({color:0xffffff})));
+      // Khung viền tự đổi liền/đứt theo góc nhìn.
+      addOccludedEdgeSet([
+        [pA,pB],[pB,pC],[pC,pA],
+        [pA2,pB2],[pB2,pC2],[pC2,pA2],
+        [pA,pA2],[pB,pB2],[pC,pC2]
+      ],prismMesh);
 
       // Cung góc 140 độ tại B
       const arcPts=[];
@@ -377,25 +429,33 @@
 
       // Dựng chóp 1 (Trái - TH1)
       const pyrGeo1=new THREE.ConeGeometry(a*0.707,h1,4);
-      const pyrMesh1=new THREE.Mesh(pyrGeo1,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:0.35,side:THREE.DoubleSide}));
+      const pyrMesh1=new THREE.Mesh(pyrGeo1,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:.28,side:THREE.DoubleSide,depthWrite:false}));
       pyrMesh1.rotation.y=Math.PI/4;pyrMesh1.position.set(x1,h1/2,0);root.add(pyrMesh1);
-      const edges1=new THREE.LineSegments(new THREE.EdgesGeometry(pyrGeo1),new THREE.LineBasicMaterial({color:0xffffff}));
-      edges1.rotation.y=Math.PI/4;edges1.position.copy(pyrMesh1.position);root.add(edges1);
+      const pS1=V(x1,h1,0);
+      const base1=[V(x1+a/2,0,a/2),V(x1+a/2,0,-a/2),V(x1-a/2,0,-a/2),V(x1-a/2,0,a/2)];
+      addOccludedEdgeSet([
+        [base1[0],base1[1]],[base1[1],base1[2]],[base1[2],base1[3]],[base1[3],base1[0]],
+        [pS1,base1[0]],[pS1,base1[1]],[pS1,base1[2]],[pS1,base1[3]]
+      ],pyrMesh1);
 
       // Đường OA và SO chóp 1
-      const pO1=V(x1,0,0),pS1=V(x1,h1,0),pA1=V(x1-a/2,0,a/2);
+      const pO1=V(x1,0,0),pA1=V(x1-a/2,0,a/2);
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pO1,pA1]),new THREE.LineBasicMaterial({color:C.accent,linewidth:3})));
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pS1,pO1]),new THREE.LineBasicMaterial({color:C.jade,linewidth:3})));
 
       // Dựng chóp 2 (Phải - TH2)
       const pyrGeo2=new THREE.ConeGeometry(a*0.707,h2,4);
-      const pyrMesh2=new THREE.Mesh(pyrGeo2,new THREE.MeshStandardMaterial({color:C.dustyBlue,transparent:true,opacity:0.35,side:THREE.DoubleSide}));
+      const pyrMesh2=new THREE.Mesh(pyrGeo2,new THREE.MeshStandardMaterial({color:C.dustyBlue,transparent:true,opacity:.28,side:THREE.DoubleSide,depthWrite:false}));
       pyrMesh2.rotation.y=Math.PI/4;pyrMesh2.position.set(x2,h2/2,0);root.add(pyrMesh2);
-      const edges2=new THREE.LineSegments(new THREE.EdgesGeometry(pyrGeo2),new THREE.LineBasicMaterial({color:0xffffff}));
-      edges2.rotation.y=Math.PI/4;edges2.position.copy(pyrMesh2.position);root.add(edges2);
+      const pS2=V(x2,h2,0);
+      const base2=[V(x2+a/2,0,a/2),V(x2+a/2,0,-a/2),V(x2-a/2,0,-a/2),V(x2-a/2,0,a/2)];
+      addOccludedEdgeSet([
+        [base2[0],base2[1]],[base2[1],base2[2]],[base2[2],base2[3]],[base2[3],base2[0]],
+        [pS2,base2[0]],[pS2,base2[1]],[pS2,base2[2]],[pS2,base2[3]]
+      ],pyrMesh2);
 
       // Đường OM và SO chóp 2
-      const pO2=V(x2,0,0),pS2=V(x2,h2,0),pM2=V(x2,0,a/2);
+      const pO2=V(x2,0,0),pM2=V(x2,0,a/2);
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pO2,pM2]),new THREE.LineBasicMaterial({color:C.dustyBlue,linewidth:3})));
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pS2,pO2]),new THREE.LineBasicMaterial({color:C.jade,linewidth:3})));
 
@@ -443,15 +503,20 @@
         pC.x,pC.y,pC.z, pA2.x,pA2.y,pA2.z, pA.x,pA.y,pA.z
       ]),3));
       prismGeo.computeVertexNormals();
-      root.add(new THREE.Mesh(prismGeo,new THREE.MeshStandardMaterial({color:C.dustyBlue,transparent:true,opacity:0.45,side:THREE.DoubleSide})));
+      const prismMesh=new THREE.Mesh(prismGeo,new THREE.MeshStandardMaterial({color:C.dustyBlue,transparent:true,opacity:.30,side:THREE.DoubleSide,depthWrite:false}));
+      root.add(prismMesh);
 
-      // Khung viền
-      const edgeGeo=new THREE.BufferGeometry().setFromPoints([pA,pB,pB,pC,pC,pA,pA2,pB2,pB2,pC2,pC2,pA2,pA,pA2,pB,pB2,pC,pC2]);
-      root.add(new THREE.LineSegments(edgeGeo,new THREE.LineBasicMaterial({color:0xffffff})));
+      // Khung viền tự đổi liền/đứt theo góc nhìn.
+      addOccludedEdgeSet([
+        [pA,pB],[pB,pC],[pC,pA],
+        [pA2,pB2],[pB2,pC2],[pC2,pA2],
+        [pA,pA2],[pB,pB2],[pC,pC2]
+      ],prismMesh);
 
       // Đường cao thẳng đứng OA' (vuông góc tâm đáy)
       root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pA2,pO]),new THREE.LineBasicMaterial({color:C.jade,linewidth:3.5})));
-      root.add(new THREE.Line(new THREE.BufferGeometry().setFromPoints([pO,pA]),new THREE.LineDashedMaterial({color:C.jade,dashSize:0.12,gapSize:0.08})));
+      const oaGuide=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pO,pA]),new THREE.LineDashedMaterial({color:C.jade,dashSize:0.12,gapSize:0.08}));
+      oaGuide.computeLineDistances();root.add(oaGuide);
 
       // Điểm
       [pA2,pO,pA,pB,pC].forEach(pt=>{

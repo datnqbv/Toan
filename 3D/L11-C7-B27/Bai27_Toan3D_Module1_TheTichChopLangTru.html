@@ -223,12 +223,14 @@
 
     const C={
       slate:0x4E6E7E,terracotta:0xC1704B,ochre:0xD97706,dustyBlue:0x6E93A6,sand:0xD8C4A0,
-      jade:0x3CA57A,jadeDeep:0x2D8B6F,accent:0xE8A24A,point:0xFAC775,grid:0x1e293b,water:0x7fb5d9
+      jade:0x3CA57A,jadeDeep:0x2D8B6F,accent:0xE8A24A,point:0xFAC775,grid:0x1e293b,water:0x7fb5d9,
+      edgeSolid:0xe6edf3,edgeHidden:0x444d56
     };
 
     const V=(x=0,y=0,z=0)=>new THREE.Vector3(x,y,z);
+    const edgeRaycaster=new THREE.Raycaster(),edgeMid=V(),edgeDir=V(),edgeTest=V();
 
-    let currentStep=1,unlocked=1,root=null,labels=[],particlesGroup=null;
+    let currentStep=1,unlocked=1,root=null,labels=[],particlesGroup=null,occlusionSets=[];
     let tiltAngle=90;
     let pourCount=0,isPouring=false;
     let pyrWaterMesh=null,prismWaterMesh=null;
@@ -240,6 +242,46 @@
       dispose(root);root=new THREE.Group();scene.add(root);
       dispose(particlesGroup);particlesGroup=new THREE.Group();scene.add(particlesGroup);
       labels.forEach(x=>x.el.remove());labels=[];
+      occlusionSets=[];
+    }
+    function addOccludedEdgeSet(edgePairs,solidMesh,solidColor=C.edgeSolid,hiddenColor=C.edgeHidden){
+      const edges=edgePairs.map(([a,b])=>{
+        const p1=a.clone(),p2=b.clone();
+        const solid=new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints([p1,p2]),
+          new THREE.LineBasicMaterial({color:solidColor,transparent:true,opacity:.98,depthTest:false})
+        );
+        const dashed=new THREE.Line(
+          new THREE.BufferGeometry().setFromPoints([p1,p2]),
+          new THREE.LineDashedMaterial({color:hiddenColor,dashSize:.15,gapSize:.10,transparent:true,opacity:.60,depthTest:false})
+        );
+        dashed.computeLineDistances();dashed.visible=false;
+        solid.renderOrder=3;dashed.renderOrder=2;root.add(solid,dashed);
+        return {p1,p2,solid,dashed,hidden:false,candidate:null,candidateFrames:0};
+      });
+      occlusionSets.push({solidMesh,edges});
+    }
+    function updateEdgeOcclusion(){
+      if(!occlusionSets.length)return;
+      root.updateMatrixWorld(true);
+      occlusionSets.forEach(({solidMesh,edges})=>{
+        solidMesh.updateMatrixWorld(true);
+        edges.forEach(edge=>{
+          edgeMid.addVectors(edge.p1,edge.p2).multiplyScalar(.5);
+          edgeDir.subVectors(camera.position,edgeMid).normalize();
+          edgeTest.copy(edgeMid).addScaledVector(edgeDir,.018);
+          const distance=edgeTest.distanceTo(camera.position);
+          edgeRaycaster.set(edgeTest,edgeDir);edgeRaycaster.near=.01;edgeRaycaster.far=Math.max(.01,distance-.035);
+          const hidden=edgeRaycaster.intersectObject(solidMesh,false).length>0;
+          if(hidden===edge.hidden){edge.candidate=null;edge.candidateFrames=0;return}
+          if(edge.candidate===hidden)edge.candidateFrames++;
+          else{edge.candidate=hidden;edge.candidateFrames=1}
+          if(edge.candidateFrames>=2){
+            edge.hidden=hidden;edge.candidate=null;edge.candidateFrames=0;
+            edge.solid.visible=!hidden;edge.dashed.visible=hidden;
+          }
+        });
+      });
     }
     function addLabel(text,pos,cls=''){
       const el=document.createElement('div');el.className='label '+cls;el.textContent=text;
@@ -275,6 +317,7 @@
     function animate(){
       requestAnimationFrame(animate);
       controls.update();
+      updateEdgeOcclusion();
       updateLabels();
       renderer.render(scene,camera);
     }
@@ -305,11 +348,14 @@
         pC.x,pC.y,pC.z, pA2.x,pA2.y,pA2.z, pA.x,pA.y,pA.z
       ]);
       const geo=new THREE.BufferGeometry();geo.setAttribute('position',new THREE.BufferAttribute(vertices,3));geo.computeVertexNormals();
-      const mesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:C.slate,transparent:true,opacity:0.75,roughness:0.4,side:THREE.DoubleSide}));
+      const mesh=new THREE.Mesh(geo,new THREE.MeshStandardMaterial({color:C.slate,transparent:true,opacity:0.30,roughness:0.4,side:THREE.DoubleSide,depthWrite:false}));
       root.add(mesh);
 
-      const wireGeo=new THREE.BufferGeometry().setFromPoints([pA,pB,pB,pC,pC,pA,pA2,pB2,pB2,pC2,pC2,pA2,pA,pA2,pB,pB2,pC,pC2]);
-      root.add(new THREE.LineSegments(wireGeo,new THREE.LineBasicMaterial({color:0xffffff,linewidth:2})));
+      addOccludedEdgeSet([
+        [pA,pB],[pB,pC],[pC,pA],
+        [pA2,pB2],[pB2,pC2],[pC2,pA2],
+        [pA,pA2],[pB,pB2],[pC,pC2]
+      ],mesh);
 
       // Đường chiều cao h
       const hFoot=V(pC2.x,0,pC2.z);
@@ -338,10 +384,16 @@
 
       // Vỏ chóp
       const pyrGeo=new THREE.ConeGeometry(sSize*0.707,h,4,1,true);
-      const pyrMesh=new THREE.Mesh(pyrGeo,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:0.25,roughness:0.1,side:THREE.DoubleSide}));
+      const pyrMesh=new THREE.Mesh(pyrGeo,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:0.25,roughness:0.1,side:THREE.DoubleSide,depthWrite:false}));
       pyrMesh.rotation.y=Math.PI/4;pyrMesh.position.set(pyrPos.x,h/2,pyrPos.z);root.add(pyrMesh);
-      const pyrEdge=new THREE.LineSegments(new THREE.EdgesGeometry(pyrGeo),new THREE.LineBasicMaterial({color:C.terracotta}));
-      pyrEdge.rotation.y=Math.PI/4;pyrEdge.position.copy(pyrMesh.position);root.add(pyrEdge);
+      const pyrTip=V(pyrPos.x,h,pyrPos.z);
+      const pyrBase=[
+        V(pyrPos.x-sSize/2,0,pyrPos.z-sSize/2),V(pyrPos.x+sSize/2,0,pyrPos.z-sSize/2),
+        V(pyrPos.x+sSize/2,0,pyrPos.z+sSize/2),V(pyrPos.x-sSize/2,0,pyrPos.z+sSize/2)
+      ];
+      addOccludedEdgeSet([
+        ...pyrBase.map((p,i)=>[p,pyrBase[(i+1)%4]]),...pyrBase.map(p=>[p,pyrTip])
+      ],pyrMesh);
 
       // Nước chóp
       const waterMat=new THREE.MeshStandardMaterial({color:C.water,transparent:true,opacity:0.85,roughness:0.2,side:THREE.DoubleSide});
@@ -350,10 +402,18 @@
 
       // Vỏ lăng trụ
       const prismGeo=new THREE.BoxGeometry(sSize,h,sSize);
-      const prismMesh=new THREE.Mesh(prismGeo,new THREE.MeshStandardMaterial({color:C.slate,transparent:true,opacity:0.22,roughness:0.1,side:THREE.DoubleSide}));
+      const prismMesh=new THREE.Mesh(prismGeo,new THREE.MeshStandardMaterial({color:C.slate,transparent:true,opacity:0.22,roughness:0.1,side:THREE.DoubleSide,depthWrite:false}));
       prismMesh.position.set(prismPos.x,h/2,prismPos.z);root.add(prismMesh);
-      const prismEdge=new THREE.LineSegments(new THREE.EdgesGeometry(prismGeo),new THREE.LineBasicMaterial({color:C.slate}));
-      prismEdge.position.copy(prismMesh.position);root.add(prismEdge);
+      const prismBottom=[
+        V(prismPos.x-sSize/2,0,prismPos.z-sSize/2),V(prismPos.x+sSize/2,0,prismPos.z-sSize/2),
+        V(prismPos.x+sSize/2,0,prismPos.z+sSize/2),V(prismPos.x-sSize/2,0,prismPos.z+sSize/2)
+      ];
+      const prismTop=prismBottom.map(p=>V(p.x,h,p.z));
+      addOccludedEdgeSet([
+        ...prismBottom.map((p,i)=>[p,prismBottom[(i+1)%4]]),
+        ...prismTop.map((p,i)=>[p,prismTop[(i+1)%4]]),
+        ...prismBottom.map((p,i)=>[p,prismTop[i]])
+      ],prismMesh);
 
       // 3 Vạch mốc 1/3, 2/3, 1
       [1/3,2/3,1].forEach((r,idx)=>{
@@ -461,10 +521,12 @@
 
       // Chóp mờ
       const pyrGeo=new THREE.ConeGeometry(a*0.707,hVal,4);
-      const pyr=new THREE.Mesh(pyrGeo,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:0.35,roughness:0.5,side:THREE.DoubleSide}));
+      const pyr=new THREE.Mesh(pyrGeo,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:0.28,roughness:0.5,side:THREE.DoubleSide,depthWrite:false}));
       pyr.rotation.y=Math.PI/4;pyr.position.y=hVal/2;root.add(pyr);
-      const edges=new THREE.LineSegments(new THREE.EdgesGeometry(pyrGeo),new THREE.LineBasicMaterial({color:0xffffff,opacity:0.5,transparent:true}));
-      edges.rotation.y=Math.PI/4;edges.position.y=hVal/2;root.add(edges);
+      const squareBase=[pA,pB,pC,pD];
+      addOccludedEdgeSet([
+        ...squareBase.map((p,i)=>[p,squareBase[(i+1)%4]]),...squareBase.map(p=>[p,pS])
+      ],pyr);
 
       // 1. SO (Chiều cao h - Jade)
       lineSO=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pS,pO]),new THREE.LineBasicMaterial({color:C.jade,linewidth:4}));
@@ -514,10 +576,16 @@
       }
 
       const hexPyrGeo=new THREE.ConeGeometry(r,h,6);
-      const hexPyr=new THREE.Mesh(hexPyrGeo,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:0.4,roughness:0.5,side:THREE.DoubleSide}));
+      const hexPyr=new THREE.Mesh(hexPyrGeo,new THREE.MeshStandardMaterial({color:C.terracotta,transparent:true,opacity:0.28,roughness:0.5,side:THREE.DoubleSide,depthWrite:false}));
       hexPyr.position.y=h/2;root.add(hexPyr);
-      const hexEdges=new THREE.LineSegments(new THREE.EdgesGeometry(hexPyrGeo),new THREE.LineBasicMaterial({color:0xffffff}));
-      hexEdges.position.y=h/2;root.add(hexEdges);
+      const hexEdgePts=[];
+      for(let i=0;i<6;i++){
+        const ang=(i*Math.PI)/3;
+        hexEdgePts.push(V(r*Math.sin(ang),0,r*Math.cos(ang)));
+      }
+      addOccludedEdgeSet([
+        ...hexEdgePts.map((p,i)=>[p,hexEdgePts[(i+1)%6]]),...hexEdgePts.map(p=>[p,pS])
+      ],hexPyr);
 
       hexPts.forEach(pt=>{
         const ray=new THREE.Line(new THREE.BufferGeometry().setFromPoints([pO,pt]),new THREE.LineDashedMaterial({color:C.jade,dashSize:0.12,gapSize:0.08}));
