@@ -167,8 +167,8 @@
       </div>
       <div class="canvas-actions">
         <button class="canvas-btn" onclick="setCamera('iso')" title="Phối cảnh 3D"><i class="ti ti-rotate-3d"></i> 3D</button>
-        <button class="canvas-btn" onclick="setCamera('front')" title="Trực diện"><i class="ti ti-border-all"></i> Front</button>
-        <button class="canvas-btn" onclick="setCamera('top')" title="Từ trên"><i class="ti ti-layout-grid"></i> Top</button>
+        <button class="canvas-btn" onclick="setCamera('front')" title="Trực diện"><i class="ti ti-border-all"></i> Trực diện</button>
+        <button class="canvas-btn" onclick="setCamera('top')" title="Từ trên"><i class="ti ti-layout-grid"></i> Từ trên</button>
       </div>
       <div class="canvas-hint">Kéo chuột để xoay · Cuộn để zoom</div>
     </section>
@@ -213,6 +213,7 @@
     let currentStep=1,unlocked=1,root=null,labels=[],occlusionSets=[];
     let edgeB=5.0;            // Step 1: Cạnh bên b biến thiên (5 -> 6)
     let quiz2Done=false,quiz3Done=false,quiz4Done=false;
+    let quiz2Choice=null,quiz3Choice=null,quiz4Choice=null;
 
     function dispose(obj){if(!obj)return;obj.traverse(o=>{if(o.geometry)o.geometry.dispose();if(o.material)(Array.isArray(o.material)?o.material:[o.material]).forEach(m=>m.dispose())});if(obj.parent)obj.parent.remove(obj)}
     function clearScene(){
@@ -669,9 +670,9 @@
 
         <p class="body-small" style="font-weight:700;margin-top:10px">Câu hỏi kiểm tra:</p>
         <p class="body-small">Vì sao không lấy (1/2)·5·3 trực tiếp làm diện tích đáy?</p>
-        <button class="choice ${quiz2Done?'correct':''}" onclick="lesson.answerQ2(1)" ${quiz2Done?'disabled':''}>A. Vì góc ABC = 140° không phải góc vuông 90°</button>
-        <button class="choice ${quiz2Done?'wrong':''}" onclick="lesson.answerQ2(0)" ${quiz2Done?'disabled':''}>B. Vì đáy là tam giác tù nên không có diện tích</button>
-        <div id="q2-fb">${quiz2Done?'<div class="feedback good">Chính xác! Tam giác thường cần nhân thêm sin của góc xen giữa.</div>':''}</div>
+        <button class="choice ${quiz2Choice===1?'correct':''}" onclick="lesson.answerQ2(1)" ${quiz2Done?'disabled':''}>A. Vì góc ABC = 140° không phải góc vuông 90°</button>
+        <button class="choice ${quiz2Choice===0?'wrong':''}" onclick="lesson.answerQ2(0)" ${quiz2Done?'disabled':''}>B. Vì đáy là tam giác tù nên không có diện tích</button>
+        <div id="q2-fb">${quiz2Choice===1?'<div class="feedback good">Chính xác! Tam giác thường cần nhân thêm sin của góc xen giữa.</div>':quiz2Choice===0?'<div class="feedback bad">Chưa chính xác. Tam giác tù vẫn có diện tích; hãy kiểm tra công thức diện tích khi biết hai cạnh và góc xen giữa.</div>':''}</div>
       </div>
       ${notebook('Khi tính thể tích, diện tích đáy có thể cần công thức lượng giác S = (1/2)·a·b·sin(C).')}
       ${navButtons('Tiếp: Bài 3 (So sánh góc)',quiz2Done)}`;
@@ -700,9 +701,9 @@
 
         <p class="body-small" style="font-weight:700;margin-top:10px">3-Strike Quiz: Nhận diện sai lầm</p>
         <p class="body-small">Nếu ở TH1 dùng nhầm OM thay vì OA để tính h, kết quả V sẽ thế nào?</p>
-        <button class="choice ${quiz3Done?'correct':''}" onclick="lesson.answerQ3(1)" ${quiz3Done?'disabled':''}>A. Sai giảm hơn một nửa (17,48 so với 35,11) vì OM < OA</button>
-        <button class="choice ${quiz3Done?'wrong':''}" onclick="lesson.answerQ3(0)" ${quiz3Done?'disabled':''}>B. Vẫn đúng vì cùng một khối chóp đáy cạnh 5</button>
-        <div id="q3-fb">${quiz3Done?'<div class="feedback good">Chính xác! Góc cạnh bên gắn với bán kính OA, góc mặt bên gắn với trung đoạn OM.</div>':''}</div>
+        <button class="choice ${quiz3Choice===1?'correct':''}" onclick="lesson.answerQ3(1)" ${quiz3Done?'disabled':''}>A. Sai giảm hơn một nửa (17,48 so với 35,11) vì OM < OA</button>
+        <button class="choice ${quiz3Choice===0?'wrong':''}" onclick="lesson.answerQ3(0)" ${quiz3Done?'disabled':''}>B. Vẫn đúng vì cùng một khối chóp đáy cạnh 5</button>
+        <div id="q3-fb">${quiz3Choice===1?'<div class="feedback good">Chính xác! Góc cạnh bên gắn với bán kính OA, góc mặt bên gắn với trung đoạn OM.</div>':quiz3Choice===0?'<div class="feedback bad">Chưa chính xác. Dùng OM thay cho OA làm thay đổi chiều cao tính được nên thể tích không thể giữ nguyên.</div>':''}</div>
       </div>
       ${notebook('• Góc cạnh bên-đáy: Gắn với đoạn OA (tâm → đỉnh đáy).<br>• Góc mặt bên-đáy: Gắn với đoạn OM (tâm → trung điểm cạnh).')}
       ${navButtons('Tiếp: Bài 4 (Lăng trụ xiên)',quiz3Done)}`;
@@ -735,9 +736,9 @@
 
         <p class="body-small" style="font-weight:700;margin-top:10px">Câu hỏi củng cố:</p>
         <p class="body-small">Kỹ thuật "cách đều 3 điểm đáy ⇒ hình chiếu là tâm" áp dụng cho những hình nào?</p>
-        <button class="choice ${quiz4Done?'correct':''}" onclick="lesson.answerQ4(1)" ${quiz4Done?'disabled':''}>A. Áp dụng cho MỌI trường hợp đỉnh cách đều 3 điểm đáy (cả chóp và lăng trụ xiên)</button>
-        <button class="choice ${quiz4Done?'wrong':''}" onclick="lesson.answerQ4(0)" ${quiz4Done?'disabled':''}>B. Chỉ áp dụng cho hình chóp</button>
-        <div id="q4-fb">${quiz4Done?'<div class="feedback good">Chính xác! Đây là nguyên lý hình chiếu tổng quát trong không gian.</div>':''}</div>
+        <button class="choice ${quiz4Choice===1?'correct':''}" onclick="lesson.answerQ4(1)" ${quiz4Done?'disabled':''}>A. Áp dụng cho MỌI trường hợp đỉnh cách đều 3 điểm đáy (cả chóp và lăng trụ xiên)</button>
+        <button class="choice ${quiz4Choice===0?'wrong':''}" onclick="lesson.answerQ4(0)" ${quiz4Done?'disabled':''}>B. Chỉ áp dụng cho hình chóp</button>
+        <div id="q4-fb">${quiz4Choice===1?'<div class="feedback good">Chính xác! Đây là nguyên lý hình chiếu tổng quát trong không gian.</div>':quiz4Choice===0?'<div class="feedback bad">Chưa chính xác. Nguyên lý hình chiếu này áp dụng cả cho hình chóp và lăng trụ xiên khi điểm đang xét cách đều ba đỉnh đáy.</div>':''}</div>
       </div>
       ${notebook('• Cách đều 3 đỉnh đáy ⇒ Hình chiếu là tâm ngoại tiếp đáy.<br>• Thể tích lăng trụ xiên: V = S_đáy · h (h là khoảng cách vuông góc thật, KHÔNG lấy cạnh bên).')}
       ${navButtons('Hoàn thành toàn bộ Bài 27',quiz4Done)}`;
@@ -770,17 +771,20 @@
         buildStep1Scene();
       },
       answerQ2(choice){
-        quiz2Done=true;
+        quiz2Choice=choice;
+        quiz2Done=choice===1;
         renderStep();
         LMS().event('quiz2-answered',{correct:choice===1});
       },
       answerQ3(choice){
-        quiz3Done=true;
+        quiz3Choice=choice;
+        quiz3Done=choice===1;
         renderStep();
         LMS().event('quiz3-answered',{correct:choice===1});
       },
       answerQ4(choice){
-        quiz4Done=true;
+        quiz4Choice=choice;
+        quiz4Done=choice===1;
         renderStep();
         LMS().event('quiz4-answered',{correct:choice===1});
       },
