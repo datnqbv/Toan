@@ -71,6 +71,8 @@
   --error: var(--wrong);
   --error-light: var(--wrong-bg);
   --font-body: 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-title: 'Be Vietnam Pro', system-ui, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, monospace;
   --radius-md: var(--radius-lg);
 }
 
@@ -85,13 +87,13 @@
             background-color: var(--bg-cream);
             color: var(--text-main);
             font-family: var(--font-body);
-            font-size: 17px;
+            font-size: 18px;
         }
 
         body {
             overflow-x: hidden;
             line-height: 1.7;
-            font-size: 17px;
+            font-size: 18px;
             background-color: var(--bg-cream);
             position: relative;
         }
@@ -325,7 +327,7 @@
             border-left: 3px solid var(--primary);
             border-radius: var(--radius-sm);
             padding: 10px 14px;
-            font-family: 'Courier New', Courier, monospace;
+            font-family: var(--font-mono);
             font-size: 14px;
             font-weight: 700;
             color: var(--primary-dark);
@@ -859,7 +861,7 @@
             font-size: 1.05rem;
             font-weight: 800;
             color: var(--primary-dark);
-            font-family: 'Courier New', Courier, monospace;
+            font-family: var(--font-mono);
         }
 
         /* ==========================================================================
@@ -919,7 +921,7 @@
             font-size: 14px;
             font-weight: 700;
             color: var(--text-main);
-            font-family: 'Courier New', Courier, monospace;
+            font-family: var(--font-mono);
         }
 
         .flow-lang {
@@ -1152,12 +1154,304 @@
                 /* Hide sidebar index on tablet/mobile size */
             }
         }
-    
-    @media (max-width: 767px) {
-      button, .btn, a.btn, input[type="button"], input[type="submit"] {
-        min-height: 44px;
-      }
-    }
+
+        /* ======================================================================
+           AIDUCATION DESIGN SYSTEM ALIGNMENT
+           Typography · Cream/Jade/Sage · responsive breakpoint 992px
+           ====================================================================== */
+        h1, h2, h3, h4,
+        .hero-quote-title,
+        .problem-quote {
+            font-family: var(--font-title);
+        }
+
+        code,
+        .equation-block,
+        .flow-term,
+        .time-icon {
+            font-family: var(--font-mono);
+            font-variant-numeric: tabular-nums;
+        }
+
+        .section-title {
+            font-size: clamp(1.5rem, 3vw, 2rem);
+        }
+
+        .hero-title {
+            font-size: clamp(2.25rem, 5vw, 3.5rem);
+            color: var(--jade-dark);
+        }
+
+        .hero-subtitle,
+        .section-body {
+            color: var(--ink-2);
+        }
+
+        .hero-scroll-btn,
+        .start-btn {
+            min-height: 44px;
+            background: var(--jade-deep);
+            box-shadow: var(--shadow);
+        }
+
+        .hero-scroll-btn:hover,
+        .start-btn:hover {
+            background: var(--jade-dark);
+            box-shadow: var(--shadow-lg);
+        }
+
+        .canvas-card,
+        .history-image-card,
+        .wave-simulation-box,
+        .unit-circle-canvas-wrap {
+            border-color: var(--paper-line);
+            box-shadow: var(--shadow-sm);
+        }
+
+        .flow-step,
+        .app-card {
+            min-height: 44px;
+        }
+
+        @media (max-width: 992px) {
+            .container {
+                width: 100%;
+                max-width: 760px;
+                padding-inline: 20px;
+            }
+
+            section {
+                min-height: auto;
+                padding-block: 48px;
+            }
+
+            .hero-section {
+                min-height: auto;
+                padding-top: 92px;
+            }
+
+            .hero-grid,
+            .problem-grid {
+                grid-template-columns: minmax(0, 1fr);
+                gap: 32px;
+            }
+
+            .hero-right {
+                width: 100%;
+                max-width: 620px;
+                margin-inline: auto;
+            }
+
+            .hero-decor-circle {
+                top: -86px;
+                left: 0;
+                width: 132px;
+                height: 132px;
+            }
+
+            .timeline-row {
+                gap: 20px;
+                padding: 24px;
+                background: var(--white);
+                border-color: var(--paper-line);
+                box-shadow: var(--shadow-sm);
+            }
+
+            .timeline-col-marker {
+                flex-wrap: wrap;
+            }
+
+            .time-location {
+                margin-top: 0;
+                text-align: left;
+            }
+
+            .history-image-card,
+            .history-media-stack .history-image-card {
+                height: auto;
+                aspect-ratio: 3 / 2;
+            }
+
+            .canvas-card {
+                height: auto;
+                min-height: 250px;
+                aspect-ratio: 16 / 10;
+            }
+
+            .mountain-card {
+                height: auto;
+                min-height: 280px;
+                aspect-ratio: 16 / 10;
+            }
+
+            .flow-grid {
+                grid-template-columns: repeat(2, minmax(0, 1fr));
+            }
+        }
+
+        @media (max-width: 600px) {
+            html,
+            body {
+                font-size: 17px;
+            }
+
+            .container {
+                padding-inline: 16px;
+            }
+
+            section {
+                padding-block: 36px;
+            }
+
+            .hero-section {
+                padding-top: 78px;
+            }
+
+            .hero-title {
+                font-size: clamp(2rem, 11vw, 2.65rem);
+                line-height: 1.12;
+            }
+
+            .hero-subtitle {
+                font-size: 1rem;
+            }
+
+            .hero-badge-container {
+                gap: 8px;
+            }
+
+            .hero-badge {
+                min-height: 36px;
+                padding-inline: 12px;
+            }
+
+            .hero-quote-card {
+                padding: 22px 18px;
+            }
+
+            .telescope-visual {
+                width: 150px;
+                height: 150px;
+            }
+
+            .timeline-row {
+                margin-bottom: 28px;
+                padding: 18px;
+                border-radius: var(--radius-lg);
+            }
+
+            .timeline-col-marker {
+                display: grid;
+                grid-template-columns: auto 1fr auto;
+                gap: 10px;
+                width: 100%;
+            }
+
+            .time-bubble {
+                white-space: nowrap;
+            }
+
+            .timeline-col-content h3 {
+                font-size: 1.25rem !important;
+                line-height: 1.35;
+            }
+
+            .history-image-stack,
+            .history-media-stack {
+                gap: 12px;
+            }
+
+            .canvas-card {
+                min-height: 210px;
+            }
+
+            .mf-box,
+            .insight-box,
+            .wave-simulation-box {
+                padding: 14px;
+            }
+
+            .flow-grid,
+            .app-grid {
+                grid-template-columns: minmax(0, 1fr);
+            }
+
+            .flow-step,
+            .app-card {
+                width: 100%;
+                min-height: 48px;
+            }
+
+            .app-card {
+                align-items: flex-start;
+                text-align: left;
+            }
+
+            .wave-sim-header {
+                align-items: flex-start;
+                flex-direction: column;
+                gap: 8px;
+            }
+
+            .wave-sim-badge {
+                max-width: 100%;
+                white-space: normal;
+            }
+
+            .wave-canvas-wrap,
+            .unit-circle-canvas-wrap {
+                height: 220px;
+            }
+
+            .ending-section {
+                padding-block: 52px;
+            }
+
+            .ending-title {
+                font-size: 1.75rem;
+            }
+
+            .ending-step-item,
+            .ending-step-arrow {
+                display: block;
+                margin-block: 4px;
+            }
+
+            button,
+            .btn,
+            a.btn,
+            .hero-scroll-btn,
+            .start-btn,
+            input[type="button"],
+            input[type="submit"],
+            input[type="range"] {
+                min-height: 44px;
+                touch-action: manipulation;
+            }
+        }
+
+        @media (max-width: 380px) {
+            .container {
+                padding-inline: 12px;
+            }
+
+            .timeline-row {
+                padding: 14px;
+            }
+
+            .timeline-col-marker {
+                grid-template-columns: 1fr auto;
+            }
+
+            .time-location {
+                grid-column: 1 / -1;
+                grid-row: 2;
+            }
+
+            .canvas-card {
+                min-height: 190px;
+            }
+        }
 </style>
 <script type="application/json" id="athena-context">
 {
