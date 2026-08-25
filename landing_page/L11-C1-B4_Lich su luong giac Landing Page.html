@@ -2378,8 +2378,8 @@
                 ctx.arc(w * 0.86, h * 0.18, 9, 0, Math.PI * 2);
                 ctx.fill();
 
-                // Dãy núi xa mờ
-                ctx.fillStyle = 'rgba(16, 124, 65, 0.05)';
+                // Dãy núi xa mờ (Đồi nền)
+                ctx.fillStyle = 'rgba(60, 165, 122, 0.25)';
                 ctx.beginPath();
                 ctx.moveTo(0, h);
                 ctx.quadraticCurveTo(w * 0.25, h * 0.45, w * 0.5, h);
@@ -2395,17 +2395,17 @@
 
                 // Mặt trời khuất sau núi phát sáng nhẹ
                 ctx.shadowBlur = 20;
-                ctx.shadowColor = 'rgba(245, 166, 35, 0.3)';
-                ctx.fillStyle = 'rgba(255, 255, 255, 0.8)';
+                ctx.shadowColor = 'rgba(245, 166, 35, 0.4)';
+                ctx.fillStyle = 'rgba(255, 255, 255, 0.9)';
                 ctx.beginPath();
-                ctx.arc(peakX - 35, peakY - 12, 10, 0, Math.PI * 2);
+                ctx.arc(peakX - 35, peakY - 12, 11, 0, Math.PI * 2);
                 ctx.fill();
                 ctx.shadowBlur = 0;
 
-                // Núi chính - Mặt đón nắng (trái)
+                // Núi chính - Mặt đón nắng (trái) - Màu xanh Jade đậm đà
                 const leftGrad = ctx.createLinearGradient(baseLeft, py, peakX, peakY);
-                leftGrad.addColorStop(0, 'rgba(16, 124, 65, 0.15)');
-                leftGrad.addColorStop(1, 'rgba(16, 124, 65, 0.35)');
+                leftGrad.addColorStop(0, '#58B38E');
+                leftGrad.addColorStop(1, '#33946C');
                 ctx.fillStyle = leftGrad;
                 ctx.beginPath();
                 ctx.moveTo(baseLeft, py);
@@ -2414,10 +2414,10 @@
                 ctx.closePath();
                 ctx.fill();
 
-                // Núi chính - Mặt khuất bóng (phải)
+                // Núi chính - Mặt khuất bóng (phải) - Màu xanh Rừng Đậm (Deep Forest Jade)
                 const rightGrad = ctx.createLinearGradient(peakX, peakY, baseRight, py);
-                rightGrad.addColorStop(0, 'rgba(12, 90, 48, 0.45)');
-                rightGrad.addColorStop(1, 'rgba(16, 124, 65, 0.15)');
+                rightGrad.addColorStop(0, '#164E37');
+                rightGrad.addColorStop(1, '#236F50');
                 ctx.fillStyle = rightGrad;
                 ctx.beginPath();
                 ctx.moveTo(peakX, peakY);
@@ -2426,18 +2426,27 @@
                 ctx.closePath();
                 ctx.fill();
 
-                ctx.strokeStyle = 'rgba(16, 124, 65, 0.45)';
-                ctx.lineWidth = 2;
+                // Đường viền sườn núi và sống núi sắc nét
+                ctx.strokeStyle = '#14432F';
+                ctx.lineWidth = 2.5;
                 ctx.beginPath();
                 ctx.moveTo(baseLeft, py);
                 ctx.lineTo(peakX, peakY);
                 ctx.lineTo(baseRight, py);
                 ctx.stroke();
 
+                // Sống núi phân chia sáng tối
+                ctx.strokeStyle = 'rgba(20, 67, 47, 0.6)';
+                ctx.lineWidth = 1.5;
+                ctx.beginPath();
+                ctx.moveTo(peakX, peakY);
+                ctx.lineTo(peakX, py);
+                ctx.stroke();
+
                 // Mặt đất cỏ xanh nhạt
-                ctx.fillStyle = '#E2ECE0';
+                ctx.fillStyle = '#D6E8D8';
                 ctx.fillRect(0, py, w, h - py);
-                ctx.strokeStyle = 'rgba(16, 124, 65, 0.15)';
+                ctx.strokeStyle = '#7CA792';
                 ctx.lineWidth = 1.5;
                 ctx.beginPath();
                 ctx.moveTo(0, py);
