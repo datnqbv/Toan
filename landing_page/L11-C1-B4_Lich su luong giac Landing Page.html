@@ -1019,6 +1019,10 @@
             padding: 16px;
         }
 
+        .history-media-stack > .wave-simulation-box {
+            margin-top: 0;
+        }
+
         .wave-sim-header {
             display: flex;
             align-items: center;
@@ -2085,6 +2089,18 @@
                                 text-anchor="middle">Sóng dao động điều hòa</text>
                         </svg>
                     </div>
+
+                    <!-- Simulation Canvas tương tác: đặt ở cột trái, ngay dưới canvas minh họa -->
+                    <div class="wave-simulation-box">
+                        <div class="wave-sim-header">
+                            <span class="wave-sim-title">Tín hiệu lượng giác</span>
+                            <span class="wave-sim-badge" id="waveSimBadge">📡 Định vị GPS (Phép giao vòng
+                                tròn)</span>
+                        </div>
+                        <div class="wave-canvas-wrap">
+                            <canvas id="waveCanvas"></canvas>
+                        </div>
+                    </div>
                 </div>
                 <div class="timeline-col-content">
                     <h3 style="font-size: 1.45rem; margin-bottom: 10px;">Ngôn ngữ lượng giác đang chạy.<br>Ngay lúc này.
@@ -2126,18 +2142,6 @@
                                 <div class="app-icon"><i class="ti ti-rocket"></i></div>
                                 <div class="app-name">🚀 SpaceX</div>
                                 <div class="app-desc">Tính toán góc lực đẩy hạ cánh tên lửa.</div>
-                            </div>
-                        </div>
-
-                        <!-- Simulation Canvas tương tác động bên dưới -->
-                        <div class="wave-simulation-box">
-                            <div class="wave-sim-header">
-                                <span class="wave-sim-title">Tín hiệu lượng giác</span>
-                                <span class="wave-sim-badge" id="waveSimBadge">📡 Định vị GPS (Phép giao vòng
-                                    tròn)</span>
-                            </div>
-                            <div class="wave-canvas-wrap">
-                                <canvas id="waveCanvas"></canvas>
                             </div>
                         </div>
                     </div>
