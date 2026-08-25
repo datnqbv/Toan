@@ -419,6 +419,29 @@
             display: block;
         }
 
+        .canvas-card,
+        .mountain-card,
+        .wave-canvas-wrap,
+        .unit-circle-canvas-wrap,
+        .timeline-col-content,
+        .timeline-col-insight,
+        .history-image-stack,
+        .history-media-stack {
+            min-width: 0;
+            max-width: 100%;
+        }
+
+        .canvas-card canvas,
+        .mountain-card canvas,
+        .wave-canvas-wrap canvas,
+        .unit-circle-canvas-wrap canvas {
+            display: block;
+            width: 100%;
+            height: 100%;
+            max-width: 100%;
+            box-sizing: border-box;
+        }
+
         /* Hai tư liệu hình ảnh cho mốc Hy Lạp, thay cho canvas mô phỏng */
         .history-image-stack {
             display: flex;
@@ -1423,6 +1446,13 @@
 
             .canvas-card {
                 min-height: 210px;
+                padding: 6px;
+            }
+
+            .wave-canvas-wrap,
+            .unit-circle-canvas-wrap {
+                width: 100%;
+                min-width: 0;
             }
 
             .mf-box,
@@ -2471,6 +2501,53 @@
             return getComputedStyle(document.documentElement).getPropertyValue(name).trim();
         }
 
+        /* Đồng bộ bitmap canvas với đúng content-box thực tế.
+           Không lấy clientWidth của thẻ cha vì giá trị đó bao gồm padding và gây tràn trên mobile. */
+        function fitCanvasToContainer(canvas, ctx) {
+            canvas.style.display = 'block';
+            canvas.style.width = '100%';
+            canvas.style.height = '100%';
+
+            const rect = canvas.getBoundingClientRect();
+            const cssWidth = Math.max(1, Math.round(rect.width));
+            const cssHeight = Math.max(1, Math.round(rect.height));
+            const dpr = window.devicePixelRatio || 1;
+            const pixelWidth = Math.max(1, Math.round(cssWidth * dpr));
+            const pixelHeight = Math.max(1, Math.round(cssHeight * dpr));
+
+            /* draw() phải dùng đúng DPR đã cấp bitmap ở lần resize này.
+               DPR toàn cục có thể đổi giữa các frame khi bật Device Toolbar. */
+            canvas._renderDpr = dpr;
+
+            if (canvas.width !== pixelWidth || canvas.height !== pixelHeight) {
+                canvas.width = pixelWidth;
+                canvas.height = pixelHeight;
+            }
+            ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+        }
+
+        function bindResponsiveCanvas(canvas, resizeFn) {
+            window.addEventListener('resize', resizeFn, { passive: true });
+
+            if (!('ResizeObserver' in window) || !canvas.parentElement) return;
+
+            let lastWidth = 0;
+            let lastHeight = 0;
+            let resizeFrame = 0;
+            const observer = new ResizeObserver((entries) => {
+                const rect = entries[0].contentRect;
+                const width = Math.round(rect.width);
+                const height = Math.round(rect.height);
+                if (width === lastWidth && height === lastHeight) return;
+                lastWidth = width;
+                lastHeight = height;
+                cancelAnimationFrame(resizeFrame);
+                resizeFrame = requestAnimationFrame(resizeFn);
+            });
+            observer.observe(canvas.parentElement);
+            canvas._containerResizeObserver = observer;
+        }
+
         /* ==========================================================================
            4. DRAW STATIC CANVAS: SECTION 1 (Ngọn núi - Interactive Hover)
            ========================================================================== */
@@ -2481,12 +2558,7 @@
             let isHovered = false;
 
             function resize() {
-                const dpr = window.devicePixelRatio || 1;
-                canvas.width = canvas.parentElement.clientWidth * dpr;
-                canvas.height = canvas.parentElement.clientHeight * dpr;
-                canvas.style.width = `${canvas.parentElement.clientWidth}px`;
-                canvas.style.height = `${canvas.parentElement.clientHeight}px`;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                fitCanvasToContainer(canvas, ctx);
                 draw();
             }
 
@@ -2530,8 +2602,8 @@
             }
 
             function draw() {
-                const w = canvas.width / (window.devicePixelRatio || 1);
-                const h = canvas.height / (window.devicePixelRatio || 1);
+                const w = canvas.width / (canvas._renderDpr || 1);
+                const h = canvas.height / (canvas._renderDpr || 1);
                 ctx.clearRect(0, 0, w, h);
 
                 // Nền trời xanh mát nhạt
@@ -2736,7 +2808,7 @@
                 ctx.fillText('• Không Drone', 15, 55);
             }
 
-            window.addEventListener('resize', resize);
+            bindResponsiveCanvas(canvas, resize);
             resize();
         }
 
@@ -2753,12 +2825,7 @@
             const pyramidHeightVal = document.getElementById('pyramidHeightVal');
 
             function resize() {
-                const dpr = window.devicePixelRatio || 1;
-                canvas.width = canvas.parentElement.clientWidth * dpr;
-                canvas.height = canvas.parentElement.clientHeight * dpr;
-                canvas.style.width = `${canvas.parentElement.clientWidth}px`;
-                canvas.style.height = `${canvas.parentElement.clientHeight}px`;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                fitCanvasToContainer(canvas, ctx);
                 draw();
             }
 
@@ -2789,8 +2856,8 @@
             }
 
             function draw() {
-                const w = canvas.width / (window.devicePixelRatio || 1);
-                const h = canvas.height / (window.devicePixelRatio || 1);
+                const w = canvas.width / (canvas._renderDpr || 1);
+                const h = canvas.height / (canvas._renderDpr || 1);
                 ctx.clearRect(0, 0, w, h);
 
                 // Nền trời hoàng hôn tím cam nhạt cực đẹp
@@ -2969,7 +3036,7 @@
                 draw();
             });
 
-            window.addEventListener('resize', resize);
+            bindResponsiveCanvas(canvas, resize);
             resize();
         }
 
@@ -2983,19 +3050,14 @@
             let isDragging = false;
 
             function resize() {
-                const dpr = window.devicePixelRatio || 1;
-                canvas.width = canvas.parentElement.clientWidth * dpr;
-                canvas.height = canvas.parentElement.clientHeight * dpr;
-                canvas.style.width = `${canvas.parentElement.clientWidth}px`;
-                canvas.style.height = `${canvas.parentElement.clientHeight}px`;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                fitCanvasToContainer(canvas, ctx);
                 draw();
             }
 
             function getAngleFromMouse(e) {
                 const rect = canvas.getBoundingClientRect();
-                const w = canvas.width / (window.devicePixelRatio || 1);
-                const h = canvas.height / (window.devicePixelRatio || 1);
+                const w = canvas.width / (canvas._renderDpr || 1);
+                const h = canvas.height / (canvas._renderDpr || 1);
                 const cx = w * 0.26;
                 const cy = h * 0.5;
                 const mx = e.clientX - rect.left;
@@ -3057,8 +3119,8 @@
             }
 
             function draw() {
-                const w = canvas.width / (window.devicePixelRatio || 1);
-                const h = canvas.height / (window.devicePixelRatio || 1);
+                const w = canvas.width / (canvas._renderDpr || 1);
+                const h = canvas.height / (canvas._renderDpr || 1);
                 ctx.clearRect(0, 0, w, h);
 
                 const cx = w * 0.26;
@@ -3173,7 +3235,7 @@
                 ctx.fillText('α', cx + 15, cy + 12);
             }
 
-            window.addEventListener('resize', resize);
+            bindResponsiveCanvas(canvas, resize);
             resize();
         }
 
@@ -3186,12 +3248,7 @@
             let animTick = 0;
 
             function resize() {
-                const dpr = window.devicePixelRatio || 1;
-                canvas.width = canvas.parentElement.clientWidth * dpr;
-                canvas.height = canvas.parentElement.clientHeight * dpr;
-                canvas.style.width = `${canvas.parentElement.clientWidth}px`;
-                canvas.style.height = `${canvas.parentElement.clientHeight}px`;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                fitCanvasToContainer(canvas, ctx);
             }
 
             function drawTag(ctx, text, x, y, width, height, r, bgColor, textColor, font) {
@@ -3221,8 +3278,8 @@
             }
 
             function drawStep() {
-                const w = canvas.width / (window.devicePixelRatio || 1);
-                const h = canvas.height / (window.devicePixelRatio || 1);
+                const w = canvas.width / (canvas._renderDpr || 1);
+                const h = canvas.height / (canvas._renderDpr || 1);
                 ctx.clearRect(0, 0, w, h);
 
                 const cx = w * 0.26;
@@ -3339,7 +3396,7 @@
                 drawTag(ctx, 'jya = jya-ardha (Sin)', cx + r + 20, cy + 20, 125, 20, 4, 'rgba(255, 255, 255, 0.8)', varColor('--text-muted'), '11px Courier New');
             }
 
-            window.addEventListener('resize', resize);
+            bindResponsiveCanvas(canvas, resize);
             resize();
             registerAnimationLoop('indiaCanvas', drawStep);
         }
@@ -3354,12 +3411,7 @@
             const trail = [];
 
             function resize() {
-                const dpr = window.devicePixelRatio || 1;
-                canvas.width = canvas.parentElement.clientWidth * dpr;
-                canvas.height = canvas.parentElement.clientHeight * dpr;
-                canvas.style.width = `${canvas.parentElement.clientWidth}px`;
-                canvas.style.height = `${canvas.parentElement.clientHeight}px`;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                fitCanvasToContainer(canvas, ctx);
             }
 
             function drawTag(ctx, text, x, y, width, height, r, bgColor, textColor, font) {
@@ -3389,8 +3441,8 @@
             }
 
             function drawStep() {
-                const w = canvas.width / (window.devicePixelRatio || 1);
-                const h = canvas.height / (window.devicePixelRatio || 1);
+                const w = canvas.width / (canvas._renderDpr || 1);
+                const h = canvas.height / (canvas._renderDpr || 1);
                 ctx.clearRect(0, 0, w, h);
 
                 const cx = w * 0.30;
@@ -3508,7 +3560,7 @@
                 angle += 0.015;
             }
 
-            window.addEventListener('resize', resize);
+            bindResponsiveCanvas(canvas, resize);
             resize();
             registerAnimationLoop('orbitCanvas', drawStep);
         }
@@ -3523,18 +3575,13 @@
             const particles = [];
 
             function resize() {
-                const dpr = window.devicePixelRatio || 1;
-                canvas.width = canvas.parentElement.clientWidth * dpr;
-                canvas.height = canvas.parentElement.clientHeight * dpr;
-                canvas.style.width = `${canvas.parentElement.clientWidth}px`;
-                canvas.style.height = `${canvas.parentElement.clientHeight}px`;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                fitCanvasToContainer(canvas, ctx);
                 initParticles();
             }
 
             function initParticles() {
-                const w = canvas.width / (window.devicePixelRatio || 1);
-                const h = canvas.height / (window.devicePixelRatio || 1);
+                const w = canvas.width / (canvas._renderDpr || 1);
+                const h = canvas.height / (canvas._renderDpr || 1);
                 particles.length = 0;
 
                 oldNotes.forEach((text, i) => {
@@ -3554,8 +3601,8 @@
             }
 
             function drawStep() {
-                const w = canvas.width / (window.devicePixelRatio || 1);
-                const h = canvas.height / (window.devicePixelRatio || 1);
+                const w = canvas.width / (canvas._renderDpr || 1);
+                const h = canvas.height / (canvas._renderDpr || 1);
                 ctx.clearRect(0, 0, w, h);
 
                 const cx = w * 0.5;
@@ -3656,7 +3703,7 @@
                 }
             }
 
-            window.addEventListener('resize', resize);
+            bindResponsiveCanvas(canvas, resize);
             resize();
             registerAnimationLoop('eulerCanvas', drawStep);
         }
@@ -3704,17 +3751,12 @@
             }
 
             function resize() {
-                const dpr = window.devicePixelRatio || 1;
-                canvas.width = canvas.parentElement.clientWidth * dpr;
-                canvas.height = canvas.parentElement.clientHeight * dpr;
-                canvas.style.width = `${canvas.parentElement.clientWidth}px`;
-                canvas.style.height = `${canvas.parentElement.clientHeight}px`;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                fitCanvasToContainer(canvas, ctx);
             }
 
             function drawStep() {
-                const w = canvas.width / (window.devicePixelRatio || 1);
-                const h = canvas.height / (window.devicePixelRatio || 1);
+                const w = canvas.width / (canvas._renderDpr || 1);
+                const h = canvas.height / (canvas._renderDpr || 1);
                 ctx.clearRect(0, 0, w, h);
 
                 const skyGrad = ctx.createLinearGradient(0, 0, 0, h);
@@ -3858,7 +3900,7 @@
                 offset += 0.022;
             }
 
-            window.addEventListener('resize', resize);
+            bindResponsiveCanvas(canvas, resize);
             resize();
             registerAnimationLoop('arabCanvas', drawStep);
         }
@@ -3893,17 +3935,12 @@
             let offset = 0;
 
             function resize() {
-                const dpr = window.devicePixelRatio || 1;
-                canvas.width = canvas.parentElement.clientWidth * dpr;
-                canvas.height = canvas.parentElement.clientHeight * dpr;
-                canvas.style.width = `${canvas.parentElement.clientWidth}px`;
-                canvas.style.height = `${canvas.parentElement.clientHeight}px`;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                fitCanvasToContainer(canvas, ctx);
             }
 
             function drawStep() {
-                const w = canvas.width / (window.devicePixelRatio || 1);
-                const h = canvas.height / (window.devicePixelRatio || 1);
+                const w = canvas.width / (canvas._renderDpr || 1);
+                const h = canvas.height / (canvas._renderDpr || 1);
                 ctx.clearRect(0, 0, w, h);
 
                 ctx.strokeStyle = '#107C41';
@@ -4046,7 +4083,7 @@
                 offset += 0.02;
             }
 
-            window.addEventListener('resize', resize);
+            bindResponsiveCanvas(canvas, resize);
             resize();
             registerAnimationLoop('waveCanvas', drawStep);
         }
@@ -4061,12 +4098,7 @@
             const history = [];
 
             function resize() {
-                const dpr = window.devicePixelRatio || 1;
-                canvas.width = canvas.parentElement.clientWidth * dpr;
-                canvas.height = canvas.parentElement.clientHeight * dpr;
-                canvas.style.width = `${canvas.parentElement.clientWidth}px`;
-                canvas.style.height = `${canvas.parentElement.clientHeight}px`;
-                ctx.setTransform(dpr, 0, 0, dpr, 0, 0);
+                fitCanvasToContainer(canvas, ctx);
             }
 
             function drawTag(ctx, text, x, y, width, height, r, bgColor, textColor, font) {
@@ -4096,8 +4128,8 @@
             }
 
             function drawStep() {
-                const w = canvas.width / (window.devicePixelRatio || 1);
-                const h = canvas.height / (window.devicePixelRatio || 1);
+                const w = canvas.width / (canvas._renderDpr || 1);
+                const h = canvas.height / (canvas._renderDpr || 1);
                 ctx.clearRect(0, 0, w, h);
 
                 const circleX = w * 0.22;
@@ -4236,7 +4268,7 @@
                 angle += 0.022;
             }
 
-            window.addEventListener('resize', resize);
+            bindResponsiveCanvas(canvas, resize);
             resize();
             registerAnimationLoop('unitCircleCanvas', drawStep);
         }
