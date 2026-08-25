@@ -183,6 +183,62 @@
         }
 
         /* ==========================================================================
+           SCROLL TO TOP BUTTON (Nút cuộn lên đầu trang)
+           ========================================================================== */
+        .scroll-to-top-btn {
+            position: fixed;
+            right: 28px;
+            bottom: 28px;
+            width: 46px;
+            height: 46px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.92);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1.5px solid rgba(45, 139, 111, 0.3);
+            color: #14432F;
+            font-size: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            cursor: pointer;
+            z-index: 999;
+            box-shadow: 0 6px 20px rgba(20, 67, 47, 0.12), 0 2px 6px rgba(0, 0, 0, 0.05);
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(16px) scale(0.9);
+            transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .scroll-to-top-btn.visible {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+        }
+
+        .scroll-to-top-btn:hover {
+            background: linear-gradient(135deg, #3CA57A, #14432F);
+            color: #FFFFFF;
+            border-color: #3CA57A;
+            transform: translateY(-4px) scale(1.06);
+            box-shadow: 0 10px 24px rgba(20, 67, 47, 0.28);
+        }
+
+        .scroll-to-top-btn:active {
+            transform: translateY(0) scale(0.96);
+        }
+
+        @media (max-width: 600px) {
+            .scroll-to-top-btn {
+                right: 18px;
+                bottom: 18px;
+                width: 42px;
+                height: 42px;
+                font-size: 18px;
+            }
+        }
+
+        /* ==========================================================================
        SECTION TYPOGRAPHY & LAYOUTS
        ========================================================================== */
         section {
@@ -428,21 +484,21 @@
             position: relative;
         }
 
-        /* Vẽ hình tròn lượng giác SVG tương tác trang trí góc đầu */
+        /* Bánh xe Thời gian Lượng giác 2000 năm (Timeline Chrono-Dial) */
         .hero-decor-circle {
             position: absolute;
-            top: -135px;
-            left: -15px;
-            opacity: 0.95;
-            cursor: grab;
+            top: -110px;
+            left: 0;
+            opacity: 0.98;
+            cursor: pointer;
             z-index: 10;
             transition: filter 0.3s ease, transform 0.3s ease;
             animation: hero-pop-in 0.8s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;
         }
 
         .hero-decor-circle:hover {
-            filter: drop-shadow(0 0 10px rgba(16, 124, 65, 0.25));
-            transform: scale(1.03);
+            filter: drop-shadow(0 6px 18px rgba(206, 138, 51, 0.28));
+            transform: scale(1.025);
         }
 
         @keyframes hero-pop-in {
@@ -1522,6 +1578,11 @@
         </div>
     </div>
 
+    <!-- Nút cuộn lên đầu trang (Scroll to Top) -->
+    <button id="scrollToTopBtn" class="scroll-to-top-btn" onclick="scrollToTop()" title="Cuộn lên đầu trang" aria-label="Cuộn lên đầu trang">
+        <i class="ti ti-arrow-up"></i>
+    </button>
+
     <div class="container">
 
         <!-- ==========================================================================
@@ -1530,35 +1591,106 @@
         <section id="hero" class="hero-section">
             <div class="hero-grid">
                 <div class="hero-left">
-                    <!-- Hình tròn lượng giác SVG tương tác -->
-                    <svg class="hero-decor-circle" id="heroInteractiveCircle" width="180" height="180"
-                        viewBox="0 0 100 100">
-                        <!-- Vòng tròn -->
-                        <circle cx="50" cy="50" r="38" fill="rgba(255, 255, 255, 0.4)" stroke="#107C41"
-                            stroke-width="1.5" />
-                        <!-- Trục tọa độ -->
-                        <line x1="8" y1="50" x2="92" y2="50" stroke="#107C41" stroke-width="0.8" />
-                        <line x1="50" y1="8" x2="50" y2="92" stroke="#107C41" stroke-width="0.8" />
-                        <!-- Cung góc để chỉ góc hiện tại -->
-                        <path id="circleAngleArc" d="" fill="none" stroke="rgba(217, 119, 6, 0.4)" stroke-width="1.5" />
-                        <!-- Trục Cos (ngang) và Trục Sin (dọc) nét đứt -->
-                        <line id="circleCosLine" x1="50" y1="50" x2="77" y2="50" stroke="#D97706" stroke-width="1.5" />
-                        <line id="circleSinLine" x1="77" y1="50" x2="77" y2="23" stroke="#107C41" stroke-width="1.5"
-                            stroke-dasharray="1.5,1.5" />
-                        <!-- Bán kính OM -->
-                        <line id="circleRadiusLine" x1="50" y1="50" x2="77" y2="23" stroke="#D97706"
-                            stroke-width="1.8" />
-                        <!-- Điểm M(x,y) có thể drag -->
-                        <circle id="circlePointM" cx="77" cy="23" r="5" fill="#D97706" stroke="#FFFFFF"
-                            stroke-width="1.5" />
-                        <!-- Text hiển thị góc và tọa độ -->
-                        <text id="circleTextVal" x="50" y="46" font-family="Courier" font-size="6" fill="#107C41"
-                            text-anchor="middle">θ = 45°</text>
-                        <text id="circleCoordsText" x="78" y="18" font-family="Courier" font-size="5"
-                            fill="#107C41">M(0.71, 0.71)</text>
+                    <!-- Bánh xe Thời gian Lượng giác 2000 năm (Timeline Chrono-Dial) -->
+                    <svg class="hero-decor-circle" id="heroChronoDial" width="180" height="180" viewBox="0 0 160 165" title="Bấm hoặc kéo kim đồng hồ để du hành 2000 năm lịch sử lượng giác">
+                        <defs>
+                            <linearGradient id="chronoGoldGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#FDE68A" />
+                                <stop offset="50%" stop-color="#D97706" />
+                                <stop offset="100%" stop-color="#92400E" />
+                            </linearGradient>
+                            <radialGradient id="chronoDialFace" cx="50%" cy="50%" r="50%">
+                                <stop offset="0%" stop-color="#FFFFFF" stop-opacity="0.95" />
+                                <stop offset="70%" stop-color="#FAF7F0" stop-opacity="0.9" />
+                                <stop offset="100%" stop-color="#E2ECE0" stop-opacity="0.85" />
+                            </radialGradient>
+                            <filter id="chronoGlow" x="-20%" y="-20%" width="140%" height="140%">
+                                <feDropShadow dx="0" dy="2" stdDeviation="3" flood-color="#D97706" flood-opacity="0.3" />
+                            </filter>
+                        </defs>
+
+                        <!-- 1. Vành bánh xe mạ đồng cổ ngoài cùng -->
+                        <circle cx="80" cy="72" r="62" fill="url(#chronoDialFace)" stroke="url(#chronoGoldGrad)" stroke-width="3" filter="url(#chronoGlow)" />
+                        <!-- Vòng gân hoa văn cổ -->
+                        <circle cx="80" cy="72" r="56" fill="none" stroke="rgba(206, 138, 51, 0.4)" stroke-width="1" stroke-dasharray="2,2" />
+                        <circle cx="80" cy="72" r="40" fill="none" stroke="rgba(45, 139, 111, 0.3)" stroke-width="0.8" />
+
+                        <!-- 2. Các vạch chia 12 cung giờ / thế kỷ -->
+                        <g stroke="#B87322" stroke-width="1" opacity="0.6">
+                            <line x1="80" y1="12" x2="80" y2="18" />
+                            <line x1="80" y1="126" x2="80" y2="132" />
+                            <line x1="20" y1="72" x2="26" y2="72" />
+                            <line x1="134" y1="72" x2="140" y2="72" />
+                            <line x1="38" y1="30" x2="43" y2="35" />
+                            <line x1="122" y1="114" x2="117" y2="109" />
+                            <line x1="38" y1="114" x2="43" y2="109" />
+                            <line x1="122" y1="30" x2="117" y2="35" />
+                        </g>
+
+                        <!-- 3. Cung góc tiến trình lịch sử -->
+                        <path id="chronoProgressArc" d="" fill="rgba(60, 165, 122, 0.15)" stroke="#2D8B6F" stroke-width="1.8" />
+
+                        <!-- 4. 7 Mốc thời gian lớn (Các điểm nút lịch sử tương tác) -->
+                        <!-- Ai Cập ~2600 TCN -->
+                        <g class="chrono-node" data-sec="egypt" data-angle="-135" style="cursor: pointer;">
+                            <circle cx="41" cy="111" r="6" fill="#FFFFFF" stroke="#D97706" stroke-width="1.5" />
+                            <text x="41" y="113.5" font-family="'JetBrains Mono', monospace" font-size="5" font-weight="700" fill="#8A551A" text-anchor="middle">2600</text>
+                        </g>
+
+                        <!-- Hy Lạp ~150 CN -->
+                        <g class="chrono-node" data-sec="greece" data-angle="-90" style="cursor: pointer;">
+                            <circle cx="22" cy="72" r="6" fill="#FFFFFF" stroke="#2D8B6F" stroke-width="1.5" />
+                            <text x="22" y="74.5" font-family="'JetBrains Mono', monospace" font-size="5" font-weight="700" fill="#14432F" text-anchor="middle">150</text>
+                        </g>
+
+                        <!-- Ấn Độ 499 CN -->
+                        <g class="chrono-node" data-sec="india" data-angle="-45" style="cursor: pointer;">
+                            <circle cx="41" cy="33" r="6" fill="#FFFFFF" stroke="#D97706" stroke-width="1.5" />
+                            <text x="41" y="35.5" font-family="'JetBrains Mono', monospace" font-size="5" font-weight="700" fill="#8A551A" text-anchor="middle">499</text>
+                        </g>
+
+                        <!-- Ả Rập 750 CN -->
+                        <g class="chrono-node" data-sec="arab" data-angle="0" style="cursor: pointer;">
+                            <circle cx="80" cy="16" r="6.5" fill="#FFFFFF" stroke="#2D8B6F" stroke-width="1.8" />
+                            <text x="80" y="18.5" font-family="'JetBrains Mono', monospace" font-size="5.5" font-weight="800" fill="#14432F" text-anchor="middle">750</text>
+                        </g>
+
+                        <!-- Châu Âu 1436 CN -->
+                        <g class="chrono-node" data-sec="europe" data-angle="45" style="cursor: pointer;">
+                            <circle cx="119" cy="33" r="6" fill="#FFFFFF" stroke="#D97706" stroke-width="1.5" />
+                            <text x="119" y="35.5" font-family="'JetBrains Mono', monospace" font-size="5" font-weight="700" fill="#8A551A" text-anchor="middle">1436</text>
+                        </g>
+
+                        <!-- Euler 1748 CN -->
+                        <g class="chrono-node" data-sec="euler" data-angle="90" style="cursor: pointer;">
+                            <circle cx="138" cy="72" r="6" fill="#FFFFFF" stroke="#2D8B6F" stroke-width="1.5" />
+                            <text x="138" y="74.5" font-family="'JetBrains Mono', monospace" font-size="5" font-weight="700" fill="#14432F" text-anchor="middle">1748</text>
+                        </g>
+
+                        <!-- Hiện tại: Sóng & Không gian -->
+                        <g class="chrono-node" data-sec="present" data-angle="135" style="cursor: pointer;">
+                            <circle cx="119" cy="111" r="6" fill="#FFFFFF" stroke="#3CA57A" stroke-width="1.5" />
+                            <text x="119" y="113.5" font-family="'JetBrains Mono', monospace" font-size="5" font-weight="700" fill="#14432F" text-anchor="middle">2026</text>
+                        </g>
+
+                        <!-- 5. Kim thời gian cổ (Chrono Pointer xoay quanh tâm) -->
+                        <g id="chronoHandGroup" transform="rotate(-135 80 72)" style="cursor: grab;">
+                            <!-- Kim chính mạ vàng -->
+                            <path d="M 77 72 L 79 30 L 80 22 L 81 30 L 83 72 L 80 81 Z" fill="url(#chronoGoldGrad)" stroke="#8A551A" stroke-width="0.8" />
+                            <!-- Đuôi kim hình vầng trăng -->
+                            <circle cx="80" cy="81" r="3.5" fill="#D97706" />
+                        </g>
+
+                        <!-- 6. Trục đinh tán trung tâm -->
+                        <circle cx="80" cy="72" r="6.5" fill="url(#chronoGoldGrad)" stroke="#8A551A" stroke-width="1" />
+                        <circle cx="80" cy="72" r="2.8" fill="#14432F" />
+
+                        <!-- 7. Thẻ nhãn mốc thời gian hiển thị động -->
+                        <rect x="3" y="140" width="154" height="23" rx="6" fill="rgba(255, 255, 255, 0.96)" stroke="#D97706" stroke-width="1.2" />
+                        <text id="chronoLabelText" x="80" y="155" font-family="'JetBrains Mono', monospace" font-size="8.2" font-weight="800" fill="#14432F" text-anchor="middle">~2600 TCN · Ai Cập</text>
                     </svg>
 
-                    <div class="section-label" style="margin-top: 40px;">
+                    <div class="section-label" style="margin-top: 75px;">
                         <i class="ti ti-route"></i> Ngôn ngữ của góc & sóng
                     </div>
                     <h1 class="hero-title">LỊCH SỬ<br><span>LƯỢNG GIÁC</span></h1>
@@ -1587,51 +1719,96 @@
                         <span class="quote-mark close">”</span>
                     </div>
 
-                    <!-- Vẽ hình ảnh kính thiên văn tương tác -->
-                    <svg class="telescope-visual" id="heroInteractiveTelescope" viewBox="0 0 100 100">
-                        <!-- Mặt đất -->
-                        <line x1="10" y1="90" x2="90" y2="90" stroke="#107C41" stroke-width="2" />
-                        <!-- Người đứng nhỏ -->
-                        <circle cx="25" cy="72" r="4" fill="#475569" />
-                        <line x1="25" y1="76" x2="25" y2="84" stroke="#475569" stroke-width="2" />
-                        <line x1="25" y1="84" x2="22" y2="90" stroke="#475569" stroke-width="1.5" />
-                        <line x1="25" y1="84" x2="28" y2="90" stroke="#475569" stroke-width="1.5" />
-                        <!-- Cánh tay trái tĩnh -->
-                        <line x1="25" y1="78" x2="21" y2="83" stroke="#475569" stroke-width="1.5"
-                            stroke-linecap="round" />
-                        <!-- Cánh tay phải động (kết nối với kính thiên văn) -->
-                        <line id="stickFigureArm" x1="25" y1="78" x2="38" y2="65" stroke="#475569" stroke-width="1.5"
-                            stroke-linecap="round" />
-                        <!-- Kính viễn vọng trên giá đỡ -->
-                        <line x1="50" y1="65" x2="42" y2="90" stroke="#107C41" stroke-width="2" />
-                        <line x1="50" y1="65" x2="58" y2="90" stroke="#107C41" stroke-width="2" />
+                    <!-- Quả cầu thiên văn lượng giác cổ đại (Interactive Armillary Sphere) -->
+                    <svg class="telescope-visual" id="heroInteractiveArmillary" viewBox="0 0 160 160" width="200" height="200" title="Kéo ngôi sao hoặc xoay kim ngắm quanh Quả cầu thiên văn để xem biến thiên Sin và Cos">
+                        <defs>
+                            <!-- Gradient đồng cổ cho chân đế -->
+                            <linearGradient id="brassGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#F7D488" />
+                                <stop offset="50%" stop-color="#CE8A33" />
+                                <stop offset="100%" stop-color="#8A551A" />
+                            </linearGradient>
+                            <linearGradient id="jadeGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+                                <stop offset="0%" stop-color="#58B38E" />
+                                <stop offset="100%" stop-color="#14432F" />
+                            </linearGradient>
+                            <filter id="glowGold" x="-20%" y="-20%" width="140%" height="140%">
+                                <feGaussianBlur stdDeviation="2" result="blur" />
+                                <feComposite in="SourceGraphic" in2="blur" operator="over" />
+                            </filter>
+                        </defs>
 
-                        <!-- Ống kính và tia ngắm có thể xoay quanh tâm (50, 65) -->
-                        <g id="telescopeBarrelGroup"
-                            style="transform-origin: 50px 65px; transform: rotate(-30deg); cursor: grab;">
-                            <!-- Ống kính chỉ lên trời -->
-                            <line x1="38" y1="65" x2="68" y2="65" stroke="#1E293B" stroke-width="5"
-                                stroke-linecap="round" />
-                            <!-- Kính ngắm phụ -->
-                            <line x1="42" y1="61" x2="58" y2="61" stroke="#475569" stroke-width="1.5"
-                                stroke-linecap="round" />
-                            <!-- Đầu ống kính hướng ra xa (tia ngắm) -->
-                            <line x1="66" y1="65" x2="88" y2="65" stroke="rgba(217, 119, 6, 0.3)" stroke-width="1"
-                                stroke-dasharray="2,2" />
-                            <!-- Đầu ngắm tròn nhỏ màu vàng -->
-                            <circle cx="68" cy="65" r="2.5" fill="#D97706" />
+                        <!-- 1. Chân đế & Trụ đỡ bằng đồng cổ (Brass Stand) -->
+                        <!-- Chân đế tam giác cách điệu -->
+                        <path d="M 50 133 L 110 133 L 102 128 L 58 128 Z" fill="url(#brassGrad)" stroke="#8A551A" stroke-width="1" />
+                        <ellipse cx="80" cy="133" rx="34" ry="4.5" fill="#B87322" opacity="0.4" />
+                        <!-- Cột trụ tiện đồng -->
+                        <path d="M 76 107 L 84 107 L 83 128 L 77 128 Z" fill="url(#brassGrad)" stroke="#8A551A" stroke-width="0.8" />
+                        <circle cx="80" cy="115" r="4.5" fill="url(#brassGrad)" stroke="#8A551A" stroke-width="0.8" />
+                        <!-- Vòng bán nguyệt giá đỡ (Meridian Bracket) -->
+                        <path d="M 34 57 A 46 46 0 0 0 126 57" fill="none" stroke="url(#brassGrad)" stroke-width="3.5" stroke-linecap="round" />
+
+                        <!-- 2. Trục nghiêng thiên văn (Ecliptic Polar Axis nghiêng 23.5 độ) -->
+                        <g transform="rotate(-23.5 80 57)">
+                            <!-- Trục chính xuyên tâm -->
+                            <line x1="80" y1="7" x2="80" y2="107" stroke="#8A551A" stroke-width="2.2" stroke-linecap="round" />
+                            <circle cx="80" cy="8" r="2.8" fill="url(#brassGrad)" stroke="#8A551A" stroke-width="0.8" />
+                            <circle cx="80" cy="106" r="2.8" fill="url(#brassGrad)" stroke="#8A551A" stroke-width="0.8" />
                         </g>
 
-                        <!-- Chốt xoay -->
-                        <circle cx="50" cy="65" r="3" fill="#D97706" />
+                        <!-- 3. Các vòng đai thiên văn (Armillary Rings) -->
+                        <!-- Vòng kinh tuyến cố định ngoài cùng -->
+                        <circle cx="80" cy="57" r="44" fill="rgba(255, 255, 255, 0.25)" stroke="url(#brassGrad)" stroke-width="2" />
 
-                        <!-- Ngôi sao nhỏ sáng di động hoặc lấp lánh để ngắm -->
-                        <path id="telescopeStar" d="M 85 30 L 86 33 L 89 34 L 86 35 L 85 38 L 84 35 L 81 34 L 84 33 Z"
-                            fill="#D97706" />
+                        <!-- Vòng xích đạo trời (Celestial Equator) -->
+                        <ellipse cx="80" cy="57" rx="44" ry="13" fill="none" stroke="#2D8B6F" stroke-width="1.8" stroke-dasharray="3,1.5" opacity="0.85" />
 
-                        <!-- Text hiển thị góc ngắm -->
-                        <text id="telescopeAngleText" x="50" y="98" font-family="Courier" font-size="6" fill="#107C41"
-                            text-anchor="middle">Góc ngắm = 30°</text>
+                        <!-- Vòng hoàng đạo nghiêng 23.5 độ (Zodiac Ecliptic Band) -->
+                        <g transform="rotate(-23.5 80 57)">
+                            <ellipse cx="80" cy="57" rx="44" ry="17" fill="none" stroke="#E8A24A" stroke-width="2.2" />
+                            <!-- Các vạch chia cung hoàng đạo nhỏ -->
+                            <line x1="36" y1="57" x2="39" y2="57" stroke="#8A551A" stroke-width="1.5" />
+                            <line x1="121" y1="57" x2="124" y2="57" stroke="#8A551A" stroke-width="1.5" />
+                            <line x1="80" y1="40" x2="80" y2="43" stroke="#8A551A" stroke-width="1.5" />
+                            <line x1="80" y1="71" x2="80" y2="74" stroke="#8A551A" stroke-width="1.5" />
+                        </g>
+
+                        <!-- Vòng chí tuyến Bắc & Nam -->
+                        <ellipse cx="80" cy="41" rx="38" ry="9" fill="none" stroke="rgba(45, 139, 111, 0.45)" stroke-width="1" stroke-dasharray="2,2" />
+                        <ellipse cx="80" cy="73" rx="38" ry="9" fill="none" stroke="rgba(45, 139, 111, 0.45)" stroke-width="1" stroke-dasharray="2,2" />
+
+                        <!-- Vòng kinh tuyến quay trong không gian -->
+                        <ellipse cx="80" cy="57" rx="16" ry="44" fill="none" stroke="rgba(206, 138, 51, 0.55)" stroke-width="1.2" />
+
+                        <!-- 4. Trái Đất nhỏ ở tâm vũ trụ cổ đại -->
+                        <circle cx="80" cy="57" r="7.5" fill="url(#jadeGrad)" stroke="#FAF7F0" stroke-width="1.2" />
+                        <ellipse cx="80" cy="57" rx="7.5" ry="2.5" fill="none" stroke="rgba(255, 255, 255, 0.6)" stroke-width="0.8" />
+                        <line x1="80" y1="49.5" x2="80" y2="64.5" stroke="rgba(255, 255, 255, 0.6)" stroke-width="0.8" />
+
+                        <!-- 5. Hệ thống Đo đạc Lượng giác Tương tác (Trigonometric Pointer & Vectors) -->
+                        <!-- Cung góc θ -->
+                        <path id="armillaryAngleArc" d="" fill="rgba(232, 162, 74, 0.25)" stroke="#D97706" stroke-width="1.5" />
+
+                        <!-- Đoạn Cos θ (chiếu ngang trên trục X) -->
+                        <line id="armillaryCosLine" x1="80" y1="57" x2="111" y2="57" stroke="#D97706" stroke-width="2.2" stroke-linecap="round" />
+
+                        <!-- Đoạn Sin θ (chiếu đứng trên trục Y) -->
+                        <line id="armillarySinLine" x1="111" y1="57" x2="111" y2="26" stroke="#2D8B6F" stroke-width="2.2" stroke-dasharray="2,2" stroke-linecap="round" />
+
+                        <!-- Kim ngắm thiên văn (Sighting Arm) từ tâm ra ngôi sao -->
+                        <line id="armillaryPointer" x1="80" y1="57" x2="111" y2="26" stroke="#CE8A33" stroke-width="2" />
+
+                        <!-- Ngôi sao thiên văn lấp lánh có thể kéo M(x, y) -->
+                        <g id="armillaryStarGroup" transform="translate(111, 26)" style="cursor: grab;">
+                            <circle cx="0" cy="0" r="8" fill="rgba(232, 162, 74, 0.2)" />
+                            <!-- Ngôi sao 4 cánh mạ vàng phát sáng -->
+                            <path d="M 0 -6 L 1.8 -1.8 L 6 0 L 1.8 1.8 L 0 6 L -1.8 1.8 L -6 0 L -1.8 -1.8 Z" fill="#F59E0B" stroke="#FFFFFF" stroke-width="0.8" filter="url(#glowGold)" />
+                            <circle cx="0" cy="0" r="2.2" fill="#FFFFFF" />
+                        </g>
+
+                        <!-- 6. Bảng hiển thị thông số lượng giác động -->
+                        <rect x="3" y="136" width="154" height="23" rx="6" fill="rgba(255, 255, 255, 0.96)" stroke="#2D8B6F" stroke-width="1.2" />
+                        <text id="armillaryTextVal" x="80" y="151" font-family="'JetBrains Mono', monospace" font-size="7.8" font-weight="700" fill="#14432F" text-anchor="middle">θ = 45° | sin = 0.71  cos = 0.71</text>
                     </svg>
                 </div>
             </div>
@@ -4084,9 +4261,26 @@
                     item.classList.add('active');
                 }
             });
+
+            // Tự động hiện/ẩn nút cuộn lên đầu trang khi cuộn qua 350px
+            const topBtn = document.getElementById('scrollToTopBtn');
+            if (topBtn) {
+                if (window.scrollY > 350) {
+                    topBtn.classList.add('visible');
+                } else {
+                    topBtn.classList.remove('visible');
+                }
+            }
         }
 
-        window.addEventListener('scroll', handleScrollSpy);
+        window.addEventListener('scroll', handleScrollSpy, { passive: true });
+
+        function scrollToTop() {
+            window.scrollTo({
+                top: 0,
+                behavior: 'smooth'
+            });
+        }
 
         function scrollToSection(id) {
             const target = document.getElementById(id);
@@ -4096,50 +4290,92 @@
         }
 
         /* ==========================================================================
-           INTERACTIVE HERO ELEMENTS: CIRCLE & TELESCOPE DRAG LOGIC
+           INTERACTIVE HERO CHRONO-DIAL (Bánh xe Thời gian Lượng giác 2000 năm)
            ========================================================================== */
-        function initInteractiveHeroCircle() {
-            const svg = document.getElementById('heroInteractiveCircle');
-            const ptM = document.getElementById('circlePointM');
-            const rLine = document.getElementById('circleRadiusLine');
-            const cosLine = document.getElementById('circleCosLine');
-            const sinLine = document.getElementById('circleSinLine');
-            const arc = document.getElementById('circleAngleArc');
-            const textVal = document.getElementById('circleTextVal');
-            const coordsText = document.getElementById('circleCoordsText');
+        function initInteractiveHeroChronoDial() {
+            const svg = document.getElementById('heroChronoDial');
+            if (!svg) return;
 
+            const handGroup = document.getElementById('chronoHandGroup');
+            const progressArc = document.getElementById('chronoProgressArc');
+            const labelText = document.getElementById('chronoLabelText');
+            const nodes = svg.querySelectorAll('.chrono-node');
+
+            const cx = 80;
+            const cy = 72;
+            let currentAngle = -135;
             let isDragging = false;
-            const cx = 50;
-            const cy = 50;
-            const r = 38;
 
-            function updateCircle(angleRad) {
-                const x = cx + r * Math.cos(angleRad);
-                const y = cy - r * Math.sin(angleRad);
+            const epochs = [
+                { sec: 'egypt', name: '~2600 TCN · Ai Cập', angle: -135 },
+                { sec: 'greece', name: '~150 CN · Hy Lạp', angle: -90 },
+                { sec: 'india', name: '499 CN · Ấn Độ (Sin)', angle: -45 },
+                { sec: 'arab', name: '750 CN · Ả Rập', angle: 0 },
+                { sec: 'europe', name: '1436 CN · Châu Âu', angle: 45 },
+                { sec: 'euler', name: '1748 CN · Euler', angle: 90 },
+                { sec: 'present', name: 'Hiện tại · Sóng & GPS', angle: 135 }
+            ];
 
-                ptM.setAttribute('cx', x);
-                ptM.setAttribute('cy', y);
+            function setDialAngle(angleDeg, triggerScroll = false, secId = null) {
+                currentAngle = angleDeg;
+                handGroup.style.transform = `rotate(${angleDeg}deg)`;
+                handGroup.style.transformOrigin = `${cx}px ${cy}px`;
+                handGroup.style.transition = isDragging ? 'none' : 'transform 0.4s cubic-bezier(0.34, 1.56, 0.64, 1)';
 
-                rLine.setAttribute('x2', x);
-                rLine.setAttribute('y2', y);
+                // Tìm mốc lịch sử gần nhất
+                let closest = epochs[0];
+                let minDiff = Infinity;
+                epochs.forEach(ep => {
+                    let diff = Math.abs(ep.angle - angleDeg);
+                    if (diff < minDiff) {
+                        minDiff = diff;
+                        closest = ep;
+                    }
+                });
 
-                cosLine.setAttribute('x2', x);
+                labelText.textContent = closest.name;
 
-                sinLine.setAttribute('x1', x);
-                sinLine.setAttribute('y1', y);
-                sinLine.setAttribute('x2', x);
+                // Làm nổi bật node tương ứng
+                nodes.forEach(node => {
+                    const isCurrent = node.getAttribute('data-sec') === closest.sec;
+                    const circle = node.querySelector('circle');
+                    if (circle) {
+                        circle.setAttribute('fill', isCurrent ? '#D97706' : '#FFFFFF');
+                        circle.setAttribute('stroke', isCurrent ? '#FFFFFF' : '#2D8B6F');
+                        circle.setAttribute('r', isCurrent ? '7.5' : '6');
+                    }
+                    const txt = node.querySelector('text');
+                    if (txt) {
+                        txt.setAttribute('fill', isCurrent ? '#FFFFFF' : '#14432F');
+                    }
+                });
 
-                const largeArcFlag = angleRad > Math.PI ? 1 : 0;
-                const arcX = cx + 8 * Math.cos(angleRad);
-                const arcY = cy - 8 * Math.sin(angleRad);
-                arc.setAttribute('d', `M ${cx + 8} ${cy} A 8 8 0 ${largeArcFlag} 0 ${arcX} ${arcY}`);
+                // Cập nhật cung tiến trình lịch sử
+                const startRad = (-135 - 90) * Math.PI / 180;
+                const endRad = (angleDeg - 90) * Math.PI / 180;
+                const arcR = 36;
+                const x1 = cx + arcR * Math.cos(startRad);
+                const y1 = cy + arcR * Math.sin(startRad);
+                const x2 = cx + arcR * Math.cos(endRad);
+                const y2 = cy + arcR * Math.sin(endRad);
+                const diffAngle = ((angleDeg - (-135)) % 360 + 360) % 360;
+                const largeArc = diffAngle > 180 ? 1 : 0;
+                progressArc.setAttribute('d', `M ${cx} ${cy} L ${x1.toFixed(1)} ${y1.toFixed(1)} A ${arcR} ${arcR} 0 ${largeArc} 1 ${x2.toFixed(1)} ${y2.toFixed(1)} Z`);
 
-                const deg = Math.round(angleRad * 180 / Math.PI);
-                textVal.textContent = `θ = ${deg}°`;
-                coordsText.textContent = `M(${Math.cos(angleRad).toFixed(2)}, ${Math.sin(angleRad).toFixed(2)})`;
-                coordsText.setAttribute('x', x + 3);
-                coordsText.setAttribute('y', y - 3);
+                if (triggerScroll && (secId || closest.sec)) {
+                    scrollToSection(secId || closest.sec);
+                }
             }
+
+            // Click vào các mốc thời gian để quay kim & cuộn trang
+            nodes.forEach(node => {
+                node.addEventListener('click', (e) => {
+                    e.stopPropagation();
+                    const targetAngle = parseFloat(node.getAttribute('data-angle'));
+                    const sec = node.getAttribute('data-sec');
+                    setDialAngle(targetAngle, true, sec);
+                });
+            });
 
             function handleMove(clientX, clientY) {
                 const rect = svg.getBoundingClientRect();
@@ -4149,16 +4385,18 @@
                 const svgW = rect.width;
                 const svgH = rect.height;
 
-                const svgX = (mx / svgW) * 100;
-                const svgY = (my / svgH) * 100;
+                const svgX = (mx / svgW) * 160;
+                const svgY = (my / svgH) * 165;
 
                 const dx = svgX - cx;
-                const dy = cy - svgY;
+                const dy = svgY - cy;
 
-                let angleRad = Math.atan2(dy, dx);
-                if (angleRad < 0) angleRad += 2 * Math.PI;
+                let angleRad = Math.atan2(dy, dx) + Math.PI / 2;
+                let angleDeg = angleRad * 180 / Math.PI;
+                if (angleDeg > 180) angleDeg -= 360;
 
-                updateCircle(angleRad);
+                angleDeg = Math.max(-140, Math.min(140, angleDeg));
+                setDialAngle(angleDeg, false);
             }
 
             svg.addEventListener('mousedown', (e) => {
@@ -4174,56 +4412,83 @@
             });
 
             window.addEventListener('mouseup', () => {
-                isDragging = false;
+                if (isDragging) {
+                    isDragging = false;
+                    setDialAngle(currentAngle, true);
+                }
             });
 
             svg.addEventListener('touchstart', (e) => {
                 isDragging = true;
                 handleMove(e.touches[0].clientX, e.touches[0].clientY);
                 e.preventDefault();
-            });
+            }, { passive: false });
 
             window.addEventListener('touchmove', (e) => {
                 if (isDragging) {
                     handleMove(e.touches[0].clientX, e.touches[0].clientY);
                 }
-            });
+            }, { passive: false });
 
             window.addEventListener('touchend', () => {
-                isDragging = false;
+                if (isDragging) {
+                    isDragging = false;
+                    setDialAngle(currentAngle, true);
+                }
             });
 
-            updateCircle(Math.PI / 4);
+            // Khởi tạo ở mốc Ai Cập (-135 độ)
+            setDialAngle(-135, false);
         }
 
-        function initInteractiveHeroTelescope() {
-            const svg = document.getElementById('heroInteractiveTelescope');
-            const barrel = document.getElementById('telescopeBarrelGroup');
-            const angleText = document.getElementById('telescopeAngleText');
-            const star = document.getElementById('telescopeStar');
-            const arm = document.getElementById('stickFigureArm');
+        function initInteractiveHeroArmillary() {
+            const svg = document.getElementById('heroInteractiveArmillary');
+            if (!svg) return;
+
+            const pointer = document.getElementById('armillaryPointer');
+            const starGroup = document.getElementById('armillaryStarGroup');
+            const cosLine = document.getElementById('armillaryCosLine');
+            const sinLine = document.getElementById('armillarySinLine');
+            const angleArc = document.getElementById('armillaryAngleArc');
+            const textVal = document.getElementById('armillaryTextVal');
 
             let isDragging = false;
-            const pivotX = 50;
-            const pivotY = 65;
+            const pivotX = 80;
+            const pivotY = 57;
+            const radius = 44;
+            const arcRadius = 14;
 
-            function updateTelescope(angleDeg) {
-                angleDeg = Math.max(5, Math.min(85, angleDeg));
-                barrel.style.transform = `rotate(${-angleDeg}deg)`;
-                angleText.textContent = `Góc ngắm = ${Math.round(angleDeg)}°`;
+            function updateArmillary(angleRad) {
+                // Tọa độ điểm thiên văn trên vòng quả cầu
+                const targetX = pivotX + radius * Math.cos(angleRad);
+                const targetY = pivotY - radius * Math.sin(angleRad);
 
-                const starRad = angleDeg * Math.PI / 180;
-                const starX = 50 + 40 * Math.cos(starRad);
-                const starY = 65 - 40 * Math.sin(starRad);
-                star.setAttribute('transform', `translate(${starX - 85}, ${starY - 30})`);
+                // Cập nhật vị trí ngôi sao
+                starGroup.setAttribute('transform', `translate(${targetX.toFixed(2)}, ${targetY.toFixed(2)})`);
 
-                // Cập nhật vị trí cánh tay phải của người que
-                const eyeX = 50 - 12 * Math.cos(starRad);
-                const eyeY = 65 + 12 * Math.sin(starRad);
-                if (arm) {
-                    arm.setAttribute('x2', eyeX);
-                    arm.setAttribute('y2', eyeY);
-                }
+                // Cập nhật kim ngắm
+                pointer.setAttribute('x2', targetX.toFixed(2));
+                pointer.setAttribute('y2', targetY.toFixed(2));
+
+                // Cập nhật hình chiếu Cos (ngang) và Sin (đứng)
+                cosLine.setAttribute('x2', targetX.toFixed(2));
+                sinLine.setAttribute('x1', targetX.toFixed(2));
+                sinLine.setAttribute('y1', pivotY);
+                sinLine.setAttribute('x2', targetX.toFixed(2));
+                sinLine.setAttribute('y2', targetY.toFixed(2));
+
+                // Vẽ cung góc θ
+                const normAngle = angleRad < 0 ? angleRad + Math.PI * 2 : angleRad;
+                const arcEndX = pivotX + arcRadius * Math.cos(angleRad);
+                const arcEndY = pivotY - arcRadius * Math.sin(angleRad);
+                const largeArc = normAngle > Math.PI ? 1 : 0;
+                angleArc.setAttribute('d', `M ${pivotX} ${pivotY} L ${pivotX + arcRadius} ${pivotY} A ${arcRadius} ${arcRadius} 0 ${largeArc} 0 ${arcEndX.toFixed(2)} ${arcEndY.toFixed(2)} Z`);
+
+                // Cập nhật thông số lượng giác
+                const angleDeg = Math.round(normAngle * 180 / Math.PI);
+                const sinVal = Math.sin(angleRad).toFixed(2);
+                const cosVal = Math.cos(angleRad).toFixed(2);
+                textVal.textContent = `θ = ${angleDeg}° | sin = ${sinVal}  cos = ${cosVal}`;
             }
 
             function handleMove(clientX, clientY) {
@@ -4234,18 +4499,14 @@
                 const svgW = rect.width;
                 const svgH = rect.height;
 
-                const svgX = (mx / svgW) * 100;
-                const svgY = (my / svgH) * 100;
+                const svgX = (mx / svgW) * 160;
+                const svgY = (my / svgH) * 160;
 
                 const dx = svgX - pivotX;
                 const dy = pivotY - svgY;
 
                 let angleRad = Math.atan2(dy, dx);
-                let angleDeg = angleRad * 180 / Math.PI;
-
-                if (angleDeg < 0) angleDeg = 0;
-
-                updateTelescope(angleDeg);
+                updateArmillary(angleRad);
             }
 
             svg.addEventListener('mousedown', (e) => {
@@ -4268,19 +4529,20 @@
                 isDragging = true;
                 handleMove(e.touches[0].clientX, e.touches[0].clientY);
                 e.preventDefault();
-            });
+            }, { passive: false });
 
             window.addEventListener('touchmove', (e) => {
                 if (isDragging) {
                     handleMove(e.touches[0].clientX, e.touches[0].clientY);
                 }
-            });
+            }, { passive: false });
 
             window.addEventListener('touchend', () => {
                 isDragging = false;
             });
 
-            updateTelescope(30);
+            // Khởi tạo góc 45 độ
+            updateArmillary(Math.PI / 4);
         }
 
         document.addEventListener('DOMContentLoaded', () => {
@@ -4290,8 +4552,8 @@
             initEulerDraw();
             initWaveSim();
             initUnitCircleSim();
-            initInteractiveHeroCircle();
-            initInteractiveHeroTelescope();
+            initInteractiveHeroChronoDial();
+            initInteractiveHeroArmillary();
             handleScrollSpy();
         });
     
